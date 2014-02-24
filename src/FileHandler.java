@@ -10,11 +10,13 @@ import java.io.IOException;
 public class FileHandler {
 
 	private static ArrayList<TaskCards> fileDetails;
-	private static String fileName = null;
-	private static int numberOfTasks = 0;
+	private static String uncompletedTasksStorageFileName = "uncompletedTasks.txt";
+	private static String completedTasksStorageFileName = "completedTasks.txt";
+	private static int numberOfUncompletedTasks = 0;
+	private static int numberOfCompletedTasks = 0;
 	
-	public FileHandler(String fileName) {
-		this.fileName = fileName;
+	public FileHandler() {
+		
 	}
 	
 	public static void openFile() {
