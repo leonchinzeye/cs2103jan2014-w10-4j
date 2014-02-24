@@ -72,6 +72,9 @@ public class TaskWorthy {
 	private static String fileName = null;
 	private static int fileSize = 0;
 	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
+	public enum COMMAND_TYPE {
+		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
+	};
 	
 	public static void main(String[] args) {
 		checkValidArgument(args);
