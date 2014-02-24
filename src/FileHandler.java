@@ -16,4 +16,12 @@ public class FileHandler {
 	public FileHandler(String fileName) {
 		this.fileName = fileName;
 	}
+	
+	public static void openFile() {
+		
+	}
+	
+	public static void saveFile() {
+		
+	}
 }
