@@ -9,17 +9,31 @@ import java.io.IOException;
 
 public class FileHandler {
 
-	private static ArrayList<TaskCards> fileDetails;
+	//2 separate arraylists for handling the completed and uncompleted tasks
+	private static ArrayList<TaskCards> uncompletedTasks;
+	private static ArrayList<TaskCards> completedTasks;
+	
+	//2 separate files for storage. one for uncompleted tasks, the other for archiving
 	private static String uncompletedTasksStorageFileName = "uncompletedTasks.txt";
 	private static String completedTasksStorageFileName = "completedTasks.txt";
+	
 	private static int numberOfUncompletedTasks = 0;
 	private static int numberOfCompletedTasks = 0;
 	
 	public FileHandler() {
+		loadFileDetails();
+	}
+	
+	private void loadFileDetails() {
+		openCompletedStorageFile();
+		openUncompletedStorageFile();
+	}
+
+	private static void openCompletedStorageFile() {
 		
 	}
 	
-	public static void openFile() {
+	private static void openUncompletedStorageFile() {
 		
 	}
 	
