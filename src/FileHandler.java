@@ -165,18 +165,18 @@ public class FileHandler {
 	private static void writeTaskCardDetails(BufferedWriter buffWrite,
 			TaskCard task) {
 		try {
-			buffWrite.write(task.getName());
-			buffWrite.write(task.getType());
-			buffWrite.write(task.getStartDate());
-			buffWrite.write(task.getStartMonth());
-			buffWrite.write(task.getStartYear());
-			buffWrite.write(task.getEndDate());
-			buffWrite.write(task.getEndMonth());
-			buffWrite.write(task.getEndYear());
-			buffWrite.write(task.getStartTime());
-			buffWrite.write(task.getEndTime());
-			buffWrite.write(task.getFrequency());
-			buffWrite.write(task.getPriority());
+			buffWrite.write("" + task.getName());
+			buffWrite.write("" + task.getType());
+			buffWrite.write("" + task.getStartDate());
+			buffWrite.write("" + task.getStartMonth());
+			buffWrite.write("" + task.getStartYear());
+			buffWrite.write("" + task.getEndDate());
+			buffWrite.write("" + task.getEndMonth());
+			buffWrite.write("" + task.getEndYear());
+			buffWrite.write("" + task.getStartTime());
+			buffWrite.write("" + task.getEndTime());
+			buffWrite.write("" + task.getFrequency());
+			buffWrite.write("" + task.getPriority());
 		} catch(IOException ex) {
 			//error writing to file message
 		}	
