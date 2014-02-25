@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -9,15 +8,15 @@ import java.io.IOException;
 
 public class FileHandler {
 
-	//2 separate arraylists for handling the completed and uncompleted tasks
-	private static ArrayList<TaskCards> uncompletedTasks;
+	//2 separate arraylists for handling the completed and incomplete tasks
+	private static ArrayList<TaskCards> incompleteTasks;
 	private static ArrayList<TaskCards> completedTasks;
 	
-	//2 separate files for storage. one for uncompleted tasks, the other for archiving
-	private static String uncompletedTasksStorageFileName = "uncompletedTasks.txt";
-	private static String completedTasksStorageFileName = "completedTasks.txt";
+	//2 separate files for storage. one for incomplete tasks, the other for archiving
+	private static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
+	private static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
 	
-	private static int numberOfUncompletedTasks = 0;
+	private static int numberOfIncompleteTasks = 0;
 	private static int numberOfCompletedTasks = 0;
 	
 	public FileHandler() {
@@ -26,7 +25,7 @@ public class FileHandler {
 	
 	private void loadFileDetails() {
 		openCompletedStorageFile();
-		openUncompletedStorageFile();
+		openIncompleteStorageFile();
 	}
 
 	/*
@@ -34,10 +33,21 @@ public class FileHandler {
 	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
 	 */
 	private static void openCompletedStorageFile() {
-		
+		try {
+			FileReader fileRead = new FileReader(COMPLETED_TASKS_STORAGE_FILE_NAME);
+		} catch (FileNotFoundException ex) {
+			createFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
+		} catch (IOException ex) {
+			
+		}
 	}
 	
-	private static void openUncompletedStorageFile() {
+	private static void createFile(String completedTasksStorageFileName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void openIncompleteStorageFile() {
 		
 	}
 	
