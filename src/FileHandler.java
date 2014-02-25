@@ -39,8 +39,11 @@ public class FileHandler {
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
 			
+			TaskCard task = new TaskCard();
 			
 			for(int i = 0; i < numberOfTaskCards; i++) {
+				task.setTaskName(buffRead.readLine());
+				task.setTaskType(buffRead.readLine());
 				
 			}
 		} catch (FileNotFoundException ex) {
