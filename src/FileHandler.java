@@ -16,8 +16,8 @@ public class FileHandler {
 	private static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
 	private static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
 	
-	private static int numberOfIncompleteTasks = 0;
-	private static int numberOfCompletedTasks = 0;
+	public static int numberOfIncompleteTasks = 0;
+	public static int numberOfCompletedTasks = 0;
 	
 	public FileHandler() {
 		loadFileDetails();
@@ -133,6 +133,8 @@ public class FileHandler {
 			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
 			
+			buffWrite.write(numberOfCompletedTasks);
+			
 			for(int i = 0; i < numberOfCompletedTasks; i++) {
 				TaskCard task = completedTasks.get(i);
 				writeTaskCardDetails(buffWrite, task);
@@ -147,6 +149,8 @@ public class FileHandler {
 		try {
 			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
+			
+			buffWrite.write(numberOfIncompleteTasks);
 			
 			for(int i = 0; i < numberOfIncompleteTasks; i++) {
 				TaskCard task = incompleteTasks.get(i);

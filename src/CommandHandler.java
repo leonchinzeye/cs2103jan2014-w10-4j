@@ -1,12 +1,13 @@
 public class CommandHandler {
-	static FileHandler incompleteTasks = new FileHandler();
-	static FileHandler completeTasks = new FileHandler();
+	static FileHandler fhIncomplete = new FileHandler();
+	static FileHandler fhComplete = new FileHandler();
 	
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
 	public static String executeCommand(String commandFull) {
+		TaskCard newCard = new TaskCard();
 		String response = "";
 		String[] cmd = commandFull.split(" ", 2);
 		String commandTypeString = cmd[0];
@@ -15,8 +16,12 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				Add addCmd = new Add();
-				response = addCmd.executeAdd(commandFull);
-				incompleteTasks.saveFile();
+				newCard = addCmd.executeAdd(commandFull);
+				if (newCard != null) {
+					fhIncomplete.incompleteTasks.add(newCard);
+				} else {
+					response = "Invalid argument";
+				}
 				break;
 			case DISPLAY:
 				break;
