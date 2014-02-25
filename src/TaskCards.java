@@ -6,9 +6,18 @@ public class TaskCards {
 	private int TaskDate;
 	private int TaskStartTime = 0;
 	private int TaskEndTime = 0;
+	private int taskPriority = 0;
 	
 	
 	
+	public int getTaskPriority() {
+		return taskPriority;
+	}
+
+	public void setTaskPriority(int taskPriority) {
+		this.taskPriority = taskPriority;
+	}
+
 	public String getTaskName() {
 		return TaskName;
 	}
