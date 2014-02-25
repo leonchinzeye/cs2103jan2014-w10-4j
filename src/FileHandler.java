@@ -9,8 +9,8 @@ import java.io.IOException;
 public class FileHandler {
 
 	//2 separate arraylists for handling the completed and incomplete tasks
-	private static ArrayList<TaskCard> incompleteTasks;
-	private static ArrayList<TaskCard> completedTasks;
+	public static ArrayList<TaskCard> incompleteTasks;
+	public static ArrayList<TaskCard> completedTasks;
 	
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
 	private static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
