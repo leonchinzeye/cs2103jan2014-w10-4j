@@ -150,6 +150,8 @@ public class FileHandler {
 			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
 			
+			buffWrite.write(numberOfIncompleteTasks);
+			
 			for(int i = 0; i < numberOfIncompleteTasks; i++) {
 				TaskCard task = incompleteTasks.get(i);
 				writeTaskCardDetails(buffWrite, task);
