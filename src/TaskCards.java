@@ -1,11 +1,11 @@
 
 public class TaskCards {
 	//should have the following TaskName, TaskType, TaskStartTime, TaskEndTime, TaskDate
-	private String TaskName;
-	private String TaskType;
-	private int TaskDate;
-	private int TaskStartTime = 0;
-	private int TaskEndTime = 0;
+	private String taskName;
+	private String taskType;
+	private int taskDate;
+	private int taskStartTime = 0;
+	private int taskEndTime = 0;
 	private int taskPriority = 0;
 	
 	
@@ -19,43 +19,43 @@ public class TaskCards {
 	}
 
 	public String getTaskName() {
-		return TaskName;
+		return taskName;
 	}
 
 	public void setTaskName(String taskName) {
-		TaskName = taskName;
+		this.taskName = taskName;
 	}
 
 	public String getTaskType() {
-		return TaskType;
+		return taskType;
 	}
 
 	public void setTaskType(String taskType) {
-		TaskType = taskType;
+		this.taskType = taskType;
 	}
 
 	public int getTaskDate() {
-		return TaskDate;
+		return taskDate;
 	}
 
 	public void setTaskDate(int taskDate) {
-		TaskDate = taskDate;
+		this.taskDate = taskDate;
 	}
 
 	public int getTaskStartTime() {
-		return TaskStartTime;
+		return taskStartTime;
 	}
 
 	public void setTaskStartTime(int taskStartTime) {
-		TaskStartTime = taskStartTime;
+		this.taskStartTime = taskStartTime;
 	}
 
 	public int getTaskEndTime() {
-		return TaskEndTime;
+		return taskEndTime;
 	}
 
 	public void setTaskEndTime(int taskEndTime) {
-		TaskEndTime = taskEndTime;
+		this.taskEndTime = taskEndTime;
 	}
 
 	
