@@ -1,5 +1,5 @@
 
-public class TaskCards {
+public class TaskCard {
 	//should have the following TaskName, TaskType, TaskStartTime, TaskEndTime, TaskDate
 	private String taskName;
 	private String taskType;
@@ -75,7 +75,7 @@ public class TaskCards {
 	}
 
 	
-	public TaskCards(){
+	public TaskCard(){
 		
 	}
 	
