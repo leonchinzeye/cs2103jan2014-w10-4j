@@ -144,7 +144,18 @@ public class FileHandler {
 	}
 	
 	public static void writeIncompleteTasksFile() {
-		
+		try {
+			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
+			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
+			
+			for(int i = 0; i < numberOfIncompleteTasks; i++) {
+				TaskCard task = incompleteTasks.get(i);
+				writeTaskCardDetails(buffWrite, task);
+			}
+			buffWrite.close();
+		} catch(IOException ex) {
+			//print error writing to file message
+		}
 	}
 
 	private static void writeTaskCardDetails(BufferedWriter buffWrite,
@@ -164,7 +175,6 @@ public class FileHandler {
 			buffWrite.write(task.getPriority());
 		} catch(IOException ex) {
 			//error writing to file message
-		}
-		
+		}	
 	}
 }
