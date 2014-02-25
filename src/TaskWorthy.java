@@ -77,7 +77,11 @@ public class TaskWorthy {
 	};
 	
 	public static void main(String[] args) {
+		String response = "";
 		FileHandler fh = new FileHandler();
+		CommandHandler ch = new CommandHandler();
+		response = ch.executeCommand("/addf CS2103 V0.5");
+		System.out.println(response);
 		
 		/*
 		checkValidArgument(args);
