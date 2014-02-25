@@ -35,6 +35,14 @@ public class FileHandler {
 	private static void openCompletedStorageFile() {
 		try {
 			FileReader fileRead = new FileReader(COMPLETED_TASKS_STORAGE_FILE_NAME);
+			BufferedReader buffRead = new BufferedReader(fileRead);
+			
+			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
+			
+			
+			for(int i = 0; i < numberOfTaskCards; i++) {
+				
+			}
 		} catch (FileNotFoundException ex) {
 			createFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
 		} catch (IOException ex) {
