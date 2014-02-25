@@ -67,6 +67,7 @@ public class FileHandler {
 			BufferedReader buffRead = new BufferedReader(fileRead);
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
+			numberOfIncompleteTasks = numberOfTaskCards;
 			
 			for(int i = 0; i < numberOfTaskCards; i++) {
 				TaskCard task = new TaskCard();
