@@ -133,6 +133,8 @@ public class FileHandler {
 			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
 			
+			buffWrite.write(numberOfCompletedTasks);
+			
 			for(int i = 0; i < numberOfCompletedTasks; i++) {
 				TaskCard task = completedTasks.get(i);
 				writeTaskCardDetails(buffWrite, task);
