@@ -33,39 +33,29 @@ public class FileHandler {
 	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
 	 */
 	private static void openCompletedStorageFile() {
+		completedTasks = new ArrayList<TaskCard>();
+		
 		try {
 			FileReader fileRead = new FileReader(COMPLETED_TASKS_STORAGE_FILE_NAME);
 			BufferedReader buffRead = new BufferedReader(fileRead);
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
 			
-			TaskCard task = new TaskCard();
-			ArrayList<String> taskDetails = new ArrayList<String>();
-			
 			for(int i = 0; i < numberOfTaskCards; i++) {
+				TaskCard task = new TaskCard();
+				ArrayList<String> taskDetails = new ArrayList<String>();
+				
 				taskDetails = getTaskDetailsFromFile(buffRead);
+				setTaskDetailsForReading(taskDetails, task);
 				
-				String name = buffRead.readLine();
-				String Type = buffRead.readLine();
-				
-				int startDate = Integer.parseInt(buffRead.readLine());
-				int startMonth = Integer.parseInt(buffRead.readLine());
-				int startYear = Integer.parseInt(buffRead.readLine());
-				
-				int endDate = Integer.parseInt(buffRead.readLine());
-				int endMonth = Integer.parseInt(buffRead.readLine());
-				int endYear = Integer.parseInt(buffRead.readLine());
-				
-				int startTime = Integer.parseInt(buffRead.readLine());
-				int endTime = Integer.parseInt(buffRead.readLine());
-				
-				String frequency = buffRead.readLine();
-				int priority = Integer.parseInt(buffRead.readLine());
+				completedTasks.add(task);
 			}
+			
+			buffRead.close();
 		} catch (FileNotFoundException ex) {
 			createFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
 		} catch (IOException ex) {
-			
+			//throw error reading file message
 		}
 	}
 	
@@ -73,8 +63,35 @@ public class FileHandler {
 			BufferedReader buffRead) {
 		ArrayList<String> taskDetails = new ArrayList<String>();
 		
+		try {
+			for(int i = 0; i < 12; i++) {
+				taskDetails.add(buffRead.readLine());
+			}
+			return taskDetails;
+		} catch(IOException ex) {
+			return null;
+		}
+	}
+
+	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,
+			TaskCard task) {
 		
-		return null;
+		task.setName(taskDetails.get(1));
+		task.setType(taskDetails.get(2));
+		
+		task.setStartDate(Integer.parseInt(taskDetails.get(3)));
+		task.setStartMonth(Integer.parseInt(taskDetails.get(4)));
+		task.setStartYear(Integer.parseInt(taskDetails.get(5)));
+		
+		task.setEndDate(Integer.parseInt(taskDetails.get(6)));
+		task.setEndMonth(Integer.parseInt(taskDetails.get(7)));
+		task.setEndYear(Integer.parseInt(taskDetails.get(8)));
+		
+		task.setStartTime(Integer.parseInt(taskDetails.get(9)));
+		task.setEndTime(Integer.parseInt(taskDetails.get(10)));
+		
+		task.setFrequency(taskDetails.get(11));
+		task.setPriority(Integer.parseInt(taskDetails.get(12)));
 	}
 
 	private static void openIncompleteStorageFile() {
