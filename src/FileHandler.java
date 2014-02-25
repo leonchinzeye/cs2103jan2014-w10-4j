@@ -39,9 +39,28 @@ public class FileHandler {
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
 			
+			TaskCard task = new TaskCard();
+			ArrayList<String> taskDetails = new ArrayList<String>();
 			
 			for(int i = 0; i < numberOfTaskCards; i++) {
+				taskDetails = getTaskDetailsFromFile(buffRead);
 				
+				String name = buffRead.readLine();
+				String Type = buffRead.readLine();
+				
+				int startDate = Integer.parseInt(buffRead.readLine());
+				int startMonth = Integer.parseInt(buffRead.readLine());
+				int startYear = Integer.parseInt(buffRead.readLine());
+				
+				int endDate = Integer.parseInt(buffRead.readLine());
+				int endMonth = Integer.parseInt(buffRead.readLine());
+				int endYear = Integer.parseInt(buffRead.readLine());
+				
+				int startTime = Integer.parseInt(buffRead.readLine());
+				int endTime = Integer.parseInt(buffRead.readLine());
+				
+				String frequency = buffRead.readLine();
+				int priority = Integer.parseInt(buffRead.readLine());
 			}
 		} catch (FileNotFoundException ex) {
 			createFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
@@ -50,15 +69,23 @@ public class FileHandler {
 		}
 	}
 	
-	private static void createFile(String completedTasksStorageFileName) {
-		// TODO Auto-generated method stub
+	private static ArrayList<String> getTaskDetailsFromFile(
+			BufferedReader buffRead) {
+		ArrayList<String> taskDetails = new ArrayList<String>();
 		
+		
+		return null;
 	}
 
 	private static void openIncompleteStorageFile() {
 		
 	}
 	
+	private static void createFile(String completedTasksStorageFileName) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public static void saveFile() {
 		
 	}
