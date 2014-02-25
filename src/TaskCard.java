@@ -1,6 +1,7 @@
 
 public class TaskCard {
-	//should have the following TaskName, TaskType, TaskStartTime, TaskEndTime, TaskDate
+	//should have the following taskName, taskType, taskStartTime, taskEndTime, taskStartDate,taskEndDate
+	//taskPriority, taskFrequency 
 	private String taskName;
 	private String taskType;
 	private int taskStartDate;
