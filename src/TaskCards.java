@@ -3,13 +3,13 @@ public class TaskCards {
 	//should have the following TaskName, TaskType, TaskStartTime, TaskEndTime, TaskDate
 	private String taskName;
 	private String taskType;
-	private int taskDate;
+	private int taskStartDate;
+	private int taskEndDate;
 	private int taskStartTime = 0;
 	private int taskEndTime = 0;
 	private int taskPriority = 0;
-	
-	
-	
+	private String taskFrequency = "";
+
 	public int getTaskPriority() {
 		return taskPriority;
 	}
@@ -34,12 +34,20 @@ public class TaskCards {
 		this.taskType = taskType;
 	}
 
-	public int getTaskDate() {
-		return taskDate;
+	public int getStartTaskDate() {
+		return taskStartDate;
 	}
 
-	public void setTaskDate(int taskDate) {
-		this.taskDate = taskDate;
+	public void setStartTaskDate(int taskDate) {
+		this.taskStartDate = taskDate;
+	}
+	
+	public int getEndTaskDate() {
+		return taskEndDate;
+	}
+
+	public void setEndTaskDate(int taskDate) {
+		this.taskEndDate = taskDate;
 	}
 
 	public int getTaskStartTime() {
@@ -56,6 +64,14 @@ public class TaskCards {
 
 	public void setTaskEndTime(int taskEndTime) {
 		this.taskEndTime = taskEndTime;
+	}
+	
+	public String getTaskFrequency() {
+		return taskFrequency;
+	}
+
+	public void setTaskFrequency(String taskFrequency) {
+		this.taskFrequency = taskFrequency;
 	}
 
 	
