@@ -93,7 +93,7 @@ public class FileHandler {
 		ArrayList<String> taskDetails = new ArrayList<String>();
 		
 		try {
-			for(int i = 0; i < 12; i++) {
+			for(int i = 0; i < 2; i++) {
 				taskDetails.add(buffRead.readLine());
 			}
 			return taskDetails;
@@ -106,21 +106,23 @@ public class FileHandler {
 			TaskCard task) {
 		
 		task.setName(taskDetails.get(0));
-		task.setType(taskDetails.get(1));
 		
-		task.setStartDate(Integer.parseInt(taskDetails.get(2)));
-		task.setStartMonth(Integer.parseInt(taskDetails.get(3)));
-		task.setStartYear(Integer.parseInt(taskDetails.get(4)));
+		String[] restOfDetails = taskDetails.get(1).split(" ");
+		task.setType(restOfDetails[0]);
 		
-		task.setEndDate(Integer.parseInt(taskDetails.get(5)));
-		task.setEndMonth(Integer.parseInt(taskDetails.get(6)));
-		task.setEndYear(Integer.parseInt(taskDetails.get(7)));
+		task.setStartDate(Integer.parseInt(restOfDetails[1]));
+		task.setStartMonth(Integer.parseInt(restOfDetails[2]));
+		task.setStartYear(Integer.parseInt(restOfDetails[3]));
 		
-		task.setStartTime(Integer.parseInt(taskDetails.get(8)));
-		task.setEndTime(Integer.parseInt(taskDetails.get(9)));
+		task.setEndDate(Integer.parseInt(restOfDetails[4]));
+		task.setEndDate(Integer.parseInt(restOfDetails[5]));
+		task.setEndDate(Integer.parseInt(restOfDetails[6]));
 		
-		task.setFrequency(taskDetails.get(10));
-		task.setPriority(Integer.parseInt(taskDetails.get(11)));
+		task.setStartTime(Integer.parseInt(restOfDetails[7]));
+		task.setEndTime(Integer.parseInt(restOfDetails[8]));
+		
+		task.setFrequency(restOfDetails[9]);
+		task.setPriority(Integer.parseInt(restOfDetails[10]));
 	}
 
 	private static void createFile(String completedTasksStorageFileName) {
