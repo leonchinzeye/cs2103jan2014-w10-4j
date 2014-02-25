@@ -128,7 +128,11 @@ public class FileHandler {
 		
 	}
 
-	public static void saveFile() {
+	public static void writeCompleteTasksFile() {
+		
+	}
+	
+	public static void writeIncompleteTasksFile() {
 		
 	}
 }
