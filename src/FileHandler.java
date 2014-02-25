@@ -16,8 +16,8 @@ public class FileHandler {
 	private static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
 	private static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
 	
-	private static int numberOfIncompleteTasks = 0;
-	private static int numberOfCompletedTasks = 0;
+	public static int numberOfIncompleteTasks = 0;
+	public static int numberOfCompletedTasks = 0;
 	
 	public FileHandler() {
 		loadFileDetails();
