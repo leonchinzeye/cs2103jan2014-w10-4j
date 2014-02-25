@@ -77,6 +77,9 @@ public class TaskWorthy {
 	};
 	
 	public static void main(String[] args) {
+		FileHandler fh = new FileHandler();
+		
+		/*
 		checkValidArgument(args);
 		
 		openFile(args);
@@ -86,7 +89,7 @@ public class TaskWorthy {
 		initialiseCommands();
 		
 		letUserEnterTillErrorOrExit();
-		
+		*/
 		return;
 	}
 	
