@@ -150,7 +150,8 @@ public class FileHandler {
 			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
 			
-			buffWrite.write(numberOfIncompleteTasks);
+			buffWrite.write("" + numberOfIncompleteTasks);
+			buffWrite.newLine();
 			
 			for(int i = 0; i < numberOfIncompleteTasks; i++) {
 				TaskCard task = incompleteTasks.get(i);
@@ -165,18 +166,17 @@ public class FileHandler {
 	private static void writeTaskCardDetails(BufferedWriter buffWrite,
 			TaskCard task) {
 		try {
-			buffWrite.write(task.getName());
-			buffWrite.write(task.getType());
-			buffWrite.write(task.getStartDate());
-			buffWrite.write(task.getStartMonth());
-			buffWrite.write(task.getStartYear());
-			buffWrite.write(task.getEndDate());
-			buffWrite.write(task.getEndMonth());
-			buffWrite.write(task.getEndYear());
-			buffWrite.write(task.getStartTime());
-			buffWrite.write(task.getEndTime());
-			buffWrite.write(task.getFrequency());
-			buffWrite.write(task.getPriority());
+			buffWrite.write("" + task.getName());
+			buffWrite.newLine();
+			
+			String detailsToBeWritten = task.getType() + " " + task.getStartDate() + " " 
+																	+ task.getStartMonth() + " " + task.getStartYear() + " "
+																	+ task.getEndDate() + " " + task.getEndMonth() + " " 
+																	+ task.getEndYear() + " " + task.getStartTime() + " "
+																	+ task.getEndTime() + " " + task.getFrequency() + " "
+																	+ task.getPriority();
+			buffWrite.write(detailsToBeWritten);
+			buffWrite.newLine();
 		} catch(IOException ex) {
 			//error writing to file message
 		}	

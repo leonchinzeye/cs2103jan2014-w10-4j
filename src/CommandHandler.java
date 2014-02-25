@@ -5,7 +5,7 @@ public class CommandHandler {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
-	public static String executeCommand(String commandFull) {
+	public String executeCommand(String commandFull) {
 		TaskCard newCard = new TaskCard();
 		String response = "";
 		String[] cmd = commandFull.split(" ", 2);
