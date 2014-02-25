@@ -129,10 +129,42 @@ public class FileHandler {
 	}
 
 	public static void writeCompleteTasksFile() {
-		
+		try {
+			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
+			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
+			
+			for(int i = 0; i < numberOfCompletedTasks; i++) {
+				TaskCard task = completedTasks.get(i);
+				writeTaskCardDetails(buffWrite, task);
+			}
+			buffWrite.close();
+		} catch(IOException ex) {
+			//print error writing to file message
+		}
 	}
 	
 	public static void writeIncompleteTasksFile() {
+		
+	}
+
+	private static void writeTaskCardDetails(BufferedWriter buffWrite,
+			TaskCard task) {
+		try {
+			buffWrite.write(task.getName());
+			buffWrite.write(task.getType());
+			buffWrite.write(task.getStartDate());
+			buffWrite.write(task.getStartMonth());
+			buffWrite.write(task.getStartYear());
+			buffWrite.write(task.getEndDate());
+			buffWrite.write(task.getEndMonth());
+			buffWrite.write(task.getEndYear());
+			buffWrite.write(task.getStartTime());
+			buffWrite.write(task.getEndTime());
+			buffWrite.write(task.getFrequency());
+			buffWrite.write(task.getPriority());
+		} catch(IOException ex) {
+			//error writing to file message
+		}
 		
 	}
 }
