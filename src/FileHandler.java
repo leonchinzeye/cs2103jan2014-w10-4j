@@ -59,6 +59,33 @@ public class FileHandler {
 		}
 	}
 	
+	private static void openIncompleteStorageFile() {
+		incompleteTasks = new ArrayList<TaskCard>();
+		
+		try {
+			FileReader fileRead = new FileReader(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+			BufferedReader buffRead = new BufferedReader(fileRead);
+			
+			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
+			
+			for(int i = 0; i < numberOfTaskCards; i++) {
+				TaskCard task = new TaskCard();
+				ArrayList<String> taskDetails = new ArrayList<String>();
+				
+				taskDetails = getTaskDetailsFromFile(buffRead);
+				setTaskDetailsForReading(taskDetails, task);
+				
+				incompleteTasks.add(task);
+			}
+			
+			buffRead.close();
+		} catch (FileNotFoundException ex) {
+			createFile(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		} catch (IOException ex) {
+			//throw error reading file message
+		}
+	}
+
 	private static ArrayList<String> getTaskDetailsFromFile(
 			BufferedReader buffRead) {
 		ArrayList<String> taskDetails = new ArrayList<String>();
@@ -94,12 +121,8 @@ public class FileHandler {
 		task.setPriority(Integer.parseInt(taskDetails.get(12)));
 	}
 
-	private static void openIncompleteStorageFile() {
-		
-	}
-	
 	private static void createFile(String completedTasksStorageFileName) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
