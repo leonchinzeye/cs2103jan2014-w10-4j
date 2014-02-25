@@ -29,6 +29,10 @@ public class FileHandler {
 		openUncompletedStorageFile();
 	}
 
+	/*
+	 * When writing to the program, will instantiate a new TaskCard object with the parameters
+	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
+	 */
 	private static void openCompletedStorageFile() {
 		
 	}
