@@ -18,6 +18,7 @@ public class CommandHandler {
 				newCard = addCmd.executeAdd(commandFull);
 				if (newCard != null) {
 					FileHandler.incompleteTasks.add(newCard);
+					FileHandler.numberOfIncompleteTasks++;
 					response = "Added " + newCard.getName();
 				} else {
 					response = "Invalid argument";
