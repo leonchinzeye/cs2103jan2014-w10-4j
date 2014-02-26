@@ -54,7 +54,7 @@ public class FileHandler {
 			
 			buffRead.close();
 		} catch (FileNotFoundException ex) {
-			createFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
+			createEmptyFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
@@ -82,7 +82,7 @@ public class FileHandler {
 			
 			buffRead.close();
 		} catch (FileNotFoundException ex) {
-			createFile(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+			createEmptyFile(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
@@ -125,7 +125,7 @@ public class FileHandler {
 		task.setPriority(Integer.parseInt(restOfDetails[10]));
 	}
 
-	private static void createFile(String completedTasksStorageFileName) {
+	private static void createEmptyFile(String completedTasksStorageFileName) {
 		
 		
 	}
