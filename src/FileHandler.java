@@ -125,9 +125,24 @@ public class FileHandler {
 		task.setPriority(Integer.parseInt(restOfDetails[10]));
 	}
 
-	private static void createEmptyFile(String completedTasksStorageFileName) {
+	private static void createEmptyFile(String fileStorageName) {
+		initialiseFileDetails(fileStorageName);
 		
-		
+		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
+			writeIncompleteTasksFile();
+		} else {
+			writeCompleteTasksFile();
+		}
+	}
+
+	private static void initialiseFileDetails(String fileStorageName) {
+		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
+			numberOfIncompleteTasks = 0;
+			incompleteTasks = new ArrayList<TaskCard>();
+		} else {
+			numberOfCompletedTasks = 0;
+			completedTasks = new ArrayList<TaskCard>();
+		}
 	}
 
 	public static void writeCompleteTasksFile() {
