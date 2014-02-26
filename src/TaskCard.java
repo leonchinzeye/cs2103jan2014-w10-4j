@@ -134,21 +134,6 @@ public class TaskCard {
 	public void setEndTime(int endTime) {
 		this.endTime = endTime;
 	}
-
-
-
-	public int getPriority() {
-		return priority;
-	}
-
-
-
-	public void setPriority(int priority) {
-		this.priority = priority;
-	}
-
-
-
 	public String getFrequency() {
 		return frequency;
 	}
@@ -159,11 +144,18 @@ public class TaskCard {
 		this.frequency = frequency;
 	}
 
-
-
-
 	
-	
+	public int getPriority() {
+		return priority;
+	}
+
+
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+		
 	public TaskCard(){
 		
 	}
