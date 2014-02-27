@@ -1,5 +1,4 @@
 public class CommandHandler {
-	public boolean terminateStatus = false;
 	
 	static FileHandler fh = new FileHandler();
 	
