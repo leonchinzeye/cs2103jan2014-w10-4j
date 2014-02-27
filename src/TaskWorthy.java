@@ -76,6 +76,8 @@ public class TaskWorthy {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
+	private static boolean terminationStatus = false;
+	
 	public static void main(String[] args) {
 		String response = "";
 		//FileHandler fh = new FileHandler();
