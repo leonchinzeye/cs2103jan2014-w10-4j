@@ -87,10 +87,10 @@ public class TaskWorthy {
 		while(true) {
 			String userInput = scan.nextLine();
 			
-			if(userInput.isEmpty()) {
-				//no input detected, user just pressed enter only
-			} else {
+			if(hasInput(userInput)) {
 				ch.executeCommand(userInput);
+			} else {
+				//no user input provide. just pressed enter only
 			}
 		}
 		
@@ -105,6 +105,14 @@ public class TaskWorthy {
 		
 		letUserEnterTillErrorOrExit();
 		*/
+	}
+	
+	private static boolean hasInput(String userInput) {
+		if(userInput.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	private static void checkValidArgument(String[] args) {
