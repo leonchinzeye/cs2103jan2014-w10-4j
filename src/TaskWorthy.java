@@ -77,13 +77,25 @@ public class TaskWorthy {
 	};
 	
 	private static boolean terminationStatus = false;
+	private static Scanner scan = new Scanner(System.in);
 	
 	public static void main(String[] args) {
 		String response = "";
-		//FileHandler fh = new FileHandler();
 		CommandHandler ch = new CommandHandler();
 		response = ch.executeCommand("/addf CS2103 V0.5");
 		System.out.println(response);
+		
+		while(terminationStatus == false) {
+			String userInput = scan.nextLine();
+			
+			if(userInput.isEmpty()) {
+				//no input detected, user just pressed enter only
+			} else {
+				ch.executeCommand(userInput);
+			}
+			
+			terminationStatus = ch.terminateStatus;
+		}
 		
 		/*
 		checkValidArgument(args);
