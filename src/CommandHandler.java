@@ -1,4 +1,6 @@
 public class CommandHandler {
+	public static boolean terminateStatus = false;
+	
 	static FileHandler fh = new FileHandler();
 	
 	public enum COMMAND_TYPE {
