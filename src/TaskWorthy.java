@@ -76,7 +76,6 @@ public class TaskWorthy {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
-	private static boolean terminationStatus = false;
 	private static Scanner scan = new Scanner(System.in);
 	
 	public static void main(String[] args) {
@@ -85,7 +84,7 @@ public class TaskWorthy {
 		response = ch.executeCommand("/addf CS2103 V0.5");
 		System.out.println(response);
 		
-		while(terminationStatus == false) {
+		while(true) {
 			String userInput = scan.nextLine();
 			
 			if(userInput.isEmpty()) {
@@ -93,8 +92,6 @@ public class TaskWorthy {
 			} else {
 				ch.executeCommand(userInput);
 			}
-			
-			terminationStatus = ch.terminateStatus;
 		}
 		
 		/*
@@ -108,7 +105,6 @@ public class TaskWorthy {
 		
 		letUserEnterTillErrorOrExit();
 		*/
-		return;
 	}
 	
 	private static void checkValidArgument(String[] args) {
