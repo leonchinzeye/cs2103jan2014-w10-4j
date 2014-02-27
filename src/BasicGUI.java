@@ -12,11 +12,11 @@ import java.awt.event.ActionListener;
 public class BasicGUI{	
 
 	//JTextField
-	private static JTextArea displayField;
+	private static JTextArea consoleField;
 	private static JTextField commandField;
 	
 	//JScrollPane 
-	//private static JScrollPane displayScroll;
+	private static JScrollPane consoleScroll;
 	
 	public static void main(String args[]){
 		
@@ -32,15 +32,16 @@ public class BasicGUI{
 		storageContainer.setLayout(null);
 		
 		//JPanel for display
-		JPanel displayPanel = new JPanel(null);
-		displayPanel.setBorder(BorderFactory.createTitledBorder("Display"));
+		JPanel consolePanel = new JPanel(null);
+		consolePanel.setBorder(BorderFactory.createTitledBorder("Console"));
 		
 		//JPanel for command
 		JPanel commandPanel = new JPanel(null);
 		commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
 		
+		//JTextArea
+		consoleField = new JTextArea();
 		//JTextField
-		displayField = new JTextArea();
 		commandField = new JTextField();
 		
 		//JLabel
@@ -48,16 +49,19 @@ public class BasicGUI{
 		
 		//Storage container 
 		storageContainer.setBounds(0,0, 400, 400);
-		storageContainer.add(displayPanel);
+		storageContainer.add(consolePanel);
 		storageContainer.add(commandPanel);
 		
+		//scroll function 
+		consoleScroll = new JScrollPane(consoleField);
+		
 		//displayPanel
-		displayPanel.setBounds(5,5,375, 275);
+		consolePanel.setBounds(5,5,375, 275);
 		//part of the display box 
-		displayPanel.add(displayField);
-		displayField.setBounds(8, 20, 360, 245);
-		displayField.setEditable(false);
-		displayField.setBackground(Color.white);
+		consolePanel.add(consoleScroll);
+		consoleScroll.setBounds(8, 20, 360, 245);
+		consoleField.setEditable(false);
+		consoleField.setBackground(Color.white);
 		//commandPanel
 		commandPanel.setBounds(5, 280, 375, 70);
 		commandPanel.add(commandField);
@@ -66,19 +70,17 @@ public class BasicGUI{
 		
 		
 		//input/output field
-		
-		//displayScroll  = new JScrollPane(displayField);
-		
+		//input into the command field can be displayed on Console
 		commandField.addActionListener(new ActionListener() {
 			@Override
 			
 			public void actionPerformed(ActionEvent arg0) {
-				if(displayField.getText().isEmpty()){
-					displayField.setText(commandField.getText());
+				if(consoleField.getText().isEmpty()){
+					consoleField.setText(commandField.getText());
 					commandField.setText("");
 				}
 				else{
-				displayField.setText(displayField.getText() + "\n" +commandField.getText());
+				consoleField.setText(consoleField.getText() + "\n" +commandField.getText());
 				commandField.setText("");
 				}
 			}
