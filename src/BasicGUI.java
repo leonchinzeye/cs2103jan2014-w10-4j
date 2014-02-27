@@ -2,10 +2,21 @@
 //import javax.swing.JPanel;
 //import javax.swing.JLabel;
 import javax.swing.*;
+
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 
 public class BasicGUI{	
+
+	//JTextField
+	private static JTextArea displayField;
+	private static JTextField commandField;
+	
+	//JScrollPane 
+	//private static JScrollPane displayScroll;
 	
 	public static void main(String args[]){
 		
@@ -29,8 +40,8 @@ public class BasicGUI{
 		commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
 		
 		//JTextField
-		JTextField displayField = new JTextField();
-		JTextField commandField = new JTextField();
+		displayField = new JTextArea();
+		commandField = new JTextField();
 		
 		//JLabel
 		//JLabel mainLabel = new JLabel("Hello");
@@ -53,12 +64,35 @@ public class BasicGUI{
 		commandField.setBounds(8, 20, 360, 40); 
 		
 		
-		//part of the command box
-		//mainPanel.add(commadField);
-		//commadField.setBounds(180, 118, 360, 180);
 		
-		//displayPanel.add(mainLabel);
-		//mainLabel.setBounds(5, 20, 50, 20);		
+		//input/output field
+		
+		//displayScroll  = new JScrollPane(displayField);
+		
+		commandField.addActionListener(new ActionListener() {
+			@Override
+			
+			public void actionPerformed(ActionEvent arg0) {
+				if(displayField.getText().isEmpty()){
+					displayField.setText(commandField.getText());
+					commandField.setText("");
+				}
+				else{
+				displayField.setText(displayField.getText() + "\n" +commandField.getText());
+				commandField.setText("");
+				}
+			}
+		});
+		
+		
+		/*
+		part of the command box
+		mainPanel.add(commadField);
+		commadField.setBounds(180, 118, 360, 180);
+		
+		displayPanel.add(mainLabel);
+		mainLabel.setBounds(5, 20, 50, 20);		
+		 */
 	}
 	
 }
