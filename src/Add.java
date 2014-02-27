@@ -3,6 +3,13 @@ import java.util.Calendar;
 public class Add {
 	TaskCard newCard = new TaskCard();
 	Calendar today = Calendar.getInstance();
+	
+	private static FileHandler fileHand;
+	
+	public Add(FileHandler fileHand) {
+		this.fileHand = fileHand;
+	}
+	
 	public TaskCard executeAdd(String commandFull) {
 		String[] commandArray = commandFull.split(" ", 2);
 		if (commandArray[1].trim().length() <= 0) {
