@@ -13,8 +13,8 @@ public class FileHandler {
 	public static ArrayList<TaskCard> completedTasks;
 	
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
-	private static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
-	private static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
+	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
+	public static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
 	
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
