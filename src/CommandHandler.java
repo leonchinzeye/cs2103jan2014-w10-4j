@@ -29,15 +29,15 @@ public class CommandHandler {
 	
 	public String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
-		String response = "";
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		
 		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
-			
+		
+		String response;
 		switch(commandType) {
 			case ADD:
-				Add addCmd = new Add(fh);
-				
+				response = Add.executeAdd(tokenizedInput);
 				break;
 			case DISPLAY:
 				break;
