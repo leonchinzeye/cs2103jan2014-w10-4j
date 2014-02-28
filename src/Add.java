@@ -5,10 +5,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Add {
-	TaskCard newCard = new TaskCard();
-	Calendar today = GregorianCalendar.getInstance();
-	Calendar endDay = GregorianCalendar.getInstance();
-	SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
+	private static TaskCard newCard = new TaskCard();
+	private static Calendar today = GregorianCalendar.getInstance();
+	private static Calendar endDay = GregorianCalendar.getInstance();
+	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
 	
 	private static FileHandler fileHand;
 	
@@ -16,8 +16,8 @@ public class Add {
 		this.fileHand = fileHand;
 	}
 	
-	public TaskCard executeAdd(String commandFull) {
-		String[] commandArray = commandFull.split(" ", 2);
+	public static String executeAdd(String[] commandArray) {
+		
 		if (commandArray[1].trim().length() <= 0) {
 			return null;
 		} else if (commandArray[0].equals("/add")){
@@ -29,10 +29,10 @@ public class Add {
 		} else if (commandArray[0].equals("/addr")) {
 			addRepeatingEvent (commandArray[1]);
 		}
-		return newCard;
+		return null;
 	}
 
-	private void addTask(String argument) {
+	private static void addTask(String argument) {
 		String[] argArray = argument.split(",");
 		Date endDateAndTime = null;
 		newCard.setName(argArray[0]);
@@ -49,7 +49,7 @@ public class Add {
 		newCard.setEndYear(endDay.get(Calendar.YEAR));
 	}
 
-	public void addFloatingTask(String argument) {
+	public static void addFloatingTask(String argument) {
 		newCard.setName(argument);
 		newCard.setType("FT");
 		newCard.setStartDate(0);
@@ -64,11 +64,11 @@ public class Add {
 		newCard.setPriority(1);
 	}
 
-	private void addEvent(String argument) {
+	private static void addEvent(String argument) {
 		
 	}
 	
-	private void addRepeatingEvent(String argument) {
+	private static void addRepeatingEvent(String argument) {
 		
 	}
 }

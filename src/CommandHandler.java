@@ -34,7 +34,8 @@ public class CommandHandler {
 		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
 		
-		String response;
+		String response = "";
+		
 		switch(commandType) {
 			case ADD:
 				response = Add.executeAdd(tokenizedInput);
