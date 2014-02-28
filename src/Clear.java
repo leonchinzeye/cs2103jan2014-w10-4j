@@ -25,13 +25,18 @@ public class Clear {
 		correctCmd = checkCmdInput(userInput[FIRST_ARGUMENT]);
 		
 		if(correctCmd == true) {
-			
-			
+			String cmd = userInput[FIRST_ARGUMENT];
+			identifyCmdTypeAndPerform(cmd);
 		} else {
 			clearErrorHandling();
 		}
 	}
 	
+	private static void identifyCmdTypeAndPerform(String cmd) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	/*
 	 * for checking if the first argument is exactly "/clear"
 	 * user might have input "/clearCS2105" and forgotten the spacing
