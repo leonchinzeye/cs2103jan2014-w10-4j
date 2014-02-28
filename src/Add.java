@@ -8,8 +8,6 @@ public class Add {
 	TaskCard newCard = new TaskCard();
 	Calendar today = GregorianCalendar.getInstance();
 	Calendar endDay = GregorianCalendar.getInstance();
-	SimpleDateFormat time = new SimpleDateFormat("HH:mm");
-	SimpleDateFormat date = new SimpleDateFormat("dd/MM/YYYY");
 	SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
 	
 	private static FileHandler fileHand;
@@ -44,10 +42,11 @@ public class Add {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
 		}
-		
-		Date endTime = endDay.getTime();
-		//newCard.setEndTime(endTime);
+		endDay.setTime(endDateAndTime);
+		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));
 		newCard.setEndDate(endDay.get(Calendar.DATE));
+		newCard.setEndMonth(endDay.get(Calendar.MONTH));
+		newCard.setEndYear(endDay.get(Calendar.YEAR));
 	}
 
 	public void addFloatingTask(String argument) {
