@@ -38,7 +38,7 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput);
+				response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
 				break;

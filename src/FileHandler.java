@@ -95,7 +95,7 @@ public class FileHandler {
 		ArrayList<String> taskDetails = new ArrayList<String>();
 		
 		try {
-			for(int i = 0; i < 2; i++) {
+			for(int i = 0; i < NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK; i++) {
 				taskDetails.add(buffRead.readLine());
 			}
 			return taskDetails;
