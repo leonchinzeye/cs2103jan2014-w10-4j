@@ -4,7 +4,7 @@ public class CommandHandler {
 	private static Scanner scan = new Scanner(System.in);
 	
 	private FileHandler fh;
-	private Add addCmd;
+	private static Add addCmd;
 	private Clear clearCmd;
 	private Delete deleteCmd;
 	private Search searchCmd;
@@ -44,7 +44,7 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				Add.executeAdd(tokenizedInput);	
+				addCmd.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
 				break;
@@ -66,7 +66,7 @@ public class CommandHandler {
 				response = "Invalid Command";
 				break;
 		}
-		FileHandler.writeIncompleteTasksFile();
+		//FileHandler.writeIncompleteTasksFile();
 		return response;
 	}
 	

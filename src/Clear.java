@@ -14,7 +14,7 @@ public class Clear {
 	private static final String MESSAGE_ERROR_CMD = "Error in reading your input. "
 			+ "What is it that you want to clear?";
 	
-	private static HashMap<String, Integer> commandTable;
+	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
 	/*
 	 * Clear constructor
 	 */
