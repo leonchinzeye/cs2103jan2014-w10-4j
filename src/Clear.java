@@ -11,6 +11,9 @@ public class Clear {
 	
 	private static final int FIRST_ARGUMENT = 0;
 	
+	private static final String MESSAGE_ERROR_CMD = "Error in reading your input. "
+			+ "What is it that you want to clear?";
+	
 	private static HashMap<String, Integer> commandTable;
 	/*
 	 * Clear constructor
@@ -32,11 +35,6 @@ public class Clear {
 		}
 	}
 	
-	private static void identifyCmdTypeAndPerform(String cmd) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	/*
 	 * for checking if the first argument is exactly "/clear"
 	 * user might have input "/clearCS2105" and forgotten the spacing
@@ -51,23 +49,50 @@ public class Clear {
 		}
 	}
 
+	private static void identifyCmdTypeAndPerform(String cmd) {
+		int cmdType = commandTable.get(cmd);
+		
+		if(cmdType == CLEAR_INCOMPLETE) {
+			clearIncomplete();
+		} else if(cmdType == CLEAR_HISTORY) {
+			clearHistory();
+		} else if(cmdType == CLEAR_ALL) {
+			clearHistory();
+			clearIncomplete();
+		} else if(cmdType == CLEAR_EVENTS) {
+			clearEvents();
+		} else {
+			clearTasks();
+		}
+	}
+
+	private static void clearTasks() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void clearEvents() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void clearHistory() {
+		FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
+		FileHandler.writeCompleteTasksFile();
+	}
+	
+	private static void clearIncomplete() {
+		FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		FileHandler.writeIncompleteTasksFile();
+	}
+	
 	/*
 	 * handle the error identified in checkCmdInput
 	 */
 	private static void clearErrorHandling() {
 		
 	}
-	
-	private static void clearHistory() {
-		FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
-		FileHandler.writeCompleteTasksFile();
-	}
-	
-	private static void clearAll() {
-		FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-		FileHandler.writeIncompleteTasksFile();
-	}
-	
+
 	private static void initialiseCmdTypes() {
 		commandTable.put("/clear", CLEAR_INCOMPLETE);
 		commandTable.put("/clearall", CLEAR_ALL);
