@@ -87,4 +87,9 @@ public class CommandHandler {
 			return COMMAND_TYPE.INVALID;
 		}
 	}
+	
+	private static boolean incorrectCommandErrorHandling() {
+		
+		return false;
+	}
 }
