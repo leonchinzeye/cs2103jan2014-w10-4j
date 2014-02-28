@@ -35,6 +35,7 @@ public class Add {
 			//return message for invalid input
 		}
 		fileHand.incompleteTasks.add(newCard);
+		//make the filesize++;
 		fileHand.writeIncompleteTasksFile();
 		return null;//return string that prints success message to user
 	}
