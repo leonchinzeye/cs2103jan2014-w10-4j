@@ -92,4 +92,8 @@ public class CommandHandler {
 		
 		return false;
 	}
+	
+	private static void printErrorMessage() {
+		
+	}
 }
