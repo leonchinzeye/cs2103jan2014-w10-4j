@@ -19,8 +19,7 @@ public class Add {
 		this.fileHand = fileHand;
 	}
 	
-	public TaskCard executeAdd(String commandFull) {
-		String[] commandArray = commandFull.split(" ", 2);
+	public String executeAdd(String[] commandArray) {
 		if (commandArray[1].trim().length() <= 0) {
 			return null;
 		} else if (commandArray[0].equals("/add")){
@@ -32,7 +31,7 @@ public class Add {
 		} else if (commandArray[0].equals("/addr")) {
 			addRepeatingEvent (commandArray[1]);
 		}
-		return newCard;
+		return null;
 	}
 
 	private void addTask(String argument) {
