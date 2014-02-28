@@ -25,29 +25,19 @@ public class CommandHandler {
 		this.clearCmd = new Clear(fh);
 		this.deleteCmd = new Delete(fh);
 		this.searchCmd = new Search(fh);
-		
 	}
 	
 	public String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
-		String response = "";
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		
 		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
-			
+		
+		String response;
 		switch(commandType) {
 			case ADD:
-				Add addCmd = new Add(fh);
-				/*
-				newCard = addCmd.executeAdd(userInput);
-				if (newCard != null) {
-					FileHandler.incompleteTasks.add(newCard);
-					FileHandler.numberOfIncompleteTasks++;
-					response = "Added " + newCard.getName();
-				} else {
-					response = "Invalid argument";
-				}
-				*/
+				response = Add.executeAdd(tokenizedInput);
 				break;
 			case DISPLAY:
 				break;
