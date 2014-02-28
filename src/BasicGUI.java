@@ -26,6 +26,7 @@ public class BasicGUI{
 		mainFrame.setVisible(true);
 		mainFrame.setResizable(true);
 		mainFrame.setTitle("TaskWorthy");
+		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		//contain what ever you want to add into the GUI
 		Container storageContainer = mainFrame.getContentPane();
@@ -71,22 +72,28 @@ public class BasicGUI{
 		
 		//input/output field
 		//input into the command field can be displayed on Console
-		commandField.addActionListener(new ActionListener() {
-			@Override
-			
-			public void actionPerformed(ActionEvent arg0) {
-				if(consoleField.getText().isEmpty()){
+		
+		
+		
+			commandField.addActionListener(new ActionListener() {
+				@Override
+				
+				public void actionPerformed(ActionEvent arg0) {
+					if(consoleField.getText().isEmpty()){
+						String[] message = commandField.getText().split(" ", 2);
+						consoleField.setText("added " + message[1]);
+						commandField.setText("");
+					}
+					else{
 					String[] message = commandField.getText().split(" ", 2);
-					consoleField.setText("added " + message[1]);
+					consoleField.setText(consoleField.getText() + "\nadded " +message[1]);
 					commandField.setText("");
+					}
 				}
-				else{
-				String[] message = commandField.getText().split(" ", 2);
-				consoleField.setText(consoleField.getText() + "\nadded " +message[1]);
-				commandField.setText("");
-				}
-			}
-		});
+			});
+			
+		
+		
 		
 		
 		/*
