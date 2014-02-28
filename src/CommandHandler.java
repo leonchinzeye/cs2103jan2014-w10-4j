@@ -6,17 +6,17 @@ public class CommandHandler {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
-	public String executeCommand(String commandFull) {
+	public String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
 		String response = "";
-		String[] cmd = commandFull.split(" ", 2);
+		String[] cmd = userInput.split("\\s+", 2);
 		String commandTypeString = cmd[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
 			
 		switch(commandType) {
 			case ADD:
 				Add addCmd = new Add(fh);
-				newCard = addCmd.executeAdd(commandFull);
+				newCard = addCmd.executeAdd(userInput);
 				if (newCard != null) {
 					FileHandler.incompleteTasks.add(newCard);
 					FileHandler.numberOfIncompleteTasks++;
