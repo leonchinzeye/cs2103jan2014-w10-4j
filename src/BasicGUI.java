@@ -76,11 +76,13 @@ public class BasicGUI{
 			
 			public void actionPerformed(ActionEvent arg0) {
 				if(consoleField.getText().isEmpty()){
-					consoleField.setText(commandField.getText());
+					String[] message = commandField.getText().split(" ", 2);
+					consoleField.setText("added " + message[1]);
 					commandField.setText("");
 				}
 				else{
-				consoleField.setText(consoleField.getText() + "\n" +commandField.getText());
+				String[] message = commandField.getText().split(" ", 2);
+				consoleField.setText(consoleField.getText() + "\nadded " +message[1]);
 				commandField.setText("");
 				}
 			}
