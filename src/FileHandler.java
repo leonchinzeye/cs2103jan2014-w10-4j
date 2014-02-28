@@ -8,18 +8,18 @@ import java.io.IOException;
 
 public class FileHandler {
 
-	//2 separate arraylists for handling the completed and incomplete tasks
-	public static ArrayList<TaskCard> incompleteTasks;
-	public static ArrayList<TaskCard> completedTasks;
-	
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
 	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
 	public static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
 	
+	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
+	
+	//2 separate arraylists for handling the completed and incomplete tasks
+	public static ArrayList<TaskCard> incompleteTasks;
+	public static ArrayList<TaskCard> completedTasks;
+	
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
-	
-	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
 	
 	public FileHandler() {
 		loadFileDetails();
@@ -137,7 +137,7 @@ public class FileHandler {
 		}
 	}
 
-	private static void initialiseFileDetails(String fileStorageName) {
+	public static void initialiseFileDetails(String fileStorageName) {
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
 			numberOfIncompleteTasks = 0;
 			incompleteTasks = new ArrayList<TaskCard>();
