@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class CommandHandler {
 	
 	private FileHandler fh;
@@ -5,6 +7,9 @@ public class CommandHandler {
 	private Clear clearCmd;
 	private Delete deleteCmd;
 	private Search searchCmd;
+	
+	private static final String MESSAGE_ERROR_INVALID_COMMAND = "Unrecognised command. "
+			+ "What do you want to do with this input?";
 	
 	
 	public enum COMMAND_TYPE {
@@ -38,7 +43,7 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput);	
+				Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
 				break;
@@ -88,12 +93,12 @@ public class CommandHandler {
 		}
 	}
 	
-	private static boolean incorrectCommandErrorHandling() {
+	private static void incorrectCommandErrorHandling() {
 		
-		return false;
+
 	}
 	
 	private static void printErrorMessage() {
-		
+		System.out.println(MESSAGE_ERROR_INVALID_COMMAND);
 	}
 }
