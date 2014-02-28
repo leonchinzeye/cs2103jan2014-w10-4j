@@ -1,8 +1,16 @@
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Add {
 	TaskCard newCard = new TaskCard();
-	Calendar today = Calendar.getInstance();
+	Calendar today = GregorianCalendar.getInstance();
+	Calendar endDay = GregorianCalendar.getInstance();
+	SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+	SimpleDateFormat date = new SimpleDateFormat("dd/MM/YYYY");
+	SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
 	
 	private static FileHandler fileHand;
 	
@@ -27,7 +35,19 @@ public class Add {
 	}
 
 	private void addTask(String argument) {
+		String[] argArray = argument.split(",");
+		Date endDateAndTime = null;
+		newCard.setName(argArray[0]);
+		try {
+			endDateAndTime = dateAndTime.parse(argArray[1]);
+		} catch (ParseException e) {
+			// Ask user to input date and time in proper format here
+			e.printStackTrace();
+		}
 		
+		Date endTime = endDay.getTime();
+		//newCard.setEndTime(endTime);
+		newCard.setEndDate(endDay.get(Calendar.DATE));
 	}
 
 	public void addFloatingTask(String argument) {
