@@ -90,7 +90,11 @@ public class TaskWorthy {
 			if(hasInput(userInput)) {
 				ch.executeCommand(userInput);
 			} else {
-				//no user input provide. just pressed enter only
+				/*
+				 * No user input here. User only pressed enter. Instead of printing out an error message,
+				 * it shouldn't do anything. Just like how in a chat if you press enter, nothing comes
+				 * up
+				 */
 			}
 		}
 		
