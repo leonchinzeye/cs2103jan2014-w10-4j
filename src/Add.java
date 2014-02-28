@@ -1,9 +1,12 @@
 import java.util.Calendar;
+import java.text.SimpleDateFormat;
 
 public class Add {
 	TaskCard newCard = new TaskCard();
 	Calendar today = Calendar.getInstance();
-	
+	SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+	SimpleDateFormat date = new SimpleDateFormat("dd/MM/YYYY");
+	SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
 	private static FileHandler fileHand;
 	
 	public Add(FileHandler fileHand) {
@@ -27,6 +30,8 @@ public class Add {
 	}
 
 	private void addTask(String argument) {
+		String[] argArray = argument.split(",");
+		newCard.setName(argArray[0]);
 		
 	}
 
