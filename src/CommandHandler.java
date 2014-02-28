@@ -1,5 +1,4 @@
 public class CommandHandler {
-	public static boolean terminateStatus = false;
 	
 	static FileHandler fh = new FileHandler();
 	
@@ -16,7 +15,7 @@ public class CommandHandler {
 			
 		switch(commandType) {
 			case ADD:
-				Add addCmd = new Add();
+				Add addCmd = new Add(fh);
 				newCard = addCmd.executeAdd(commandFull);
 				if (newCard != null) {
 					FileHandler.incompleteTasks.add(newCard);
