@@ -25,7 +25,6 @@ public class CommandHandler {
 		this.clearCmd = new Clear(fh);
 		this.deleteCmd = new Delete(fh);
 		this.searchCmd = new Search(fh);
-		
 	}
 	
 	public String executeCommand(String userInput) {
@@ -38,16 +37,7 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				Add addCmd = new Add(fh);
-				/*
-				newCard = addCmd.executeAdd(userInput);
-				if (newCard != null) {
-					FileHandler.incompleteTasks.add(newCard);
-					FileHandler.numberOfIncompleteTasks++;
-					response = "Added " + newCard.getName();
-				} else {
-					response = "Invalid argument";
-				}
-				*/
+				
 				break;
 			case DISPLAY:
 				break;
