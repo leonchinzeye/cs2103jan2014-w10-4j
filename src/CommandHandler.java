@@ -9,8 +9,8 @@ public class CommandHandler {
 	private Delete deleteCmd;
 	private Search searchCmd;
 	
-	private static final String MESSAGE_ERROR_INVALID_COMMAND = "Unrecognised command. "
-			+ "What do you want to do with this input?";
+	private static final String MESSAGE_ERROR_INVALID_COMMAND = "Unrecognised command format. "
+			+ "Please re-enter your input.";
 	
 	
 	public enum COMMAND_TYPE {
@@ -57,7 +57,7 @@ public class CommandHandler {
 			case SEARCH:
 				break;
 			case INVALID:
-				response = "Invalid Command";
+				invalidCommandErrorHandling();
 				break;
 			case EXIT:
 				System.exit(0);
@@ -92,11 +92,10 @@ public class CommandHandler {
 		}
 	}
 	
-	private static void invalidCommandErrorHandling(String userInput) {
+	private static void invalidCommandErrorHandling() {
 		printErrorMessage();	
-		String cmd = scan.nextLine();
-		userInput = cmd + " " + userInput;
-		
+		String userInput = scan.nextLine();
+
 		executeCommand(userInput);
 	}
 	
