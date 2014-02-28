@@ -1,21 +1,44 @@
 public class CommandHandler {
 	
-	static FileHandler fh = new FileHandler();
+	private FileHandler fh;
+	private Add addCmd;
+	private Clear clearCmd;
+	private Delete deleteCmd;
+	private Search searchCmd;
+	
 	
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
+	/*
+	 * Constructor for CommandHandler.
+	 * When CommandHandler is declared in the main, everything is loaded up. The program has been
+	 * started by the user.
+	 * Should display the list of current events to the user in the constructor with a display 
+	 * command used
+	 */
+	public CommandHandler() {
+		this.fh = new FileHandler();
+		
+		this.addCmd = new Add(fh);
+		this.clearCmd = new Clear(fh);
+		this.deleteCmd = new Delete(fh);
+		this.searchCmd = new Search(fh);
+		
+	}
+	
 	public String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
 		String response = "";
-		String[] cmd = userInput.split("\\s+", 2);
-		String commandTypeString = cmd[0];
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
 			
 		switch(commandType) {
 			case ADD:
 				Add addCmd = new Add(fh);
+				/*
 				newCard = addCmd.executeAdd(userInput);
 				if (newCard != null) {
 					FileHandler.incompleteTasks.add(newCard);
@@ -24,6 +47,7 @@ public class CommandHandler {
 				} else {
 					response = "Invalid argument";
 				}
+				*/
 				break;
 			case DISPLAY:
 				break;
