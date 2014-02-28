@@ -76,12 +76,23 @@ public class TaskWorthy {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
 	};
 	
+	private static Scanner scan = new Scanner(System.in);
+	
 	public static void main(String[] args) {
 		String response = "";
-		//FileHandler fh = new FileHandler();
 		CommandHandler ch = new CommandHandler();
 		response = ch.executeCommand("/addf CS2103 V0.5");
 		System.out.println(response);
+		
+		while(true) {
+			String userInput = scan.nextLine();
+			
+			if(hasInput(userInput)) {
+				ch.executeCommand(userInput);
+			} else {
+				//no user input provide. just pressed enter only
+			}
+		}
 		
 		/*
 		checkValidArgument(args);
@@ -94,7 +105,14 @@ public class TaskWorthy {
 		
 		letUserEnterTillErrorOrExit();
 		*/
-		return;
+	}
+	
+	private static boolean hasInput(String userInput) {
+		if(userInput.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	private static void checkValidArgument(String[] args) {
