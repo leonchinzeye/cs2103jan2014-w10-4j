@@ -19,6 +19,8 @@ public class FileHandler {
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
 	
+	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
+	
 	public FileHandler() {
 		loadFileDetails();
 	}
