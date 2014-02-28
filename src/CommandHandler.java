@@ -1,6 +1,7 @@
 import java.util.Scanner;
 
 public class CommandHandler {
+	private static Scanner scan = new Scanner(System.in);
 	
 	private FileHandler fh;
 	private Add addCmd;
@@ -32,7 +33,7 @@ public class CommandHandler {
 		this.searchCmd = new Search(fh);
 	}
 	
-	public String executeCommand(String userInput) {
+	public static String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
@@ -71,9 +72,7 @@ public class CommandHandler {
 	
 	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
 		commandTypeString = commandTypeString.toLowerCase();
-		if (commandTypeString == null)
-			throw new Error("Command type string cannot be null!");
-
+		
 		if (commandTypeString.contains("/add")) {
 			return COMMAND_TYPE.ADD;
 		} else if (commandTypeString.contains("/dis")) {
@@ -93,9 +92,12 @@ public class CommandHandler {
 		}
 	}
 	
-	private static void incorrectCommandErrorHandling() {
+	private static void invalidCommandErrorHandling(String userInput) {
+		printErrorMessage();	
+		String cmd = scan.nextLine();
+		userInput = cmd + " " + userInput;
 		
-
+		executeCommand(userInput);
 	}
 	
 	private static void printErrorMessage() {
