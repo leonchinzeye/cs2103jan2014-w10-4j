@@ -79,6 +79,8 @@ public class TaskWorthy {
 	private static Scanner scan = new Scanner(System.in);
 	
 	public static void main(String[] args) {
+		FileHandler.loadFileDetails();
+		
 		String response = "";
 		CommandHandler ch = new CommandHandler();
 		response = ch.executeCommand("/addf CS2103 V0.5");
