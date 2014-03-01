@@ -25,7 +25,7 @@ public class FileHandler {
 		loadFileDetails();
 	}
 	
-	public void loadFileDetails() {
+	public static void loadFileDetails() {
 		openCompletedStorageFile();
 		openIncompleteStorageFile();
 	}
