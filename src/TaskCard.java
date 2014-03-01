@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class TaskCard {
 	
@@ -6,16 +8,20 @@ public class TaskCard {
 	
 	private String name;
 	private String type;
-	private int startDate;
+	/*private int startDate;
 	private int endDate;
 	private int startMonth;
 	private int endMonth;
 	private int startYear;
 	private int endYear;
 	private int startTime = 0;
-	private int endTime = 0;
+	private int endTime = 0;*/
 	private int priority = 0;
 	private String frequency = "";
+	private Calendar startDay = Calendar.getInstance();
+	private Calendar endDay = Calendar.getInstance();
+	
+	private SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	public String getName() {
 		return name;
@@ -33,7 +39,7 @@ public class TaskCard {
 		this.type = type;
 	}
 
-	public int getStartDate() {
+	/*public int getStartDate() {
 		return startDate;
 	}
 
@@ -95,7 +101,7 @@ public class TaskCard {
 
 	public void setEndTime(int endTime) {
 		this.endTime = endTime;
-	}
+	}*/
 
 	public String getFrequency() {
 		return frequency;
@@ -111,6 +117,26 @@ public class TaskCard {
 
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+	
+	public Calendar getStartDay() {
+		return startDay;
+	}
+	
+	public void setStartDay(Calendar startDay) {
+		this.startDay = startDay;
+	}
+	
+	public Calendar getEndDay() {
+		return endDay;
+	}
+	
+	public void setEndDay(Calendar end) {
+		this.endDay = end;
+	}
+	
+	public String getTaskString() {
+		return name + ", " + date.format(startDay.getTime()) + " - " + date.format(endDay.getTime());
 	}
 
 	public TaskCard(){
