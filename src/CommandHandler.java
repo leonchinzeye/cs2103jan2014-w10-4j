@@ -3,15 +3,14 @@ import java.util.Scanner;
 public class CommandHandler {
 	private static Scanner scan = new Scanner(System.in);
 	
-	private FileHandler fh;
-	private static Add addCmd;
-	private Clear clearCmd;
-	private Delete deleteCmd;
-	private Search searchCmd;
+	//private FileHandler fh;
+	//private static Add addCmd;
+	//private Clear clearCmd;
+	//private Delete deleteCmd;
+	//private Search searchCmd;
 	
-	private static final String MESSAGE_ERROR_INVALID_COMMAND = "Unrecognised command format. "
-			+ "Please re-enter your input.";
-	
+	private static final String MESSAGE_ERROR_INVALID_COMMAND = "You appear to have typed something wrongly!"
+			+ "Please try another command.";
 	
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
@@ -24,14 +23,14 @@ public class CommandHandler {
 	 * Should display the list of current events to the user in the constructor with a display 
 	 * command used
 	 */
-	public CommandHandler() {
+	/*public CommandHandler() {
 		this.fh = new FileHandler();
 		
 		this.addCmd = new Add(fh);
 		this.clearCmd = new Clear(fh);
 		this.deleteCmd = new Delete(fh);
 		this.searchCmd = new Search(fh);
-	}
+	}*/
 	
 	public static String executeCommand(String userInput) {
 		TaskCard newCard = new TaskCard();
@@ -44,9 +43,10 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				addCmd.executeAdd(tokenizedInput);	
+				response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
+				Display.executeDis(tokenizedInput);
 				break;
 			case CLEAR:
 				break;

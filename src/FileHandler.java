@@ -1,4 +1,7 @@
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -20,6 +23,22 @@ public class FileHandler {
 	
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
+	
+	private static Calendar startDay = new GregorianCalendar();
+	private static Calendar endDay = new GregorianCalendar();
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	
+	private static int startDate = 0;
+	private static int startMonth = 0;
+	private static int startYear = 0;
+	private static int startHour = 0;
+	private static int startMinute = 0;
+	
+	private static int endDate = 0;
+	private static int endMonth = 0;
+	private static int endYear = 0;
+	private static int endHour = 0;
+	private static int endMinute = 0;
 	
 	public FileHandler() {
 		loadFileDetails();
@@ -110,9 +129,30 @@ public class FileHandler {
 		task.setName(taskDetails.get(0));
 		
 		String[] restOfDetails = taskDetails.get(1).split(" ");
-		task.setType(restOfDetails[0]);
+		task.setType(restOfDetails[0]); //Type of task/event
 		
-		task.setStartDate(Integer.parseInt(restOfDetails[1]));
+		String[] startDateArray = restOfDetails[1].split("/");
+		String[] startTimeArray = restOfDetails[2].split(":");
+		
+		String[] endDateArray = restOfDetails[3].split("/");
+		String[] endTimeArray = restOfDetails[4].split(":");
+		
+		startDate = Integer.parseInt(startDateArray[0]);
+		startMonth = Integer.parseInt(startDateArray[1]) - 1;
+		startYear = Integer.parseInt(startDateArray[2]);
+		startHour = Integer.parseInt(startTimeArray[0]);
+		startMinute = Integer.parseInt(startTimeArray[1]);
+		
+		endDate = Integer.parseInt(endDateArray[0]);
+		endMonth = Integer.parseInt(endDateArray[1]) - 1;
+		endYear = Integer.parseInt(endDateArray[2]);
+		endHour = Integer.parseInt(endTimeArray[0]);
+		endMinute = Integer.parseInt(endTimeArray[1]);
+		
+		startDay.set(startYear, startMonth, startDate, startHour, startMinute);
+		endDay.set(endYear, endMonth, endDate, endHour, endMinute);
+		
+		/*task.setStartDate(Integer.parseInt(restOfDetails[1]));
 		task.setStartMonth(Integer.parseInt(restOfDetails[2]));
 		task.setStartYear(Integer.parseInt(restOfDetails[3]));
 		
@@ -121,10 +161,10 @@ public class FileHandler {
 		task.setEndDate(Integer.parseInt(restOfDetails[6]));
 		
 		task.setStartTime(Integer.parseInt(restOfDetails[7]));
-		task.setEndTime(Integer.parseInt(restOfDetails[8]));
+		task.setEndTime(Integer.parseInt(restOfDetails[8]));*/
 		
-		task.setFrequency(restOfDetails[9]);
-		task.setPriority(Integer.parseInt(restOfDetails[10]));
+		task.setFrequency(restOfDetails[5]);
+		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
 
 	private static void createEmptyFile(String fileStorageName) {
@@ -189,12 +229,15 @@ public class FileHandler {
 			buffWrite.write("" + task.getName());
 			buffWrite.newLine();
 			
-			String detailsToBeWritten = task.getType() + " " + task.getStartDate() + " " 
+			/*String detailsToBeWritten = task.getType() + " " + task.getStartDate() + " " 
 																	+ task.getStartMonth() + " " + task.getStartYear() + " "
 																	+ task.getEndDate() + " " + task.getEndMonth() + " " 
 																	+ task.getEndYear() + " " + task.getStartTime() + " "
 																	+ task.getEndTime() + " " + task.getFrequency() + " "
-																	+ task.getPriority();
+																	+ task.getPriority();*/
+			String detailsToBeWritten = task.getType() + " " + dateFormat.format(task.getStartDay().getTime()) + 
+					" " + dateFormat.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
+			
 			buffWrite.write(detailsToBeWritten);
 			buffWrite.newLine();
 		} catch(IOException ex) {

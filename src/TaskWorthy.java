@@ -29,7 +29,7 @@ import java.io.IOException;
  */
 public class TaskWorthy {
 	
-	private static final int COMMAND_ARGUMENT = 0;
+	/*private static final int COMMAND_ARGUMENT = 0;
 	private static final int ONLY_ONE_ARGUMENT = 1;
 	private static final int SPLIT_TWO_ARGUMENTS = 2;
 	private static final int FIRST_ARGUMENT = 1;
@@ -43,7 +43,7 @@ public class TaskWorthy {
 	private static final int TYPE_ADD = 1;
 	
 	private static final String COMMAND_PROMPT = "command: ";
-	private static final String WELCOME_MESSAGE = "Welcome to TextBuddy. %s is ready for use";
+	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. What would you like to do today?";
 	private static final String MESSAGE_NO_TASK_ENTERED = "no task entered";
 	private static final String MESSAGE_ERROR_WRITING_TO_FILE = "error writing to file %s";
 	private static final String MESSAGE_CLEAR_FILE_SUCCESSFUL = "all content deleted from %s";
@@ -74,23 +74,36 @@ public class TaskWorthy {
 	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
-	};
+	};*/
+	
+	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. Here's your agenda for today: ";
 	
 	private static Scanner scan = new Scanner(System.in);
 	
 	public static void main(String[] args) {
-		FileHandler.loadFileDetails();
-		
 		String response = "";
-		CommandHandler ch = new CommandHandler();
-		response = ch.executeCommand("/addf CS2103 V0.5");
-		System.out.println(response);
+		String today = "";
+		FileHandler.loadFileDetails(); //add any existing entries in the text files into their respective arraylists
+		
+		System.out.println(WELCOME_MESSAGE);
+		
+		//Below is for testing display at start
+		//today = CommandHandler.executeCommand("/dis today");
+		//System.out.println(today);
+		
+		System.out.println("What would you like to do?");
+		
+		//Below is for testing adding tasks
+		//response = CommandHandler.executeCommand("/add CS2103 Assignment V0.1, 04/04/2014 23:59");
+		//response = CommandHandler.executeCommand("/add CS2105 Assignment 2, 13/03/2014 23:59");
+		
+		System.out.println(response); //will have to refactor this later.
 		
 		while(true) {
 			String userInput = scan.nextLine();
 			
 			if(hasInput(userInput)) {
-				ch.executeCommand(userInput);
+				CommandHandler.executeCommand(userInput);
 			} else {
 				/*
 				 * No user input here. User only pressed enter. Instead of printing out an error message,
@@ -121,12 +134,11 @@ public class TaskWorthy {
 		}
 	}
 	
-	private static void checkValidArgument(String[] args) {
+	/*private static void checkValidArgument(String[] args) {
 		if(args.length != ONLY_ONE_ARGUMENT) {
 			exitWithErrorMessage(MESSAGE_INVALID_ARGUMENT);
 		}
 	}
-
 
 	public static void openFile(String[] args) {
 		fileName = args[0];
@@ -451,7 +463,6 @@ public class TaskWorthy {
         String s1 = (String) o1;
         String s2 = (String) o2;
         return s1.toLowerCase().compareTo(s2.toLowerCase());
-    }
-	}
+    }*/
 }
 

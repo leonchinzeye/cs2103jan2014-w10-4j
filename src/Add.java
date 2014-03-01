@@ -8,16 +8,12 @@ public class Add {
 	private static TaskCard newCard = new TaskCard();
 	private static Calendar today = GregorianCalendar.getInstance();
 	private static Calendar startDay = GregorianCalendar.getInstance();
-	private static Calendar endDay = GregorianCalendar.getInstance();
-	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/YYYY HH:mm");
-	private static SimpleDateFormat date = new SimpleDateFormat("dd/MM/YYYY");
+	private static Calendar endDay = Calendar.getInstance();
+	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
 	private static SimpleDateFormat time = new SimpleDateFormat("HH:mm");
 	
-	private static FileHandler fileHand;
-	
-	public Add(FileHandler fileHand) {
-		this.fileHand = fileHand;
-	}
+	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
 	public static String executeAdd(String[] cmdArr) {
 		if (cmdArr[1].trim().length() <= 0) {
@@ -34,10 +30,13 @@ public class Add {
 		else {
 			//return message for invalid input
 		}
-		fileHand.incompleteTasks.add(newCard);
-		//make the filesize++;
-		fileHand.writeIncompleteTasksFile();
-		return null;//return string that prints success message to user
+		
+		//The following lines add the task or event to the arraylist 
+		//and the file by calling the appropriate FileHandler functions.
+		FileHandler.incompleteTasks.add(newCard);
+		FileHandler.numberOfIncompleteTasks++;
+		FileHandler.writeIncompleteTasksFile();
+		return FileHandler.incompleteTasks.get(FileHandler.incompleteTasks.size()-1).getTaskString() + " has been successfully added!";//return string that prints success message to user
 	}
 
 	/**
@@ -52,17 +51,10 @@ public class Add {
 	 */
 	private static void addTask(String argument) {
 		String[] argArray = argument.split(",");
-		Date endDateAndTime = new Date();
-		try { //get the End Date AND End Time
-			endDateAndTime = dateAndTime.parse(argArray[1]);
-		} catch (ParseException e) {
-			// Ask user to input date and time in proper format here
-			e.printStackTrace();
-		}
 		
 		setTaskDetails(argArray);
 		setStartDateAndTime();
-		setEndDateAndTime(endDateAndTime);
+		setEndDateAndTime(argArray[1]);
 	}
 
 	private static void setTaskDetails(String[] argArray) {
@@ -72,12 +64,18 @@ public class Add {
 		newCard.setPriority(2);
 	}
 	
-	private static void setEndDateAndTime(Date endDateAndTime) {
-		endDay.setTime(endDateAndTime);
-		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));
+	private static void setEndDateAndTime(String endDate) {
+		try {
+			endDay.setTime(dateAndTime.parse(endDate)); //BUG CAUSED HERE
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		newCard.setEndDay(endDay); //stores the Calendar object
+		/*newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));
 		newCard.setEndDate(endDay.get(Calendar.DATE));
 		newCard.setEndMonth(endDay.get(Calendar.MONTH));
-		newCard.setEndYear(endDay.get(Calendar.YEAR));
+		newCard.setEndYear(endDay.get(Calendar.YEAR));*/
 	}
 
 	/**
@@ -93,25 +91,28 @@ public class Add {
 		setFloatingEnd();
 	}
 	
-	private static void setStartDateAndTime() {
-		newCard.setStartDate(today.get(Calendar.DATE));
-		newCard.setStartMonth(today.get(Calendar.MONTH));
-		newCard.setStartYear(today.get(Calendar.YEAR));
-		newCard.setStartTime((today.get(Calendar.HOUR_OF_DAY) * 100) + today.get(Calendar.MINUTE));
-	}
-	
-	private static void setFloatingEnd() {
-		newCard.setEndDate(0);
-		newCard.setEndMonth(0);
-		newCard.setEndYear(0);
-		newCard.setEndTime(0);
-	}
-	
 	private static void setFloatingTaskDetails(String argument) {
 		newCard.setName(argument);
 		newCard.setType("FT");
 		newCard.setFrequency("N");
 		newCard.setPriority(1);
+	}
+	
+	private static void setStartDateAndTime() {
+		newCard.setStartDay(today);
+		/*newCard.setStartDate(today.get(Calendar.DATE));
+		newCard.setStartMonth(today.get(Calendar.MONTH) + 1);
+		newCard.setStartYear(today.get(Calendar.YEAR));
+		newCard.setStartTime((today.get(Calendar.HOUR_OF_DAY) * 100) + today.get(Calendar.MINUTE));*/
+	}
+	
+	private static void setFloatingEnd() {
+		endDay.set(9999, 99, 99, 99, 99, 99);
+		newCard.setEndDay(endDay);
+		/*newCard.setEndDate(0);
+		newCard.setEndMonth(0);
+		newCard.setEndYear(0);
+		newCard.setEndTime(0);*/
 	}
 
 	/**
@@ -209,10 +210,11 @@ public class Add {
 	
 	private static void setTimedEventEnd(Date endDateAndTime) {
 		endDay.setTime(endDateAndTime);
-		newCard.setEndDate(endDay.get(Calendar.DATE));
-		newCard.setEndMonth(endDay.get(Calendar.MONTH));
+		newCard.setEndDay(endDay);
+		/*newCard.setEndDate(endDay.get(Calendar.DATE));
+		newCard.setEndMonth(endDay.get(Calendar.MONTH) + 1);
 		newCard.setEndYear(endDay.get(Calendar.YEAR));
-		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));
+		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));*/
 	}
 
 	/**
@@ -323,24 +325,31 @@ public class Add {
 	}
 	
 	private static void setAllDayStart() {
-		newCard.setStartDate(startDay.get(Calendar.DATE));
-		newCard.setStartMonth(startDay.get(Calendar.MONTH));
+		startDay.set(Calendar.HOUR_OF_DAY, 00);
+		startDay.set(Calendar.MINUTE, 00);
+		newCard.setStartDay(startDay);
+		/*newCard.setStartDate(startDay.get(Calendar.DATE));
+		newCard.setStartMonth(startDay.get(Calendar.MONTH) + 1);
 		newCard.setStartYear(startDay.get(Calendar.YEAR));
-		newCard.setStartTime(0);
+		newCard.setStartTime(0);*/
 	}
 	
 	private static void setAllDayEnd() {
-		newCard.setEndDate(startDay.get(Calendar.DATE));
-		newCard.setEndMonth(startDay.get(Calendar.MONTH));
+		startDay.set(Calendar.HOUR_OF_DAY, 23);
+		startDay.set(Calendar.MINUTE, 59);
+		newCard.setEndDay(startDay);
+		/*newCard.setEndDate(startDay.get(Calendar.DATE));
+		newCard.setEndMonth(startDay.get(Calendar.MONTH) + 1);
 		newCard.setEndYear(startDay.get(Calendar.YEAR));
-		newCard.setEndTime(2359);
+		newCard.setEndTime(2359);*/
 	}
 	
 	private static void setTimedEventStart() {
-		newCard.setStartDate(startDay.get(Calendar.DATE));
-		newCard.setStartMonth(startDay.get(Calendar.MONTH));
+		newCard.setStartDay(startDay);
+		/*newCard.setStartDate(startDay.get(Calendar.DATE));
+		newCard.setStartMonth(startDay.get(Calendar.MONTH) + 1);
 		newCard.setStartYear(startDay.get(Calendar.YEAR));
-		newCard.setStartTime((startDay.get(Calendar.HOUR_OF_DAY) * 100) + startDay.get(Calendar.MINUTE));
+		newCard.setStartTime((startDay.get(Calendar.HOUR_OF_DAY) * 100) + startDay.get(Calendar.MINUTE));*/
 	}
 	
 	private static void setTimedEventNextDayEnd() {
@@ -349,9 +358,10 @@ public class Add {
 	}
 	
 	private static void setTimedEventSameDayEnd() {
-		newCard.setEndDate(startDay.get(Calendar.DATE));
-		newCard.setEndMonth(startDay.get(Calendar.MONTH));
+		newCard.setEndDay(startDay);
+		/*newCard.setEndDate(startDay.get(Calendar.DATE));
+		newCard.setEndMonth(startDay.get(Calendar.MONTH) + 1);
 		newCard.setEndYear(startDay.get(Calendar.YEAR));
-		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));
+		newCard.setEndTime((endDay.get(Calendar.HOUR_OF_DAY) * 100) + endDay.get(Calendar.MINUTE));*/
 	}
 }
