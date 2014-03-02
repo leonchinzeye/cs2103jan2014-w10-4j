@@ -3,8 +3,10 @@ import java.util.HashMap;
 
 public class Clear {
 
+	private static final String MESSAGE_ERROR_VALID_SELECTION = "Please enter a valid selection (yes/no)";
+	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear you archived files? (yes/no)";
+	private static final String MESSAGE_CLEAR_CMD_ERROR = "The clear command you've entered is not recognised. Please re-enter your command: ";
 	private static final String MESSAGE_CLEAR_INCOMPLETE = "All tasks and events have been cleared.";
-
 	private static final String MESSAGE_HISTORY_CLEARED = "History has been cleared.";
 	
 	private static final int CLEAR_INCOMPLETE = 1;
@@ -19,6 +21,8 @@ public class Clear {
 			+ "What is it that you want to clear?";
 	
 	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
+	private static Scanner scan = new Scanner(System.in);
+	
 	/*
 	 * Clear constructor
 	 */
@@ -36,7 +40,7 @@ public class Clear {
 			String cmd = userInput[FIRST_ARGUMENT];
 			identifyCmdTypeAndPerform(cmd);
 		} else {
-			clearErrorHandling();
+			response = MESSAGE_CLEAR_CMD_ERROR;
 		}
 		
 		return response;
@@ -93,9 +97,35 @@ public class Clear {
 		
 	}
 
+	/**
+	 * method to clear history
+	 * 
+	 */
 	private static void clearHistory() {
-		FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
-		FileHandler.writeCompleteTasksFile();
+		boolean clearConfirmation = false;
+		boolean correctUserConfirmation = false;
+		print(MESSAGE_CONFIRMATION_HISTORY);
+		
+		while(correctUserConfirmation == false) {
+			String userConfirmation = scan.nextLine();
+			
+			userConfirmation = userConfirmation.toLowerCase();
+			
+			if(userConfirmation.equals("yes") || userConfirmation.equals("y")) {
+				correctUserConfirmation = true;
+				clearConfirmation = true; 
+			} else if(userConfirmation.equals("no") || userConfirmation.equals("n")) {
+				correctUserConfirmation = true;
+				clearConfirmation = false;
+			} else {
+				print(MESSAGE_ERROR_VALID_SELECTION);
+			}
+		}
+		
+		if(clearConfirmation == true) {
+			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
+			FileHandler.writeCompleteTasksFile();
+		}
 	}
 	
 	private static void clearIncomplete() {
@@ -103,11 +133,15 @@ public class Clear {
 		FileHandler.writeIncompleteTasksFile();
 	}
 	
-	/*
+	/**
 	 * handle the error identified in checkCmdInput
 	 */
 	private static void clearErrorHandling() {
 		
+	}
+	
+	private static void print(String message) {
+		System.out.println(message);
 	}
 
 	private static void initialiseCmdTypes() {
@@ -116,6 +150,7 @@ public class Clear {
 		commandTable.put("/cleare", CLEAR_EVENTS);
 		commandTable.put("cleart", CLEAR_TASKS);
 		commandTable.put("/clearh", CLEAR_HISTORY);
-		
 	}
+	
+	
 }
