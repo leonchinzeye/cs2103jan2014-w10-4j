@@ -48,6 +48,7 @@ public class CommandHandler {
 				response = Display.executeDis();
 				break;
 			case CLEAR:
+				response = Clear.executeClear(tokenizedInput);
 				break;
 			case DELETE:
 				break;
