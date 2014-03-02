@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class TaskCard {
 	
@@ -18,10 +19,10 @@ public class TaskCard {
 	private int endTime = 0;*/
 	private int priority = 0;
 	private String frequency = "";
-	private Calendar startDay = Calendar.getInstance();
-	private Calendar endDay = Calendar.getInstance();
+	private Calendar startDay = new GregorianCalendar();
+	private Calendar endDay = new GregorianCalendar();
 	
-	private SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	public String getName() {
 		return name;
@@ -124,6 +125,7 @@ public class TaskCard {
 	}
 	
 	public void setStartDay(Calendar startDay) {
+		this.startDay = new GregorianCalendar();
 		this.startDay = startDay;
 	}
 	
@@ -132,11 +134,12 @@ public class TaskCard {
 	}
 	
 	public void setEndDay(Calendar end) {
+		this.endDay = new GregorianCalendar();
 		this.endDay = end;
 	}
 	
 	public String getTaskString() {
-		return name + ", " + date.format(startDay.getTime()) + " - " + date.format(endDay.getTime());
+		return name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
 	}
 
 	public TaskCard(){

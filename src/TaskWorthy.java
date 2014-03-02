@@ -88,10 +88,10 @@ public class TaskWorthy {
 		System.out.println(WELCOME_MESSAGE);
 		
 		//Below is for testing display at start
-		//today = CommandHandler.executeCommand("/dis today");
-		//System.out.println(today);
+		today = CommandHandler.executeCommand("/dis today");
+		System.out.println("\n" + today + "\n");
 		
-		System.out.println("What would you like to do?");
+		System.out.println("What would you like to do now?");
 		
 		//Below is for testing adding tasks
 		//response = CommandHandler.executeCommand("/add CS2103 Assignment V0.1, 04/04/2014 23:59");
