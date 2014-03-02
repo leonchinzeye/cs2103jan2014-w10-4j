@@ -3,11 +3,16 @@ import java.util.HashMap;
 
 public class Clear {
 
+	private static final String MESSAGE_SUCCESS_CLEAR_INCOMPLETE = "Tasks and schedule have been cleared!";
+	private static final String MESSAGE_SUCCESS_CLEAR_HISTORY = "Archived tasks have been cleared!";
+	private static final String MESSAGE_SUCCESS_CLEAR_BOTH = "Both uncompleted and archived tasks have been cleared!";
+	
 	private static final String MESSAGE_ERROR_VALID_SELECTION = "Please enter a valid selection (yes/no)";
-	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear you archived files? (yes/no)";
 	private static final String MESSAGE_CLEAR_CMD_ERROR = "The clear command you've entered is not recognised. Please re-enter your command: ";
-	private static final String MESSAGE_CLEAR_INCOMPLETE = "All tasks and events have been cleared.";
-	private static final String MESSAGE_HISTORY_CLEARED = "History has been cleared.";
+
+	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear you archived files? (yes/no)";
+	private static final String MESSAGE_CONFIRMATION_UNCOMPLETED = "Are you sure you want to clear your uncompleted tasks? (yes/no)";
+	private static final String MESSAGE_CONFIRMATION_BOTH = "Are you sure you want to clear both current and history files? (yes/no)";
 	
 	private static final int CLEAR_INCOMPLETE = 1;
 	private static final int CLEAR_ALL = 2;
@@ -19,6 +24,7 @@ public class Clear {
 	
 	private static final String MESSAGE_ERROR_CMD = "Error in reading your input. "
 			+ "What is it that you want to clear?";
+	
 	
 	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
 	private static Scanner scan = new Scanner(System.in);
@@ -66,16 +72,15 @@ public class Clear {
 		
 		if(cmdType == CLEAR_INCOMPLETE) {
 			clearIncomplete();
-			response = MESSAGE_CLEAR_INCOMPLETE;
+			response = MESSAGE_SUCCESS_CLEAR_INCOMPLETE;
 					
 		} else if(cmdType == CLEAR_HISTORY) {
 			clearHistory();
-			response = MESSAGE_HISTORY_CLEARED;
+			response = MESSAGE_SUCCESS_CLEAR_HISTORY;
 			
 		} else if(cmdType == CLEAR_ALL) {
-			clearHistory();
-			clearIncomplete();
-			
+			clearBothFiles();
+			response = MESSAGE_SUCCESS_CLEAR_BOTH;
 			
 		} else if(cmdType == CLEAR_EVENTS) {
 			clearEvents();
@@ -103,9 +108,44 @@ public class Clear {
 	 */
 	private static void clearHistory() {
 		boolean clearConfirmation = false;
-		boolean correctUserConfirmation = false;
 		print(MESSAGE_CONFIRMATION_HISTORY);
 		
+		clearConfirmation = isValidConfirmation(clearConfirmation);
+		
+		if(clearConfirmation == true) {
+			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
+			FileHandler.writeCompleteTasksFile();
+		}
+	}
+
+	private static void clearIncomplete() {
+		boolean clearConfirmation = false;
+		print(MESSAGE_CONFIRMATION_UNCOMPLETED);
+		
+		clearConfirmation = isValidConfirmation(clearConfirmation);
+		
+		if(clearConfirmation == true) {
+			FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+			FileHandler.writeIncompleteTasksFile();
+		}
+	}
+	
+	private static void clearBothFiles() {
+		boolean clearConfirmation = false;
+		print(MESSAGE_CONFIRMATION_BOTH);
+		
+		clearConfirmation = isValidConfirmation(clearConfirmation);
+		
+		if(clearConfirmation == true) {
+			FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+			FileHandler.writeIncompleteTasksFile();
+			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
+			FileHandler.writeCompleteTasksFile();
+		}
+	}
+	
+	private static boolean isValidConfirmation(boolean clearConfirmation) {
+		boolean correctUserConfirmation = false;
 		while(correctUserConfirmation == false) {
 			String userConfirmation = scan.nextLine();
 			
@@ -121,18 +161,9 @@ public class Clear {
 				print(MESSAGE_ERROR_VALID_SELECTION);
 			}
 		}
-		
-		if(clearConfirmation == true) {
-			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
-			FileHandler.writeCompleteTasksFile();
-		}
+		return clearConfirmation;
 	}
-	
-	private static void clearIncomplete() {
-		FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-		FileHandler.writeIncompleteTasksFile();
-	}
-	
+
 	/**
 	 * handle the error identified in checkCmdInput
 	 */
