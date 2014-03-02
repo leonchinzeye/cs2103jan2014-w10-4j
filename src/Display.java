@@ -1,4 +1,3 @@
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -6,48 +5,39 @@ import java.util.Comparator;
 import java.util.GregorianCalendar;
 
 public class Display {
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
+	static String response = "";
+	static ArrayList <TaskCard> displayIncomplete = FileHandler.incompleteTasks;
+	static Calendar today = GregorianCalendar.getInstance();
 	
-	public static String executeDis(String cmdArray[]) {
-		if (cmdArray[1].toLowerCase().equals("today")) {
-			return displayToday();
-		} else {
-			return null;
-		}
-	}
-
-	private static String displayToday() {
-		ArrayList <TaskCard> incomplete = FileHandler.incompleteTasks;
-		ArrayList <TaskCard> todayTasks = new ArrayList<TaskCard>();
-		Calendar today = GregorianCalendar.getInstance();
-		String dateForToday = dateString.format(today.getTime());
-		String finalOutput = dateForToday + "\n";
-		for (int i = 0; i < FileHandler.numberOfIncompleteTasks; i++) {
-			if (incomplete.get(i).getEndDay().after(today)) { //need to take repeating tasks into consideration
-				if (incomplete.get(i).getType() != "FT") { //don't display floating tasks
-					todayTasks.add(incomplete.get(i));
+	public static String executeDis() {
+		if (!displayIncomplete.isEmpty()) {
+			for (int i = 0; i < displayIncomplete.size(); i++) {
+				Collections.sort(displayIncomplete, new SortDeadlineThenPriority());
+				if (!displayIncomplete.get(i).getEndDay().before(today)) { //if the Deadline has not already passed
+					if (i > 0) {
+						response += "\n";
+					}
+					response += displayIncomplete.get(i).getTaskString();
 				}
 			}
-		}
-		if (todayTasks.isEmpty()) {
-			finalOutput += "You have nothing for today!";
 		} else {
-			Collections.sort(todayTasks, new SortPriority());
-			for (int i = 0; i < todayTasks.size(); i++) {
-				if (i > 0) {
-					finalOutput += "\n";
-				}
-				finalOutput += todayTasks.get(i).getTaskString();
-			}
+			response += "You have no tasks! Use the \"/add\" command to add a new task.";
 		}
-		return finalOutput;
+		return response;
 	}
 	
-	private static class SortPriority implements Comparator<TaskCard> {
+	private static class SortDeadlineThenPriority implements Comparator<TaskCard> {
 		public int compare(TaskCard o1, TaskCard o2) {
-			Integer i1 = (Integer) o1.getPriority();
-			Integer i2 = (Integer) o2.getPriority();
-			return i1.compareTo(i2);
+			Calendar c1 = (Calendar) o1.getEndDay();
+			Calendar c2 = (Calendar) o2.getEndDay();
+			int cComp = c1.compareTo(c2);
+			if (cComp != 0) {
+				return cComp;
+			} else {
+				Integer i1 = (Integer) o1.getPriority();
+				Integer i2 = (Integer) o2.getPriority();
+				return i2.compareTo(i1);
+			}
 		}
 	}
 }
