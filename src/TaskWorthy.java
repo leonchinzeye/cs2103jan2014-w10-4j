@@ -1,14 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * This class is used to manipulate text in a file. It can be used to add or delete text
@@ -88,7 +78,7 @@ public class TaskWorthy {
 		System.out.println(WELCOME_MESSAGE);
 		
 		//Below is for testing display at start
-		today = CommandHandler.executeCommand("/dis today");
+		today = CommandHandler.executeCommand("/search today");
 		System.out.println("\n" + today + "\n");
 		
 		System.out.println("What would you like to do now?");
@@ -97,13 +87,12 @@ public class TaskWorthy {
 		//response = CommandHandler.executeCommand("/add CS2103 Assignment V0.1, 04/04/2014 23:59");
 		//response = CommandHandler.executeCommand("/add CS2105 Assignment 2, 13/03/2014 23:59");
 		
-		System.out.println(response); //will have to refactor this later.
-		
 		while(true) {
 			String userInput = scan.nextLine();
 			
 			if(hasInput(userInput)) {
-				CommandHandler.executeCommand(userInput);
+				response = CommandHandler.executeCommand(userInput);
+				System.out.println(response); //will have to refactor this later.
 			} else {
 				/*
 				 * No user input here. User only pressed enter. Instead of printing out an error message,
@@ -456,13 +445,6 @@ public class TaskWorthy {
 	private static void exitWithErrorMessage(String error) {
 		System.out.println(error);
 		System.exit(0);
-	}
-
-	public static class SortIgnoreCase implements Comparator<Object> {
-    public int compare(Object o1, Object o2) {
-        String s1 = (String) o1;
-        String s2 = (String) o2;
-        return s1.toLowerCase().compareTo(s2.toLowerCase());
-    }*/
+	}*/
 }
 
