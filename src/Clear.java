@@ -37,6 +37,8 @@ public class Clear {
 	}
 
 	public static String executeClear(String[] userInput) {
+		initialiseCmdTypes();
+		
 		boolean correctCmd;
 		String response = "";
 		
