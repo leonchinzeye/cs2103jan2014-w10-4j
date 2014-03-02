@@ -9,8 +9,8 @@ public class CommandHandler {
 	//private Delete deleteCmd;
 	//private Search searchCmd;
 	
-	private static final String MESSAGE_ERROR_INVALID_COMMAND = "You appear to have typed something wrongly!"
-			+ "Please try another command.";
+	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
+			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
