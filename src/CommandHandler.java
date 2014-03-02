@@ -46,7 +46,7 @@ public class CommandHandler {
 				response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
-				Display.executeDis(tokenizedInput);
+				response = Display.executeDis(tokenizedInput);
 				break;
 			case CLEAR:
 				break;

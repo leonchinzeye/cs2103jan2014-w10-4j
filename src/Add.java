@@ -10,8 +10,8 @@ public class Add {
 	private static Calendar startDay = GregorianCalendar.getInstance();
 	private static Calendar endDay = Calendar.getInstance();
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private static SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-	private static SimpleDateFormat time = new SimpleDateFormat("HH:mm");
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
+	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
@@ -139,7 +139,7 @@ public class Add {
 	private static void addAllDayEvent (String[] arg) {		
 		Date startDate = new Date();
 		try { //get the Start Date ONLY
-			startDate = date.parse(arg[1]);
+			startDate = dateString.parse(arg[1]);
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
@@ -229,7 +229,7 @@ public class Add {
 	private static void timeParser(String[] dateRange) {
 		Date endTime;
 		try { //get the End Time ONLY
-			endTime = time.parse(dateRange[1].trim());
+			endTime = timeString.parse(dateRange[1].trim());
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
@@ -284,7 +284,7 @@ public class Add {
 		}
 		
 		try { //get the End Time ONLY
-			endTime = time.parse(dateRange[1].trim());
+			endTime = timeString.parse(dateRange[1].trim());
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();

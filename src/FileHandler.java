@@ -26,7 +26,7 @@ public class FileHandler {
 	
 	private static Calendar startDay = new GregorianCalendar();
 	private static Calendar endDay = new GregorianCalendar();
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	
 	private static int startDate = 0;
 	private static int startMonth = 0;
@@ -149,8 +149,16 @@ public class FileHandler {
 		endHour = Integer.parseInt(endTimeArray[0]);
 		endMinute = Integer.parseInt(endTimeArray[1]);
 		
+		startDay = Calendar.getInstance(); //need to create a new Calendar instance
+		endDay = Calendar.getInstance();
 		startDay.set(startYear, startMonth, startDate, startHour, startMinute);
 		endDay.set(endYear, endMonth, endDate, endHour, endMinute);
+		
+		task.setStartDay(startDay);
+		task.setEndDay(endDay);
+		
+		task.setFrequency(restOfDetails[5]);
+		task.setPriority(Integer.parseInt(restOfDetails[6]));
 		
 		/*task.setStartDate(Integer.parseInt(restOfDetails[1]));
 		task.setStartMonth(Integer.parseInt(restOfDetails[2]));
@@ -162,9 +170,6 @@ public class FileHandler {
 		
 		task.setStartTime(Integer.parseInt(restOfDetails[7]));
 		task.setEndTime(Integer.parseInt(restOfDetails[8]));*/
-		
-		task.setFrequency(restOfDetails[5]);
-		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
 
 	private static void createEmptyFile(String fileStorageName) {
@@ -235,8 +240,8 @@ public class FileHandler {
 																	+ task.getEndYear() + " " + task.getStartTime() + " "
 																	+ task.getEndTime() + " " + task.getFrequency() + " "
 																	+ task.getPriority();*/
-			String detailsToBeWritten = task.getType() + " " + dateFormat.format(task.getStartDay().getTime()) + 
-					" " + dateFormat.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
+			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
+					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
 			
 			buffWrite.write(detailsToBeWritten);
 			buffWrite.newLine();
