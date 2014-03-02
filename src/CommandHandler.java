@@ -33,7 +33,6 @@ public class CommandHandler {
 	}*/
 	
 	public static String executeCommand(String userInput) {
-		TaskCard newCard = new TaskCard();
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -46,7 +45,7 @@ public class CommandHandler {
 				response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
-				response = Display.executeDis(tokenizedInput);
+				response = Display.executeDis();
 				break;
 			case CLEAR:
 				break;
@@ -55,6 +54,7 @@ public class CommandHandler {
 			case SORT:
 				break;
 			case SEARCH:
+				response = Search.executeSearch(tokenizedInput);
 				break;
 			case INVALID:
 				invalidCommandErrorHandling();
