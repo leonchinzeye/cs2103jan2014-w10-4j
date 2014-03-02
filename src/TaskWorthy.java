@@ -85,13 +85,13 @@ public class TaskWorthy {
 		String today = "";
 		FileHandler.loadFileDetails(); //add any existing entries in the text files into their respective arraylists
 		
-		System.out.println(WELCOME_MESSAGE);
+		print(WELCOME_MESSAGE);
 		
 		//Below is for testing display at start
 		today = CommandHandler.executeCommand("/dis today");
-		System.out.println("\n" + today + "\n");
+		print("\n" + today + "\n");
 		
-		System.out.println("What would you like to do now?");
+		print("What would you like to do now?");
 		
 		//Below is for testing adding tasks
 		//response = CommandHandler.executeCommand("/add CS2103 Assignment V0.1, 04/04/2014 23:59");
@@ -132,6 +132,10 @@ public class TaskWorthy {
 		} else {
 			return true;
 		}
+	}
+	
+	private static void print(String stringToBePrinted) {
+		System.out.println(stringToBePrinted);
 	}
 	
 	/*private static void checkValidArgument(String[] args) {
