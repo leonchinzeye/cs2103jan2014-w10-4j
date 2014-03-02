@@ -1,11 +1,17 @@
-//import javax.swing.JFrame;
-//import javax.swing.JPanel;
-//import javax.swing.JLabel;
-import javax.swing.*;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 
@@ -28,24 +34,13 @@ public class BasicGUI{
 	public static void main(String args[]){
 
 		//create the frame with which the program can work on 
-		mainFrame = new JFrame();
-		mainFrame.setSize(400, 400);
-		mainFrame.setVisible(true);
-		mainFrame.setResizable(true);
-		mainFrame.setTitle("TaskWorthy");
-		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		mainFrameSetUp();
 
 		//contain what ever you want to add into the GUI
 		storageContainer = mainFrame.getContentPane();
 		storageContainer.setLayout(null);
 
-		//JPanel for display
-		consolePanel = new JPanel(null);
-		consolePanel.setBorder(BorderFactory.createTitledBorder("Console"));
-
-		//JPanel for command
-		commandPanel = new JPanel(null);
-		commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+		jpanelSetUp();
 
 		//JTextArea
 		consoleArea = new JTextArea();
@@ -97,6 +92,28 @@ public class BasicGUI{
 			}
 		});
 
+	}
+
+	private static void jpanelSetUp() {
+		//JPanel for console
+		consolePanel = new JPanel(null);
+		consolePanel.setBorder(BorderFactory.createTitledBorder("Console"));
+
+		//JPanel for command
+		commandPanel = new JPanel(null);
+		commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+	}
+
+	private static void mainFrameSetUp() {
+		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		mainFrame = new JFrame();
+		//mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		mainFrame.setSize(390, 380);
+		//mainFrame.setSize(screenSize);
+		mainFrame.setVisible(true);
+		mainFrame.setResizable(false);
+		mainFrame.setTitle("TaskWorthy");
+		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
 }
