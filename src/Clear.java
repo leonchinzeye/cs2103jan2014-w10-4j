@@ -1,5 +1,10 @@
 import java.util.Scanner;
 import java.util.HashMap;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class Clear {
 
@@ -22,6 +27,10 @@ public class Clear {
 	
 	private static final int FIRST_ARGUMENT = 0;
 	
+	private static Calendar today = Calendar.getInstance(); 
+	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
+	
 	private static final String MESSAGE_ERROR_CMD = "Error in reading your input. "
 			+ "What is it that you want to clear?";
 	
@@ -38,6 +47,7 @@ public class Clear {
 
 	public static String executeClear(String[] userInput) {
 		initialiseCmdTypes();
+		String action = "";
 		
 		boolean correctCmd;
 		String response = "";
@@ -46,7 +56,12 @@ public class Clear {
 		
 		if(correctCmd == true) {
 			String cmd = userInput[FIRST_ARGUMENT];
-			identifyCmdTypeAndPerform(cmd);
+			
+			if(userInput.length > 1) {
+				action = userInput[1];
+			}
+			
+			identifyCmdTypeAndPerform(cmd, action);
 		} else {
 			response = MESSAGE_CLEAR_CMD_ERROR;
 		}
@@ -68,7 +83,7 @@ public class Clear {
 		}
 	}
 
-	private static String identifyCmdTypeAndPerform(String cmd) {
+	private static String identifyCmdTypeAndPerform(String cmd, String action) {
 		int cmdType = commandTable.get(cmd);
 		String response = "";
 		
@@ -85,7 +100,7 @@ public class Clear {
 			response = MESSAGE_SUCCESS_CLEAR_BOTH;
 			
 		} else if(cmdType == CLEAR_EVENTS) {
-			clearEvents();
+			clearEvents(action);
 			
 		} else {
 			clearTasks();
@@ -99,8 +114,12 @@ public class Clear {
 		
 	}
 
-	private static void clearEvents() {
+	private static void clearEvents(String action) {
 		// TODO Auto-generated method stub
+		// clear today
+		// clear date
+		// clear an instance of a specified event (all of it)
+		
 		
 	}
 
