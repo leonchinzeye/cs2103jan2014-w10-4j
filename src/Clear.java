@@ -47,7 +47,7 @@ public class Clear {
 
 	public static String executeClear(String[] userInput) {
 		initialiseCmdTypes();
-		String action = "";
+		String action = null;
 		
 		boolean correctCmd;
 		String response = "";
@@ -61,7 +61,7 @@ public class Clear {
 				action = userInput[1];
 			}
 			
-			identifyCmdTypeAndPerform(cmd, action);
+			response = identifyCmdTypeAndPerform(cmd, action);
 		} else {
 			response = MESSAGE_CLEAR_CMD_ERROR;
 		}
@@ -85,15 +85,17 @@ public class Clear {
 
 	private static String identifyCmdTypeAndPerform(String cmd, String action) {
 		int cmdType = commandTable.get(cmd);
-		String response = "";
+		boolean clearConfirmation = false;
+		String response = null;
 		
 		if(cmdType == CLEAR_INCOMPLETE) {
 			clearIncomplete();
 			response = MESSAGE_SUCCESS_CLEAR_INCOMPLETE;
 					
 		} else if(cmdType == CLEAR_HISTORY) {
-			clearHistory();
-			response = MESSAGE_SUCCESS_CLEAR_HISTORY;
+			clearConfirmation = clearHistory();
+			if(clearConfirmation)
+				response = MESSAGE_SUCCESS_CLEAR_HISTORY;
 			
 		} else if(cmdType == CLEAR_ALL) {
 			clearBothFiles();
@@ -127,7 +129,7 @@ public class Clear {
 	 * method to clear history
 	 * 
 	 */
-	private static void clearHistory() {
+	private static boolean clearHistory() {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_HISTORY);
 		
@@ -137,6 +139,8 @@ public class Clear {
 			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
 			FileHandler.writeCompleteTasksFile();
 		}
+		
+		return clearConfirmation;
 	}
 
 	private static void clearIncomplete() {
