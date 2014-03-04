@@ -124,7 +124,8 @@ public class TaskWorthy {
 	}
 	
 	private static void print(String stringToBePrinted) {
-		System.out.println(stringToBePrinted);
+		if(stringToBePrinted != null)
+			System.out.println(stringToBePrinted);
 	}
 	
 	/*private static void checkValidArgument(String[] args) {
