@@ -1,8 +1,13 @@
 
 public class Delete {
 
-	public Delete(FileHandler fh) {
+	public Delete() {
 		// TODO Auto-generated constructor stub
 	}
 
+	public static String executeDelete() {
+		String response = "";
+		
+		return response;
+	}
 }
