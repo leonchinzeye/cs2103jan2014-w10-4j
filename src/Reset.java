@@ -6,24 +6,24 @@ import java.util.GregorianCalendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class Clear {
+public class Reset {
 
-	private static final String MESSAGE_SUCCESS_CLEAR_INCOMPLETE = "Tasks and schedule have been cleared!";
-	private static final String MESSAGE_SUCCESS_CLEAR_HISTORY = "Archived tasks have been cleared!";
-	private static final String MESSAGE_SUCCESS_CLEAR_BOTH = "Both uncompleted and archived tasks have been cleared!";
+	private static final String MESSAGE_SUCCESS_RESET_INCOMPLETE = "Tasks and schedule have been cleared!";
+	private static final String MESSAGE_SUCCESS_RESET_HISTORY = "Archived tasks have been cleared!";
+	private static final String MESSAGE_SUCCESS_RESET_BOTH = "Both uncompleted and archived tasks have been cleared!";
 	
 	private static final String MESSAGE_ERROR_VALID_SELECTION = "Please enter a valid selection (yes/no)";
-	private static final String MESSAGE_CLEAR_CMD_ERROR = "The clear command you've entered is not recognised. Please re-enter your command: ";
+	private static final String MESSAGE_RESET_CMD_ERROR = "The clear command you've entered is not recognised. Please re-enter your command: ";
 
 	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear you archived files? (yes/no)";
 	private static final String MESSAGE_CONFIRMATION_UNCOMPLETED = "Are you sure you want to clear your uncompleted tasks? (yes/no)";
 	private static final String MESSAGE_CONFIRMATION_BOTH = "Are you sure you want to clear both current and history files? (yes/no)";
 	
-	private static final int CLEAR_INCOMPLETE = 1;
-	private static final int CLEAR_ALL = 2;
-	private static final int CLEAR_EVENTS = 3;
-	private static final int CLEAR_TASKS = 4;
-	private static final int CLEAR_HISTORY = 5;
+	private static final int RESET_INCOMPLETE = 1;
+	private static final int RESET_ALL = 2;
+	private static final int RESET_EVENTS = 3;
+	private static final int RESET_TASKS = 4;
+	private static final int RESET_HISTORY = 5;
 	
 	private static final int FIRST_ARGUMENT = 0;
 	
@@ -39,13 +39,13 @@ public class Clear {
 	private static Scanner scan = new Scanner(System.in);
 	
 	/*
-	 * Clear constructor
+	 * Reset constructor
 	 */
-	public Clear(FileHandler fh) {
+	public Reset(FileHandler fh) {
 		initialiseCmdTypes();
 	}
 
-	public static String executeClear(String[] userInput) {
+	public static String executeReset(String[] userInput) {
 		initialiseCmdTypes();
 		String action = null;
 		
@@ -63,7 +63,7 @@ public class Clear {
 			
 			response = identifyCmdTypeAndPerform(cmd, action);
 		} else {
-			response = MESSAGE_CLEAR_CMD_ERROR;
+			response = MESSAGE_RESET_CMD_ERROR;
 		}
 		
 		return response;
@@ -85,39 +85,39 @@ public class Clear {
 
 	private static String identifyCmdTypeAndPerform(String cmd, String action) {
 		int cmdType = commandTable.get(cmd);
-		boolean clearConfirmation = false;
+		boolean resetConfirmation = false;
 		String response = null;
 		
-		if(cmdType == CLEAR_INCOMPLETE) {
-			clearConfirmation = clearIncomplete();
-			if(clearConfirmation)
-				response = MESSAGE_SUCCESS_CLEAR_INCOMPLETE;
+		if(cmdType == RESET_INCOMPLETE) {
+			resetConfirmation = resetIncomplete();
+			if(resetConfirmation)
+				response = MESSAGE_SUCCESS_RESET_INCOMPLETE;
 					
-		} else if(cmdType == CLEAR_HISTORY) {
-			clearConfirmation = clearHistory();
-			if(clearConfirmation)
-				response = MESSAGE_SUCCESS_CLEAR_HISTORY;
+		} else if(cmdType == RESET_HISTORY) {
+			resetConfirmation = resetHistory();
+			if(resetConfirmation)
+				response = MESSAGE_SUCCESS_RESET_HISTORY;
 			
-		} else if(cmdType == CLEAR_ALL) {
-			clearBothFiles();
-			response = MESSAGE_SUCCESS_CLEAR_BOTH;
+		} else if(cmdType == RESET_ALL) {
+			resetBothFiles();
+			response = MESSAGE_SUCCESS_RESET_BOTH;
 			
-		} else if(cmdType == CLEAR_EVENTS) {
-			clearEvents(action);
+		} else if(cmdType == RESET_EVENTS) {
+			resetEvents(action);
 			
 		} else {
-			clearTasks();
+			resetTasks();
 		}
 		
 		return response;
 	}
 
-	private static void clearTasks() {
+	private static void resetTasks() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	private static void clearEvents(String action) {
+	private static void resetEvents(String action) {
 		// TODO Auto-generated method stub
 		// clear today
 		// clear date
@@ -130,7 +130,7 @@ public class Clear {
 	 * method to clear history
 	 * 
 	 */
-	private static boolean clearHistory() {
+	private static boolean resetHistory() {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_HISTORY);
 		
@@ -144,7 +144,7 @@ public class Clear {
 		return clearConfirmation;
 	}
 
-	private static boolean clearIncomplete() {
+	private static boolean resetIncomplete() {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_UNCOMPLETED);
 		
@@ -158,7 +158,7 @@ public class Clear {
 		return clearConfirmation;
 	}
 	
-	private static void clearBothFiles() {
+	private static void resetBothFiles() {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_BOTH);
 		
@@ -204,11 +204,11 @@ public class Clear {
 	}
 
 	private static void initialiseCmdTypes() {
-		commandTable.put("/clear", CLEAR_INCOMPLETE);
-		commandTable.put("/clearall", CLEAR_ALL);
-		commandTable.put("/cleare", CLEAR_EVENTS);
-		commandTable.put("cleart", CLEAR_TASKS);
-		commandTable.put("/clearh", CLEAR_HISTORY);
+		commandTable.put("/reset", RESET_INCOMPLETE);
+		commandTable.put("/resetall", RESET_ALL);
+		commandTable.put("/resete", RESET_EVENTS);
+		commandTable.put("/resett", RESET_TASKS);
+		commandTable.put("/reseth", RESET_HISTORY);
 	}
 	
 	
