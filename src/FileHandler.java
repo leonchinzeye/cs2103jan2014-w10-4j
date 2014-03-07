@@ -18,8 +18,8 @@ public class FileHandler {
 	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
 	
 	//2 separate arraylists for handling the completed and incomplete tasks
-	public static ArrayList<TaskCard> incompleteTasks;
-	public static ArrayList<TaskCard> completedTasks;
+	//public static ArrayList<TaskCard> incompleteTasks;
+	//public static ArrayList<TaskCard> completedTasks;
 	
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
@@ -53,8 +53,8 @@ public class FileHandler {
 	 * When writing to the program, will instantiate a new TaskCard object with the parameters
 	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
 	 */
-	private static void openCompletedStorageFile() {
-		completedTasks = new ArrayList<TaskCard>();
+	private static ArrayList<TaskCard> openCompletedStorageFile() {
+		ArrayList<TaskCard> completedTasks = new ArrayList<TaskCard>();
 		
 		try {
 			FileReader fileRead = new FileReader(COMPLETED_TASKS_STORAGE_FILE_NAME);
@@ -79,10 +79,12 @@ public class FileHandler {
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
+		
+		return completedTasks;
 	}
 	
-	private static void openIncompleteStorageFile() {
-		incompleteTasks = new ArrayList<TaskCard>();
+	private static ArrayList<TaskCard> openIncompleteStorageFile() {
+		ArrayList<TaskCard> incompleteTasks = new ArrayList<TaskCard>();
 		
 		try {
 			FileReader fileRead = new FileReader(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
@@ -107,6 +109,8 @@ public class FileHandler {
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
+		
+		return incompleteTasks;
 	}
 
 	private static ArrayList<String> getTaskDetailsFromFile(
@@ -172,17 +176,20 @@ public class FileHandler {
 		task.setEndTime(Integer.parseInt(restOfDetails[8]));*/
 	}
 
+	
 	private static void createEmptyFile(String fileStorageName) {
-		initialiseFileDetails(fileStorageName);
+		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
+		
 		
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
-			writeIncompleteTasksFile();
+			writeIncompleteTasksFile(emptyArrayList);
 		} else {
-			writeCompleteTasksFile();
+			writeCompleteTasksFile(emptyArrayList);
 		}
 	}
-
-	public static void initialiseFileDetails(String fileStorageName) {
+	
+	/*
+		public static void initialiseFileDetails(String fileStorageName) {
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
 			numberOfIncompleteTasks = 0;
 			incompleteTasks = new ArrayList<TaskCard>();
@@ -191,8 +198,9 @@ public class FileHandler {
 			completedTasks = new ArrayList<TaskCard>();
 		}
 	}
-
-	public static void writeCompleteTasksFile() {
+	*/
+	
+	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks) {
 		try {
 			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
@@ -210,7 +218,7 @@ public class FileHandler {
 		}
 	}
 	
-	public static void writeIncompleteTasksFile() {
+	public static void writeIncompleteTasksFile(ArrayList<TaskCard> incompleteTasks) {
 		try {
 			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
