@@ -40,9 +40,20 @@ public class FileLinker {
 	 * method for edit logic that will update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public boolean editHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+	
+	public ArrayList<TaskCard> displayHandler() {
 		
-		return false;
+		return incompleteTasks;
+	}
+	
+	public ArrayList<TaskCard> editRetrieval() {
+		return incompleteTasks;
+	}
+	
+	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified) {
+		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+		callStorageWriteIncomplete();
+		return true;
 	}
 	
 	public boolean resetIncompleteHandling() {
