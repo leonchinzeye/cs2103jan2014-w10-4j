@@ -6,10 +6,11 @@ import java.util.GregorianCalendar;
 
 public class Display {
 	static String response = "";
-	static ArrayList <TaskCard> displayIncomplete = FileHandler.incompleteTasks;
+	static ArrayList <TaskCard> displayIncomplete;
 	static Calendar today = GregorianCalendar.getInstance();
 	
-	public static String executeDis() {
+	public static String executeDis(FileLinker fileLink) {
+		displayIncomplete = fileLink.displayHandler();
 		if (!displayIncomplete.isEmpty()) {
 			for (int i = 0; i < displayIncomplete.size(); i++) {
 				Collections.sort(displayIncomplete, new SortDeadlineThenPriority());

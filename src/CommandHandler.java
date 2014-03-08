@@ -10,7 +10,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID, RESET
+		ADD, DISPLAY, DELETE, CLEAR, EDIT, SEARCH, EXIT, INVALID, RESET
 	};
 	
 	public CommandHandler() {
@@ -27,21 +27,25 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput);	
+				response = Add.executeAdd(tokenizedInput, fileLink);
 				break;
 			case DISPLAY:
-				response = Display.executeDis();
+				response = Display.executeDis(fileLink);
 				break;
 			case CLEAR:
-				response = Reset.executeReset(tokenizedInput);
+				response = Reset.executeReset(tokenizedInput, fileLink);
 				break;
 			case DELETE:
+				response = Delete.executeDelete(tokenizedInput, fileLink);
 				break;
-			case SORT:
+			case EDIT:
+				response = Edit.executeEdit(tokenizedInput, fileLink);
 				break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput);
+				response = Search.executeSearch(tokenizedInput, fileLink);
 				break;
+			case RESET:
+				response = Reset.executeReset(tokenizedInput, fileLink);
 			case INVALID:
 				invalidCommandErrorHandling();
 				break;
@@ -67,14 +71,14 @@ public class CommandHandler {
 			 	return COMMAND_TYPE.DELETE;
 		} else if (commandTypeString.contains("/clear")) {
 		 	return COMMAND_TYPE.CLEAR;
-		} else if (commandTypeString.contains("/sort")) {
-		 	return COMMAND_TYPE.SORT;
+		} else if (commandTypeString.contains("/edit")) {
+		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/search")) {
 		 	return COMMAND_TYPE.SEARCH;
-		} else if (commandTypeString.contains("/exit")) {
-		 	return COMMAND_TYPE.EXIT;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
+		} else if (commandTypeString.contains("/exit")) {
+		 	return COMMAND_TYPE.EXIT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
 		}
