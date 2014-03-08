@@ -177,7 +177,7 @@ public class Storage {
 		}
 	}*/
 	
-	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks) {
+	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks, int numberOfCompletedTasks) {
 		try {
 			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
@@ -195,7 +195,7 @@ public class Storage {
 		}
 	}
 	
-	public static void writeIncompleteTasksFile(ArrayList<TaskCard> incompleteTasks) {
+	public static void writeIncompleteTasksFile(ArrayList<TaskCard> incompleteTasks, int numberOfIncompleteTasks) {
 		try {
 			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
 			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
