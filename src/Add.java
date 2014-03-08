@@ -14,10 +14,11 @@ public class Add {
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	private static boolean success = false;
 	
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
-	public static String executeAdd(String[] cmdArr) {
+	public static String executeAdd(String[] cmdArr, FileLinker fileLink) {
 		if (cmdArr[1].trim().length() <= 0) {
 			return null; //need to return message for invalid input
 		} else if (cmdArr[0].equals("/add") || cmdArr[0].equals("/addt")){
@@ -35,10 +36,12 @@ public class Add {
 		
 		//The following lines add the task or event to the arraylist 
 		//and the file by calling the appropriate FileHandler functions.
-		FileHandler.incompleteTasks.add(newCard);
-		FileHandler.numberOfIncompleteTasks++;
-		FileHandler.writeIncompleteTasksFile();
-		return FileHandler.incompleteTasks.get(FileHandler.incompleteTasks.size()-1).getTaskString() + " has been successfully added!";//return string that prints success message to user
+		success = fileLink.addHandling(newCard);
+		if (success) {
+			return newCard.getTaskString() + " has been successfully added!";//return string that prints success message to user
+		} else {
+			return null; //return error message
+		}
 	}
 
 	/**
