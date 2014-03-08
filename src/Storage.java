@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class FileHandler {
+public class Storage {
 
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
 	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
@@ -40,7 +40,7 @@ public class FileHandler {
 	private static int endHour = 0;
 	private static int endMinute = 0;
 	
-	public FileHandler() {
+	public Storage() {
 		loadFileDetails();
 	}
 	
@@ -53,7 +53,7 @@ public class FileHandler {
 	 * When writing to the program, will instantiate a new TaskCard object with the parameters
 	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
 	 */
-	private static ArrayList<TaskCard> openCompletedStorageFile() {
+	public static ArrayList<TaskCard> openCompletedStorageFile() {
 		ArrayList<TaskCard> completedTasks = new ArrayList<TaskCard>();
 		
 		try {
@@ -82,7 +82,7 @@ public class FileHandler {
 		return completedTasks;
 	}
 	
-	private static ArrayList<TaskCard> openIncompleteStorageFile() {
+	public static ArrayList<TaskCard> openIncompleteStorageFile() {
 		ArrayList<TaskCard> incompleteTasks = new ArrayList<TaskCard>();
 		
 		try {
