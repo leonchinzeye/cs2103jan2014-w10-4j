@@ -21,7 +21,7 @@ public class FileLinker {
 	 * @param arrayToBeUpdated
 	 */
 	public boolean addHandling(TaskCard taskToBeAdded) {
-		
+		incompleteTasks.add(taskToBeAdded);
 		
 		
 		return false;
@@ -45,7 +45,11 @@ public class FileLinker {
 		return false;
 	}
 	
-	private void callStorageWrite() {
+	private void callStorageWriteIncomplete() {
+		
+	}
+	
+	private void callStorageWriteCompleted() {
 		
 	}
 }
