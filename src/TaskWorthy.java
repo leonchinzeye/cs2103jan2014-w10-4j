@@ -69,16 +69,18 @@ public class TaskWorthy {
 	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. Here's your agenda for today: ";
 	
 	private static Scanner scan = new Scanner(System.in);
+	private static CommandHandler commandHandler;
 	
 	public static void main(String[] args) {
 		String response = "";
 		String today = "";
-		FileHandler.loadFileDetails(); //add any existing entries in the text files into their respective arraylists
+		
+		commandHandler = new CommandHandler();
 		
 		print(WELCOME_MESSAGE);
 		
 		//Below is for testing display at start
-		today = CommandHandler.executeCommand("/search today");
+		today = commandHandler.executeCommand("/search today");
 		print("\n" + today + "\n");
 		
 		print("What would you like to do now?");
@@ -91,7 +93,7 @@ public class TaskWorthy {
 			String userInput = scan.nextLine();
 			
 			if(hasInput(userInput)) {
-				response = CommandHandler.executeCommand(userInput);
+				response = commandHandler.executeCommand(userInput);
 				print(response);
 			} else {
 				/*

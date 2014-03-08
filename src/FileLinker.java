@@ -8,31 +8,42 @@ import java.util.ArrayList;
  */
 public class FileLinker {
 
+	private ArrayList<TaskCard> incompleteTasks;
+	private ArrayList<TaskCard> completedTasks;
+	
 	public FileLinker() {
-		
+		this.incompleteTasks = Storage.openIncompleteStorageFile();
+		this.completedTasks = Storage.openCompletedStorageFile();
 	}
 	
 	/**
 	 * method that add logic will call to update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public static void addHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+	public boolean addHandling(ArrayList<TaskCard> arrayToBeUpdated) {
 		
+		return false;
 	}
 	
 	/**
 	 * method that delete logic will call to update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public static void deleteHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+	public boolean deleteHandling(ArrayList<TaskCard> arrayToBeUpdated) {
 		
+		return false;
 	}
 	
 	/**
 	 * method for edit logic that will update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public static void editHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+	public boolean editHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+		
+		return false;
+	}
+	
+	private void callStorageWrite() {
 		
 	}
 }

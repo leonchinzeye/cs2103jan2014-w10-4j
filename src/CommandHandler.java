@@ -1,13 +1,10 @@
 import java.util.Scanner;
 
 public class CommandHandler {
-	private static Scanner scan = new Scanner(System.in);
 	
-	//private FileHandler fh;
-	//private static Add addCmd;
-	//private Clear clearCmd;
-	//private Delete deleteCmd;
-	//private Search searchCmd;
+	private Scanner scan = new Scanner(System.in);
+	private FileLinker fileLink;
+	
 	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
@@ -16,7 +13,11 @@ public class CommandHandler {
 		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID, RESET
 	};
 	
-	public static String executeCommand(String userInput) {
+	public CommandHandler() {
+		fileLink = new FileLinker();
+	}
+	
+	public String executeCommand(String userInput) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -55,7 +56,7 @@ public class CommandHandler {
 		return response;
 	}
 	
-	private static COMMAND_TYPE determineCommandType(String commandTypeString) {
+	private COMMAND_TYPE determineCommandType(String commandTypeString) {
 		commandTypeString = commandTypeString.toLowerCase();
 		
 		if (commandTypeString.contains("/add")) {
@@ -79,14 +80,14 @@ public class CommandHandler {
 		}
 	}
 	
-	private static void invalidCommandErrorHandling() {
+	private void invalidCommandErrorHandling() {
 		printErrorMessage();	
 		String userInput = scan.nextLine();
 
 		executeCommand(userInput);
 	}
 	
-	private static void printErrorMessage() {
+	private void printErrorMessage() {
 		System.out.println(MESSAGE_ERROR_INVALID_COMMAND);
 	}
 }
