@@ -17,10 +17,6 @@ public class Storage {
 	
 	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
 	
-	//2 separate arraylists for handling the completed and incomplete tasks
-	//public static ArrayList<TaskCard> incompleteTasks;
-	//public static ArrayList<TaskCard> completedTasks;
-	
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
 	
@@ -61,7 +57,6 @@ public class Storage {
 			BufferedReader buffRead = new BufferedReader(fileRead);
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
-			numberOfCompletedTasks = numberOfTaskCards;
 			
 			for(int i = 0; i < numberOfTaskCards; i++) {
 				TaskCard task = new TaskCard();
@@ -90,7 +85,6 @@ public class Storage {
 			BufferedReader buffRead = new BufferedReader(fileRead);
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
-			numberOfIncompleteTasks = numberOfTaskCards;
 			
 			for(int i = 0; i < numberOfTaskCards; i++) {
 				TaskCard task = new TaskCard();
