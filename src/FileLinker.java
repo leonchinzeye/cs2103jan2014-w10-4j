@@ -46,10 +46,12 @@ public class FileLinker {
 	}
 	
 	private void callStorageWriteIncomplete() {
-		Storage.writeIncompleteTasksFile(incompleteTasks);
+		int numberOfIncompleteTasks = incompleteTasks.size();
+		Storage.writeIncompleteTasksFile(incompleteTasks, numberOfIncompleteTasks);
 	}
 	
 	private void callStorageWriteCompleted() {
-		Storage.writeCompleteTasksFile(completedTasks);
+		int numberOfCompletedTasks = completedTasks.size();
+		Storage.writeCompleteTasksFile(completedTasks, numberOfCompletedTasks);
 	}
 }
