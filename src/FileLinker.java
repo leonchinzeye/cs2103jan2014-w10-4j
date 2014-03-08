@@ -22,7 +22,7 @@ public class FileLinker {
 	 */
 	public boolean addHandling(TaskCard taskToBeAdded) {
 		incompleteTasks.add(taskToBeAdded);
-		
+		callStorageWriteIncomplete();
 		
 		return false;
 	}
@@ -46,10 +46,10 @@ public class FileLinker {
 	}
 	
 	private void callStorageWriteIncomplete() {
-		
+		Storage.writeIncompleteTasksFile(incompleteTasks);
 	}
 	
 	private void callStorageWriteCompleted() {
-		
+		Storage.writeCompleteTasksFile(completedTasks);
 	}
 }
