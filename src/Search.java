@@ -14,7 +14,7 @@ public class Search {
 	 * @return
 	 * @author Omar Khalid
 	 */
-	public static String executeSearch(String[] cmdArray) {
+	public static String executeSearch(String[] cmdArray, FileLinker fileLink) {
 		if (cmdArray[1].equals("today")){
 			return searchToday();
 		} /*else if (!cmdArray[1].isEmpty()){
@@ -25,12 +25,12 @@ public class Search {
 	}
 	
 	private static String searchToday() {
-		ArrayList <TaskCard> incomplete = FileHandler.incompleteTasks;
+		ArrayList <TaskCard> incomplete = fileLink.searchHandler();
 		ArrayList <TaskCard> todayTasks = new ArrayList<TaskCard>();
 		Calendar today = GregorianCalendar.getInstance();
 		String dateForToday = dateString.format(today.getTime());
 		String finalOutput = dateForToday + "\n";
-		for (int i = 0; i < FileHandler.numberOfIncompleteTasks; i++) {
+		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
 			if (incomplete.get(i).getEndDay().after(today)) { //need to take repeating tasks into consideration
 				if (incomplete.get(i).getType() != "FT") { //don't display floating tasks
 					todayTasks.add(incomplete.get(i));
