@@ -27,13 +27,13 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput);	
+				//response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
 				response = Display.executeDis();
 				break;
 			case CLEAR:
-				response = Reset.executeReset(tokenizedInput);
+				//response = Reset.executeReset(tokenizedInput);
 				break;
 			case DELETE:
 				break;
