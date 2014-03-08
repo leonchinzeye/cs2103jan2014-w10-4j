@@ -3,6 +3,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Scanner;
 
 public class Edit {
 	/**
@@ -19,10 +20,13 @@ public class Edit {
 	 * @author Omar Khalid
 	 */
 	
+	private static Scanner scan = new Scanner(System.in);
+	private static int choice;
 	private static ArrayList <TaskCard> originalList; //this is the cloned to do list
 	private static ArrayList <TaskCard> editList; //this is the list that will be printed out on the screen
 	private static ArrayList <Integer> editIndex; //this is to store the indices of the TaskCards that match the keyword
 	//as of right now, I'm still not sure what editIndex will do
+	private static TaskCard editedTask;
 	private static boolean found = false;
 	private static boolean isDate = false;
 	private static boolean isDigit = false;
@@ -50,17 +54,64 @@ public class Edit {
 					if (dateQuery.equals(originalList.get(i).getStartDay()) || dateQuery.equals(originalList.get(i).getEndDay())) {
 						editIndex.add(i);
 						editList.add(originalList.get(i));
-						//print out editList with numbers at the side
-						//let user choose which to edit
-						//create new task card with edited details
+						if (editList.isEmpty()) {
+							return "Keyword not found! Try a different keyword.";
+						} else {
+							System.out.println("Which would you like to edit?");
+							for (int j = 0; j < editList.size(); j++) {
+								System.out.println(j+1 + ". " + editList.get(j).getTaskString());
+							}
+							String input = scan.nextLine();
+							if (input.toLowerCase().equals("exit")) {
+								return null;
+							} else if (checkForDigit(input) == false) {
+								//invalid input, ask for input again
+							} else if (checkForDigit(input) == true) {
+								choice = Integer.parseInt(input);
+								if (choice > editList.size()) {
+									//invalid input, ask for input again
+								} else {
+									editedTask = editList.get(choice - 1);
+									System.out.println("What would you like to edit?");
+									System.out.println("1. Name\n" + "2. Start date\n" + "3. End date\n"
+														+ "4. Start time\n" + "5. End time\n" + "6. Priority");
+									int nextChoice = scan.nextInt();
+									switch (nextChoice) {
+										case 1:
+											String newName = scan.nextLine();
+											editedTask.setName(newName);
+											break;
+										case 2:
+											//change date
+											break;
+										case 3:
+											//change date
+											break;
+										case 4:
+											//change time
+											break;
+										case 5:
+											//change time
+											break;
+										case 6:
+											int priority = scan.nextInt();
+											editedTask.setPriority(priority);
+											break;
+										default:
+											break;
+									}
+								}
+							}
+						}
 						//send new task card and index back to FileLinker
+						fileLink.editHandler(editedTask, editIndex.get(choice));
 					}
 				}
 				for (int i = 0; i < Storage.numberOfCompletedTasks; i++) {
 					
 				}
 			} else {
-				isDigit = checkQueryForDigit();
+				isDigit = checkForDigit(keyword);
 			}
 			
 			if (isDigit == true) {
@@ -87,10 +138,10 @@ public class Edit {
 		return true;
 	}
 	
-	private static boolean checkQueryForDigit() {
+	private static boolean checkForDigit(String query) {
 		//check if keyword is a digit
 		try {
-			Integer.parseInt(keyword);
+			Integer.parseInt(query);
 		} catch (NumberFormatException e) {
 			return false;
 		}
