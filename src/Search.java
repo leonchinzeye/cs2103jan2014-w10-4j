@@ -16,7 +16,7 @@ public class Search {
 	 */
 	public static String executeSearch(String[] cmdArray, FileLinker fileLink) {
 		if (cmdArray[1].equals("today")){
-			return searchToday();
+			return searchToday(fileLink);
 		} /*else if (!cmdArray[1].isEmpty()){
 			return searchByKey();
 		}*/ else {
@@ -24,7 +24,7 @@ public class Search {
 		}
 	}
 	
-	private static String searchToday() {
+	private static String searchToday(FileLinker fileLink) {
 		ArrayList <TaskCard> incomplete = fileLink.searchHandler();
 		ArrayList <TaskCard> todayTasks = new ArrayList<TaskCard>();
 		Calendar today = GregorianCalendar.getInstance();

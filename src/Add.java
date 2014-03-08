@@ -37,7 +37,7 @@ public class Add {
 		//The following lines add the task or event to the arraylist 
 		//and the file by calling the appropriate FileHandler functions.
 		success = fileLink.addHandling(newCard);
-		if (success) {
+		if (success == true) {
 			return newCard.getTaskString() + " has been successfully added!";//return string that prints success message to user
 		} else {
 			return null; //return error message
