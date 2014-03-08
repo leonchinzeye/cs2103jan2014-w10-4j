@@ -17,7 +17,9 @@ public class Search {
 	public static String executeSearch(String[] cmdArray) {
 		if (cmdArray[1].equals("today")){
 			return searchToday();
-		} else {
+		} /*else if (!cmdArray[1].isEmpty()){
+			return searchByKey();
+		}*/ else {
 			return null;
 		}
 	}

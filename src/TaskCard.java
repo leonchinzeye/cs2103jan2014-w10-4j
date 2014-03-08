@@ -12,15 +12,6 @@ public class TaskCard {
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
-	
-	/*private int startDate;
-	private int endDate;
-	private int startMonth;
-	private int endMonth;
-	private int startYear;
-	private int endYear;
-	private int startTime = 0;
-	private int endTime = 0;*/
 
 	public TaskCard(){
 		
@@ -85,69 +76,5 @@ public class TaskCard {
 		}
 		return taskString;
 	}
-	
-	/*public int getStartDate() {
-	return startDate;
-}
-
-public void setStartDate(int startDate) {
-	this.startDate = startDate;
-}
-
-public int getEndDate() {
-	return endDate;
-}
-
-public void setEndDate(int endDate) {
-	this.endDate = endDate;
-}
-
-public int getStartMonth() {
-	return startMonth;
-}
-
-public void setStartMonth(int startMonth) {
-	this.startMonth = startMonth;
-}
-
-public int getEndMonth() {
-	return endMonth;
-}
-
-public void setEndMonth(int endMonth) {
-	this.endMonth = endMonth;
-}
-
-public int getStartYear() {
-	return startYear;
-}
-
-public void setStartYear(int startYear) {
-	this.startYear = startYear;
-}
-
-public int getEndYear() {
-	return endYear;
-}
-
-public void setEndYear(int endYear) {
-	this.endYear = endYear;
-}
-
-public int getStartTime() {
-	return startTime;
-}
-
-public void setStartTime(int startTime) {
-	this.startTime = startTime;
-}
-
-public int getEndTime() {
-	return endTime;
-}
-
-public void setEndTime(int endTime) {
-	this.endTime = endTime;
-}*/
 }
 

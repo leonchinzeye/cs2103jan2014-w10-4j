@@ -79,7 +79,6 @@ public class FileHandler {
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
-		
 		return completedTasks;
 	}
 	
@@ -102,14 +101,12 @@ public class FileHandler {
 				
 				incompleteTasks.add(task);
 			}
-			
 			buffRead.close();
 		} catch (FileNotFoundException ex) {
 			createEmptyFile(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 		} catch (IOException ex) {
 			//throw error reading file message
 		}
-		
 		return incompleteTasks;
 	}
 
@@ -163,23 +160,11 @@ public class FileHandler {
 		
 		task.setFrequency(restOfDetails[5]);
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
-		
-		/*task.setStartDate(Integer.parseInt(restOfDetails[1]));
-		task.setStartMonth(Integer.parseInt(restOfDetails[2]));
-		task.setStartYear(Integer.parseInt(restOfDetails[3]));
-		
-		task.setEndDate(Integer.parseInt(restOfDetails[4]));
-		task.setEndDate(Integer.parseInt(restOfDetails[5]));
-		task.setEndDate(Integer.parseInt(restOfDetails[6]));
-		
-		task.setStartTime(Integer.parseInt(restOfDetails[7]));
-		task.setEndTime(Integer.parseInt(restOfDetails[8]));*/
 	}
 
 	
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
-		
 		
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
 			writeIncompleteTasksFile(emptyArrayList);
@@ -188,8 +173,7 @@ public class FileHandler {
 		}
 	}
 	
-	/*
-		public static void initialiseFileDetails(String fileStorageName) {
+	/*	public static void initialiseFileDetails(String fileStorageName) {
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
 			numberOfIncompleteTasks = 0;
 			incompleteTasks = new ArrayList<TaskCard>();
@@ -197,8 +181,7 @@ public class FileHandler {
 			numberOfCompletedTasks = 0;
 			completedTasks = new ArrayList<TaskCard>();
 		}
-	}
-	*/
+	}*/
 	
 	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks) {
 		try {
@@ -242,12 +225,6 @@ public class FileHandler {
 			buffWrite.write("" + task.getName());
 			buffWrite.newLine();
 			
-			/*String detailsToBeWritten = task.getType() + " " + task.getStartDate() + " " 
-																	+ task.getStartMonth() + " " + task.getStartYear() + " "
-																	+ task.getEndDate() + " " + task.getEndMonth() + " " 
-																	+ task.getEndYear() + " " + task.getStartTime() + " "
-																	+ task.getEndTime() + " " + task.getFrequency() + " "
-																	+ task.getPriority();*/
 			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
 					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
 			
