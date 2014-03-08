@@ -41,11 +41,11 @@ public class Reset {
 	/*
 	 * Reset constructor
 	 */
-	public Reset(FileHandler fh) {
-		initialiseCmdTypes();
+	public Reset() {
+		
 	}
 
-	public static String executeReset(String[] userInput) {
+	public static String executeReset(String[] userInput, FileLinker fileLink) {
 		initialiseCmdTypes();
 		String action = null;
 		
@@ -61,7 +61,7 @@ public class Reset {
 				action = userInput[1];
 			}
 			
-			response = identifyCmdTypeAndPerform(cmd, action);
+			response = identifyCmdTypeAndPerform(cmd, action, fileLink);
 		} else {
 			response = MESSAGE_RESET_CMD_ERROR;
 		}
@@ -83,27 +83,27 @@ public class Reset {
 		}
 	}
 
-	private static String identifyCmdTypeAndPerform(String cmd, String action) {
+	private static String identifyCmdTypeAndPerform(String cmd, String action, FileLinker fileLink) {
 		int cmdType = commandTable.get(cmd);
 		boolean resetConfirmation = false;
 		String response = null;
 		
 		if(cmdType == RESET_INCOMPLETE) {
-			resetConfirmation = resetIncomplete();
+			resetConfirmation = resetIncomplete(fileLink);
 			if(resetConfirmation)
 				response = MESSAGE_SUCCESS_RESET_INCOMPLETE;
 					
 		} else if(cmdType == RESET_HISTORY) {
-			resetConfirmation = resetHistory();
+			resetConfirmation = resetHistory(fileLink);
 			if(resetConfirmation)
 				response = MESSAGE_SUCCESS_RESET_HISTORY;
 			
 		} else if(cmdType == RESET_ALL) {
-			resetBothFiles();
+			resetBothFiles(fileLink);
 			response = MESSAGE_SUCCESS_RESET_BOTH;
 			
 		} else if(cmdType == RESET_EVENTS) {
-			resetEvents(action);
+			resetEvents(action, fileLink);
 			
 		} else {
 			resetTasks();
@@ -117,7 +117,7 @@ public class Reset {
 		
 	}
 
-	private static void resetEvents(String action) {
+	private static void resetEvents(String action, FileLinker fileLink) {
 		// TODO Auto-generated method stub
 		// clear today
 		// clear date
@@ -128,47 +128,44 @@ public class Reset {
 
 	/**
 	 * method to clear history
+	 * @param fileLink 
 	 * 
 	 */
-	private static boolean resetHistory() {
+	private static boolean resetHistory(FileLinker fileLink) {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_HISTORY);
 		
 		clearConfirmation = isValidConfirmation(clearConfirmation);
 		
 		if(clearConfirmation == true) {
-			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
-			FileHandler.writeCompleteTasksFile();
+			fileLink.resetCompleteHandling();
 		}
 		
 		return clearConfirmation;
 	}
 
-	private static boolean resetIncomplete() {
+	private static boolean resetIncomplete(FileLinker fileLink) {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_UNCOMPLETED);
 		
 		clearConfirmation = isValidConfirmation(clearConfirmation);
 		
 		if(clearConfirmation == true) {
-			FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-			FileHandler.writeIncompleteTasksFile();
+			fileLink.resetCompleteHandling();
 		}
 		
 		return clearConfirmation;
 	}
 	
-	private static void resetBothFiles() {
+	private static void resetBothFiles(FileLinker fileLink) {
 		boolean clearConfirmation = false;
 		print(MESSAGE_CONFIRMATION_BOTH);
 		
 		clearConfirmation = isValidConfirmation(clearConfirmation);
 		
 		if(clearConfirmation == true) {
-			FileHandler.initialiseFileDetails(FileHandler.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-			FileHandler.writeIncompleteTasksFile();
-			FileHandler.initialiseFileDetails(FileHandler.COMPLETED_TASKS_STORAGE_FILE_NAME);
-			FileHandler.writeCompleteTasksFile();
+			fileLink.resetCompleteHandling();
+			fileLink.resetIncompleteHandling();
 		}
 	}
 	

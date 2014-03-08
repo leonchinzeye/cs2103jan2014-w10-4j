@@ -45,6 +45,16 @@ public class FileLinker {
 		return false;
 	}
 	
+	public boolean resetIncompleteHandling() {
+		
+		return false;
+	}
+	
+	public boolean resetCompleteHandling() {
+		
+		return false;
+	}
+	
 	private void callStorageWriteIncomplete() {
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		Storage.writeIncompleteTasksFile(incompleteTasks, numberOfIncompleteTasks);
