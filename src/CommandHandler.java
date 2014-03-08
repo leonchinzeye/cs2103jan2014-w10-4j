@@ -10,7 +10,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID, RESET
+		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, RESET, EXIT, INVALID
 	};
 	
 	public CommandHandler() {
@@ -27,20 +27,20 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				//response = Add.executeAdd(tokenizedInput);	
+				response = Add.executeAdd(tokenizedInput, fileLink);	
 				break;
 			case DISPLAY:
-				response = Display.executeDis();
+				response = Display.executeDis(fileLink);
 				break;
 			case CLEAR:
-				//response = Reset.executeReset(tokenizedInput);
+				response = Reset.executeReset(tokenizedInput, fileLink);
 				break;
 			case DELETE:
 				break;
 			case SORT:
 				break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput);
+				response = Search.executeSearch(tokenizedInput, fileLink);
 				break;
 			case INVALID:
 				invalidCommandErrorHandling();
@@ -49,10 +49,9 @@ public class CommandHandler {
 				System.exit(0);
 				break;
 			default:
-				response = "Invalid Command";
+				invalidCommandErrorHandling();
 				break;
 		}
-		//FileHandler.writeIncompleteTasksFile();
 		return response;
 	}
 	
@@ -71,10 +70,10 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.SORT;
 		} else if (commandTypeString.contains("/search")) {
 		 	return COMMAND_TYPE.SEARCH;
-		} else if (commandTypeString.contains("/exit")) {
-		 	return COMMAND_TYPE.EXIT;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
+		} else if (commandTypeString.contains("/exit")) {
+		 	return COMMAND_TYPE.EXIT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
 		}
