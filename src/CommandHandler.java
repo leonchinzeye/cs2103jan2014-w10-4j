@@ -30,17 +30,17 @@ public class CommandHandler {
 				//response = Add.executeAdd(tokenizedInput);	
 				break;
 			case DISPLAY:
-				response = Display.executeDis();
+				response = Display.executeDis(fileLink);
 				break;
-			case CLEAR:
-				//response = Reset.executeReset(tokenizedInput);
+			case RESET:
+				response = Reset.executeReset(tokenizedInput, fileLink);
 				break;
 			case DELETE:
 				break;
 			case SORT:
 				break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput);
+				response = Search.executeSearch(tokenizedInput, fileLink);
 				break;
 			case INVALID:
 				invalidCommandErrorHandling();

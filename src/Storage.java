@@ -156,7 +156,7 @@ public class Storage {
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
 
-	
+	/*
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
 		
@@ -166,6 +166,7 @@ public class Storage {
 			writeCompleteTasksFile(emptyArrayList);
 		}
 	}
+	*/
 	
 	/*	public static void initialiseFileDetails(String fileStorageName) {
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
