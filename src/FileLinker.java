@@ -31,9 +31,15 @@ public class FileLinker {
 	 * method that delete logic will call to update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public boolean deleteHandling(ArrayList<TaskCard> arrayToBeUpdated) {
+	public ArrayList<TaskCard> deleteRetrieval() {
 		
-		return false;
+		return incompleteTasks;
+	}
+	
+	public boolean deleteHandling(int taskNumberToBeDelete) {
+		incompleteTasks.remove(taskNumberToBeDelete);
+		callStorageWriteIncomplete();
+		return true;
 	}
 	
 	/**
