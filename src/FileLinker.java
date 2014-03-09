@@ -62,14 +62,16 @@ public class FileLinker {
 		return true;
 	}
 	
-	public boolean resetIncompleteHandling() {
-		
-		return false;
+	public void resetIncompleteHandling() {
+		incompleteTasks = new ArrayList<TaskCard>();
+		int numberOfIncompleteTasks = incompleteTasks.size();
+		Storage.writeIncompleteTasksFile(incompleteTasks, numberOfIncompleteTasks);
 	}
 	
-	public boolean resetCompleteHandling() {
-		
-		return false;
+	public void resetCompleteHandling() {
+		completedTasks = new ArrayList<TaskCard>(); 
+		int numberOfCompletedTasks = completedTasks.size();
+		Storage.writeCompleteTasksFile(completedTasks, numberOfCompletedTasks);
 	}
 	
 	private void callStorageWriteIncomplete() {
