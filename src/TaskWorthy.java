@@ -67,6 +67,7 @@ public class TaskWorthy {
 	};*/
 	
 	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. Here's your agenda for today: ";
+	private static final String COMMAND_PROMPT = "What would you like to do now?";
 	
 	private static Scanner scan = new Scanner(System.in);
 	private static CommandHandler commandHandler;
@@ -83,18 +84,21 @@ public class TaskWorthy {
 		today = commandHandler.executeCommand("/search today");
 		print("\n" + today + "\n");
 		
-		print("What would you like to do now?");
 		
 		//Below is for testing adding tasks
 		//response = CommandHandler.executeCommand("/add CS2103 Assignment V0.1, 04/04/2014 23:59");
 		//response = CommandHandler.executeCommand("/add CS2105 Assignment 2, 13/03/2014 23:59");
 		
 		while(true) {
+			print(COMMAND_PROMPT);
 			String userInput = scan.nextLine();
 			
 			if(hasInput(userInput)) {
 				response = commandHandler.executeCommand(userInput);
-				print(response);
+				
+				if(response != null) {
+					print(response);
+				}
 			} else {
 				/*
 				 * No user input here. User only pressed enter. Instead of printing out an error message,

@@ -43,7 +43,7 @@ public class Delete {
 		initialiseCmdTable();
 		
 		if(checkCmdInput(tokenizedInput[0]) == true) {
-			identifyCmdTypeAndPerform(tokenizedInput, fileLink);
+			response = identifyCmdTypeAndPerform(tokenizedInput, fileLink);
 		} else {
 			response = "You've entered an unrecognisable delete command. Please re-enter your command:";
 		}
@@ -51,13 +51,14 @@ public class Delete {
 		return response;
 	}
 	
-	private static void identifyCmdTypeAndPerform(String[] tokenizedInput,
+	private static String identifyCmdTypeAndPerform(String[] tokenizedInput,
 			FileLinker fileLink) {
+		String response = "";
 		int cmdType = cmdTable.get(tokenizedInput[0]);
 		
 		switch(cmdType) {
 			case 1:
-				performSpecificDelete(tokenizedInput, fileLink);
+				response = performSpecificDelete(tokenizedInput, fileLink);
 				break;
 			case 2:
 				
@@ -68,15 +69,23 @@ public class Delete {
 			default:
 				break;
 		}
+		
+		return response;
 	}
 
-	private static void performSpecificDelete(String[] tokenizedInput,
+	private static String performSpecificDelete(String[] tokenizedInput,
 			FileLinker fileLink) {
+		String response = "";
 		String keyword = "";
 				
 		//only /delete
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
+			
+			if(keyword.equals("!q")) {
+				response = null;
+				return response;
+			}
 		} else {
 			keyword = tokenizedInput[1];
 		}
@@ -89,6 +98,8 @@ public class Delete {
 			deleteBasedOnDateAndString(keyword, fileLink); 
 		} else
 			deleteBasedOnString(keyword, fileLink);
+		
+		return response;
 	}
 
 	private static void deleteBasedOnString(String keyword, FileLinker fileLink) {
