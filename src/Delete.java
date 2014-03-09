@@ -102,6 +102,8 @@ public class Delete {
 		for(int i = 0; i < numberOfIncompleteTasks; i++) {
 			TaskCard task = incompleteTasks.get(i);
 			String taskDescription = task.getName();
+			taskDescription = taskDescription.toLowerCase();
+			keyword = keyword.toLowerCase();
 			
 			if(taskDescription.contains(keyword)) {
 				taskCardsToBeDeleted.add(task);
@@ -129,6 +131,8 @@ public class Delete {
 			String taskDetails = task.getName();
 			String toBePrinted = counter + ") " + taskDetails;
 			print(toBePrinted);
+			
+			counter++;
 		}
 		
 		/*
