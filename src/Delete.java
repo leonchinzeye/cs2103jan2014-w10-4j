@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class Delete {
 	
-	private static final String MESSAGE_DELETION_PROMPTING = "The number you have entered is not "
+	private static final String MESSAGE_DELETION_PROMPTING_RANGE = "The number you have entered is not "
 			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
 	
 	private static HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
@@ -148,9 +148,10 @@ public class Delete {
 				int indexNumber = Integer.parseInt(userInput);
 				
 				if(indexNumber > taskCardsToBeDeleted.size() || indexNumber < 1) {
-					print(String.format(MESSAGE_DELETION_PROMPTING, taskCardsToBeDeleted.size()));
+					print(String.format(MESSAGE_DELETION_PROMPTING_RANGE, taskCardsToBeDeleted.size()));
 				} else {
 					userConfirmedIndex = indexNumber;
+					correctUserInput = true;
 				}
 				
 			} else {
