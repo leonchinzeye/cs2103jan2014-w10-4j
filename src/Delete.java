@@ -95,6 +95,7 @@ public class Delete {
 		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
 		ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
+		int userConfirmedIndex;
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		
@@ -110,9 +111,9 @@ public class Delete {
 		
 		if(taskCardsToBeDeleted.isEmpty()) {
 			print("Keyword is not found among the lists of tasks you have.");
+		} else {
+			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
-		
-		int userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 	}
 
 	private static int getDeletionConfirmation(
