@@ -1,4 +1,8 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -15,8 +19,19 @@ import java.util.Scanner;
  */
 public class Delete {
 	
+	private static final String MESSAGE_DELETION_PROMPTING = "The number you have entered is not "
+			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
+	
 	private static HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	private static Scanner scan = new Scanner(System.in);
+	private static boolean isDate = false;
+	private static boolean isString = false;
+	private static boolean isInteger = false;
+	private static Calendar dateKeyword = GregorianCalendar.getInstance();
+	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
+	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	
 
 	public Delete() {
 		// TODO Auto-generated constructor stub
@@ -57,29 +72,155 @@ public class Delete {
 
 	private static void performSpecificDelete(String[] tokenizedInput,
 			FileLinker fileLink) {
-		String action = "";
-		
+		String keyword = "";
+				
 		//only /delete
 		if(tokenizedInput.length < 2) {
-			action = getActionFromUser();
+			keyword = getKeywordFromUser();
+		} else {
+			keyword = tokenizedInput[1];
+		}
+		
+		checkKeywordType(keyword);
+		
+		if(isDate == true) {
+			deleteBasedOnDate(keyword, fileLink);
+		} else if(isInteger == true) {
+			deleteBasedOnDateAndString(keyword, fileLink); 
+		} else
+			deleteBasedOnString(keyword, fileLink);
+	}
+
+	private static void deleteBasedOnString(String keyword, FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
+		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
+		ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
+		
+		for(int i = 0; i < numberOfIncompleteTasks; i++) {
+			TaskCard task = incompleteTasks.get(i);
+			String taskDescription = task.getName();
+			
+			if(taskDescription.contains(keyword)) {
+				taskCardsToBeDeleted.add(task);
+				deletedIndex.add(i);
+			}
+		}
+		
+		if(taskCardsToBeDeleted.isEmpty()) {
+			print("Keyword is not found among the lists of tasks you have.");
+		}
+		
+		int userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
+	}
+
+	private static int getDeletionConfirmation(
+			ArrayList<TaskCard> taskCardsToBeDeleted) {
+		int userConfirmedIndex = -1;
+		int counter = 1;
+		boolean correctUserInput = false;
+		
+		print("Here is the list of items that contain your keyword. Which do you want to delete?");
+		
+		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
+			TaskCard task = taskCardsToBeDeleted.get(i);
+			String taskDetails = task.getName();
+			String toBePrinted = counter + ") " + taskDetails;
+			print(toBePrinted);
+		}
+		
+		/*
+		 * - user has to enter either a number or "n" to exit this loop
+		 * - if user enters anything else, it will throw an error prompt to 
+		 * 	 get the user to re-enter his selection
+		 * - if is integer, has to check if integer is within the range
+		 * 
+		 */
+		while(correctUserInput == false) {
+			String userInput = scan.nextLine();
+			
+			if(userInput.equals("n")) {
+				break;
+				
+			} else if(checkIsInteger(userInput)) {
+				//check range of values coincide with those shown
+				int indexNumber = Integer.parseInt(userInput);
+				
+				if(indexNumber > taskCardsToBeDeleted.size() || indexNumber < 1) {
+					print(String.format(MESSAGE_DELETION_PROMPTING, taskCardsToBeDeleted.size()));
+				} else {
+					userConfirmedIndex = indexNumber;
+				}
+				
+			} else {
+				print(String.format("Please enter a number between 1 to %d.", taskCardsToBeDeleted.size()));
+			}
+		}
+		
+		return userConfirmedIndex;
+	}
+
+	private static void deleteBasedOnDateAndString(String keyword,
+			FileLinker fileLink) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void deleteBasedOnDate(String keyword, FileLinker fileLink) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static void checkKeywordType(String keyword) {
+		isInteger = checkIsInteger(keyword);
+		isDate = checkIsDate(keyword);
+		if(isDate == false && isInteger == false) {
+			isString = true;
 		}
 		
 	}
 
-	private static String getActionFromUser() {
+	private static boolean checkIsDate(String keyword) {
+		boolean isDate;
+		
+		try {
+			dateKeyword.setTime(dateAndTime.parse(keyword));
+			dateKeyword.setTime(dateString.parse(keyword));
+			dateKeyword.setTime(timeString.parse(keyword));
+			isDate = true;
+		} catch(ParseException e) {
+			isDate = false;
+		}
+		return isDate;
+	}
+
+	private static boolean checkIsInteger(String keyword) {
+		boolean isInteger;
+		try {
+			Integer.parseInt(keyword);
+			isInteger = true;
+		} catch(NumberFormatException e) {
+			isInteger = false;
+		}
+		
+		return isInteger;
+	}
+
+	private static String getKeywordFromUser() {
 		boolean enteredAction = false;
-		String action = "";
+		String keyword = "";
 		
 		while(enteredAction == false) {
-			print("You did not specify a date or keyword you wish to delete. Please enter a date or keyword: ");
+			print("You did not specify a keyword. Please enter a keyword: ");
 			
 			if(scan.hasNext()) {
-				action = scan.nextLine();
+				keyword = scan.nextLine();
 				enteredAction = true;
 			}
 		}
 
-		return action;
+		return keyword;
 	}
 
 	private static boolean checkCmdInput(String cmd) {
@@ -93,9 +234,9 @@ public class Delete {
 	}
 	
 	private static void initialiseCmdTable() {
-		cmdTable.put("/delete", 1);
-		cmdTable.put("/deletet", 2);
-		cmdTable.put("/deletee", 3);
+		cmdTable.put("/del", 1);
+		cmdTable.put("/delt", 2);
+		cmdTable.put("/delev", 3);
 	}
 	
 	private static void print(String message) {
