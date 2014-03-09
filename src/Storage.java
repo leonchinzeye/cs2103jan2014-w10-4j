@@ -2,6 +2,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -155,7 +156,6 @@ public class Storage {
 		task.setFrequency(restOfDetails[5]);
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
-
 	
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
@@ -167,17 +167,6 @@ public class Storage {
 			writeCompleteTasksFile(emptyArrayList, numberOfTasks);
 		}
 	}
-	
-	
-	/*	public static void initialiseFileDetails(String fileStorageName) {
-		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
-			numberOfIncompleteTasks = 0;
-			incompleteTasks = new ArrayList<TaskCard>();
-		} else {
-			numberOfCompletedTasks = 0;
-			completedTasks = new ArrayList<TaskCard>();
-		}
-	}*/
 	
 	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks, int numberOfCompletedTasks) {
 		try {
