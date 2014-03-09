@@ -36,6 +36,7 @@ public class CommandHandler {
 				response = Reset.executeReset(tokenizedInput, fileLink);
 				break;
 			case DELETE:
+				response = Delete.executeDelete(tokenizedInput, fileLink);
 				break;
 			case SORT:
 				break;
