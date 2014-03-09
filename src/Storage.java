@@ -156,17 +156,18 @@ public class Storage {
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
 
-	/*
+	
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
+		int numberOfTasks = emptyArrayList.size();
 		
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
-			writeIncompleteTasksFile(emptyArrayList);
+			writeIncompleteTasksFile(emptyArrayList, numberOfTasks);
 		} else {
-			writeCompleteTasksFile(emptyArrayList);
+			writeCompleteTasksFile(emptyArrayList, numberOfTasks);
 		}
 	}
-	*/
+	
 	
 	/*	public static void initialiseFileDetails(String fileStorageName) {
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
