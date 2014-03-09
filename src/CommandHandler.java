@@ -32,7 +32,7 @@ public class CommandHandler {
 			case DISPLAY:
 				response = Display.executeDis(fileLink);
 				break;
-			case CLEAR:
+			case RESET:
 				response = Reset.executeReset(tokenizedInput, fileLink);
 				break;
 			case DELETE:

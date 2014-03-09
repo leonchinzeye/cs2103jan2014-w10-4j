@@ -24,7 +24,7 @@ public class Display {
 		} else {
 			response += "You have no tasks! Use the \"/add\" command to add a new task.";
 		}
-		return response;
+		return response + "\n";
 	}
 	
 	private static class SortDeadlineThenPriority implements Comparator<TaskCard> {
