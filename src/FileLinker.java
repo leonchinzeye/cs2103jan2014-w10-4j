@@ -62,6 +62,10 @@ public class FileLinker {
 		return true;
 	}
 	
+	public ArrayList<TaskCard> searchRetrieval() {
+		return incompleteTasks;
+	}
+	
 	public void resetIncompleteHandling() {
 		incompleteTasks = new ArrayList<TaskCard>();
 		int numberOfIncompleteTasks = incompleteTasks.size();
