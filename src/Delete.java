@@ -97,16 +97,17 @@ public class Delete {
 		} else if(isInteger == true) {
 			deleteBasedOnDateAndString(keyword, fileLink); 
 		} else
-			deleteBasedOnString(keyword, fileLink);
+			response = deleteBasedOnString(keyword, fileLink);
 		
 		return response;
 	}
 
-	private static void deleteBasedOnString(String keyword, FileLinker fileLink) {
+	private static String deleteBasedOnString(String keyword, FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
 		ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
-		int userConfirmedIndex;
+		int userConfirmedIndex = -1;
+		String response = "";
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		
@@ -127,12 +128,20 @@ public class Delete {
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
+		
+		if(userConfirmedIndex == -1) {
+			response = null;
+		} else {
+			//perform deletion using the index and filelinker
+		}
+		
+		return response;
 	}
 
 	private static int getDeletionConfirmation(
 			ArrayList<TaskCard> taskCardsToBeDeleted) {
 		int userConfirmedIndex = -1;
-		int counter = 1;
+		int counterReference = 1;
 		boolean correctUserInput = false;
 		
 		print("Here is the list of items that contain your keyword. Which do you want to delete?");
@@ -140,10 +149,10 @@ public class Delete {
 		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
 			TaskCard task = taskCardsToBeDeleted.get(i);
 			String taskDetails = task.getName();
-			String toBePrinted = counter + ") " + taskDetails;
+			String toBePrinted = counterReference + ") " + taskDetails;
 			print(toBePrinted);
 			
-			counter++;
+			counterReference++;
 		}
 		
 		/*
@@ -156,7 +165,7 @@ public class Delete {
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
 			
-			if(userInput.equals("n")) {
+			if(userInput.equals("!q")) {
 				break;
 				
 			} else if(checkIsInteger(userInput)) {
