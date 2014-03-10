@@ -131,6 +131,8 @@ public class Delete {
 		
 		if(userConfirmedIndex == -1) {
 			response = null;
+		} else {
+			//perform deletion using the index and filelinker
 		}
 		
 		return response;
@@ -139,7 +141,7 @@ public class Delete {
 	private static int getDeletionConfirmation(
 			ArrayList<TaskCard> taskCardsToBeDeleted) {
 		int userConfirmedIndex = -1;
-		int counter = 1;
+		int counterReference = 1;
 		boolean correctUserInput = false;
 		
 		print("Here is the list of items that contain your keyword. Which do you want to delete?");
@@ -147,10 +149,10 @@ public class Delete {
 		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
 			TaskCard task = taskCardsToBeDeleted.get(i);
 			String taskDetails = task.getName();
-			String toBePrinted = counter + ") " + taskDetails;
+			String toBePrinted = counterReference + ") " + taskDetails;
 			print(toBePrinted);
 			
-			counter++;
+			counterReference++;
 		}
 		
 		/*
