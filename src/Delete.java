@@ -17,11 +17,29 @@ import java.util.Scanner;
  * @author leon
  *
  */
-public class Delete {
+public class Delete {	
 	
+	private static final int DELETE_SPECIFIC_TASKS = 1;
+	private static final int DELETE_TASKS = 2;
+	private static final int DELETE_EVENTS = 3;
+
+	private static final int FIRST_ARGUMENT = 0;
+	
+	private static final String COMMAND_QUIT_TO_TOP = "!q";
+	
+	private static final String RESPONSE_DELETE_SUCCESSFUL = "\" %s\" has been deleted.";
+	private static final String RESPONSE_UNRECOGNISABLE_DELETE_COMMAND = "You've entered an "
+			+ "unrecognisable delete command. Please re-enter your command: ";
+	private static final String MESSAGE_PROMPT_GET_KEYWORD = "You did not specify a keyword. "
+			+ "Please enter a keyword: ";
 	private static final String MESSAGE_DELETION_PROMPTING_RANGE = "The number you have entered is not "
 			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
-	
+	private static final String MESSAGE_NOT_NUMBER_ENTERED = "Please enter a number between 1 to %d.";
+	private static final String MESSAGE_LIST_FOR_DELETION = "Here is the list of items that contain "
+			+ "your keyword. Which do you want to delete?";
+	private static final String MESSAGE_KEYWORD_NOT_FOUND = "Keyword is not found among the lists of "
+			+ "tasks you have.";
+
 	private static HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	private static Scanner scan = new Scanner(System.in);
 	private static boolean isDate = false;
@@ -32,9 +50,8 @@ public class Delete {
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	
-
 	public Delete() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public static String executeDelete(String[] tokenizedInput, FileLinker fileLink) {
@@ -42,10 +59,10 @@ public class Delete {
 		
 		initialiseCmdTable();
 		
-		if(checkCmdInput(tokenizedInput[0]) == true) {
+		if(checkCmdInput(tokenizedInput[FIRST_ARGUMENT]) == true) {
 			response = identifyCmdTypeAndPerform(tokenizedInput, fileLink);
 		} else {
-			response = "You've entered an unrecognisable delete command. Please re-enter your command:";
+			response = RESPONSE_UNRECOGNISABLE_DELETE_COMMAND;
 		}
 				
 		return response;
@@ -54,7 +71,7 @@ public class Delete {
 	private static String identifyCmdTypeAndPerform(String[] tokenizedInput,
 			FileLinker fileLink) {
 		String response = "";
-		int cmdType = cmdTable.get(tokenizedInput[0]);
+		int cmdType = cmdTable.get(tokenizedInput[FIRST_ARGUMENT]);
 		
 		switch(cmdType) {
 			case 1:
@@ -82,7 +99,7 @@ public class Delete {
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
 			
-			if(keyword.equals("!q")) {
+			if(keyword.equals(COMMAND_QUIT_TO_TOP)) {
 				response = null;
 				return response;
 			}
@@ -124,7 +141,7 @@ public class Delete {
 		}
 		
 		if(taskCardsToBeDeleted.isEmpty()) {
-			print("Keyword is not found among the lists of tasks you have.");
+			print(MESSAGE_KEYWORD_NOT_FOUND);
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
@@ -133,7 +150,7 @@ public class Delete {
 			response = null;
 		} else {
 			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
-			response = "\"" + deletedTask + "\" has been deleted.";
+			response = String.format(RESPONSE_DELETE_SUCCESSFUL, deletedTask);
 			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
 			fileLink.deleteHandling(fileIndexToBeDeleted);
 		}
@@ -160,7 +177,7 @@ public class Delete {
 		}
 		
 		if(taskCardsToBeDeleted.isEmpty()) {
-			print("Keyword is not found among the lists of tasks you have.");
+			print(MESSAGE_KEYWORD_NOT_FOUND);
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
@@ -169,7 +186,7 @@ public class Delete {
 			response = null;
 		} else {
 			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
-			response = "\"" + deletedTask + "\" has been deleted.";
+			response = String.format(RESPONSE_DELETE_SUCCESSFUL, deletedTask);
 			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
 			fileLink.deleteHandling(fileIndexToBeDeleted);
 		}
@@ -188,7 +205,7 @@ public class Delete {
 		int counterReference = 1;
 		boolean correctUserInput = false;
 		
-		print("Here is the list of items that contain your keyword. Which do you want to delete?");
+		print(MESSAGE_LIST_FOR_DELETION);
 		
 		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
 			TaskCard task = taskCardsToBeDeleted.get(i);
@@ -209,7 +226,7 @@ public class Delete {
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
 			
-			if(userInput.equals("!q")) {
+			if(userInput.equals(COMMAND_QUIT_TO_TOP)) {
 				break;
 				
 			} else if(checkIsInteger(userInput)) {
@@ -224,7 +241,7 @@ public class Delete {
 				}
 				
 			} else {
-				print(String.format("Please enter a number between 1 to %d.", taskCardsToBeDeleted.size()));
+				print(String.format(MESSAGE_NOT_NUMBER_ENTERED, taskCardsToBeDeleted.size()));
 			}
 		}
 		
@@ -271,7 +288,7 @@ public class Delete {
 		String keyword = "";
 		
 		while(enteredAction == false) {
-			print("You did not specify a keyword. Please enter a keyword: ");
+			print(MESSAGE_PROMPT_GET_KEYWORD);
 			
 			if(scan.hasNext()) {
 				keyword = scan.nextLine();
@@ -293,9 +310,9 @@ public class Delete {
 	}
 	
 	private static void initialiseCmdTable() {
-		cmdTable.put("/del", 1);
-		cmdTable.put("/delt", 2);
-		cmdTable.put("/delev", 3);
+		cmdTable.put("/del", DELETE_SPECIFIC_TASKS);
+		cmdTable.put("/delt", DELETE_TASKS);
+		cmdTable.put("/delev", DELETE_EVENTS);
 	}
 	
 	private static void print(String toPrint) {
