@@ -10,7 +10,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, RESET, EXIT, INVALID
+		ADD, DISPLAY, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
 	};
 	
 	public CommandHandler() {
@@ -38,7 +38,8 @@ public class CommandHandler {
 			case DELETE:
 				response = Delete.executeDelete(tokenizedInput, fileLink);
 				break;
-			case SORT:
+			case EDIT:
+				response = Edit.executeEdit(tokenizedInput, fileLink);
 				break;
 			case SEARCH:
 				response = Search.executeSearch(tokenizedInput, fileLink);
@@ -67,8 +68,8 @@ public class CommandHandler {
 			 	return COMMAND_TYPE.DELETE;
 		} else if (commandTypeString.contains("/clear")) {
 		 	return COMMAND_TYPE.CLEAR;
-		} else if (commandTypeString.contains("/sort")) {
-		 	return COMMAND_TYPE.SORT;
+		} else if (commandTypeString.contains("/edit")) {
+		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/search")) {
 		 	return COMMAND_TYPE.SEARCH;
 		} else if (commandTypeString.contains("/reset")) {
