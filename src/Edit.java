@@ -2,6 +2,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.Scanner;
 
@@ -124,6 +126,7 @@ public class Edit {
 		if (editList.isEmpty()) {
 			System.out.println("Keyword not found! Try a different keyword.");
 		} else {
+			Collections.sort(editList, new SortPriority());
 			System.out.println("Which would you like to edit?");
 			for (int j = 0; j < editList.size(); j++) {
 				System.out.println(j+1 + ". " + editList.get(j).getTaskString());
@@ -197,5 +200,13 @@ public class Edit {
 			return false;
 		}
 		return true;
+	}
+	
+	private static class SortPriority implements Comparator<TaskCard> {
+		public int compare(TaskCard o1, TaskCard o2) {
+			Integer i1 = (Integer) o1.getPriority();
+			Integer i2 = (Integer) o2.getPriority();
+			return i2.compareTo(i1);
+		}
 	}
 }
