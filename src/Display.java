@@ -9,6 +9,10 @@ public class Display {
 	static ArrayList <TaskCard> displayIncomplete;
 	static Calendar today = GregorianCalendar.getInstance();
 	
+	
+	/*
+	 * error handle the /discard
+	 */
 	public static String executeDis(FileLinker fileLink) {
 		displayIncomplete = fileLink.displayHandler();
 		if (!displayIncomplete.isEmpty()) {
