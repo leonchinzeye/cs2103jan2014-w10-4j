@@ -22,11 +22,9 @@ public class Edit {
 	 * @author Omar Khalid
 	 */
 	
-	private static final String MESSAGE_DELETION_PROMPTING_RANGE = "The number you have entered is not "
-			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
-	
 	private static Scanner scan = new Scanner(System.in);
 	private static int indexNumber;
+	private static int nextIndexNumber;
 	private static ArrayList <TaskCard> originalList; //this is the cloned to do list
 	private static ArrayList <TaskCard> editList; //this is the list that will be printed out on the screen
 	private static ArrayList <Integer> editIndex; //this is to store the indices of the TaskCards that match the keyword
@@ -36,12 +34,17 @@ public class Edit {
 	private static boolean edited = false;
 	private static boolean hasDate;
 	private static boolean isDigit = false;
+	private static boolean editedFlag = false;
 	private static String query = "";
 	private static String response = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	
+	private static final String EDIT_SUCCESS = "Your edit was successful!\n%s";
+	private static final String EDIT_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
+	private static final String KEYWORD_NOT_FOUND = "You seem to have forgotten something! Please type in a keyword to search for: ";
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
 		String keyword = "";
@@ -59,11 +62,15 @@ public class Edit {
 		originalList = fileLink.editRetrieval();
 		checkKeywordType(keyword);
 		editFilter(fileLink);
+		mainEditor();
+		if (editedFlag == true) {
+			edited = fileLink.editHandling(editedTask, editIndex.get(indexNumber));
+		}
 		
 		if (edited == true) {
-			return "Edit successful";
+			return String.format(EDIT_SUCCESS, editedTask.getTaskString());
 		} else {
-			return null;
+			return EDIT_FAILURE;
 		}
 	}
 
@@ -106,8 +113,6 @@ public class Edit {
 			}
 		}
 		editIndex = secondaryIndex;
-		listEditor();
-		edited = fileLink.editHandling(editedTask, editIndex.get(indexNumber));
 	}
 
 	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
@@ -140,61 +145,97 @@ public class Edit {
 		}
 	}
 
-	private static void listEditor() {
-		boolean correctUserInput = false;
-		
+	private static void mainEditor() {
 		if (editList.isEmpty()) {
-			System.out.println("Keyword not found! Try a different keyword.");
+			print("We can't find anything by your keyword :(");
 		} else {
-			Collections.sort(editList, new SortPriority());
-			System.out.println("Which would you like to edit?");
-			for (int j = 0; j < editList.size(); j++) {
-				System.out.println(j+1 + ". " + editList.get(j).getTaskString());
-			}
-			while(correctUserInput == false) {
-				String userInput = scan.nextLine();
-				if(userInput.equals("!q")) {
-					break;
-				} else if (checkForDigit(userInput)) {
-					indexNumber = Integer.parseInt(userInput);
-					if (indexNumber > editList.size() || indexNumber < 1) {
-						System.out.println("Please enter a digit between 1 and " + editList.size());
-					} else {
-						editedTask = editList.get(indexNumber - 1);
-						System.out.println("What would you like to edit?");
-						System.out.println("1. Name\n" + "2. Start date\n" + "3. End date\n"
-											+ "4. Start time\n" + "5. End time\n" + "6. Priority");
-						int nextIndex = scan.nextInt();
-						editTaskAttribute(nextIndex);
-					}
+			firstEditMenu();
+		}
+	}
+	
+	private static void firstEditMenu() {
+		boolean correctUserInput = false;
+		printFirstMenu();		
+		while(correctUserInput == false) {
+			String userInput = scan.nextLine();
+			if(userInput.equals("!q")) {
+				break;
+			} else if (checkForDigit(userInput)) {
+				indexNumber = Integer.parseInt(userInput);
+				if (indexNumber > editList.size() || indexNumber < 1) {
+					print("Please enter a digit between 1 and " + editList.size());
 				} else {
-					System.out.println("Please enter a digit between 1 and " + editList.size());
+					correctUserInput = true;
+					editedTask = editList.get(indexNumber - 1);					
+					secondEditMenu();
 				}
+			} else {
+				print("Please enter a digit between 1 and " + editList.size());
 			}
 		}
 	}
 
-	private static void editTaskAttribute(int nextChoice) {
-		switch (nextChoice) {
+	private static void printFirstMenu() {
+		Collections.sort(editList, new SortPriority());
+		print("Which would you like to edit?");
+		for (int j = 0; j < editList.size(); j++) {
+			print(j+1 + ". " + editList.get(j).getTaskString());
+		}
+	}
+
+	private static void secondEditMenu() {
+		boolean correctNextIndex = false;
+		printSecondMenu();
+		while(correctNextIndex == false) {
+			String nextIndex = scan.nextLine();
+			if(nextIndex.equals("!q")) {
+				break;
+			} else if (checkForDigit(nextIndex)){
+				nextIndexNumber = Integer.parseInt(nextIndex);
+				if (nextIndexNumber > 6 || nextIndexNumber < 1) {
+					print("Please enter a digit between 1 and 6");
+				} else {
+					correctNextIndex = true;
+					editTaskAttribute(nextIndexNumber);
+				}
+			} else {
+				print("Please enter a digit between 1 and 6");
+			}
+		}
+	}
+
+	private static void printSecondMenu() {
+		print("What would you like to edit?");
+		print("1. Name\n" + "2. Start date\n" + "3. End date\n" + "4. Start time\n" + "5. End time\n" + "6. Priority");
+	}
+
+	private static void editTaskAttribute(int nextIndex) {
+		switch (nextIndex) {
 			case 1:
 				String newName = scan.nextLine();
 				editedTask.setName(newName);
+				editedFlag = true;
 				break;
 			case 2:
 				//change date
+				editedFlag = true;
 				break;
 			case 3:
 				//change date
+				editedFlag = true;
 				break;
 			case 4:
 				//change time
+				editedFlag = true;
 				break;
 			case 5:
 				//change time
+				editedFlag = true;
 				break;
 			case 6:
 				int priority = scan.nextInt();
 				editedTask.setPriority(priority);
+				editedFlag = true;
 				break;
 			default:
 				break;
@@ -228,7 +269,7 @@ public class Edit {
 		boolean enteredAction = false;
 		String keyword = "";
 		while(enteredAction == false) {
-			System.out.println("You did not specify a keyword. Please enter a keyword: ");
+			System.out.println(KEYWORD_NOT_FOUND);
 			
 			if(scan.hasNext()) {
 				keyword = scan.nextLine();
