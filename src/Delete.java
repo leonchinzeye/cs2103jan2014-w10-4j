@@ -97,16 +97,17 @@ public class Delete {
 		} else if(isInteger == true) {
 			deleteBasedOnDateAndString(keyword, fileLink); 
 		} else
-			deleteBasedOnString(keyword, fileLink);
+			response = deleteBasedOnString(keyword, fileLink);
 		
 		return response;
 	}
 
-	private static void deleteBasedOnString(String keyword, FileLinker fileLink) {
+	private static String deleteBasedOnString(String keyword, FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
 		ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
-		int userConfirmedIndex;
+		int userConfirmedIndex = -1;
+		String response = "";
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		
@@ -127,6 +128,12 @@ public class Delete {
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
+		
+		if(userConfirmedIndex == -1) {
+			response = null;
+		}
+		
+		return response;
 	}
 
 	private static int getDeletionConfirmation(
@@ -156,7 +163,7 @@ public class Delete {
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
 			
-			if(userInput.equals("n")) {
+			if(userInput.equals("!q")) {
 				break;
 				
 			} else if(checkIsInteger(userInput)) {
