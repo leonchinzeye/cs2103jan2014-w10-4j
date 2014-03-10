@@ -33,63 +33,79 @@ public class Edit {
 	private static boolean edited = false;
 	private static boolean hasDate;
 	private static boolean isDigit = false;
-	private static String keyword = "";
+	private static String query = "";
+	private static String response = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	
-	public static String executeEdit (String[] cmdArray, FileLinker fileLink) {
-		if (cmdArray.length == 1) {
-			return "Invalid query! Please enter a keyword to search for.";
+	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
+		String keyword = "";
+		
+		//check whether there's an argument for edit
+		if(tokenizedInput.length < 2) {
+			keyword = getKeywordFromUser();
+			if (keyword.equals("!q")) {
+				response = null;
+				return response;
+			}
 		} else {
-			originalList = fileLink.editRetrieval();
-			boolean tempCheckDate;
-			//need to account if search query has both a keyword and date
-			for (int i = 1; i < cmdArray.length; i++) {
-				tempCheckDate = false;
-				tempCheckDate = checkForDate(cmdArray[i]);
-				if (tempCheckDate == false) {
-					keyword.concat(cmdArray[i]);
-					keyword += " ";
-				}
-			}
-			keyword.replaceFirst("\\s+$", ""); //remove any trailing whitespace
-			
-			if (hasDate == true) {
-				ArrayList <TaskCard> tempEditList = new ArrayList <TaskCard>();
-				ArrayList <Integer> tempIndex = new ArrayList <Integer>();
-				searchByKeyword(fileLink, originalList, tempEditList); //filter by keyword first
-				if (!tempEditList.isEmpty()) {
-					tempIndex = secondaryIndex;
-					secondaryIndex.clear();
-					searchByDate(fileLink, tempEditList, editList); //then filter by date
-					//filter out editIndex
-					for (int i = 0; i < secondaryIndex.size(); i++) {
-						editIndex.add(tempIndex.get(i));
-					}
-				} else {
-					editIndex = secondaryIndex;
-				}
-				
-			} else {
-				isDigit = checkForDigit(keyword);
-				if (isDigit == true) {
-					searchByDigit(fileLink, originalList, editList);
-				} else {
-					searchByKeyword(fileLink, originalList, editList);
-				}
-			}
-			editIndex = secondaryIndex;
-			printEditList();
-			edited = fileLink.editHandling(editedTask, editIndex.get(choice));
-			
-			if (edited == true) {
-				return "Edit successful";
-			} else {
-				return null;
+			keyword = tokenizedInput[1];
+		}
+		
+		originalList = fileLink.editRetrieval();
+		checkKeywordType(keyword);
+		editFilter(fileLink);
+		
+		if (edited == true) {
+			return "Edit successful";
+		} else {
+			return null;
+		}
+	}
+
+	private static void checkKeywordType(String keyword) {
+		boolean tempCheckDate;
+		String[] tokenizedKeyword = keyword.trim().split("\\s+");
+		//need to account if search query has both a keyword and date
+		for (int i = 0; i < tokenizedKeyword.length; i++) {
+			tempCheckDate = false;
+			tempCheckDate = checkForDate(tokenizedKeyword[i]);
+			if (tempCheckDate == false) {
+				query.concat(tokenizedKeyword[i]);
+				query += " ";
 			}
 		}
+		query.replaceFirst("\\s+$", ""); //remove any trailing whitespace
+	}
+
+	private static void editFilter(FileLinker fileLink) {
+		if (hasDate == true) {
+			ArrayList <TaskCard> tempEditList = new ArrayList <TaskCard>();
+			ArrayList <Integer> tempIndex = new ArrayList <Integer>();
+			searchByKeyword(fileLink, originalList, tempEditList); //filter by keyword first
+			if (!tempEditList.isEmpty()) {
+				tempIndex = secondaryIndex;
+				secondaryIndex.clear();
+				searchByDate(fileLink, tempEditList, editList); //then filter by date
+				for (int i = 0; i < secondaryIndex.size(); i++) {
+					editIndex.add(tempIndex.get(i));
+				}
+			} else {
+				editIndex = secondaryIndex;
+			}
+		} else {
+			isDigit = checkForDigit(query);
+			if (isDigit == true) {
+				searchByDigit(fileLink, originalList, editList);
+			} else {
+				searchByKeyword(fileLink, originalList, editList);
+			}
+		}
+		editIndex = secondaryIndex;
+		listEditor();
+		edited = fileLink.editHandling(editedTask, editIndex.get(choice));
 	}
 
 	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
@@ -104,9 +120,9 @@ public class Edit {
 	
 	private static void searchByDigit(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
 		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().contains(keyword)
-				|| lookThru.get(i).getStartDay().toString().contains(keyword)
-				|| lookThru.get(i).getEndDay().toString().contains(keyword)) {
+			if (lookThru.get(i).getName().contains(query)
+				|| lookThru.get(i).getStartDay().toString().contains(query)
+				|| lookThru.get(i).getEndDay().toString().contains(query)) {
 				addTo.add(lookThru.get(i));
 				secondaryIndex.add(i);
 			}
@@ -115,14 +131,14 @@ public class Edit {
 	
 	private static void searchByKeyword(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
 		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().equals(keyword)) {
+			if (lookThru.get(i).getName().equals(query)) {
 				addTo.add(lookThru.get(i));
 				secondaryIndex.add(i);
 			}
 		}
 	}
 
-	private static void printEditList() {
+	private static void listEditor() {
 		if (editList.isEmpty()) {
 			System.out.println("Keyword not found! Try a different keyword.");
 		} else {
@@ -132,7 +148,7 @@ public class Edit {
 				System.out.println(j+1 + ". " + editList.get(j).getTaskString());
 			}
 			String input = scan.nextLine();
-			if (input.toLowerCase().equals("exit")) {
+			if (input.toLowerCase().equals("!q")) {
 				return;
 			} else if (checkForDigit(input) == false) {
 				//invalid input, ask for input again
@@ -200,6 +216,20 @@ public class Edit {
 			return false;
 		}
 		return true;
+	}
+	
+	private static String getKeywordFromUser() {
+		boolean enteredAction = false;
+		String keyword = "";
+		while(enteredAction == false) {
+			System.out.println("You did not specify a keyword. Please enter a keyword: ");
+			
+			if(scan.hasNext()) {
+				keyword = scan.nextLine();
+				enteredAction = true;
+			}
+		}
+		return keyword;
 	}
 	
 	private static class SortPriority implements Comparator<TaskCard> {
