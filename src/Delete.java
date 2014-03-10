@@ -269,7 +269,7 @@ public class Delete {
 		cmdTable.put("/delev", 3);
 	}
 	
-	private static void print(String message) {
-		System.out.println(message);
+	private static void print(String toPrint) {
+		System.out.println(toPrint);
 	}
 }

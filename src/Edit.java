@@ -22,8 +22,11 @@ public class Edit {
 	 * @author Omar Khalid
 	 */
 	
+	private static final String MESSAGE_DELETION_PROMPTING_RANGE = "The number you have entered is not "
+			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
+	
 	private static Scanner scan = new Scanner(System.in);
-	private static int choice;
+	private static int indexNumber;
 	private static ArrayList <TaskCard> originalList; //this is the cloned to do list
 	private static ArrayList <TaskCard> editList; //this is the list that will be printed out on the screen
 	private static ArrayList <Integer> editIndex; //this is to store the indices of the TaskCards that match the keyword
@@ -42,7 +45,6 @@ public class Edit {
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
 		String keyword = "";
-		
 		//check whether there's an argument for edit
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
@@ -105,7 +107,7 @@ public class Edit {
 		}
 		editIndex = secondaryIndex;
 		listEditor();
-		edited = fileLink.editHandling(editedTask, editIndex.get(choice));
+		edited = fileLink.editHandling(editedTask, editIndex.get(indexNumber));
 	}
 
 	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
@@ -139,6 +141,8 @@ public class Edit {
 	}
 
 	private static void listEditor() {
+		boolean correctUserInput = false;
+		
 		if (editList.isEmpty()) {
 			System.out.println("Keyword not found! Try a different keyword.");
 		} else {
@@ -147,22 +151,24 @@ public class Edit {
 			for (int j = 0; j < editList.size(); j++) {
 				System.out.println(j+1 + ". " + editList.get(j).getTaskString());
 			}
-			String input = scan.nextLine();
-			if (input.toLowerCase().equals("!q")) {
-				return;
-			} else if (checkForDigit(input) == false) {
-				//invalid input, ask for input again
-			} else if (checkForDigit(input) == true) {
-				choice = Integer.parseInt(input);
-				if (choice > editList.size()) {
-					//invalid input, ask for input again
+			while(correctUserInput == false) {
+				String userInput = scan.nextLine();
+				if(userInput.equals("!q")) {
+					break;
+				} else if (checkForDigit(userInput)) {
+					indexNumber = Integer.parseInt(userInput);
+					if (indexNumber > editList.size() || indexNumber < 1) {
+						System.out.println("Please enter a digit between 1 and " + editList.size());
+					} else {
+						editedTask = editList.get(indexNumber - 1);
+						System.out.println("What would you like to edit?");
+						System.out.println("1. Name\n" + "2. Start date\n" + "3. End date\n"
+											+ "4. Start time\n" + "5. End time\n" + "6. Priority");
+						int nextIndex = scan.nextInt();
+						editTaskAttribute(nextIndex);
+					}
 				} else {
-					editedTask = editList.get(choice - 1);
-					System.out.println("What would you like to edit?");
-					System.out.println("1. Name\n" + "2. Start date\n" + "3. End date\n"
-										+ "4. Start time\n" + "5. End time\n" + "6. Priority");
-					int nextChoice = scan.nextInt();
-					editTaskAttribute(nextChoice);
+					System.out.println("Please enter a digit between 1 and " + editList.size());
 				}
 			}
 		}
@@ -230,6 +236,10 @@ public class Edit {
 			}
 		}
 		return keyword;
+	}
+	
+	private static void print(String toPrint) {
+		System.out.println(toPrint);
 	}
 	
 	private static class SortPriority implements Comparator<TaskCard> {
