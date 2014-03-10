@@ -1,10 +1,12 @@
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Add {
+	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
 	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
 	private static TaskCard newCard = new TaskCard();
@@ -16,31 +18,50 @@ public class Add {
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	private static boolean success = false;
 	
+	private static final String UNRECOGNIZABLE_COMMAND = "You must have typed something wrongly! We can't recognize that command.";
+	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
+	private static final String ADD_SUCCESS = "%s has been successfully added!";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
-	public static String executeAdd(String[] cmdArr, FileLinker fileLink) {
-		if (cmdArr[1].trim().length() <= 0) {
-			return null; //need to return message for invalid input
-		} else if (cmdArr[0].equals("/add") || cmdArr[0].equals("/addt")){
-			addTask(cmdArr[1]);
-		} else if (cmdArr[0].equals("/addf")) {
-			addFloatingTask(cmdArr[1]);
-		} else if (cmdArr[0].equals("/adde")) {
-			addEvent (cmdArr[1]);
-		} else if (cmdArr[0].equals("/addr")) {
-			addRepeatingEvent (cmdArr[1]);
-		}
-		else {
-			//return message for invalid input
-		}
+	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink) {
+		String response = "";
+		initialiseAddCmdTable();
 		
-		//The following lines add the task or event to the arraylist 
-		//and the file by calling the appropriate FileHandler functions.
-		success = fileLink.addHandling(newCard);
-		if (success == true) {
-			return newCard.getTaskString() + " has been successfully added!";//return string that prints success message to user
+		if(checkAddCmdInput(tokenizedInput[0]) == true) {
+			identifyAddCmdTypeAndPerform(tokenizedInput, fileLink);
+			success = fileLink.addHandling(newCard);
+			if (success == true) {
+				response = String.format(ADD_SUCCESS, newCard.getTaskString());
+			} else {
+				response = ADD_FAILURE;
+			}
 		} else {
-			return null; //return error message
+			response = UNRECOGNIZABLE_COMMAND;
+		}
+		return response;
+	}
+	
+	private static void identifyAddCmdTypeAndPerform(String[] tokenizedInput, FileLinker fileLink) {
+		int addType = addCmdTable.get(tokenizedInput[0]);
+		
+		switch(addType) {
+			case 1:
+				addTask(tokenizedInput[1]);
+				break;
+			case 2:
+				addTask(tokenizedInput[1]);
+				break;
+			case 3:
+				addFloatingTask(tokenizedInput[1]);
+				break;
+			case 4:
+				addEvent(tokenizedInput[1]);
+				break;
+			case 5:
+				addRepeatingEvent(tokenizedInput[1]);
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -114,7 +135,7 @@ public class Add {
 	}
 	
 	private static void setFloatingEnd() {
-		endDay.set(9999, 99, 99, 99, 99, 99);
+		endDay.set(9999, 12, 31, 23, 59);
 		newCard.setEndDay(endDay);
 	}
 
@@ -356,7 +377,20 @@ public class Add {
 		newCard.setEndDay(startDay);
 	}
 	
-	private static void print(String toPrint) {
-		System.out.println(toPrint);
+	private static boolean checkAddCmdInput(String cmd) {
+		boolean isCorrectCmd = false;
+		
+		if(addCmdTable.containsKey(cmd)) {
+			isCorrectCmd = true;
+		}
+		return isCorrectCmd;
+	}
+	
+	private static void initialiseAddCmdTable() {
+		addCmdTable.put("/add", 1);
+		addCmdTable.put("/addt", 2);
+		addCmdTable.put("/addf", 3);
+		addCmdTable.put("/adde", 3);
+		addCmdTable.put("/addr", 3);
 	}
 }
