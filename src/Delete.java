@@ -132,7 +132,10 @@ public class Delete {
 		if(userConfirmedIndex == -1) {
 			response = null;
 		} else {
-			//perform deletion using the index and filelinker
+			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
+			print("\"" + deletedTask + "\" has been deleted.");
+			int fileIndexToBeDeleted = deletedIndex.get(userConfirmedIndex - 1);
+			fileLink.deleteHandling(fileIndexToBeDeleted);
 		}
 		
 		return response;
