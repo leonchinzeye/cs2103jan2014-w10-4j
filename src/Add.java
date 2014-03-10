@@ -355,4 +355,8 @@ public class Add {
 	private static void setTimedEventSameDayEnd() {
 		newCard.setEndDay(startDay);
 	}
+	
+	private static void print(String toPrint) {
+		System.out.println(toPrint);
+	}
 }
