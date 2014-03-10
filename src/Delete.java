@@ -105,7 +105,7 @@ public class Delete {
 	private static String deleteBasedOnString(String keyword, FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
-		ArrayList<Integer> deletedIndex = new ArrayList<Integer>();
+		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
 		int userConfirmedIndex = -1;
 		String response = "";
 		
@@ -119,7 +119,7 @@ public class Delete {
 			
 			if(taskDescription.contains(keyword)) {
 				taskCardsToBeDeleted.add(task);
-				deletedIndex.add(i);
+				indexOfTasksToBeDeleted.add(i);
 			}
 		}
 		
@@ -133,12 +133,53 @@ public class Delete {
 			response = null;
 		} else {
 			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
-			print("\"" + deletedTask + "\" has been deleted.");
-			int fileIndexToBeDeleted = deletedIndex.get(userConfirmedIndex - 1);
+			response = "\"" + deletedTask + "\" has been deleted.";
+			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
 			fileLink.deleteHandling(fileIndexToBeDeleted);
 		}
 		
 		return response;
+	}
+
+	private static String deleteBasedOnDateAndString(String keyword,
+			FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
+		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
+		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
+		int userConfirmedIndex = -1;
+		String response = "";
+		
+		for(int i = 0; i < incompleteTasks.size(); i++) {
+			TaskCard task = incompleteTasks.get(i);
+			String taskDescription = task.getTaskString();
+			
+			if(taskDescription.contains(keyword)) {
+				taskCardsToBeDeleted.add(task);
+				indexOfTasksToBeDeleted.add(i);
+			}
+		}
+		
+		if(taskCardsToBeDeleted.isEmpty()) {
+			print("Keyword is not found among the lists of tasks you have.");
+		} else {
+			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
+		}
+		
+		if(userConfirmedIndex == -1) {
+			response = null;
+		} else {
+			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
+			response = "\"" + deletedTask + "\" has been deleted.";
+			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
+			fileLink.deleteHandling(fileIndexToBeDeleted);
+		}
+		
+		return response;
+	}
+
+	private static void deleteBasedOnDate(String keyword, FileLinker fileLink) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private static int getDeletionConfirmation(
@@ -151,7 +192,7 @@ public class Delete {
 		
 		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
 			TaskCard task = taskCardsToBeDeleted.get(i);
-			String taskDetails = task.getName();
+			String taskDetails = task.getTaskString();
 			String toBePrinted = counterReference + ") " + taskDetails;
 			print(toBePrinted);
 			
@@ -188,18 +229,6 @@ public class Delete {
 		}
 		
 		return userConfirmedIndex;
-	}
-
-	private static void deleteBasedOnDateAndString(String keyword,
-			FileLinker fileLink) {
-		int integerKeyword = Integer.parseInt(keyword);
-		
-		
-	}
-
-	private static void deleteBasedOnDate(String keyword, FileLinker fileLink) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private static void checkKeywordType(String keyword) {
