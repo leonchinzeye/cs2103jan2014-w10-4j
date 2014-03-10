@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.GregorianCalendar;
 
 public class Display {
-	static String response = "";
 	static ArrayList <TaskCard> displayIncomplete;
 	static Calendar today = GregorianCalendar.getInstance();
 	
@@ -14,10 +13,12 @@ public class Display {
 	 * error handle the /discard
 	 */
 	public static String executeDis(FileLinker fileLink) {
+		String response = "";
 		displayIncomplete = fileLink.displayHandler();
 		if (!displayIncomplete.isEmpty()) {
+			Collections.sort(displayIncomplete, new SortDeadline());
+			
 			for (int i = 0; i < displayIncomplete.size(); i++) {
-				Collections.sort(displayIncomplete, new SortDeadlineThenPriority());
 				if (!displayIncomplete.get(i).getEndDay().before(today)) { //if the Deadline has not already passed
 					if (i > 0) {
 						response += "\n";
@@ -31,18 +32,24 @@ public class Display {
 		return response + "\n";
 	}
 	
-	private static class SortDeadlineThenPriority implements Comparator<TaskCard> {
+	private static class SortDeadline implements Comparator<TaskCard> {
 		public int compare(TaskCard o1, TaskCard o2) {
 			Calendar c1 = (Calendar) o1.getEndDay();
 			Calendar c2 = (Calendar) o2.getEndDay();
-			int cComp = c1.compareTo(c2);
-			if (cComp != 0) {
-				return cComp;
-			} else {
-				Integer i1 = (Integer) o1.getPriority();
-				Integer i2 = (Integer) o2.getPriority();
-				return i2.compareTo(i1);
-			}
+			
+			Integer i1 = (Integer) o1.getPriority();
+			Integer i2 = (Integer) o2.getPriority();
+			
+			if(c1.compareTo(c2)<0)
+				return -1;
+			else if(c1.compareTo(c2)>0)
+				return 1;
+			else if(c1.compareTo(c2) == 0 && i1.compareTo(i2)<0)
+				return 1;
+			else 
+				return -1;
 		}
 	}
+	
+	
 }
