@@ -192,7 +192,8 @@ public class Delete {
 
 	private static void deleteBasedOnDateAndString(String keyword,
 			FileLinker fileLink) {
-		// TODO Auto-generated method stub
+		int integerKeyword = Integer.parseInt(keyword);
+		
 		
 	}
 
