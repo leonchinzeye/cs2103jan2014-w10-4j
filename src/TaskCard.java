@@ -74,6 +74,9 @@ public class TaskCard {
 		if (!frequency.equals("N")) {
 			taskString += " " + frequency;
 		}
+		if(type.equals("FT")){
+			taskString += name + ", " + dateString.format(startDay.getTime()); 
+		}
 		return taskString;
 	}
 }
