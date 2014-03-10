@@ -25,10 +25,11 @@ public class Edit {
 	private static ArrayList <TaskCard> originalList; //this is the cloned to do list
 	private static ArrayList <TaskCard> editList; //this is the list that will be printed out on the screen
 	private static ArrayList <Integer> editIndex; //this is to store the indices of the TaskCards that match the keyword
+	private static ArrayList <Integer> secondaryIndex; //this is a temporary storage
 	//as of right now, I'm still not sure what editIndex will do
 	private static TaskCard editedTask;
 	private static boolean edited = false;
-	private static boolean isDate = false;
+	private static boolean hasDate;
 	private static boolean isDigit = false;
 	private static String keyword = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
@@ -40,25 +41,46 @@ public class Edit {
 		if (cmdArray.length == 1) {
 			return "Invalid query! Please enter a keyword to search for.";
 		} else {
-			//in case there's more than one keyword
+			originalList = fileLink.editRetrieval();
+			boolean tempCheckDate;
+			//need to account if search query has both a keyword and date
 			for (int i = 1; i < cmdArray.length; i++) {
-				keyword.concat(cmdArray[i]);
-				keyword += " ";
+				tempCheckDate = false;
+				tempCheckDate = checkForDate(cmdArray[i]);
+				if (tempCheckDate == false) {
+					keyword.concat(cmdArray[i]);
+					keyword += " ";
+				}
 			}
 			keyword.replaceFirst("\\s+$", ""); //remove any trailing whitespace
-			originalList = fileLink.editRetrieval();
 			
-			isDate = checkQueryForDate(); //check if keyword is a date
-			if (isDate == true) {
-				edited = searchByDate(fileLink);
+			if (hasDate == true) {
+				ArrayList <TaskCard> tempEditList = new ArrayList <TaskCard>();
+				ArrayList <Integer> tempIndex = new ArrayList <Integer>();
+				searchByKeyword(fileLink, originalList, tempEditList); //filter by keyword first
+				if (!tempEditList.isEmpty()) {
+					tempIndex = secondaryIndex;
+					secondaryIndex.clear();
+					searchByDate(fileLink, tempEditList, editList); //then filter by date
+					//filter out editIndex
+					for (int i = 0; i < secondaryIndex.size(); i++) {
+						editIndex.add(tempIndex.get(i));
+					}
+				} else {
+					editIndex = secondaryIndex;
+				}
+				
 			} else {
 				isDigit = checkForDigit(keyword);
 				if (isDigit == true) {
-					edited = searchByDigit(fileLink);
+					searchByDigit(fileLink, originalList, editList);
 				} else {
-					edited = searchByKeyword(fileLink);
+					searchByKeyword(fileLink, originalList, editList);
 				}
 			}
+			editIndex = secondaryIndex;
+			printEditList();
+			edited = fileLink.editHandling(editedTask, editIndex.get(choice));
 			
 			if (edited == true) {
 				return "Edit successful";
@@ -68,40 +90,34 @@ public class Edit {
 		}
 	}
 
-	private static boolean searchByDate(FileLinker fileLink) {
+	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
 		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (dateQuery.equals(originalList.get(i).getStartDay()) 
-				|| dateQuery.equals(originalList.get(i).getEndDay())) {
-				editIndex.add(i);
-				editList.add(originalList.get(i));
-				printEditList();
+			if (dateQuery.equals(lookThru.get(i).getStartDay()) 
+				|| dateQuery.equals(lookThru.get(i).getEndDay())) {
+				addTo.add(lookThru.get(i));
+				secondaryIndex.add(i);
 			}
 		}
-		return fileLink.editHandling(editedTask, editIndex.get(choice));
 	}
 	
-	private static boolean searchByDigit(FileLinker fileLink) {
+	private static void searchByDigit(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
 		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (originalList.get(i).getName().contains(keyword)
-				|| originalList.get(i).getStartDay().toString().contains(keyword)
-				|| originalList.get(i).getEndDay().toString().contains(keyword)) {
-				editIndex.add(i);
-				editList.add(originalList.get(i));
-				printEditList();
+			if (lookThru.get(i).getName().contains(keyword)
+				|| lookThru.get(i).getStartDay().toString().contains(keyword)
+				|| lookThru.get(i).getEndDay().toString().contains(keyword)) {
+				addTo.add(lookThru.get(i));
+				secondaryIndex.add(i);
 			}
 		}
-		return fileLink.editHandling(editedTask, editIndex.get(choice));
 	}
 	
-	private static boolean searchByKeyword(FileLinker fileLink) {
+	private static void searchByKeyword(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
 		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (originalList.get(i).getName().equals(keyword)) {
-				editList.add(originalList.get(i));
-				editIndex.add(i);
-				printEditList();
+			if (lookThru.get(i).getName().equals(keyword)) {
+				addTo.add(lookThru.get(i));
+				secondaryIndex.add(i);
 			}
 		}
-		return fileLink.editHandling(editedTask, editIndex.get(choice));
 	}
 
 	private static void printEditList() {
@@ -160,15 +176,16 @@ public class Edit {
 		}
 	}
 
-	private static boolean checkQueryForDate() {
+	private static boolean checkForDate(String query) {
 		//check if keyword is a date
 		try {
-			dateQuery.setTime(dateAndTime.parse(keyword));
-			dateQuery.setTime(dateString.parse(keyword));
-			dateQuery.setTime(timeString.parse(keyword));
+			dateQuery.setTime(dateAndTime.parse(query));
+			dateQuery.setTime(dateString.parse(query));
+			dateQuery.setTime(timeString.parse(query));
 		} catch (ParseException e){
 			return false;
 		}
+		hasDate = true;
 		return true;
 	}
 	
