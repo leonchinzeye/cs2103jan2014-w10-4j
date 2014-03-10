@@ -23,10 +23,7 @@ public class Edit {
 	 */
 	
 	private static Scanner scan = new Scanner(System.in);
-	private static ArrayList <TaskCard> originalList = new ArrayList<TaskCard>(); //this is the cloned to do list
-	private static ArrayList <TaskCard> editList = new ArrayList<TaskCard>(); //this is the list that will be printed out on the screen
-	private static ArrayList <Integer> editIndex = new ArrayList<Integer>(); //this is to store the indices of the TaskCards that match the keyword
-	private static ArrayList <Integer> secondaryIndex = new ArrayList<Integer>(); //this is a temporary storage
+	private static ArrayList<Integer> editIndex = new ArrayList<Integer>();
 	private static int indexNumber;
 	private static int nextIndexNumber;
 	private static TaskCard editedTask;
@@ -36,7 +33,7 @@ public class Edit {
 	private static boolean isInteger = false;
 	private static boolean editedFlag = false;
 	private static boolean quitSecondMenu = false;
-	private static String query = "";
+	private static String keyword = "";
 	private static String response = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
 	private static Calendar editedDate = GregorianCalendar.getInstance();
@@ -57,7 +54,8 @@ public class Edit {
 	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
-		String keyword = "";
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		
 		//check whether there's an argument for edit
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
@@ -69,15 +67,14 @@ public class Edit {
 			keyword = tokenizedInput[1];
 		}
 		
-		originalList = fileLink.editRetrieval();
 		checkKeywordType(keyword);
-		editFilter(fileLink);
+		editList = editFilter(fileLink);
 		
 		if (editList.isEmpty()) {
 			print(KEYWORD_NOT_FOUND);
 			return null;
 		} else {
-			firstEditMenu();
+			firstEditMenu(editList);
 		}
 		
 		if (editedFlag == false) {
@@ -105,71 +102,72 @@ public class Edit {
 		isDate = checkIsDate(keyword);
 	}
 
-	private static void editFilter(FileLinker fileLink) {
+	private static ArrayList<TaskCard> editFilter(FileLinker fileLink) {
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+
 		if (isDate == true) {
-			searchByDate(fileLink, originalList, editList);
-			editIndex = secondaryIndex;
+			editList = searchByDate(fileLink);
 		} else if (isInteger == true) {
-			searchByDigit(fileLink, originalList, editList);
-			editIndex = secondaryIndex;
+			editList = searchByDigit(fileLink);
 		} else {
-			searchByKeyword(fileLink, originalList, editList);
-			editIndex = secondaryIndex;
+			editList = searchByKeyword(fileLink);
 		}
+		
+		return editList;
 	}
 
-	private static void editBasedOnDate(FileLinker fileLink) {
-		ArrayList <TaskCard> tempEditList = new ArrayList <TaskCard>();
-		ArrayList <Integer> tempIndex = new ArrayList <Integer>();
-		searchByKeyword(fileLink, originalList, tempEditList); //filter by keyword first
-		if (!tempEditList.isEmpty()) {
-			tempIndex = secondaryIndex;
-			secondaryIndex.clear();
-			searchByDate(fileLink, tempEditList, editList); //then filter by date
-			for (int i = 0; i < secondaryIndex.size(); i++) {
-				editIndex.add(tempIndex.get(i));
-			}
-		} else {
-			editIndex = secondaryIndex;
-		}
+	private static ArrayList<TaskCard> editBasedOnDate(FileLinker fileLink) {
+		return null;
 	}
 
-	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (dateQuery.equals(lookThru.get(i).getStartDay()) 
-				|| dateQuery.equals(lookThru.get(i).getEndDay())) {
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (dateQuery.equals(incompleteTasks.get(i).getStartDay())
+				|| dateQuery.equals(incompleteTasks.get(i).getEndDay())) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void searchByDigit(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> searchByDigit(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().contains(query)
-				|| lookThru.get(i).getTaskString().contains(query)
-				|| lookThru.get(i).getTaskString().contains(query)) {
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void searchByKeyword(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> searchByKeyword(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().contains(query)) {
-				System.out.println(lookThru.get(i).getName());
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (incompleteTasks.get(i).getName().contains(keyword)) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void firstEditMenu() {
-		printFirstMenu();
+	private static void firstEditMenu(ArrayList<TaskCard> editList) {
+		printFirstMenu(editList);
 		
 		boolean correctUserInput = false;
 		while(correctUserInput == false) {
@@ -187,14 +185,14 @@ public class Edit {
 					correctUserInput = true;
 					editedTask = editList.get(indexNumber - 1);		
 					while (quitSecondMenu == false) {
-						secondEditMenu();
+						secondEditMenu(editList);
 					}
 				}
 			}
 		}
 	}
 
-	private static void printFirstMenu() {
+	private static void printFirstMenu(ArrayList<TaskCard> editList) {
 		Collections.sort(editList, new SortPriority());
 		print(FIRST_MENU_QUERY);
 		for (int j = 0; j < editList.size(); j++) {
@@ -202,7 +200,7 @@ public class Edit {
 		}
 	}
 
-	private static void secondEditMenu() {
+	private static void secondEditMenu(ArrayList<TaskCard> editList) {
 		printSecondMenu();
 		
 		boolean correctNextIndex = false;
@@ -219,7 +217,7 @@ public class Edit {
 					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
 				} else {
 					correctNextIndex = true;
-					editTaskAttribute(nextIndexNumber);
+					editTaskAttribute(nextIndexNumber, editList);
 				}
 			}
 		}
@@ -236,7 +234,7 @@ public class Edit {
 		print("7. Exit");
 	}
 
-	private static void editTaskAttribute(int nextIndex) {
+	private static void editTaskAttribute(int nextIndex, ArrayList<TaskCard> editList) {
 		switch (nextIndex) {
 			case 1:
 				print("Please enter a new name for this task: ");
