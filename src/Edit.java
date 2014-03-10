@@ -29,7 +29,6 @@ public class Edit {
 	private static ArrayList <TaskCard> editList; //this is the list that will be printed out on the screen
 	private static ArrayList <Integer> editIndex; //this is to store the indices of the TaskCards that match the keyword
 	private static ArrayList <Integer> secondaryIndex; //this is a temporary storage
-	//as of right now, I'm still not sure what editIndex will do
 	private static TaskCard editedTask;
 	private static boolean edited = false;
 	private static boolean hasDate;
@@ -38,13 +37,21 @@ public class Edit {
 	private static String query = "";
 	private static String response = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
+	private static Calendar editedDate = GregorianCalendar.getInstance();
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	
 	private static final String EDIT_SUCCESS = "Your edit was successful!\n%s";
 	private static final String EDIT_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
-	private static final String KEYWORD_NOT_FOUND = "You seem to have forgotten something! Please type in a keyword to search for: ";
+	private static final String KEYWORD_NOT_ENTERED = "You seem to have forgotten something! Please type in a keyword to search for: ";
+	private static final String KEYWORD_NOT_FOUND = "We can't find anything by your keyword :(";
+	private static final String NOT_DIGIT_ENTERED = "You seem to have mistakenly entered something that is not a digit!";
+	private static final String INVALID_INPUT_PROMPT_WITH_RANGE = "Please enter something between 1 and %d: ";
+	private static final String FIRST_MENU_QUERY = "Which task would you like to edit?";
+	private static final String SECOND_MENU_QUERY = "What attribute would you like to change?";
+	private static final String INCORRECT_TIME_INPUT = "We can't seem to recognize the time that you have entered. :( \nPlease try again: ";
+	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
 		String keyword = "";
@@ -147,66 +154,74 @@ public class Edit {
 
 	private static void mainEditor() {
 		if (editList.isEmpty()) {
-			print("We can't find anything by your keyword :(");
+			print(KEYWORD_NOT_FOUND);
 		} else {
 			firstEditMenu();
 		}
 	}
 	
 	private static void firstEditMenu() {
+		printFirstMenu();
+		
 		boolean correctUserInput = false;
-		printFirstMenu();		
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
 			if(userInput.equals("!q")) {
 				break;
-			} else if (checkForDigit(userInput)) {
+			} else if (checkForDigit(userInput) == false) {
+				print(NOT_DIGIT_ENTERED);
+				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, editList.size()));
+			} else {
 				indexNumber = Integer.parseInt(userInput);
 				if (indexNumber > editList.size() || indexNumber < 1) {
-					print("Please enter a digit between 1 and " + editList.size());
+					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, editList.size()));
 				} else {
 					correctUserInput = true;
-					editedTask = editList.get(indexNumber - 1);					
+					editedTask = editList.get(indexNumber - 1);		
 					secondEditMenu();
 				}
-			} else {
-				print("Please enter a digit between 1 and " + editList.size());
 			}
 		}
 	}
 
 	private static void printFirstMenu() {
 		Collections.sort(editList, new SortPriority());
-		print("Which would you like to edit?");
+		print(FIRST_MENU_QUERY);
 		for (int j = 0; j < editList.size(); j++) {
 			print(j+1 + ". " + editList.get(j).getTaskString());
 		}
 	}
 
 	private static void secondEditMenu() {
-		boolean correctNextIndex = false;
 		printSecondMenu();
+		
+		boolean correctNextIndex = false;
 		while(correctNextIndex == false) {
 			String nextIndex = scan.nextLine();
 			if(nextIndex.equals("!q")) {
 				break;
-			} else if (checkForDigit(nextIndex)){
+			} else if (!checkForDigit(nextIndex)){
+				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
+			} else {
 				nextIndexNumber = Integer.parseInt(nextIndex);
 				if (nextIndexNumber > 6 || nextIndexNumber < 1) {
-					print("Please enter a digit between 1 and 6");
+					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
 				} else {
 					correctNextIndex = true;
 					editTaskAttribute(nextIndexNumber);
 				}
-			} else {
-				print("Please enter a digit between 1 and 6");
 			}
 		}
 	}
 
 	private static void printSecondMenu() {
-		print("What would you like to edit?");
-		print("1. Name\n" + "2. Start date\n" + "3. End date\n" + "4. Start time\n" + "5. End time\n" + "6. Priority");
+		print(SECOND_MENU_QUERY);
+		print("1. Name");
+		print("2. Start date");
+		print("3. End date");
+		print("4. Start time");
+		print("5. End time");
+		print("6. Priority");
 	}
 
 	private static void editTaskAttribute(int nextIndex) {
@@ -217,19 +232,24 @@ public class Edit {
 				editedFlag = true;
 				break;
 			case 2:
-				//change date
+				editDate();
+				editedTask.setStartDay(editedDate);
 				editedFlag = true;
 				break;
 			case 3:
-				//change date
+				editedTask.setEndDay(editedDate);
 				editedFlag = true;
 				break;
 			case 4:
-				//change time
+				editedDate = editList.get(indexNumber - 1).getStartDay();
+				editTime();
+				editedTask.setStartDay(editedDate);
 				editedFlag = true;
 				break;
 			case 5:
-				//change time
+				editedDate = editList.get(indexNumber - 1).getEndDay();
+				editTime();
+				editedTask.setEndDay(editedDate);
 				editedFlag = true;
 				break;
 			case 6:
@@ -239,6 +259,32 @@ public class Edit {
 				break;
 			default:
 				break;
+		}
+	}
+
+	private static void editDate() {
+		boolean correctDateInput = false;
+		while (correctDateInput == false) {
+			String newDate = scan.nextLine();
+			try {
+				editedDate.setTime(dateString.parse(newDate));
+				correctDateInput = true;
+			} catch(ParseException e) {
+				print(INCORRECT_DATE_INPUT);
+			}
+		}
+	}
+	
+	private static void editTime() {
+		boolean correctTimeInput = false;
+		while (correctTimeInput == false) {
+			String newDate = scan.nextLine();
+			try {
+				editedDate.setTime(timeString.parse(newDate));
+				correctTimeInput = true;
+			} catch(ParseException e) {
+				print(INCORRECT_TIME_INPUT);
+			}
 		}
 	}
 
@@ -269,7 +315,7 @@ public class Edit {
 		boolean enteredAction = false;
 		String keyword = "";
 		while(enteredAction == false) {
-			System.out.println(KEYWORD_NOT_FOUND);
+			System.out.println(KEYWORD_NOT_ENTERED);
 			
 			if(scan.hasNext()) {
 				keyword = scan.nextLine();
