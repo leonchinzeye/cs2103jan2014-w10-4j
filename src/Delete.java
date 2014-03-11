@@ -37,7 +37,7 @@ public class Delete {
 	private static final String MESSAGE_NOT_NUMBER_ENTERED = "Please enter a number between 1 to %d.";
 	private static final String MESSAGE_LIST_FOR_DELETION = "Here is the list of items that contain "
 			+ "your keyword. Which do you want to delete?";
-	private static final String MESSAGE_KEYWORD_NOT_FOUND = "Keyword is not found among the lists of "
+	private static final String MESSAGE_KEYWORD_NOT_FOUND = "\"%s\" is not found among the lists of "
 			+ "tasks you have.";
 
 	private static HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
@@ -141,7 +141,7 @@ public class Delete {
 		}
 		
 		if(taskCardsToBeDeleted.isEmpty()) {
-			print(MESSAGE_KEYWORD_NOT_FOUND);
+			print(String.format(MESSAGE_KEYWORD_NOT_FOUND, keyword));
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
@@ -177,7 +177,7 @@ public class Delete {
 		}
 		
 		if(taskCardsToBeDeleted.isEmpty()) {
-			print(MESSAGE_KEYWORD_NOT_FOUND);
+			print(String.format(MESSAGE_KEYWORD_NOT_FOUND, keyword));
 		} else {
 			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
 		}
