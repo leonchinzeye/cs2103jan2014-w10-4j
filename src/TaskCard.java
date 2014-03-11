@@ -70,13 +70,16 @@ public class TaskCard {
 		for (int i = 0; i < priority; i++) {
 			taskString += "*";
 		}
-		taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
-		if (!frequency.equals("N")) {
-			taskString += " " + frequency;
-		}
 		if(type.equals("FT")){
 			taskString += name + ", " + dateString.format(startDay.getTime()); 
+		} else {
+			taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
+			if (!frequency.equals("N")) {
+				taskString += " " + frequency;
+			}
 		}
+				
+		
 		return taskString;
 	}
 }

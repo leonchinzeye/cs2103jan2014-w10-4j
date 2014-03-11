@@ -117,6 +117,8 @@ public class Add {
 		setFloatingTaskDetails(argArray);
 		setStartDateAndTime();
 		setFloatingEnd();
+		
+		System.out.println(newCard.getTaskString());
 	}
 	
 	private static void setFloatingTaskDetails(String[] argArray) {
@@ -135,7 +137,7 @@ public class Add {
 	}
 	
 	private static void setFloatingEnd() {
-		endDay.set(9999, 12, 31, 23, 59);
+		endDay.set(9999, 11, 31, 23, 59);
 		newCard.setEndDay(endDay);
 	}
 
