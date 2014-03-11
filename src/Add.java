@@ -2,10 +2,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Add {
+	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
 	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
@@ -16,11 +18,12 @@ public class Add {
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
-	private static boolean success = false;
+	private static boolean successWriteToFile = false;
 	
 	private static final String UNRECOGNIZABLE_COMMAND = "You must have typed something wrongly! We can't recognize that command.";
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String ADD_SUCCESS = "%s has been successfully added!";
+	private static final Object COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
 	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink) {
@@ -28,41 +31,73 @@ public class Add {
 		initialiseAddCmdTable();
 		
 		if(checkAddCmdInput(tokenizedInput[0]) == true) {
-			identifyAddCmdTypeAndPerform(tokenizedInput, fileLink);
-			success = fileLink.addHandling(newCard);
-			if (success == true) {
-				response = String.format(ADD_SUCCESS, newCard.getTaskString());
-			} else {
-				response = ADD_FAILURE;
-			}
+			response = performAddCommand(tokenizedInput, fileLink);
 		} else {
 			response = UNRECOGNIZABLE_COMMAND;
 		}
 		return response;
 	}
 	
-	private static void identifyAddCmdTypeAndPerform(String[] tokenizedInput, FileLinker fileLink) {
-		int addType = addCmdTable.get(tokenizedInput[0]);
+	private static String performAddCommand(String[] tokenizedInput,
+			FileLinker fileLink) {
+		// TODO Auto-generated method stub
+		String response = "";
+		String taskDetails = "";
 		
+		if(tokenizedInput.length < 2) {
+			taskDetails = getTaskDetailsFromUser();
+			
+			if(taskDetails.equals(COMMAND_QUIT_TO_TOP)) {
+				response = null;
+				return response;
+			} else {
+				response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
+			}
+		} else {
+			taskDetails = tokenizedInput[1];
+			response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
+		}
+		
+		return response;
+	}
+
+	private static String getTaskDetailsFromUser() {
+		boolean enteredInput = false;
+		String taskDetails = "";
+		
+		while(enteredInput == false) {
+			print("You seem to be forgetting something. Please enter a task to be added.");
+			
+			if(scan.hasNext()) {
+				taskDetails = scan.nextLine();
+				enteredInput = true;
+			}
+		}
+		return taskDetails;
+	}
+
+	private static String identifyAddCmdTypeAndPerform(String cmd, String taskDetails, FileLinker fileLink) {
+		int addType = addCmdTable.get(cmd);
+		String response = "";
+	
 		switch(addType) {
 			case 1:
-				addTask(tokenizedInput[1]);
-				break;
 			case 2:
-				addTask(tokenizedInput[1]);
+				response = addTask(taskDetails, fileLink);
 				break;
 			case 3:
-				addFloatingTask(tokenizedInput[1]);
+				addFloatingTask(taskDetails);
 				break;
 			case 4:
-				addEvent(tokenizedInput[1]);
+				addEvent(taskDetails);
 				break;
 			case 5:
-				addRepeatingEvent(tokenizedInput[1]);
+				addRepeatingEvent(taskDetails);
 				break;
 			default:
 				break;
-		}
+		} 
+		return response;
 	}
 
 	/**
@@ -75,12 +110,26 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 */
-	private static void addTask(String argument) {
-		String[] argArray = argument.split(",");
+	private static String addTask(String argument, FileLinker fileLink) {
+		String response = "";
+		String[] argArray = argument.split(";");
 		
-		setTaskDetails(argArray);
-		setStartDateAndTime();
-		setEndDateAndTime(argArray[1]);
+		if(argArray.length < 2 || argArray.length > 3) {
+			//catch and print error message
+			print("not valid argument");
+			response = null;
+		} else { 
+			setTaskDetails(argArray);
+			setStartDateAndTime();
+			setEndDateAndTime(argArray[1]);
+		}
+		
+		return response;
+	}
+
+	private static void print(String message) {
+		// TODO Auto-generated method stub
+		System.out.println(message);
 	}
 
 	private static void setTaskDetails(String[] argArray) {
