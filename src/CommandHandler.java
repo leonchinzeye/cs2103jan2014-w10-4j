@@ -61,7 +61,7 @@ public class CommandHandler {
 		
 		if (commandTypeString.contains("/add")) {
 			return COMMAND_TYPE.ADD;
-		} else if (commandTypeString.contains("/dis")) {
+		} else if (commandTypeString.equals("/display")) {
 			return COMMAND_TYPE.DISPLAY;
 		} else if (commandTypeString.contains("/del")) {
 			 	return COMMAND_TYPE.DELETE;
