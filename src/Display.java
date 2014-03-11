@@ -25,16 +25,14 @@ public class Display {
 			
 			for (int i = 0; i < displayIncomplete.size(); i++) {
 				if (!displayIncomplete.get(i).getEndDay().before(today)) { //if the Deadline has not already passed
-					if (i > 0) {
-						response += "\n";
-					}
-					response += displayIncomplete.get(i).getTaskString();
+					
+					response += displayIncomplete.get(i).getTaskString() + "\n";
 				}
 			}
 		} else {
 			response += MESSAGE_YOU_HAVE_NO_TASK;
 		}
-		return response + "\n";
+		return response;
 	}
 	
 	private static class SortByDeadlineAndPriority implements Comparator<TaskCard> {

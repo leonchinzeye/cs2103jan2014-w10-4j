@@ -86,13 +86,13 @@ public class Add {
 				response = addTask(taskDetails, fileLink);
 				break;
 			case 3:
-				addFloatingTask(taskDetails);
+				addFloatingTask(taskDetails, fileLink);
 				break;
 			case 4:
-				addEvent(taskDetails);
+				addEvent(taskDetails, fileLink);
 				break;
 			case 5:
-				addRepeatingEvent(taskDetails);
+				addRepeatingEvent(taskDetails, fileLink);
 				break;
 			default:
 				break;
@@ -113,15 +113,18 @@ public class Add {
 	private static String addTask(String argument, FileLinker fileLink) {
 		String response = "";
 		String[] argArray = argument.split(";");
+		TaskCard taskToBeAdded = new TaskCard();
 		
 		if(argArray.length < 2 || argArray.length > 3) {
 			//catch and print error message
+			//wrong format, please re-enter valid format [][][]
 			print("not valid argument");
 			response = null;
 		} else { 
-			setTaskDetails(argArray);
-			setStartDateAndTime();
-			setEndDateAndTime(argArray[1]);
+			setTaskDetails(argArray, taskToBeAdded);
+			setStartDateAndTime(taskToBeAdded);
+			setEndDateAndTime(argArray[1], taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded);
 		}
 		
 		return response;
@@ -132,25 +135,25 @@ public class Add {
 		System.out.println(message);
 	}
 
-	private static void setTaskDetails(String[] argArray) {
-		newCard.setName(argArray[0]);
-		newCard.setType("T");
-		newCard.setFrequency("N");
+	private static void setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("T");
+		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			newCard.setPriority(Integer.parseInt(argArray[2]));
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 		} else {
-			newCard.setPriority(DEFAULT_PRIORITY_TASK);
+			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
 		}
 	}
 	
-	private static void setEndDateAndTime(String endDate) {
+	private static void setEndDateAndTime(String endDate, TaskCard taskToBeAdded) {
 		try {
 			endDay.setTime(dateAndTime.parse(endDate));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		newCard.setEndDay(endDay); //stores the Calendar object
+		taskToBeAdded.setEndDay(endDay); //stores the Calendar object
 	}
 
 	/**
@@ -160,33 +163,36 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 */
-	private static void addFloatingTask(String argument) {
-		String argArray[] = argument.split(",");
+	private static void addFloatingTask(String argument, FileLinker fileLink) {
+		String argArray[] = argument.split(";");
+		TaskCard taskToBeAdded = new TaskCard();
 		
-		setFloatingTaskDetails(argArray);
-		setStartDateAndTime();
-		setFloatingEnd();
+		setFloatingTaskDetails(argArray, taskToBeAdded);
+		setStartDateAndTime(taskToBeAdded);
+		setFloatingEnd(taskToBeAdded);
+		
+		fileLink.addHandling(taskToBeAdded);
 		
 	}
 	
-	private static void setFloatingTaskDetails(String[] argArray) {
-		newCard.setName(argArray[0]);
-		newCard.setType("FT");
-		newCard.setFrequency("N");
+	private static void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("FT");
+		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 2) {
-			newCard.setPriority(Integer.parseInt(argArray[1]));
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[1]));
 		} else {
-			newCard.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
+			taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
 		}
 	}
 	
-	private static void setStartDateAndTime() {
-		newCard.setStartDay(today);
+	private static void setStartDateAndTime(TaskCard taskToBeAdded) {
+		taskToBeAdded.setStartDay(today);
 	}
 	
-	private static void setFloatingEnd() {
+	private static void setFloatingEnd(TaskCard taskToBeAdded) {
 		endDay.set(9999, 11, 31, 23, 59);
-		newCard.setEndDay(endDay);
+		taskToBeAdded.setEndDay(endDay);
 	}
 
 	/**
@@ -198,19 +204,21 @@ public class Add {
 	 * is also considered in setTimedEventNextDayEnd()
 	 * @param argument
 	 * @author Omar Khalid
+	 * @param fileLink 
 	 */
-	private static void addEvent(String argument) {
-		String[] argArray = argument.split(",");
+	private static void addEvent(String argument, FileLinker fileLink) {
+		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
+		TaskCard taskToBeAdded = new TaskCard();
 		
 		if (dateRange.length == 2) {
-			addAllDayEvent (argArray);
+			addAllDayEvent (argArray, taskToBeAdded);
 		} else {
-			addTimedEvent (argArray, dateRange);
+			addTimedEvent (argArray, dateRange, taskToBeAdded);
 		}
 	}
 	
-	private static void addAllDayEvent (String[] argArray) {		
+	private static void addAllDayEvent (String[] argArray, TaskCard taskToBeAdded) {		
 		Date startDate = new Date();
 		try { //get the Start Date ONLY
 			startDate = dateString.parse(argArray[1]);
@@ -219,24 +227,24 @@ public class Add {
 			e.printStackTrace();
 		}
 		
-		setAllDayDetails(argArray);
+		setAllDayDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDate);
-		setAllDayStart();
-		setAllDayEnd();
+		setAllDayStart(taskToBeAdded);
+		setAllDayEnd(taskToBeAdded);
 	}
 
-	private static void setAllDayDetails(String[] argArray) {
-		newCard.setName(argArray[0]);
-		newCard.setType("AE");
-		newCard.setFrequency("N");
+	private static void setAllDayDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("AE");
+		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			newCard.setPriority(Integer.parseInt(argArray[2]));
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 		} else {
-			newCard.setPriority(2);
+			taskToBeAdded.setPriority(2);
 		}
 	}
 	
-	private static void addTimedEvent(String[] argArray, String[] dateRange) {
+	private static void addTimedEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		boolean withEndDate = true; //to see whether endDate was input by user
 		
 		Date startDateAndTime = new Date();
@@ -272,43 +280,43 @@ public class Add {
 			}
 		}
 		
-		setTimedEventDetails(argArray);
+		setTimedEventDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDateAndTime);
 		if (withEndDate) { //events span over a couple days
-			setTimedEventStart();
-			setTimedEventEnd(endDateAndTime);
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventEnd(endDateAndTime, taskToBeAdded);
 		} else {
-			setTimedEventWithoutEndDate(endTime);
+			setTimedEventWithoutEndDate(endTime, taskToBeAdded);
 		}
 	}
 
-	private static void setTimedEventWithoutEndDate(Date endTime) {
+	private static void setTimedEventWithoutEndDate(Date endTime, TaskCard taskToBeAdded) {
 		endDay.setTime(endTime);
 		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
 		//events are a couple hours apart and are on two sequential days
-			setTimedEventStart();
-			setTimedEventNextDayEnd();
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventNextDayEnd(taskToBeAdded);
 		} else {
 		//events are only a couple hours apart and they're on the same day
-			setTimedEventStart();
-			setTimedEventSameDayEnd();
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventSameDayEnd(taskToBeAdded);
 		}
 	}
 
-	private static void setTimedEventDetails(String[] argArray) {
-		newCard.setName(argArray[0]);
-		newCard.setType("E");
-		newCard.setFrequency("N");
+	private static void setTimedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("E");
+		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			newCard.setPriority(Integer.parseInt(argArray[2]));
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 		} else {
-			newCard.setPriority(2);
+			taskToBeAdded.setPriority(2);
 		}
 	}
 	
-	private static void setTimedEventEnd(Date endDateAndTime) {
+	private static void setTimedEventEnd(Date endDateAndTime, TaskCard taskToBeAdded) {
 		endDay.setTime(endDateAndTime);
-		newCard.setEndDay(endDay);
+		taskToBeAdded.setEndDay(endDay);
 	}
 	
 	/**
@@ -319,19 +327,21 @@ public class Add {
 	 * 
 	 * @param argument
 	 * @author Omar Khalid
+	 * @param fileLink 
 	 */
-	private static void addRepeatingEvent(String argument) {
-		String[] argArray = argument.split(",");
+	private static void addRepeatingEvent(String argument, FileLinker fileLink) {
+		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
+		TaskCard taskToBeAdded = new TaskCard();
 		
 		if (dateRange.length == 2) {
-			addAllDayRepeatingEvent (argArray, dateRange);
+			addAllDayRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		} else {
-			addTimedRepeatingEvent (argArray, dateRange);
+			addTimedRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		}
 	}
 	
-	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange) {
+	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
 		try { //get the Start Date AND Start Time
 			startDate = dateAndTime.parse(dateRange[0]);
@@ -340,13 +350,13 @@ public class Add {
 			e.printStackTrace();
 		}
 		
-		setRepeatedEventDetails(argArray);
+		setRepeatedEventDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDate);		
-		setAllDayStart();
-		setAllDayEnd();
+		setAllDayStart(taskToBeAdded);
+		setAllDayEnd(taskToBeAdded);
 	}
 	
-	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange) {
+	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
 		Date endTime = new Date();
 		try { //get the Start Date AND Start Time
@@ -363,68 +373,68 @@ public class Add {
 			e.printStackTrace();
 		}
 		
-		setRepeatedEventDetails(argArray);
+		setRepeatedEventDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDate);
 		endDay.setTime(endTime);
 		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
 		//events are a couple hours apart and are on two sequential days
-			setTimedEventStart();
-			setTimedEventNextDayEnd();
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventNextDayEnd(taskToBeAdded);
 		} else {
 		//events are only a couple hours apart and they're on the same day
-			setTimedEventStart();
-			setTimedEventSameDayEnd();
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventSameDayEnd(taskToBeAdded);
 		}
 	}
 
-	private static void setRepeatedEventDetails(String[] argArray) {
-		newCard.setName(argArray[0]);
-		newCard.setType("RE");
-		setEventFrequency(argArray[2]);
+	private static void setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("RE");
+		setEventFrequency(argArray[2], taskToBeAdded);
 		if (argArray.length == 4) {
-			newCard.setPriority(Integer.parseInt(argArray[3]));
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[3]));
 		} else {
-			newCard.setPriority(2);
+			taskToBeAdded.setPriority(2);
 		}
 	}
 
-	private static void setEventFrequency(String freq) {
+	private static void setEventFrequency(String freq, TaskCard taskToBeAdded) {
 		if (freq.equals("daily")) {
-			newCard.setFrequency("Daily");
+			taskToBeAdded.setFrequency("Daily");
 		} else if (freq.equals("weekly")) {
-			newCard.setFrequency("Weekly");
+			taskToBeAdded.setFrequency("Weekly");
 		} else if (freq.equals("monthly")) {
-			newCard.setFrequency("Monthly");
+			taskToBeAdded.setFrequency("Monthly");
 		} else if (freq.equals("yearly")) {
-			newCard.setFrequency("Yearly");
+			taskToBeAdded.setFrequency("Yearly");
 		} else {
 			//output invalid frequency input, wait for correct input
 		}
 	}
 	
-	private static void setAllDayStart() {
+	private static void setAllDayStart(TaskCard taskToBeAdded) {
 		startDay.set(Calendar.HOUR_OF_DAY, 00);
 		startDay.set(Calendar.MINUTE, 00);
-		newCard.setStartDay(startDay);
+		taskToBeAdded.setStartDay(startDay);
 	}
 	
-	private static void setAllDayEnd() {
+	private static void setAllDayEnd(TaskCard taskToBeAdded) {
 		startDay.set(Calendar.HOUR_OF_DAY, 23);
 		startDay.set(Calendar.MINUTE, 59);
-		newCard.setEndDay(startDay);
+		taskToBeAdded.setEndDay(startDay);
 	}
 	
-	private static void setTimedEventStart() {
-		newCard.setStartDay(startDay);
+	private static void setTimedEventStart(TaskCard taskToBeAdded) {
+		taskToBeAdded.setStartDay(startDay);
 	}
 	
-	private static void setTimedEventNextDayEnd() {
+	private static void setTimedEventNextDayEnd(TaskCard taskToBeAdded) {
 		startDay.add(Calendar.DATE, 1);
-		setTimedEventSameDayEnd();
+		setTimedEventSameDayEnd(taskToBeAdded);
 	}
 	
-	private static void setTimedEventSameDayEnd() {
-		newCard.setEndDay(startDay);
+	private static void setTimedEventSameDayEnd(TaskCard taskToBeAdded) {
+		taskToBeAdded.setEndDay(startDay);
 	}
 	
 	private static boolean checkAddCmdInput(String cmd) {
