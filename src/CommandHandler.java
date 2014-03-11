@@ -45,7 +45,7 @@ public class CommandHandler {
 				response = Search.executeSearch(tokenizedInput, fileLink);
 				break;
 			case INVALID:
-				invalidCommandErrorHandling();
+				response = invalidCommandErrorHandling();
 				break;
 			case EXIT:
 				System.exit(0);
@@ -81,11 +81,15 @@ public class CommandHandler {
 		}
 	}
 	
-	private void invalidCommandErrorHandling() {
+	private String invalidCommandErrorHandling() {
+		String response = "";
+		
 		printErrorMessage();	
 		String userInput = scan.nextLine();
 
-		executeCommand(userInput);
+		response = executeCommand(userInput);
+		
+		return response;
 	}
 	
 	private void printErrorMessage() {
