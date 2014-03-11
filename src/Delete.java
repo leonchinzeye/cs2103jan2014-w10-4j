@@ -27,7 +27,7 @@ public class Delete {
 	
 	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	
-	private static final String RESPONSE_DELETE_SUCCESSFUL = "\" %s\" has been deleted.";
+	private static final String RESPONSE_DELETE_SUCCESSFUL = "\"%s\" has been deleted.";
 	private static final String RESPONSE_UNRECOGNISABLE_DELETE_COMMAND = "You've entered an "
 			+ "unrecognisable delete command. Please re-enter your command: ";
 	private static final String MESSAGE_PROMPT_GET_KEYWORD = "You did not specify a keyword. "
@@ -112,7 +112,7 @@ public class Delete {
 		if(isDate == true) {
 			deleteBasedOnDate(keyword, fileLink);
 		} else if(isInteger == true) {
-			deleteBasedOnDateAndString(keyword, fileLink); 
+			response = deleteBasedOnDateAndString(keyword, fileLink); 
 		} else
 			response = deleteBasedOnString(keyword, fileLink);
 		
