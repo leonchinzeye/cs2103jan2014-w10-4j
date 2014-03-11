@@ -27,9 +27,9 @@ public class Edit {
 	private static int indexNumber;
 	private static int nextIndexNumber;
 	private static TaskCard editedTask;
-	private static boolean edited = false;
+	private static boolean editedFileLinkResponse = false;
 	private static boolean isDate = false;
-	private static boolean isString = false;
+	private static boolean isPriority = false;
 	private static boolean isInteger = false;
 	private static boolean editedFlag = false;
 	private static boolean quitSecondMenu = false;
@@ -45,7 +45,7 @@ public class Edit {
 	private static final String EDIT_SUCCESS = "Your edit was successful!\n%s";
 	private static final String EDIT_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String KEYWORD_NOT_ENTERED = "You seem to have forgotten something! Please type in a keyword to search for: ";
-	private static final String KEYWORD_NOT_FOUND = "We can't seem to find anything by your keyword :(";
+	private static final String KEYWORD_NOT_FOUND = "We can't seem to find \"%s\" in our records :(";
 	private static final String NOT_DIGIT_ENTERED = "You seem to have mistakenly entered something that is not a digit!";
 	private static final String INVALID_INPUT_PROMPT_WITH_RANGE = "Please enter something between 1 and %d: ";
 	private static final String FIRST_MENU_QUERY = "Which task would you like to edit?";
@@ -71,7 +71,7 @@ public class Edit {
 		editList = editFilter(fileLink);
 		
 		if (editList.isEmpty()) {
-			print(KEYWORD_NOT_FOUND);
+			print(String.format(KEYWORD_NOT_FOUND, keyword));
 			return null;
 		} else {
 			firstEditMenu(editList);
@@ -80,15 +80,15 @@ public class Edit {
 		if (editedFlag == false) {
 			return null;
 		} else {
-			edited = fileLink.editHandling(editedTask, editIndex.get(indexNumber - 1));
+			editedFileLinkResponse = fileLink.editHandling(editedTask, editIndex.get(indexNumber - 1));
 		}
 		
-		if (edited == true) {
+		if (editedFileLinkResponse == true) {
 			response = String.format(EDIT_SUCCESS, editedTask.getTaskString());
 		} else {
 			response = EDIT_FAILURE;
 		}
-		
+		editIndex.clear(); //this clears the Index for future use
 		return response;
 	}
 
@@ -100,6 +100,7 @@ public class Edit {
 	private static void checkKeywordType(String keyword) {
 		isInteger = checkIsInteger(keyword);
 		isDate = checkIsDate(keyword);
+		isPriority = checkIsPriority(keyword);
 	}
 
 	private static ArrayList<TaskCard> editFilter(FileLinker fileLink) {
@@ -109,6 +110,8 @@ public class Edit {
 			editList = searchByDate(fileLink);
 		} else if (isInteger == true) {
 			editList = searchByDigit(fileLink);
+		} else if (isPriority == true) {
+			editList = searchByPriority(fileLink);
 		} else {
 			editList = searchByKeyword(fileLink);
 		}
@@ -123,8 +126,8 @@ public class Edit {
 	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		
 		int numberOfIncompleteTasks = incompleteTasks.size();
+		
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
 			if (dateQuery.equals(incompleteTasks.get(i).getStartDay())
 				|| dateQuery.equals(incompleteTasks.get(i).getEndDay())) {
@@ -156,6 +159,20 @@ public class Edit {
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
 			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
+			}
+		}
+		return editList;
+	}
+	
+	private static ArrayList<TaskCard> searchByPriority(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		int numberOfIncompleteTasks = incompleteTasks.size();
+		
+		for (int i = 0; i < numberOfIncompleteTasks; i++) {
+			if (keyword.length() == incompleteTasks.get(i).getPriority()) {
 				editList.add(incompleteTasks.get(i));
 				editIndex.add(i);
 			}
@@ -207,11 +224,11 @@ public class Edit {
 				quitSecondMenu = true;
 				break;
 			} else if (!checkIsInteger(nextIndex)){
-				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
+				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 7));
 			} else {
 				nextIndexNumber = Integer.parseInt(nextIndex);
 				if (nextIndexNumber > 6 || nextIndexNumber < 1) {
-					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
+					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 7));
 				} else {
 					correctNextIndex = true;
 					editTaskAttribute(nextIndexNumber, editList);
@@ -358,6 +375,14 @@ public class Edit {
 			isInteger = false;
 		}
 		return isInteger;
+	}
+	
+	private static boolean checkIsPriority(String keyword) {
+		if (keyword.equals("*") || keyword.equals("**") || keyword.equals("***")) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private static String getKeywordFromUser() {
