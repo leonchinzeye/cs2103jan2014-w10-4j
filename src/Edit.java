@@ -123,7 +123,6 @@ public class Edit {
 	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		ArrayList<Integer> editIndex = new ArrayList<Integer>();
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
@@ -139,7 +138,6 @@ public class Edit {
 	private static ArrayList<TaskCard> searchByDigit(FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		ArrayList<Integer> editIndex = new ArrayList<Integer>();
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
@@ -154,11 +152,10 @@ public class Edit {
 	private static ArrayList<TaskCard> searchByKeyword(FileLinker fileLink) {
 		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		ArrayList<Integer> editIndex = new ArrayList<Integer>();
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (incompleteTasks.get(i).getName().contains(keyword)) {
+			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
 				editList.add(incompleteTasks.get(i));
 				editIndex.add(i);
 			}
@@ -218,6 +215,9 @@ public class Edit {
 				} else {
 					correctNextIndex = true;
 					editTaskAttribute(nextIndexNumber, editList);
+					if (editedFlag == true) {
+						print(editedTask.getTaskString());
+					}
 				}
 			}
 		}
