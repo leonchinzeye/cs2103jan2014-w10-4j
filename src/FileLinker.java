@@ -24,7 +24,7 @@ public class FileLinker {
 		incompleteTasks.add(taskToBeAdded);
 		callStorageWriteIncomplete();
 		
-		return false;
+		return true;
 	}
 	
 	/**
