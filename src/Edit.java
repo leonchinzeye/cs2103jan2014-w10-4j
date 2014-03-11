@@ -23,18 +23,17 @@ public class Edit {
 	 */
 	
 	private static Scanner scan = new Scanner(System.in);
-	private static ArrayList <TaskCard> originalList = new ArrayList<TaskCard>(); //this is the cloned to do list
-	private static ArrayList <TaskCard> editList = new ArrayList<TaskCard>(); //this is the list that will be printed out on the screen
-	private static ArrayList <Integer> editIndex = new ArrayList<Integer>(); //this is to store the indices of the TaskCards that match the keyword
-	private static ArrayList <Integer> secondaryIndex = new ArrayList<Integer>(); //this is a temporary storage
+	private static ArrayList<Integer> editIndex = new ArrayList<Integer>();
 	private static int indexNumber;
 	private static int nextIndexNumber;
 	private static TaskCard editedTask;
 	private static boolean edited = false;
-	private static boolean hasDate;
-	private static boolean isDigit = false;
+	private static boolean isDate = false;
+	private static boolean isString = false;
+	private static boolean isInteger = false;
 	private static boolean editedFlag = false;
-	private static String query = "";
+	private static boolean quitSecondMenu = false;
+	private static String keyword = "";
 	private static String response = "";
 	private static Calendar dateQuery = GregorianCalendar.getInstance();
 	private static Calendar editedDate = GregorianCalendar.getInstance();
@@ -55,7 +54,8 @@ public class Edit {
 	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
-		String keyword = "";
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		
 		//check whether there's an argument for edit
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
@@ -67,15 +67,14 @@ public class Edit {
 			keyword = tokenizedInput[1];
 		}
 		
-		originalList = fileLink.editRetrieval();
 		checkKeywordType(keyword);
-		editFilter(fileLink);
+		editList = editFilter(fileLink);
 		
 		if (editList.isEmpty()) {
 			print(KEYWORD_NOT_FOUND);
 			return null;
 		} else {
-			firstEditMenu();
+			firstEditMenu(editList);
 		}
 		
 		if (editedFlag == false) {
@@ -93,90 +92,89 @@ public class Edit {
 		return response;
 	}
 
+	/**
+	 * Check whether keyword is a date, an integer, or a string.
+	 * @param keyword
+	 * @author Omar Khalid
+	 */
 	private static void checkKeywordType(String keyword) {
-		boolean tempCheckDate;
-		String[] tokenizedKeyword = keyword.trim().split("\\s+");
-		//need to account if search query has both a keyword and date
-		for (int i = 0; i < tokenizedKeyword.length; i++) {
-			tempCheckDate = false;
-			tempCheckDate = checkForDate(tokenizedKeyword[i]);
-			if (tempCheckDate == false) {
-				query.concat(tokenizedKeyword[i]);
-				query += " ";
-			}
-		}
-		query.replaceFirst("\\s+$", ""); //remove any trailing whitespace
+		isInteger = checkIsInteger(keyword);
+		isDate = checkIsDate(keyword);
 	}
 
-	private static void editFilter(FileLinker fileLink) {
-		if (hasDate == true) {
-			ArrayList <TaskCard> tempEditList = new ArrayList <TaskCard>();
-			ArrayList <Integer> tempIndex = new ArrayList <Integer>();
-			searchByKeyword(fileLink, originalList, tempEditList); //filter by keyword first
-			if (!tempEditList.isEmpty()) {
-				tempIndex = secondaryIndex;
-				secondaryIndex.clear();
-				searchByDate(fileLink, tempEditList, editList); //then filter by date
-				for (int i = 0; i < secondaryIndex.size(); i++) {
-					editIndex.add(tempIndex.get(i));
-				}
-			} else {
-				editIndex = secondaryIndex;
-			}
+	private static ArrayList<TaskCard> editFilter(FileLinker fileLink) {
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+
+		if (isDate == true) {
+			editList = searchByDate(fileLink);
+		} else if (isInteger == true) {
+			editList = searchByDigit(fileLink);
 		} else {
-			isDigit = checkForDigit(query);
-			if (isDigit == true) {
-				searchByDigit(fileLink, originalList, editList);
-			} else {
-				searchByKeyword(fileLink, originalList, editList);
-			}
+			editList = searchByKeyword(fileLink);
 		}
-		editIndex = secondaryIndex;
+		
+		return editList;
 	}
 
-	private static void searchByDate(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> editBasedOnDate(FileLinker fileLink) {
+		return null;
+	}
+
+	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (dateQuery.equals(lookThru.get(i).getStartDay()) 
-				|| dateQuery.equals(lookThru.get(i).getEndDay())) {
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (dateQuery.equals(incompleteTasks.get(i).getStartDay())
+				|| dateQuery.equals(incompleteTasks.get(i).getEndDay())) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void searchByDigit(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> searchByDigit(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().contains(query)
-				|| lookThru.get(i).getTaskString().contains(query)
-				|| lookThru.get(i).getTaskString().contains(query)) {
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void searchByKeyword(FileLinker fileLink, ArrayList<TaskCard> lookThru, ArrayList<TaskCard> addTo) {
-		int numberOfIncompleteTasks = originalList.size();
+	private static ArrayList<TaskCard> searchByKeyword(FileLinker fileLink) {
+		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+		ArrayList<Integer> editIndex = new ArrayList<Integer>();
+		
+		int numberOfIncompleteTasks = incompleteTasks.size();
 		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (lookThru.get(i).getName().contains(query)) {
-				System.out.println(lookThru.get(i).getName());
-				addTo.add(lookThru.get(i));
-				secondaryIndex.add(i);
+			if (incompleteTasks.get(i).getName().contains(keyword)) {
+				editList.add(incompleteTasks.get(i));
+				editIndex.add(i);
 			}
 		}
+		return editList;
 	}
 	
-	private static void firstEditMenu() {
-		printFirstMenu();
+	private static void firstEditMenu(ArrayList<TaskCard> editList) {
+		printFirstMenu(editList);
 		
 		boolean correctUserInput = false;
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
 			if(userInput.equals("!q")) {
 				break;
-			} else if (checkForDigit(userInput) == false) {
+			} else if (checkIsInteger(userInput) == false) {
 				print(NOT_DIGIT_ENTERED);
 				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, editList.size()));
 			} else {
@@ -186,13 +184,15 @@ public class Edit {
 				} else {
 					correctUserInput = true;
 					editedTask = editList.get(indexNumber - 1);		
-					secondEditMenu();
+					while (quitSecondMenu == false) {
+						secondEditMenu(editList);
+					}
 				}
 			}
 		}
 	}
 
-	private static void printFirstMenu() {
+	private static void printFirstMenu(ArrayList<TaskCard> editList) {
 		Collections.sort(editList, new SortPriority());
 		print(FIRST_MENU_QUERY);
 		for (int j = 0; j < editList.size(); j++) {
@@ -200,15 +200,16 @@ public class Edit {
 		}
 	}
 
-	private static void secondEditMenu() {
+	private static void secondEditMenu(ArrayList<TaskCard> editList) {
 		printSecondMenu();
 		
 		boolean correctNextIndex = false;
 		while(correctNextIndex == false) {
 			String nextIndex = scan.nextLine();
-			if(nextIndex.equals("!q")) {
+			if(nextIndex.equals("7")) {
+				quitSecondMenu = true;
 				break;
-			} else if (!checkForDigit(nextIndex)){
+			} else if (!checkIsInteger(nextIndex)){
 				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
 			} else {
 				nextIndexNumber = Integer.parseInt(nextIndex);
@@ -216,7 +217,7 @@ public class Edit {
 					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 6));
 				} else {
 					correctNextIndex = true;
-					editTaskAttribute(nextIndexNumber);
+					editTaskAttribute(nextIndexNumber, editList);
 				}
 			}
 		}
@@ -230,9 +231,10 @@ public class Edit {
 		print("4. Start time");
 		print("5. End time");
 		print("6. Priority");
+		print("7. Exit");
 	}
 
-	private static void editTaskAttribute(int nextIndex) {
+	private static void editTaskAttribute(int nextIndex, ArrayList<TaskCard> editList) {
 		switch (nextIndex) {
 			case 1:
 				print("Please enter a new name for this task: ");
@@ -272,6 +274,8 @@ public class Edit {
 				int priority = scan.nextInt();
 				editedTask.setPriority(priority);
 				editedFlag = true;
+				break;
+			case 7:
 				break;
 			default:
 				break;
@@ -330,27 +334,30 @@ public class Edit {
 		}
 	}
 
-	private static boolean checkForDate(String query) {
+	private static boolean checkIsDate(String query) {
+		boolean isDate;
 		//check if keyword is a date
 		try {
 			dateQuery.setTime(dateAndTime.parse(query));
 			dateQuery.setTime(dateString.parse(query));
 			dateQuery.setTime(timeString.parse(query));
+			isDate = true;
 		} catch (ParseException e){
-			return false;
+			isDate = false;
 		}
-		hasDate = true;
-		return true;
+		return isDate;
 	}
 	
-	private static boolean checkForDigit(String query) {
+	private static boolean checkIsInteger(String keyword) {
+		boolean isInteger;
 		//check if keyword is a digit
 		try {
-			Integer.parseInt(query);
-			return true;
+			Integer.parseInt(keyword);
+			isInteger = true;
 		} catch (NumberFormatException e) {
-			return false;
+			isInteger = false;
 		}
+		return isInteger;
 	}
 	
 	private static String getKeywordFromUser() {
