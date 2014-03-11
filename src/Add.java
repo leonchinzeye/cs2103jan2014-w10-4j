@@ -118,7 +118,6 @@ public class Add {
 		setStartDateAndTime();
 		setFloatingEnd();
 		
-		//System.out.println(newCard.getTaskString());
 	}
 	
 	private static void setFloatingTaskDetails(String[] argArray) {

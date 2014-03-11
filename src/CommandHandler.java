@@ -5,7 +5,6 @@ public class CommandHandler {
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
 	
-	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
 	
@@ -62,7 +61,7 @@ public class CommandHandler {
 		
 		if (commandTypeString.contains("/add")) {
 			return COMMAND_TYPE.ADD;
-		} else if (commandTypeString.contains("/dis")) {
+		} else if (commandTypeString.equals("/display")) {
 			return COMMAND_TYPE.DISPLAY;
 		} else if (commandTypeString.contains("/del")) {
 			 	return COMMAND_TYPE.DELETE;
