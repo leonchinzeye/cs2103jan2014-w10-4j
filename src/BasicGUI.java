@@ -19,6 +19,7 @@ public class BasicGUI{
 
 	//JTextArea
 	private static JTextArea consoleArea;
+	private static JTextArea actionArea;
 	//JTextField
 	private static JTextField commandField;
 	//JFrame 
@@ -30,6 +31,7 @@ public class BasicGUI{
 	//JPanel 
 	private static JPanel consolePanel;
 	private static JPanel commandPanel;
+	private static JPanel actionPanel;
 
 	public static void main(String args[]){
 
@@ -51,27 +53,36 @@ public class BasicGUI{
 		//JLabel mainLabel = new JLabel("Hello");
 
 		//Storage container 
-		storageContainer.setBounds(0,0, 400, 400);
+		storageContainer.setBounds(0,0, 410, 410);
 		storageContainer.add(consolePanel);
 		storageContainer.add(commandPanel);
+		storageContainer.add(actionPanel);
 
 		//scroll function 
 		consoleScroll = new JScrollPane(consoleArea);
 
 		//displayPanel
-		consolePanel.setBounds(5,5,375, 275);
+		consolePanel.setBounds(5,5,375, 235);
+		
 		//part of the display box 
 		consolePanel.add(consoleScroll);
-		consoleScroll.setBounds(8, 20, 360, 245);
+		consoleScroll.setBounds(8, 20, 360, 205);
 		consoleArea.setEditable(false);
 		consoleArea.setBackground(Color.white);
+		
 		//commandPanel
-		commandPanel.setBounds(5, 280, 375, 70);
+		commandPanel.setBounds(5, 290, 375, 60);
 		commandPanel.add(commandField);
-		commandField.setBounds(8, 20, 360, 40); 
-
-
-
+		commandField.setBounds(8, 20, 360, 30); 
+		
+		//actionPanel 
+		actionPanel.setBounds(5, 240, 375, 50);
+		actionArea = new JTextArea();
+		actionArea.setEditable(false);
+		actionPanel.add(actionArea);
+		actionArea.setBackground(Color.lightGray);
+		actionArea.setBounds(8, 20, 360, 20);
+		
 		//input/output field
 		//input into the command field can be displayed on Console
 
@@ -102,18 +113,23 @@ public class BasicGUI{
 		//JPanel for command
 		commandPanel = new JPanel(null);
 		commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+		
+		//JPanel for the action that has been done 
+		actionPanel = new JPanel(null);
+		actionPanel.setBorder(BorderFactory.createTitledBorder("Action"));
 	}
 
 	private static void mainFrameSetUp() {
 		//Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		mainFrame = new JFrame();
 		//mainFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		mainFrame.setSize(390, 380);
+		mainFrame.setSize(390, 390);
 		//mainFrame.setSize(screenSize);
 		mainFrame.setVisible(true);
 		mainFrame.setResizable(false);
 		mainFrame.setTitle("TaskWorthy");
 		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		mainFrame.setLocationRelativeTo(consoleArea);
 	}
 
 }
