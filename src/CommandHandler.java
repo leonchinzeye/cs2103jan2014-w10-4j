@@ -5,7 +5,6 @@ public class CommandHandler {
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
 	
-	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
 	
@@ -45,7 +44,7 @@ public class CommandHandler {
 				response = Search.executeSearch(tokenizedInput, fileLink);
 				break;
 			case INVALID:
-				invalidCommandErrorHandling();
+				response = invalidCommandErrorHandling();
 				break;
 			case EXIT:
 				System.exit(0);
@@ -81,11 +80,15 @@ public class CommandHandler {
 		}
 	}
 	
-	private void invalidCommandErrorHandling() {
+	private String invalidCommandErrorHandling() {
+		String response = "";
+		
 		printErrorMessage();	
 		String userInput = scan.nextLine();
 
-		executeCommand(userInput);
+		response = executeCommand(userInput);
+		
+		return response;
 	}
 	
 	private void printErrorMessage() {
