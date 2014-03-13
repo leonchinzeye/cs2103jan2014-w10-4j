@@ -19,7 +19,7 @@ public class Display {
 	 */
 	public static String executeDis(FileLinker fileLink) {
 		String response = "";
-		displayIncomplete = fileLink.displayHandler();
+		displayIncomplete = fileLink.incompleteRetrieval();
 		if (!displayIncomplete.isEmpty()) {
 			Collections.sort(displayIncomplete, new SortByDeadlineAndPriority());
 			

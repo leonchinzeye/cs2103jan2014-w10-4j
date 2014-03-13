@@ -26,14 +26,15 @@ public class FileLinker {
 		
 		return true;
 	}
-	
-	/**
-	 * method that delete logic will call to update modified data to the file
-	 * @param arrayToBeUpdated
-	 */
-	public ArrayList<TaskCard> deleteRetrieval() {
+		
+	public ArrayList<TaskCard> incompleteRetrieval() {
 		
 		return incompleteTasks;
+	}
+	
+	public ArrayList<TaskCard> completeRetrieval() {
+		
+		return completedTasks;
 	}
 	
 	public boolean deleteHandling(int taskNumberToBeDelete) {
@@ -47,23 +48,10 @@ public class FileLinker {
 	 * @param arrayToBeUpdated
 	 */
 	
-	public ArrayList<TaskCard> displayHandler() {
-		
-		return incompleteTasks;
-	}
-	
-	public ArrayList<TaskCard> editRetrieval() {
-		return incompleteTasks;
-	}
-	
 	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified) {
 		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
 		callStorageWriteIncomplete();
 		return true;
-	}
-	
-	public ArrayList<TaskCard> searchRetrieval() {
-		return incompleteTasks;
 	}
 	
 	public void resetIncompleteHandling() {
