@@ -120,7 +120,7 @@ public class Delete {
 	}
 
 	private static String deleteBasedOnString(String keyword, FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
 		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
 		int userConfirmedIndex = -1;
@@ -160,7 +160,7 @@ public class Delete {
 
 	private static String deleteBasedOnDateAndString(String keyword,
 			FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.deleteRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
 		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
 		int userConfirmedIndex = -1;

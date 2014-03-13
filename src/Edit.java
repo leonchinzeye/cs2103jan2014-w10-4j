@@ -124,7 +124,7 @@ public class Edit {
 	}
 
 	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		
@@ -139,7 +139,7 @@ public class Edit {
 	}
 	
 	private static ArrayList<TaskCard> searchByDigit(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
@@ -153,7 +153,7 @@ public class Edit {
 	}
 	
 	private static ArrayList<TaskCard> searchByKeyword(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
 		
 		int numberOfIncompleteTasks = incompleteTasks.size();
@@ -167,7 +167,7 @@ public class Edit {
 	}
 	
 	private static ArrayList<TaskCard> searchByPriority(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.editRetrieval();
+		ArrayList<TaskCard> incompleteTasks = fileLink.incompleteRetrieval();
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		
