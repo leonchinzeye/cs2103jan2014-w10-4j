@@ -9,11 +9,15 @@ import java.util.ArrayList;
 public class FileLinker {
 
 	private ArrayList<TaskCard> incompleteTasks;
+	private ArrayList<TaskCard> incompleteEvents;
 	private ArrayList<TaskCard> completedTasks;
+	private ArrayList<TaskCard> completedEvents;
 	
 	public FileLinker() {
-		this.incompleteTasks = Storage.openIncompleteStorageFile();
-		this.completedTasks = Storage.openCompletedStorageFile();
+		this.incompleteTasks = Storage.openFile(Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		this.incompleteEvents = Storage.openFile(Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
+		this.completedTasks = Storage.openFile(Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
+		this.completedEvents = Storage.openFile(Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
 	}
 	
 	/**
@@ -22,24 +26,32 @@ public class FileLinker {
 	 */
 	public boolean addHandling(TaskCard taskToBeAdded) {
 		incompleteTasks.add(taskToBeAdded);
-		callStorageWriteIncomplete();
+		callStorageWriteIncompleteTasks();
 		
 		return true;
 	}
 		
-	public ArrayList<TaskCard> incompleteRetrieval() {
+	public ArrayList<TaskCard> getIncompleteTasks() {
 		
 		return incompleteTasks;
 	}
 	
-	public ArrayList<TaskCard> completeRetrieval() {
+	public ArrayList<TaskCard> getIncompleteEvents() {
+		return incompleteEvents;
+	}
+	
+	public ArrayList<TaskCard> getCompletedTasks() {
 		
 		return completedTasks;
 	}
 	
+	public ArrayList<TaskCard> getCompletedEvents() {
+		return completedEvents;
+	}
+	
 	public boolean deleteHandling(int taskNumberToBeDelete) {
 		incompleteTasks.remove(taskNumberToBeDelete);
-		callStorageWriteIncomplete();
+		callStorageWriteIncompleteTasks();
 		return true;
 	}
 	
@@ -50,29 +62,29 @@ public class FileLinker {
 	
 	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified) {
 		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
-		callStorageWriteIncomplete();
+		callStorageWriteIncompleteTasks();
 		return true;
 	}
 	
 	public void resetIncompleteHandling() {
 		incompleteTasks = new ArrayList<TaskCard>();
 		int numberOfIncompleteTasks = incompleteTasks.size();
-		Storage.writeIncompleteTasksFile(incompleteTasks, numberOfIncompleteTasks);
+		Storage.writeFile(incompleteTasks, numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 	}
 	
 	public void resetCompleteHandling() {
 		completedTasks = new ArrayList<TaskCard>(); 
 		int numberOfCompletedTasks = completedTasks.size();
-		Storage.writeCompleteTasksFile(completedTasks, numberOfCompletedTasks);
+		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);;
 	}
 	
-	private void callStorageWriteIncomplete() {
+	private void callStorageWriteIncompleteTasks() {
 		int numberOfIncompleteTasks = incompleteTasks.size();
-		Storage.writeIncompleteTasksFile(incompleteTasks, numberOfIncompleteTasks);
+		Storage.writeFile(getCompletedTasks(), numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 	}
 	
-	private void callStorageWriteCompleted() {
+	private void callStorageWriteCompletedTasks() {
 		int numberOfCompletedTasks = completedTasks.size();
-		Storage.writeCompleteTasksFile(completedTasks, numberOfCompletedTasks);
+		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
 	}
 }
