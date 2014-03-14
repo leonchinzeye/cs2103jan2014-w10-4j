@@ -4,6 +4,7 @@ public class CommandHandler {
 	
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
+	private DataUI dataToBePassedToUI;
 	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
@@ -14,6 +15,7 @@ public class CommandHandler {
 	
 	public CommandHandler() {
 		fileLink = new FileLinker();
+		dataToBePassedToUI = new DataUI();
 	}
 	
 	public String executeCommand(String userInput) {
@@ -26,22 +28,22 @@ public class CommandHandler {
 		
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput, fileLink);	
+				response = Add.executeAdd(tokenizedInput, fileLink, dataToBePassedToUI);	
 				break;
 			case DISPLAY:
-				response = Display.executeDis(fileLink);
+				response = Display.executeDis(fileLink, dataToBePassedToUI);
 				break;
 			case RESET:
-				response = Reset.executeReset(tokenizedInput, fileLink);
+				response = Reset.executeReset(tokenizedInput, fileLink, dataToBePassedToUI);
 				break;
 			case DELETE:
-				response = Delete.executeDelete(tokenizedInput, fileLink);
+				response = Delete.executeDelete(tokenizedInput, fileLink, dataToBePassedToUI);
 				break;
 			case EDIT:
-				response = Edit.executeEdit(tokenizedInput, fileLink);
+				response = Edit.executeEdit(tokenizedInput, fileLink, dataToBePassedToUI);
 				break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput, fileLink);
+				response = Search.executeSearch(tokenizedInput, fileLink, dataToBePassedToUI);
 				break;
 			case INVALID:
 				response = invalidCommandErrorHandling();

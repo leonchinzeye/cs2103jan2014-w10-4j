@@ -54,7 +54,7 @@ public class Delete {
 		
 	}
 
-	public static String executeDelete(String[] tokenizedInput, FileLinker fileLink) {
+	public static String executeDelete(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		String response = "";
 		
 		initialiseCmdTable();

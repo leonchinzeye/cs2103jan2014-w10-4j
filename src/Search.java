@@ -13,8 +13,9 @@ public class Search {
 	 * Chronological - Today, Tomorrow
 	 * @return
 	 * @author Omar Khalid
+	 * @param dataToBePassedToUI 
 	 */
-	public static String executeSearch(String[] cmdArray, FileLinker fileLink) {
+	public static String executeSearch(String[] cmdArray, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		if (cmdArray[1].equals("today")){
 			return searchToday(fileLink);
 		} /*else if (!cmdArray[1].isEmpty()){
