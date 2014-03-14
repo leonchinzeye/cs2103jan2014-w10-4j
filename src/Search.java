@@ -26,7 +26,7 @@ public class Search {
 	}
 	
 	private static String searchToday(FileLinker fileLink) {
-		ArrayList <TaskCard> incomplete = fileLink.incompleteRetrieval();
+		ArrayList <TaskCard> incomplete = fileLink.getIncompleteTasks();
 		ArrayList <TaskCard> todayTasks = new ArrayList<TaskCard>();
 		Calendar today = GregorianCalendar.getInstance();
 		String dateForToday = dateString.format(today.getTime());
