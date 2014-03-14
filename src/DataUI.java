@@ -29,7 +29,7 @@ public class DataUI {
 	 * @param
 	 * int cmdType: indicates the command type
 	 */
-	public DataUI(int cmdType) {
+	public DataUI() {
 		
 	}
 }

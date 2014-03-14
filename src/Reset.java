@@ -45,7 +45,7 @@ public class Reset {
 		
 	}
 
-	public static String executeReset(String[] userInput, FileLinker fileLink) {
+	public static String executeReset(String[] userInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		initialiseCmdTypes();
 		String action = null;
 		

@@ -17,7 +17,7 @@ public class Display {
 	/*
 	 * error handle the /discard
 	 */
-	public static String executeDis(FileLinker fileLink) {
+	public static String executeDis(FileLinker fileLink, DataUI dataToBePassedToUI) {
 		String response = "";
 		displayIncomplete = fileLink.incompleteRetrieval();
 		if (!displayIncomplete.isEmpty()) {

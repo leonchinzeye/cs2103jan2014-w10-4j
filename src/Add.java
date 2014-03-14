@@ -26,7 +26,7 @@ public class Add {
 	private static final Object COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
-	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink) {
+	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		String response = "";
 		initialiseAddCmdTable();
 		

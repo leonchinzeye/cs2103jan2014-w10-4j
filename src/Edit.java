@@ -53,7 +53,7 @@ public class Edit {
 	private static final String INCORRECT_TIME_INPUT = "We can't seem to recognize the time that you have entered. :( \nPlease try again: ";
 	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
 	
-	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink) {
+	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
 		
 		//check whether there's an argument for edit
