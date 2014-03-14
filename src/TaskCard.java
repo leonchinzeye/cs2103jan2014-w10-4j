@@ -5,6 +5,10 @@ import java.util.GregorianCalendar;
 public class TaskCard {
 	
 	private String name;
+	/*
+	 * task types: T and FT
+	 * event types: E, RE, AE
+	 */
 	private String type;
 	private int priority = 0;
 	private String frequency = "";
