@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 
-public class Display {
+public class RefreshUI {
 	private static ArrayList <TaskCard> displayIncomplete;
 	private static Calendar today = GregorianCalendar.getInstance();
 	

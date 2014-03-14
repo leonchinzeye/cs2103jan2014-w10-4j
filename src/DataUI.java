@@ -12,12 +12,16 @@ import java.util.ArrayList;
  */
 public class DataUI {
 
+	private ArrayList<ArrayList<String>> incTasks;
+	private ArrayList<ArrayList<String>> incEvent;
+	private String feedback = null;
+	
 	private ArrayList<TaskCard> incompleteTasks;
 	private ArrayList<TaskCard> incompleteEvents;
 	private ArrayList<TaskCard> completedTasks;
 	private ArrayList<TaskCard> completedEvents;
 	
-	private String feedback = null;
+	
 	
 	public enum COMMAND_TYPE {
 		
