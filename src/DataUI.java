@@ -17,6 +17,11 @@ public class DataUI {
 	private ArrayList<TaskCard> completedTasks;
 	private ArrayList<TaskCard> completedEvents;
 	
+	private String feedback = null;
+	
+	public enum COMMAND_TYPE {
+		
+	}
 	/**
 	 * Constructor for DataUI
 	 * Takes in an integer and calls the appropriate methods within DataUI
