@@ -10,7 +10,7 @@ public class CommandHandler {
 	
 	public enum COMMAND_TYPE {
 		ADD, DISPLAY, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
-	};
+	}
 	
 	public CommandHandler() {
 		fileLink = new FileLinker();
