@@ -9,9 +9,7 @@ public class RefreshUI {
 	private static Calendar today = GregorianCalendar.getInstance();
 	
 	private static final String MESSAGE_YOU_HAVE_NO_TASK = "You have no tasks! Use the \"/add\" command to add a new task.";
-	private static final String TYPE_EVENTS = "events";
-	private static final String TYPE_TASKS = "tasks";
-	
+
 	private static final int FIRST_NUMBER_ENDS_FIRST = -1;
 	private static final int SECOND_NUMBER_ENDS_FIRST = 1;
 	private static final int FIRST_NUMBER_HAS_LOWER_PRIORITY = 1;
@@ -21,42 +19,53 @@ public class RefreshUI {
 	 */
 	
 	public static boolean executeRefresh(FileLinker fileLink, DataUI dataToBe) {
-		ArrayList<TaskCard> incompleteTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incompleteEvent = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> completedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> completedEvent = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> incTasks = new ArrayList<TaskCard>();
+		ArrayList<Integer> incTasksIndex = new ArrayList<Integer>();
+		ArrayList<TaskCard> incEvent = new ArrayList<TaskCard>();
+		ArrayList<Integer> incEventIndex = new ArrayList<Integer>();
+		ArrayList<TaskCard> compTasks = new ArrayList<TaskCard>();
+		ArrayList<Integer> compTasksIndex = new ArrayList<Integer>();
+		ArrayList<TaskCard> compEvent = new ArrayList<TaskCard>();
+		ArrayList<Integer> compEventIndex = new ArrayList<Integer>();
 		
-		filterIncomplete(fileLink, incompleteTasks, incompleteEvent);
-		filterComplete(fileLink, completedTasks, completedEvent);
+		filterComplete(fileLink, compTasks, compEvent, compTasksIndex, compEventIndex);
+		filterIncomplete(fileLink, incTasks, incEvent, incTasksIndex, incEventIndex);
+		
 		return true;
 	}
 	
 	private static void filterComplete(FileLinker fileLink,
-			ArrayList<TaskCard> completedTasks, ArrayList<TaskCard> completedEvent) {
+			ArrayList<TaskCard> compTasks, ArrayList<TaskCard> compEvent, 
+			ArrayList<Integer> compTasksIndex, ArrayList<Integer> compEventIndex) {
 		ArrayList<TaskCard> complete = fileLink.completeRetrieval();
 		
 		for(int i = 0; i < complete.size(); i++) {
 			TaskCard task = complete.get(i);
 			
 			if(task.getType() == "FT" || task.getType() == "T") {
-				completedTasks.add(task);
+				compTasks.add(task);
+				compTasksIndex.add(i);
 			} else {
-				completedEvent.add(task);
+				compEvent.add(task);
+				compEventIndex.add(i);
 			}
 		}
 	}
 
 	private static void filterIncomplete(FileLinker fileLink,
-			ArrayList<TaskCard> incompleteTasks, ArrayList<TaskCard> incompleteEvent) {
+			ArrayList<TaskCard> incTasks, ArrayList<TaskCard> incEvent, 
+			ArrayList<Integer> incTasksIndex, ArrayList<Integer> incEventIndex) {
 		ArrayList<TaskCard> incomplete = fileLink.incompleteRetrieval();
 		
 		for(int i = 0; i < incomplete.size(); i++) {
 			TaskCard task = incomplete.get(i);
 			
 			if(task.getType() == "FT" || task.getType() == "T") {
-				incompleteTasks.add(task);
+				incTasks.add(task);
+				incTasksIndex.add(i);
 			} else {
-				incompleteEvent.add(task);
+				incEvent.add(task);
+				incEventIndex.add(i);
 			}
 		}
 	}
