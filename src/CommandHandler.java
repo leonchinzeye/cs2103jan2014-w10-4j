@@ -31,7 +31,7 @@ public class CommandHandler {
 				response = Add.executeAdd(tokenizedInput, fileLink, dataToBePassedToUI);	
 				break;
 			case DISPLAY:
-				response = Display.executeDis(fileLink, dataToBePassedToUI);
+				response = RefreshUI.executeDis(fileLink, dataToBePassedToUI);
 				break;
 			case RESET:
 				response = Reset.executeReset(tokenizedInput, fileLink, dataToBePassedToUI);
