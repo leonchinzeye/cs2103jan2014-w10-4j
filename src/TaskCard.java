@@ -16,7 +16,7 @@ public class TaskCard {
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
-
+	
 	public TaskCard(){
 		
 	}

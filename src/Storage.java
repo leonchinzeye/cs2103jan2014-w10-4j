@@ -9,6 +9,12 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * this class is responsible for reading from and writing to 
+ * the designated files
+ * @author leon
+ *
+ */
 public class Storage {
 
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
@@ -41,7 +47,6 @@ public class Storage {
 	public Storage() {
 	
 	}
-	
 
 	/*
 	 * When writing to the program, will instantiate a new TaskCard object with the parameters
@@ -111,7 +116,6 @@ public class Storage {
 		}	
 	}
 
-
 	private static ArrayList<String> getTaskDetailsFromFile(
 			BufferedReader buffRead) {
 		ArrayList<String> taskDetails = new ArrayList<String>();
@@ -125,7 +129,6 @@ public class Storage {
 			return null;
 		}
 	}
-
 
 	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,
 			TaskCard task) {
@@ -164,7 +167,6 @@ public class Storage {
 		task.setFrequency(restOfDetails[5]);
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
-
 
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();

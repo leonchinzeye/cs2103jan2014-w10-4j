@@ -32,7 +32,6 @@ public class FileLinker {
 	}
 		
 	public ArrayList<TaskCard> getIncompleteTasks() {
-		
 		return incompleteTasks;
 	}
 	
@@ -41,7 +40,6 @@ public class FileLinker {
 	}
 	
 	public ArrayList<TaskCard> getCompletedTasks() {
-		
 		return completedTasks;
 	}
 	
@@ -80,11 +78,21 @@ public class FileLinker {
 	
 	private void callStorageWriteIncompleteTasks() {
 		int numberOfIncompleteTasks = incompleteTasks.size();
-		Storage.writeFile(getCompletedTasks(), numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		Storage.writeFile(incompleteTasks, numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+	}
+	
+	private void callStorageWriteIncompleteEvents() {
+		int numberOfIncompleteEvents = incompleteEvents.size();
+		Storage.writeFile(incompleteEvents, numberOfIncompleteEvents, Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
 	}
 	
 	private void callStorageWriteCompletedTasks() {
 		int numberOfCompletedTasks = completedTasks.size();
 		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
+	}
+	
+	private void callStorageWriteCompletedEvents() {
+		int numberOfCompletedEvents = completedEvents.size();
+		Storage.writeFile(completedEvents, numberOfCompletedEvents, Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
 	}
 }
