@@ -6,6 +6,12 @@ public class CommandHandler {
 	private FileLinker fileLink;
 	private DataUI dataToBePassedToUI;
 	
+	private boolean state_add;
+	private boolean state_delete;
+	private boolean state_edit;
+	private boolean state_refresh;
+	private boolean state_search;
+	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
 	
@@ -13,9 +19,27 @@ public class CommandHandler {
 		ADD, DISPLAY, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
 	}
 	
+	public enum ADD_ERROR {
+		INVALID_FORMAT_FLOAT, INVALID_FORMAT_TASK, INVALID_FORMAT_EVENT
+	}
+	
+	public enum DELETE_ERROR {
+		INVALID_FORMAT, NO_INDEX 
+	}
+	
+	public enum EDIT_ERROR {
+		
+	}
+	
 	public CommandHandler() {
 		fileLink = new FileLinker();
 		dataToBePassedToUI = new DataUI();
+		
+		state_add = false;
+		state_delete = false;
+		state_edit = false;
+		state_refresh = false;
+		state_search = false;
 	}
 	
 	public String executeCommand(String userInput) {
@@ -66,7 +90,7 @@ public class CommandHandler {
 		} else if (commandTypeString.equals("/display")) {
 			return COMMAND_TYPE.DISPLAY;
 		} else if (commandTypeString.contains("/del")) {
-			 	return COMMAND_TYPE.DELETE;
+			 return COMMAND_TYPE.DELETE;
 		} else if (commandTypeString.contains("/clear")) {
 		 	return COMMAND_TYPE.CLEAR;
 		} else if (commandTypeString.contains("/edit")) {
