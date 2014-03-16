@@ -71,6 +71,7 @@ public class TaskWorthy {
 	
 	private static Scanner scan = new Scanner(System.in);
 	private static CommandHandler commandHandler;
+	private static DataUI dataProcessed;
 	
 	public static void main(String[] args) {
 		String response = "";
@@ -95,16 +96,15 @@ public class TaskWorthy {
 			
 			if(hasInput(userInput)) {
 				response = commandHandler.executeCommand(userInput);
-				
+				dataProcessed = commandHandler.executeCmd(userInput);
+				print(dataProcessed.getFeedback());
+				/*
 				if(response != null) {
 					print(response);
 				}
+				*/
 			} else {
-				/*
-				 * No user input here. User only pressed enter. Instead of printing out an error message,
-				 * it shouldn't do anything. Just like how in a chat if you press enter, nothing comes
-				 * up
-				 */
+				
 			}
 		}
 		
