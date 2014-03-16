@@ -11,6 +11,9 @@ import java.util.GregorianCalendar;
  *   - the GUI should call refresh every hour of the clock
  *   - refresh should be able to handle marking of events or tasks once
  *     past the deadline
+ *   - when refreshing and marking events that have past their designated
+ *  	 timeslots, for those repeating ones, it should know how to put it 
+ *  	 to the next repeated time
  * @author leon
  *
  */
@@ -29,7 +32,11 @@ public class RefreshUI {
 	 */
 	
 	public static boolean executeRefresh(FileLinker fileLink, DataUI dataToBe) {
-		
+		//should check for events that have passed the designated time
+		dataToBe.configureIncompleteTasks(fileLink);
+		dataToBe.configureIncompleteEvents(fileLink);
+		dataToBe.configureCompletedTasks(fileLink);
+		dataToBe.configureCompletedEvents(fileLink);
 		
 		return true;
 	}
