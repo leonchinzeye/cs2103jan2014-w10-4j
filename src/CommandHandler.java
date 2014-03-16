@@ -6,6 +6,7 @@ public class CommandHandler {
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
 	private DataUI dataToBePassedToUI;
+	private static Delete deleteHandler;
 	
 	private boolean state_add;
 	private boolean state_del;
@@ -21,6 +22,7 @@ public class CommandHandler {
 	}
 	
 	public CommandHandler() {
+		deleteHandler = new Delete();
 		fileLink = new FileLinker();
 		dataToBePassedToUI = new DataUI();
 		
@@ -66,6 +68,7 @@ public class CommandHandler {
 	}
 
 	public String executeCommand(String userInput) {
+		boolean result = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -84,7 +87,10 @@ public class CommandHandler {
 				response = Reset.executeReset(tokenizedInput, fileLink, dataToBePassedToUI);
 				break;
 			case DELETE:
-				response = Delete.executeDelete(tokenizedInput, fileLink, dataToBePassedToUI);
+				result = deleteHandler.executeDelete(userInput, fileLink, dataToBePassedToUI);
+				if(result == false) {
+					state_del = true;
+				}
 				break;
 			case EDIT:
 				response = Edit.executeEdit(tokenizedInput, fileLink, dataToBePassedToUI);

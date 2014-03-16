@@ -47,9 +47,20 @@ public class FileLinker {
 		return completedEvents;
 	}
 	
-	public boolean deleteHandling(int taskNumberToBeDelete) {
-		incompleteTasks.remove(taskNumberToBeDelete);
-		callStorageWriteIncompleteTasks();
+	public boolean deleteHandling(int taskNumberToBeDelete, int fileToBeDeleted) {
+		if(fileToBeDeleted == 1) {
+			incompleteTasks.remove(taskNumberToBeDelete);
+			callStorageWriteIncompleteTasks();
+		} else if(fileToBeDeleted == 2) {
+			incompleteEvents.remove(taskNumberToBeDelete);
+			callStorageWriteIncompleteEvents();
+		} else if(fileToBeDeleted == 3) {
+			completedTasks.remove(taskNumberToBeDelete);
+			callStorageWriteCompletedTasks();
+		} else {
+			completedEvents.remove(taskNumberToBeDelete);
+			callStorageWriteCompletedEvents();
+		}
 		return true;
 	}
 	
