@@ -5,7 +5,7 @@ public class CommandHandler {
 	
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
-	private DataUI dataToBePassedToUI;
+	private DataUI dataUI;
 	private static Delete deleteHandler;
 	
 	private boolean state_add;
@@ -18,15 +18,15 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DISPLAY, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
+		ADD, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
 	}
 	
 	public CommandHandler() {
 		deleteHandler = new Delete();
 		fileLink = new FileLinker();
-		dataToBePassedToUI = new DataUI();
+		dataUI = new DataUI();
 		
-		RefreshUI.executeRefresh(fileLink, dataToBePassedToUI);
+		RefreshUI.executeRefresh(fileLink, dataUI);
 		
 		state_add = false;
 		state_del = false;
@@ -42,18 +42,25 @@ public class CommandHandler {
 			checkStatesAndPerform(userInput);
 		}
 		
-		return dataToBePassedToUI;
+		return dataUI;
 	}
 	
 	private void checkStatesAndPerform(String userInput) {
+		boolean success;
+		
 		if(state_add == true) {
 			//Add.executeAdd(userInput, fileLink, dataToBePassedToUI);
 		} else if(state_del == true) {
-			//Delete.executeDelete(userInput, fileLink, dataToBePassedToUI);
+			success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
+			if(success == true) {
+				state_del = false;
+			} else {
+				state_del = true;
+			}
 		} else if(state_edit == true) {
 			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
 		} else if(state_ref == true) {
-			RefreshUI.executeRefresh(fileLink, dataToBePassedToUI);
+			RefreshUI.executeRefresh(fileLink, dataUI);
 		} else if(state_search == true) {
 			//Search.executeSearch(userInput, fileLink, dataToBePassedToUI);
 		}
@@ -78,28 +85,25 @@ public class CommandHandler {
 				
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput, fileLink, dataToBePassedToUI);	
-				break;
-			case DISPLAY:
-				response = RefreshUI.executeDis(fileLink, dataToBePassedToUI);
+				response = Add.executeAdd(tokenizedInput, fileLink, dataUI);	
 				break;
 			case RESET:
-				response = Reset.executeReset(tokenizedInput, fileLink, dataToBePassedToUI);
+				response = Reset.executeReset(tokenizedInput, fileLink, dataUI);
 				break;
 			case DELETE:
-				result = deleteHandler.executeDelete(userInput, fileLink, dataToBePassedToUI);
+				result = deleteHandler.executeDelete(userInput, fileLink, dataUI);
 				if(result == false) {
 					state_del = true;
 				}
 				break;
 			case EDIT:
-				response = Edit.executeEdit(tokenizedInput, fileLink, dataToBePassedToUI);
+				response = Edit.executeEdit(tokenizedInput, fileLink, dataUI);
 				break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput, fileLink, dataToBePassedToUI);
+				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
 				break;
 			case INVALID:
-				dataToBePassedToUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
+				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				//response = invalidCommandErrorHandling();
 				break;
 			case EXIT:
@@ -117,10 +121,8 @@ public class CommandHandler {
 		
 		if (commandTypeString.contains("/add")) {
 			return COMMAND_TYPE.ADD;
-		} else if (commandTypeString.equals("/display")) {
-			return COMMAND_TYPE.DISPLAY;
-		} else if (commandTypeString.contains("/del")) {
-			 return COMMAND_TYPE.DELETE;
+		} else if (commandTypeString.contains("/d")) {
+			return COMMAND_TYPE.DELETE;
 		} else if (commandTypeString.contains("/clear")) {
 		 	return COMMAND_TYPE.CLEAR;
 		} else if (commandTypeString.contains("/edit")) {
