@@ -20,11 +20,11 @@ public class Delete {
 	
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
-	
-	private static final String COMMAND_QUIT_TO_TOP = "!q";
-	
+		
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an incomplete task to delete! Please enter an ID to delete!";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an incomplete event to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You didn't specify an complete task to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You didn't specify an complete event to delete! Please enter an ID to delete!";
 	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
 	private static final String FEEDBACK_DELETION_RANGE = "Please enter a valid number between 1 to %d!";
 	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
@@ -45,6 +45,19 @@ public class Delete {
 		state_comp_event = false;
 	}
 
+	/**
+	 * this method checks if the program is currently in any delete error handling state
+	 * if it is, it calls the individual delete methods
+	 * else, it will identify what type of delete command the user has entered before
+	 * handling the user input
+	 * if errors still persist, it will remain in a state of error
+	 * @param userInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 * the return type will signal to commandhandler whether the delete was successful
+	 * or that there was an error involved
+	 */
 	public boolean executeDelete(String userInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		
@@ -116,13 +129,43 @@ public class Delete {
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
 					state_inc_event = true;
+					
+					return success = false;
+				} else {
+					success = performIncEventDelete(userIndex, fileLink, dataUI);
+					
+					if(success == false) {
+						state_inc_event = true;
+					}
 				}
 				break;
 			case DELETE_COMPLETE_TASK:
-				
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
+					state_comp_tasks = true;
+					
+					return success = false;
+				} else {
+					success = performCompTaskDelete(userIndex, fileLink, dataUI);
+						
+					if(success == false) {
+						state_comp_tasks = true;
+					}
+				}
 				break;
 			case DELETE_COMPLETE_EVENTS:
-				
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
+					state_comp_event = true;
+					
+					return success = false;
+				} else {
+					success = performCompEventDelete(userIndex, fileLink, dataUI);
+					
+					if(success == false) {
+						state_comp_event = true;
+					}
+				}
 				break;
 		}
 		
@@ -145,7 +188,6 @@ public class Delete {
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
 				RefreshUI.executeDis(fileLink, dataUI);
 			}
-			
 		} catch(NumberFormatException ex) {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
 			return success = false;
@@ -154,22 +196,79 @@ public class Delete {
 		return success;
 	}
 
-	private boolean performIncEventDelete(String userInput, FileLinker fileLink,
+	private boolean performIncEventDelete(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
+		
+		try {
+			int deletedIndex = Integer.parseInt(userIndex);
+			
+			if(deletedIndex < 0 || deletedIndex > incEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incEvent.size()));
+				return success = false;
+			} else {
+				TaskCard event = incEvent.get(deletedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
+				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				RefreshUI.executeDis(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
+			success = false;
+		}
+		
+		return success;
 	}
 
-	private boolean performCompTaskDelete(String userInput, FileLinker fileLink,
+	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		ArrayList<TaskCard> compTasks = fileLink.getIncompleteTasks();
+		
+		try {
+			int deletedIndex = Integer.parseInt(userIndex);
+			
+			if(deletedIndex < 0 || deletedIndex > compTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compTasks.size()));
+				return success = false;
+			} else {
+				TaskCard task = compTasks.get(deletedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
+				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
+				RefreshUI.executeDis(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compTasks.size()));
+			return success = false;
+		}
+		
+		return success;
 	}
 
-	private boolean performCompEventDelete(String userInput, FileLinker fileLink,
+	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success = true;
+		ArrayList<TaskCard> compEvent = fileLink.getIncompleteEvents();
+		
+		try {
+			int deletedIndex = Integer.parseInt(userIndex);
+			
+			if(deletedIndex < 0 || deletedIndex > compEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compEvent.size()));
+				return success = false;
+			} else {
+				TaskCard event = compEvent.get(deletedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
+				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				RefreshUI.executeDis(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compEvent.size()));
+			success = false;
+		}
+		
+		return success;
 	}
 
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {

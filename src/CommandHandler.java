@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class CommandHandler {
@@ -7,6 +6,8 @@ public class CommandHandler {
 	private FileLinker fileLink;
 	private DataUI dataUI;
 	private static Delete deleteHandler;
+
+	private static String quitToTop = "!q";
 	
 	private boolean state_add;
 	private boolean state_del;
@@ -28,23 +29,24 @@ public class CommandHandler {
 		
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		
-		state_add = false;
-		state_del = false;
-		state_edit = false;
-		state_ref = false;
-		state_search = false;
+		resetStates();
 	}
 	
 	public DataUI executeCmd(String userInput) {
 		if(newCommand()) {
 			executeCommand(userInput);
 		} else {
-			checkStatesAndPerform(userInput);
+			if(userInput.equals(quitToTop) == false) {
+				checkStatesAndPerform(userInput);
+			} else {
+				resetStates();
+				dataUI.setFeedback(null);
+			}
 		}
 		
 		return dataUI;
 	}
-	
+
 	private void checkStatesAndPerform(String userInput) {
 		boolean success;
 		
@@ -104,13 +106,11 @@ public class CommandHandler {
 				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
-				//response = invalidCommandErrorHandling();
 				break;
 			case EXIT:
 				System.exit(0);
 				break;
 			default:
-				invalidCommandErrorHandling();
 				break;
 		}
 		return response;
@@ -138,18 +138,11 @@ public class CommandHandler {
 		}
 	}
 	
-	private String invalidCommandErrorHandling() {
-		String response = "";
-		
-		printErrorMessage();	
-		String userInput = scan.nextLine();
-
-		response = executeCommand(userInput);
-		
-		return response;
-	}
-	
-	private void printErrorMessage() {
-		System.out.println(MESSAGE_ERROR_INVALID_COMMAND);
+	private void resetStates() {
+		state_add = false;
+		state_del = false;
+		state_edit = false;
+		state_ref = false;
+		state_search = false;
 	}
 }
