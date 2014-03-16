@@ -4,6 +4,7 @@ import java.util.GregorianCalendar;
 
 public class TaskCard {
 	
+	private static final int MAX_PRIORITY = 3;
 	private String name;
 	/*
 	 * task types: T and FT
@@ -71,8 +72,12 @@ public class TaskCard {
 	
 	public String getTaskString() {
 		taskString = "";
-		for (int i = 0; i < priority; i++) {
-			taskString += "*";
+		for (int i = 0; i < MAX_PRIORITY; i++) {
+			if (priority > i) {
+				taskString += "*";
+			} else {
+				taskString += " ";
+			}
 		}
 		if(type.equals("FT")){
 			taskString += name + ", " + dateString.format(startDay.getTime()); 

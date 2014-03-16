@@ -52,6 +52,7 @@ public class Edit {
 	private static final String SECOND_MENU_QUERY = "What attribute would you like to change?";
 	private static final String INCORRECT_TIME_INPUT = "We can't seem to recognize the time that you have entered. :( \nPlease try again: ";
 	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
+	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	
 	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
@@ -59,7 +60,7 @@ public class Edit {
 		//check whether there's an argument for edit
 		if(tokenizedInput.length < 2) {
 			keyword = getKeywordFromUser();
-			if (keyword.equals("!q")) {
+			if (keyword.equals(COMMAND_QUIT_TO_TOP)) {
 				response = null;
 				return response;
 			}
@@ -186,7 +187,7 @@ public class Edit {
 		boolean correctUserInput = false;
 		while(correctUserInput == false) {
 			String userInput = scan.nextLine();
-			if(userInput.equals("!q")) {
+			if(userInput.equals(COMMAND_QUIT_TO_TOP)) {
 				break;
 			} else if (checkIsInteger(userInput) == false) {
 				print(NOT_DIGIT_ENTERED);

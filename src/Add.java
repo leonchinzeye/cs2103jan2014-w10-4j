@@ -11,7 +11,6 @@ public class Add {
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
 	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
-	private static TaskCard newCard = new TaskCard();
 	private static Calendar today = GregorianCalendar.getInstance();
 	private static Calendar startDay = GregorianCalendar.getInstance();
 	private static Calendar endDay = Calendar.getInstance();
@@ -38,9 +37,7 @@ public class Add {
 		return response;
 	}
 	
-	private static String performAddCommand(String[] tokenizedInput,
-			FileLinker fileLink) {
-		// TODO Auto-generated method stub
+	private static String performAddCommand(String[] tokenizedInput, FileLinker fileLink) {
 		String response = "";
 		String taskDetails = "";
 		
