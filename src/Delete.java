@@ -1,10 +1,5 @@
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Scanner;
 
 /**
  * 
@@ -62,8 +57,7 @@ public class Delete {
 		boolean success = false;
 		
 		if(newDeleteCmd()) {
-			String[] tokenizedInput;
-			tokenizedInput = userInput.trim().split("\\s+", 2);
+			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 			String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
 			if(cmdTable.containsKey(cmd) != true) {
@@ -166,6 +160,8 @@ public class Delete {
 						state_comp_event = true;
 					}
 				}
+				break;
+			default:
 				break;
 		}
 		

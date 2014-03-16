@@ -5,8 +5,11 @@ public class CommandHandler {
 	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
 	private DataUI dataUI;
+	
+	//handlers
+	private static Add addHandler;
 	private static Delete deleteHandler;
-
+	
 	private static String quitToTop = "!q";
 	
 	private boolean state_add;
@@ -23,6 +26,7 @@ public class CommandHandler {
 	}
 	
 	public CommandHandler() {
+		addHandler = new Add();
 		deleteHandler = new Delete();
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
@@ -32,6 +36,12 @@ public class CommandHandler {
 		resetStates();
 	}
 	
+	/**
+	 * checks if the program is currently handling any error or prompting states.
+	 * if it is not, it will take user input as a fresh new command.
+	 * @param userInput
+	 * @return
+	 */
 	public DataUI executeCmd(String userInput) {
 		if(newCommand()) {
 			executeCommand(userInput);
@@ -47,11 +57,25 @@ public class CommandHandler {
 		return dataUI;
 	}
 
+	/**
+	 * in calling this method, this means that the program is currently in one of the error
+	 * handling states. it checks for the state it is in and calles the affected handler
+	 * directly
+	 * @param userInput
+	 */
 	private void checkStatesAndPerform(String userInput) {
 		boolean success;
 		
 		if(state_add == true) {
-			//Add.executeAdd(userInput, fileLink, dataToBePassedToUI);
+			/*
+			success = addHandler.executeA(userInput, fileLink, dataUI);
+			
+			if(success == true) {
+				state_add = false;
+			} else {
+				state_add = true;
+			}
+			*/
 		} else if(state_del == true) {
 			success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
 			if(success == true) {
@@ -77,7 +101,7 @@ public class CommandHandler {
 	}
 
 	public String executeCommand(String userInput) {
-		boolean result = false;
+		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -87,14 +111,19 @@ public class CommandHandler {
 				
 		switch(commandType) {
 			case ADD:
-				response = Add.executeAdd(tokenizedInput, fileLink, dataUI);	
+				/*
+				success = addHandler.executeA(userInput, fileLink, dataUI);
+				if(success == false) {
+					state_add = true;
+				}
 				break;
+				*/
 			case RESET:
 				response = Reset.executeReset(tokenizedInput, fileLink, dataUI);
 				break;
 			case DELETE:
-				result = deleteHandler.executeDelete(userInput, fileLink, dataUI);
-				if(result == false) {
+				success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
+				if(success == false) {
 					state_del = true;
 				}
 				break;

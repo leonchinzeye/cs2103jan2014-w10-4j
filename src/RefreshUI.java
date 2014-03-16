@@ -32,7 +32,7 @@ public class RefreshUI {
 	 */
 	
 	public static boolean executeRefresh(FileLinker fileLink, DataUI dataToBe) {
-		//should check for events that have passed the designated time
+		//should check for events that have passed the designated time (not done yet)
 		dataToBe.configureIncompleteTasks(fileLink);
 		dataToBe.configureIncompleteEvents(fileLink);
 		dataToBe.configureCompletedTasks(fileLink);

@@ -19,53 +19,6 @@ import java.util.Scanner;
  */
 public class TaskWorthy {
 	
-	/*private static final int COMMAND_ARGUMENT = 0;
-	private static final int ONLY_ONE_ARGUMENT = 1;
-	private static final int SPLIT_TWO_ARGUMENTS = 2;
-	private static final int FIRST_ARGUMENT = 1;
-	
-	private static final int TYPE_EXIT = 7;
-	private static final int TYPE_SEARCH = 6;
-	private static final int TYPE_SORT = 5;
-	private static final int TYPE_CLEAR = 4;
-	private static final int TYPE_DISPLAY = 3;
-	private static final int TYPE_DELETE = 2;
-	private static final int TYPE_ADD = 1;
-	
-	private static final String COMMAND_PROMPT = "command: ";
-	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. What would you like to do today?";
-	private static final String MESSAGE_NO_TASK_ENTERED = "no task entered";
-	private static final String MESSAGE_ERROR_WRITING_TO_FILE = "error writing to file %s";
-	private static final String MESSAGE_CLEAR_FILE_SUCCESSFUL = "all content deleted from %s";
-	private static final String MESSAGE_ERROR_UNRECOGNISABLE_COMMAND = "command not recognised."
-			+ " please re-enter command";
-	private static final String MESSAGE_ERROR_NOT_NUMBER = "please enter a number";
-	private static final String MESSAGE_ERROR_NO_SUCH_TASK_FOUND = "please enter a valid task number";
-	private static final String MESSAGE_ERROR_INVALID_TASK_NUMBER = "there are only %d task(s)."
-			+ " task %d can't be found";
-	private static final String MESSAGE_ERROR_READING_FILE = "error reading file %s";
-	private static final String MESSAGE_INVALID_ARGUMENT = "invalid argument";
-	private static final String MESSAGE_ADD_SUCCESSFUL = "added to %s: \"%s\"";
-	private static final String MESSAGE_DELETE_SUCCESSFUL = "deleted from %s: \"%s\"";
-	private static final String MESSAGE_EMPTY_FILE = "%s is empty";
-	private static final String MESSAGE_SORT_UNSUCCESSFUL = "%s is empty. there is nothing "
-			+ "to be sorted";
-	private static final String MESSAGE_SORT_SUCCESSFUL = "%s has been sorted";
-	private static final String SEARCH_LINE_WITH_WORD = "%d. %s";
-	private static final String MESSAGE_UNABLE_TO_FIND_WORD = "\"%s\" was not found";
-	private static final String MESSAGE_ERROR_SEARCH_EMPTY_FILE =
-	"%s is empty. there is nothing to be searched";
-	private static final String MESSAGE_ERROR_NO_SEARCH_OPTION_ENTERED = "no search option entered";
-
-	
-	private static ArrayList<String> fileDetails = new ArrayList<String>();
-	private static String fileName = null;
-	private static int fileSize = 0;
-	private static HashMap<String, Integer> commandTable = new HashMap<String, Integer>();
-	public enum COMMAND_TYPE {
-		ADD, DISPLAY, DELETE, CLEAR, SORT, SEARCH, EXIT, INVALID
-	};*/
-	
 	private static final String WELCOME_MESSAGE = "Welcome to TaskWorthy. Here's your agenda for today: ";
 	private static final String COMMAND_PROMPT = "What would you like to do now?";
 	
@@ -74,7 +27,6 @@ public class TaskWorthy {
 	private static DataUI dataProcessed;
 	
 	public static void main(String[] args) {
-		String response = "";
 		String today = "";
 		
 		commandHandler = new CommandHandler();
