@@ -1,3 +1,8 @@
 syntax: glob
 .DS_Store
 *.class
+incompleteevents\.txt
+incompletetasks\.txt
+completedevents\.txt
+completedtasks\.txt
+\.settings
