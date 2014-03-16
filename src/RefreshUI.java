@@ -77,6 +77,4 @@ public class RefreshUI {
 				return SECOND_NUMBER_HAS_LOWER_PRIORITY;
 		}
 	}
-	
-	
 }
