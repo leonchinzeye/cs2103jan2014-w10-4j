@@ -19,303 +19,142 @@ import java.util.Scanner;
  */
 public class Delete {	
 	
-	private static final int DELETE_SPECIFIC_TASKS = 1;
-	private static final int DELETE_TASKS = 2;
-	private static final int DELETE_EVENTS = 3;
-
+	private static final int DELETE_INCOMPLETE_TASKS = 1;
+	private static final int DELETE_INCOMPLETE_EVENTS = 2;
+	private static final int DELETE_COMPLETE_TASK = 3;
+	private static final int DELETE_COMPLETE_EVENTS = 4;
+	
 	private static final int FIRST_ARGUMENT = 0;
+	private static final int SECOND_ARGUMENT = 1;
 	
 	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	
-	private static final String RESPONSE_DELETE_SUCCESSFUL = "\"%s\" has been deleted.";
-	private static final String RESPONSE_UNRECOGNISABLE_DELETE_COMMAND = "You've entered an "
-			+ "unrecognisable delete command. Please re-enter your command: ";
+	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
+	private static final String FEEDBACK_DELETION_RANGE = "Please enter a valid number between 1 to %d!";
+	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
+	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "Please enter a number between 1 to %d!";
 	private static final String MESSAGE_PROMPT_GET_KEYWORD = "You did not specify a keyword. "
 			+ "Please enter a keyword: ";
-	private static final String MESSAGE_DELETION_PROMPTING_RANGE = "The number you have entered is not "
-			+ "within range of tasks shown. Please re-enter a number between 1 to %d.";
-	private static final String MESSAGE_NOT_NUMBER_ENTERED = "Please enter a number between 1 to %d.";
 	private static final String MESSAGE_LIST_FOR_DELETION = "Here is the list of items that contain "
 			+ "your keyword. Which do you want to delete?";
 	private static final String MESSAGE_KEYWORD_NOT_FOUND = "\"%s\" is not found among the lists of "
 			+ "tasks you have.";
 
-	private static HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
-	private static Scanner scan = new Scanner(System.in);
-	private static boolean isDate = false;
-	private static boolean isString = false;
-	private static boolean isInteger = false;
-	private static Calendar dateKeyword = GregorianCalendar.getInstance();
-	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM");
-	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();	
+	
+	private boolean state_inc_tasks;
+	private boolean state_inc_event;
+	private boolean state_comp_tasks;
+	private boolean state_comp_event;
 	
 	public Delete() {
-		
-	}
-
-	public static String executeDelete(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
-		String response = "";
-		
 		initialiseCmdTable();
-		
-		if(checkCmdInput(tokenizedInput[FIRST_ARGUMENT]) == true) {
-			response = identifyCmdTypeAndPerform(tokenizedInput, fileLink);
-		} else {
-			response = RESPONSE_UNRECOGNISABLE_DELETE_COMMAND;
-		}
-				
-		return response;
-	}
-	
-	private static String identifyCmdTypeAndPerform(String[] tokenizedInput,
-			FileLinker fileLink) {
-		String response = "";
-		int cmdType = cmdTable.get(tokenizedInput[FIRST_ARGUMENT]);
-		
-		switch(cmdType) {
-			case 1:
-				response = performSpecificDelete(tokenizedInput, fileLink);
-				break;
-			case 2:
-				
-				break;
-			case 3:
-				
-				break;
-			default:
-				break;
-		}
-		
-		return response;
+		state_inc_tasks = false;
+		state_inc_event = false;
+		state_comp_tasks = false;
+		state_comp_event = false;
 	}
 
-	private static String performSpecificDelete(String[] tokenizedInput,
-			FileLinker fileLink) {
-		String response = "";
-		String keyword = "";
-				
-		//only /delete
-		if(tokenizedInput.length < 2) {
-			keyword = getKeywordFromUser();
+	public boolean executeDelete(String userInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		
+		if(newDeleteCmd()) {
+			String[] tokenizedInput;
+			tokenizedInput = userInput.trim().split("\\s+", 2);
+			String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-			if(keyword.equals(COMMAND_QUIT_TO_TOP)) {
-				response = null;
-				return response;
-			}
-		} else {
-			keyword = tokenizedInput[1];
-		}
-		
-		checkKeywordType(keyword);
-		
-		if(isDate == true) {
-			deleteBasedOnDate(keyword, fileLink);
-		} else if(isInteger == true) {
-			response = deleteBasedOnDateAndString(keyword, fileLink); 
-		} else
-			response = deleteBasedOnString(keyword, fileLink);
-		
-		return response;
-	}
-
-	private static String deleteBasedOnString(String keyword, FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
-		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
-		int userConfirmedIndex = -1;
-		String response = "";
-		
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		
-		for(int i = 0; i < numberOfIncompleteTasks; i++) {
-			TaskCard task = incompleteTasks.get(i);
-			String taskDescription = task.getTaskString();
-			taskDescription = taskDescription.toLowerCase();
-			keyword = keyword.toLowerCase();
-			
-			if(taskDescription.contains(keyword)) {
-				taskCardsToBeDeleted.add(task);
-				indexOfTasksToBeDeleted.add(i);
-			}
-		}
-		
-		if(taskCardsToBeDeleted.isEmpty()) {
-			print(String.format(MESSAGE_KEYWORD_NOT_FOUND, keyword));
-		} else {
-			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
-		}
-		
-		if(userConfirmedIndex == -1) {
-			response = null;
-		} else {
-			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
-			response = String.format(RESPONSE_DELETE_SUCCESSFUL, deletedTask);
-			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
-			fileLink.deleteHandling(fileIndexToBeDeleted);
-		}
-		
-		return response;
-	}
-
-	private static String deleteBasedOnDateAndString(String keyword,
-			FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> taskCardsToBeDeleted = new ArrayList<TaskCard>();
-		ArrayList<Integer> indexOfTasksToBeDeleted = new ArrayList<Integer>();
-		int userConfirmedIndex = -1;
-		String response = "";
-		
-		for(int i = 0; i < incompleteTasks.size(); i++) {
-			TaskCard task = incompleteTasks.get(i);
-			String taskDescription = task.getTaskString();
-			
-			if(taskDescription.contains(keyword)) {
-				taskCardsToBeDeleted.add(task);
-				indexOfTasksToBeDeleted.add(i);
-			}
-		}
-		
-		if(taskCardsToBeDeleted.isEmpty()) {
-			print(String.format(MESSAGE_KEYWORD_NOT_FOUND, keyword));
-		} else {
-			userConfirmedIndex = getDeletionConfirmation(taskCardsToBeDeleted);
-		}
-		
-		if(userConfirmedIndex == -1) {
-			response = null;
-		} else {
-			String deletedTask = taskCardsToBeDeleted.get(userConfirmedIndex - 1).getTaskString();
-			response = String.format(RESPONSE_DELETE_SUCCESSFUL, deletedTask);
-			int fileIndexToBeDeleted = indexOfTasksToBeDeleted.get(userConfirmedIndex - 1);
-			fileLink.deleteHandling(fileIndexToBeDeleted);
-		}
-		
-		return response;
-	}
-
-	private static void deleteBasedOnDate(String keyword, FileLinker fileLink) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private static int getDeletionConfirmation(
-			ArrayList<TaskCard> taskCardsToBeDeleted) {
-		int userConfirmedIndex = -1;
-		int counterReference = 1;
-		boolean correctUserInput = false;
-		
-		print(MESSAGE_LIST_FOR_DELETION);
-		
-		for(int i = 0; i < taskCardsToBeDeleted.size(); i++) {
-			TaskCard task = taskCardsToBeDeleted.get(i);
-			String taskDetails = task.getTaskString();
-			String toBePrinted = counterReference + ") " + taskDetails;
-			print(toBePrinted);
-			
-			counterReference++;
-		}
-		
-		/*
-		 * - user has to enter either a number or "n" to exit this loop
-		 * - if user enters anything else, it will throw an error prompt to 
-		 * 	 get the user to re-enter his selection
-		 * - if is integer, has to check if integer is within the range
-		 * 
-		 */
-		while(correctUserInput == false) {
-			String userInput = scan.nextLine();
-			
-			if(userInput.equals(COMMAND_QUIT_TO_TOP)) {
-				break;
-				
-			} else if(checkIsInteger(userInput)) {
-				//check range of values coincide with those shown
-				int indexNumber = Integer.parseInt(userInput);
-				
-				if(indexNumber > taskCardsToBeDeleted.size() || indexNumber < 1) {
-					print(String.format(MESSAGE_DELETION_PROMPTING_RANGE, taskCardsToBeDeleted.size()));
-				} else {
-					userConfirmedIndex = indexNumber;
-					correctUserInput = true;
-				}
-				
+			if(cmdTable.containsValue(cmd) != true) {
+				notRecognisableCmd(fileLink, dataUI);
+				return success = true;
 			} else {
-				print(String.format(MESSAGE_NOT_NUMBER_ENTERED, taskCardsToBeDeleted.size()));
+				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
-		}
-		
-		return userConfirmedIndex;
-	}
-
-	private static void checkKeywordType(String keyword) {
-		isInteger = checkIsInteger(keyword);
-		isDate = checkIsDate(keyword);
-		if(isDate == false && isInteger == false) {
-			isString = true;
-		}
-		
-	}
-
-	private static boolean checkIsDate(String keyword) {
-		boolean isDate;
-		
-		try {
-			dateKeyword.setTime(dateAndTime.parse(keyword));
-			dateKeyword.setTime(dateString.parse(keyword));
-			dateKeyword.setTime(timeString.parse(keyword));
-			isDate = true;
-		} catch(ParseException e) {
-			isDate = false;
-		}
-		return isDate;
-	}
-
-	private static boolean checkIsInteger(String keyword) {
-		boolean isInteger;
-		try {
-			Integer.parseInt(keyword);
-			isInteger = true;
-		} catch(NumberFormatException e) {
-			isInteger = false;
-		}
-		
-		return isInteger;
-	}
-
-	private static String getKeywordFromUser() {
-		boolean enteredAction = false;
-		String keyword = "";
-		
-		while(enteredAction == false) {
-			print(MESSAGE_PROMPT_GET_KEYWORD);
+		} else if(state_inc_tasks == true) {
 			
-			if(scan.hasNext()) {
-				keyword = scan.nextLine();
-				enteredAction = true;
+		} else if(state_inc_event == true) {
+			
+		} else if(state_comp_tasks == true) {
+			
+		} else {
+			
+		}
+		return success;
+	}
+	
+	private boolean identifyCmdAndPerform(String[] tokenizedInput,
+			FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
+		
+		switch(cmdTable.get(cmd)) {
+			case DELETE_INCOMPLETE_TASKS:
+				success = performIncTaskDelete(tokenizedInput, fileLink, dataUI);
+				if(success == false) {
+					state_inc_tasks = true;
+				}
+				break;
+			case DELETE_INCOMPLETE_EVENTS:
+				
+				break;
+			case DELETE_COMPLETE_TASK:
+				
+				break;
+			case DELETE_COMPLETE_EVENTS:
+				
+				break;
+		}
+		
+		return false;
+	}
+
+	private boolean performIncTaskDelete(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = true;
+		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
+		
+		if(tokenizedInput.length < 2) {
+			dataUI.setFeedback("You didn't specify an incomplete task to delete! Please enter an ID to delete!");
+			return success = false;
+		} 
+		
+		try {
+			int deletedIndex = Integer.parseInt(tokenizedInput[SECOND_ARGUMENT]) - 1;
+			
+			if(deletedIndex < 0 || deletedIndex > incTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incTasks.size()));
+				return success = false;
+			} else {
+				TaskCard task = incTasks.get(deletedIndex);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
+				fileLink.deleteHandling(deletedIndex, DELETE_INCOMPLETE_TASKS);
+				RefreshUI.executeDis(fileLink, dataUI);
 			}
-		}
-
-		return keyword;
-	}
-
-	private static boolean checkCmdInput(String cmd) {
-		boolean isCorrectCmd = false;
-		
-		if(cmdTable.containsKey(cmd)) {
-			isCorrectCmd = true;
+			
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
+			return success = false;
 		}
 		
-		return isCorrectCmd;
+		return success;
 	}
-	
-	private static void initialiseCmdTable() {
-		cmdTable.put("/del", DELETE_SPECIFIC_TASKS);
-		cmdTable.put("/delt", DELETE_TASKS);
-		cmdTable.put("/delev", DELETE_EVENTS);
+
+	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
 	}
-	
-	private static void print(String toPrint) {
-		System.out.println(toPrint);
+
+	private boolean newDeleteCmd() {
+		if(state_inc_tasks == false && state_inc_event == false
+				&& state_comp_tasks == false && state_comp_event == false) {
+			return true;
+		}
+		return false;
+	}
+
+	private void initialiseCmdTable() {
+		cmdTable.put("/dt", DELETE_INCOMPLETE_TASKS);
+		cmdTable.put("/de", DELETE_INCOMPLETE_EVENTS);
+		cmdTable.put("/dtc", DELETE_COMPLETE_TASK);
+		cmdTable.put("/dec", DELETE_COMPLETE_EVENTS);
 	}
 }
