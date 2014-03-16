@@ -28,17 +28,6 @@ public class DataUI {
 	
 	private String feedback = null;
 	
-	/*
-	private ArrayList<TaskCard> incompleteTasks;
-	private ArrayList<TaskCard> incompleteEvents;
-	private ArrayList<TaskCard> completedTasks;
-	private ArrayList<TaskCard> completedEvents;
-	*/
-	
-	
-	public enum COMMAND_TYPE {
-		
-	}
 	/**
 	 * Constructor for DataUI
 	 * Takes in an integer and calls the appropriate methods within DataUI
@@ -48,9 +37,13 @@ public class DataUI {
 	 */
 	public DataUI() {
 		incTasks = new ArrayList<ArrayList<String>>();
-		
+		incEvent = new ArrayList<ArrayList<String>>();
+		compTasks = new ArrayList<ArrayList<String>>();
+		compEvent = new ArrayList<ArrayList<String>>();
 	}
+	
 	public void configureIncompleteTasks(FileLinker fileLink) {
+		incTasks = new ArrayList<ArrayList<String>>();
 		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
 				
 		for(int i = 0; i < incompleteTasks.size(); i++) {
@@ -63,6 +56,7 @@ public class DataUI {
 	}
 	
 	public void configureIncompleteEvents(FileLinker fileLink) {
+		incEvent = new ArrayList<ArrayList<String>>();
 		ArrayList<TaskCard> incompleteEvents = fileLink.getIncompleteEvents();
 		
 		for(int i = 0; i < incompleteEvents.size(); i++) {
@@ -75,6 +69,7 @@ public class DataUI {
 	}
 	
 	public void configureCompletedTasks(FileLinker fileLink) {
+		compTasks = new ArrayList<ArrayList<String>>();
 		ArrayList<TaskCard> completedTasks = fileLink.getCompletedTasks();
 		
 		for(int i = 0; i < completedTasks.size(); i++) {
@@ -87,6 +82,7 @@ public class DataUI {
 	}
 	
 	public void configureCompletedEvents(FileLinker fileLink) {
+		compEvent = new ArrayList<ArrayList<String>>();
 		ArrayList<TaskCard> completedEvents = fileLink.getIncompleteEvents();
 		
 		for(int i = 0; i < completedEvents.size(); i++) {
