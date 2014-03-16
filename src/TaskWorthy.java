@@ -95,7 +95,6 @@ public class TaskWorthy {
 			String userInput = scan.nextLine();
 			
 			if(hasInput(userInput)) {
-				response = commandHandler.executeCommand(userInput);
 				dataProcessed = commandHandler.executeCmd(userInput);
 				print(dataProcessed.getFeedback());
 				/*
