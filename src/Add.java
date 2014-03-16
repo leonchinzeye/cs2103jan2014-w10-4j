@@ -7,6 +7,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Add {
+	private boolean state_add_float_task;
+	private boolean state_add_timed_task;
+	private boolean state_add_timed_event;
+	private boolean state_add_all_day_event;
+	private boolean state_add_repeating_event;
+	
+	private static final int FIRST_ARGUMENT = 0;
+	
 	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
@@ -19,12 +27,61 @@ public class Add {
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	private static boolean successWriteToFile = false;
 	
-	private static final String UNRECOGNIZABLE_COMMAND = "You must have typed something wrongly! We can't recognize that command.";
+	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String ADD_SUCCESS = "%s has been successfully added!";
-	private static final Object COMMAND_QUIT_TO_TOP = "!q";
+	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
+	public Add() {
+		initialiseAddCmdTable();
+		state_add_float_task = false;
+		state_add_timed_task = false;
+		state_add_timed_event = false;
+		state_add_all_day_event = false;
+		state_add_repeating_event = false;
+	}
+	
+	public boolean executeA(String userInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		
+		if(newAddCmd()) {
+			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+			String cmd = tokenizedInput[FIRST_ARGUMENT];
+			
+			if(addCmdTable.containsKey(cmd) != true) {
+				notRecognisableCmd(fileLink, dataUI);
+			} else {
+				
+			}
+		} else if(state_add_float_task) {
+			
+		} else if(state_add_timed_task) {
+			
+		} else if(state_add_timed_event) {
+			
+		} else if(state_add_all_day_event) {
+		
+		} else {
+			
+		}
+		
+		return success;
+	}
+	
+	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
+		RefreshUI.executeDis(fileLink, dataUI);
+		dataUI.setFeedback(FEEDBACK_UNRECOGNIZABLE_COMMAND);
+	}
+
+	private boolean newAddCmd() {
+		if(state_add_float_task == false && state_add_timed_task == false
+				&& state_add_timed_event == false && state_add_all_day_event == false
+				&& state_add_repeating_event == false)
+			return true;
+		return false;
+	}
+
 	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		String response = "";
 		initialiseAddCmdTable();
@@ -32,7 +89,7 @@ public class Add {
 		if(checkAddCmdInput(tokenizedInput[0]) == true) {
 			response = performAddCommand(tokenizedInput, fileLink);
 		} else {
-			response = UNRECOGNIZABLE_COMMAND;
+			response = FEEDBACK_UNRECOGNIZABLE_COMMAND;
 		}
 		return response;
 	}
