@@ -20,15 +20,18 @@ public class FileLinker {
 		this.completedEvents = Storage.openFile(Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
 	}
 	
+	public void addEvent(TaskCard taskToBeAdded) {
+		incompleteEvents.add(taskToBeAdded);
+		callStorageWriteIncompleteEvents();
+	}
+	
 	/**
 	 * method that add logic will call to update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public boolean addHandling(TaskCard taskToBeAdded) {
+	public void addHandling(TaskCard taskToBeAdded) {
 		incompleteTasks.add(taskToBeAdded);
 		callStorageWriteIncompleteTasks();
-		
-		return true;
 	}
 		
 	public ArrayList<TaskCard> getIncompleteTasks() {

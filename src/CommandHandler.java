@@ -67,15 +67,13 @@ public class CommandHandler {
 		boolean success;
 		
 		if(state_add == true) {
-			/*
-			success = addHandler.executeA(userInput, fileLink, dataUI);
+			success = addHandler.executeAdd(userInput, fileLink, dataUI);
 			
 			if(success == true) {
 				state_add = false;
 			} else {
 				state_add = true;
 			}
-			*/
 		} else if(state_del == true) {
 			success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
 			if(success == true) {
