@@ -62,7 +62,7 @@ public class Delete {
 			
 			if(cmdTable.containsKey(cmd) != true) {
 				notRecognisableCmd(fileLink, dataUI);
-				return success = true;
+				return success = false;
 			} else {
 				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}

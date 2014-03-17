@@ -14,6 +14,7 @@ public class Add {
 	private boolean state_add_repeating_event;
 	
 	private static final int FIRST_ARGUMENT = 0;
+	private static final int SECOND_ARGUMENT = 1;
 	
 	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
@@ -51,8 +52,9 @@ public class Add {
 			
 			if(addCmdTable.containsKey(cmd) != true) {
 				notRecognisableCmd(fileLink, dataUI);
+				return success = false;
 			} else {
-				
+				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
 		} else if(state_add_float_task) {
 			
@@ -69,6 +71,33 @@ public class Add {
 		return success;
 	}
 	
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink,
+			DataUI dataUI) {
+		boolean success = false;
+		boolean noIndexArgument = false;
+		String addInput = null;
+		
+		if(tokenizedInput.length < 2) {
+			noIndexArgument = true;
+		} else {
+			addInput = tokenizedInput[SECOND_ARGUMENT]; 
+		}
+		
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
+		
+		switch(addCmdTable.get(cmd)) {
+			case 1:
+			case 2:
+				addTask(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+				break;
+			case 3:
+				
+		
+		
+		}
+		return success;
+	}
+
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
 		RefreshUI.executeDis(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNIZABLE_COMMAND);
@@ -87,13 +116,14 @@ public class Add {
 		initialiseAddCmdTable();
 		
 		if(checkAddCmdInput(tokenizedInput[0]) == true) {
-			response = performAddCommand(tokenizedInput, fileLink);
+			//response = performAddCommand(tokenizedInput, fileLink);
 		} else {
 			response = FEEDBACK_UNRECOGNIZABLE_COMMAND;
 		}
 		return response;
 	}
 	
+	/*
 	private static String performAddCommand(String[] tokenizedInput, FileLinker fileLink) {
 		String response = "";
 		String taskDetails = "";
@@ -129,7 +159,8 @@ public class Add {
 		}
 		return taskDetails;
 	}
-
+	*/
+	/*
 	private static String identifyAddCmdTypeAndPerform(String cmd, String taskDetails, FileLinker fileLink) {
 		int addType = addCmdTable.get(cmd);
 		String response = "";
@@ -153,7 +184,8 @@ public class Add {
 		} 
 		return response;
 	}
-
+	*/
+	
 	/**
 	 * Main add function for adding tasks.
 	 * Will parse the second entry in the array into Date and Time
@@ -163,25 +195,30 @@ public class Add {
 	 * Input Format: [Name], [EndDate EndTime], [Optional Priority]
 	 * @param argument
 	 * @author Omar Khalid
+	 * @param dataUI 
 	 */
-	private static String addTask(String argument, FileLinker fileLink) {
-		String response = "";
+	private boolean addTask(String argument, FileLinker fileLink, DataUI dataUI) {
+		boolean success;
+		
 		String[] argArray = argument.split(";");
 		TaskCard taskToBeAdded = new TaskCard();
 		
 		if(argArray.length < 2 || argArray.length > 3) {
 			//catch and print error message
 			//wrong format, please re-enter valid format [][][]
-			print("not valid argument");
-			response = null;
+			dataUI.setFeedback("That was an invalid format for adding a task :(");
+			state_add_timed_task = true;
+			return success = false;
 		} else { 
+			
 			setTaskDetails(argArray, taskToBeAdded);
 			setStartDateAndTime(taskToBeAdded);
 			setEndDateAndTime(argArray[1], taskToBeAdded);
 			fileLink.addHandling(taskToBeAdded);
+			success = true;
 		}
 		
-		return response;
+		return success;
 	}
 
 	private static void print(String message) {
@@ -189,8 +226,10 @@ public class Add {
 		System.out.println(message);
 	}
 
-	private static void setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
-		taskToBeAdded.setName(argArray[0]);
+	private boolean setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+		boolean success = true;
+		
+		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
 		taskToBeAdded.setType("T");
 		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
@@ -198,6 +237,8 @@ public class Add {
 		} else {
 			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
 		}
+		
+		return success;
 	}
 	
 	private static void setEndDateAndTime(String endDate, TaskCard taskToBeAdded) {
@@ -240,8 +281,9 @@ public class Add {
 		}
 	}
 	
-	private static void setStartDateAndTime(TaskCard taskToBeAdded) {
+	private boolean setStartDateAndTime(TaskCard taskToBeAdded) {
 		taskToBeAdded.setStartDay(today);
+		return true;
 	}
 	
 	private static void setFloatingEnd(TaskCard taskToBeAdded) {
