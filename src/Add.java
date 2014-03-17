@@ -16,6 +16,12 @@ public class Add {
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 	
+	private static final int ADD_TASK = 1;
+	private static final int ADD_TIMED_TASK = 2;
+	private static final int ADD_FLOATING_TASK = 3;
+	private static final int ADD_EVENT = 4;
+	private static final int ADD_REPEATING_EVENT = 5;
+	
 	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
@@ -29,6 +35,7 @@ public class Add {
 	private static boolean successWriteToFile = false;
 	
 	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
+	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String ADD_SUCCESS = "%s has been successfully added!";
 	private static final String COMMAND_QUIT_TO_TOP = "!q";
@@ -43,7 +50,7 @@ public class Add {
 		state_add_repeating_event = false;
 	}
 	
-	public boolean executeA(String userInput, FileLinker fileLink, DataUI dataUI) {
+	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		
 		if(newAddCmd()) {
@@ -59,7 +66,7 @@ public class Add {
 		} else if(state_add_float_task) {
 			
 		} else if(state_add_timed_task) {
-			
+			success = addTask(userInput, fileLink, dataUI);
 		} else if(state_add_timed_event) {
 			
 		} else if(state_add_all_day_event) {
@@ -86,14 +93,19 @@ public class Add {
 		String cmd = tokenizedInput[FIRST_ARGUMENT];
 		
 		switch(addCmdTable.get(cmd)) {
-			case 1:
-			case 2:
-				addTask(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+			case ADD_TASK:
+			case ADD_TIMED_TASK:
+				success = addTask(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
 				break;
-			case 3:
+			case ADD_FLOATING_TASK:
 				
-		
-		
+				break;
+			case ADD_EVENT:
+				
+				break;
+			case ADD_REPEATING_EVENT:
+				
+				break;
 		}
 		return success;
 	}
@@ -111,81 +123,6 @@ public class Add {
 		return false;
 	}
 
-	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
-		String response = "";
-		initialiseAddCmdTable();
-		
-		if(checkAddCmdInput(tokenizedInput[0]) == true) {
-			//response = performAddCommand(tokenizedInput, fileLink);
-		} else {
-			response = FEEDBACK_UNRECOGNIZABLE_COMMAND;
-		}
-		return response;
-	}
-	
-	/*
-	private static String performAddCommand(String[] tokenizedInput, FileLinker fileLink) {
-		String response = "";
-		String taskDetails = "";
-		
-		if(tokenizedInput.length < 2) {
-			taskDetails = getTaskDetailsFromUser();
-			
-			if(taskDetails.equals(COMMAND_QUIT_TO_TOP)) {
-				response = null;
-				return response;
-			} else {
-				response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
-			}
-		} else {
-			taskDetails = tokenizedInput[1];
-			response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
-		}
-		
-		return response;
-	}
-
-	private static String getTaskDetailsFromUser() {
-		boolean enteredInput = false;
-		String taskDetails = "";
-		
-		while(enteredInput == false) {
-			print("You seem to be forgetting something. Please enter a task to be added.");
-			
-			if(scan.hasNext()) {
-				taskDetails = scan.nextLine();
-				enteredInput = true;
-			}
-		}
-		return taskDetails;
-	}
-	*/
-	/*
-	private static String identifyAddCmdTypeAndPerform(String cmd, String taskDetails, FileLinker fileLink) {
-		int addType = addCmdTable.get(cmd);
-		String response = "";
-	
-		switch(addType) {
-			case 1:
-			case 2:
-				response = addTask(taskDetails, fileLink);
-				break;
-			case 3:
-				addFloatingTask(taskDetails, fileLink);
-				break;
-			case 4:
-				addEvent(taskDetails, fileLink);
-				break;
-			case 5:
-				addRepeatingEvent(taskDetails, fileLink);
-				break;
-			default:
-				break;
-		} 
-		return response;
-	}
-	*/
-	
 	/**
 	 * Main add function for adding tasks.
 	 * Will parse the second entry in the array into Date and Time
@@ -204,51 +141,24 @@ public class Add {
 		TaskCard taskToBeAdded = new TaskCard();
 		
 		if(argArray.length < 2 || argArray.length > 3) {
-			//catch and print error message
-			//wrong format, please re-enter valid format [][][]
-			dataUI.setFeedback("That was an invalid format for adding a task :(");
+			dataUI.setFeedback(FEEDBACK_INVALID_FORMAT_TASK);
 			state_add_timed_task = true;
 			return success = false;
 		} else { 
 			
-			setTaskDetails(argArray, taskToBeAdded);
-			setStartDateAndTime(taskToBeAdded);
-			setEndDateAndTime(argArray[1], taskToBeAdded);
-			fileLink.addHandling(taskToBeAdded);
-			success = true;
+			if(setEndDateAndTime(argArray[1], taskToBeAdded) == true) {
+				setTaskDetails(argArray, taskToBeAdded);
+				setStartDateAndTime(taskToBeAdded);
+				fileLink.addHandling(taskToBeAdded);
+				RefreshUI.executeDis(fileLink, dataUI);
+				state_add_timed_task = false;
+				success = true;
+			} else {
+				state_add_timed_task = true;
+				success = false;
+			}
 		}
-		
 		return success;
-	}
-
-	private static void print(String message) {
-		// TODO Auto-generated method stub
-		System.out.println(message);
-	}
-
-	private boolean setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
-		boolean success = true;
-		
-		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
-		taskToBeAdded.setType("T");
-		taskToBeAdded.setFrequency("N");
-		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
-		} else {
-			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
-		}
-		
-		return success;
-	}
-	
-	private static void setEndDateAndTime(String endDate, TaskCard taskToBeAdded) {
-		try {
-			endDay.setTime(dateAndTime.parse(endDate));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		taskToBeAdded.setEndDay(endDay); //stores the Calendar object
 	}
 
 	/**
@@ -258,7 +168,9 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 */
-	private static void addFloatingTask(String argument, FileLinker fileLink) {
+	private void addFloatingTask(String argument, FileLinker fileLink) {
+		boolean success;
+		
 		String argArray[] = argument.split(";");
 		TaskCard taskToBeAdded = new TaskCard();
 		
@@ -268,27 +180,6 @@ public class Add {
 		
 		fileLink.addHandling(taskToBeAdded);
 		
-	}
-	
-	private static void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
-		taskToBeAdded.setName(argArray[0]);
-		taskToBeAdded.setType("FT");
-		taskToBeAdded.setFrequency("N");
-		if (argArray.length == 2) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[1]));
-		} else {
-			taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
-		}
-	}
-	
-	private boolean setStartDateAndTime(TaskCard taskToBeAdded) {
-		taskToBeAdded.setStartDay(today);
-		return true;
-	}
-	
-	private static void setFloatingEnd(TaskCard taskToBeAdded) {
-		endDay.set(9999, 11, 31, 23, 59);
-		taskToBeAdded.setEndDay(endDay);
 	}
 
 	/**
@@ -313,7 +204,7 @@ public class Add {
 			addTimedEvent (argArray, dateRange, taskToBeAdded);
 		}
 	}
-	
+
 	private static void addAllDayEvent (String[] argArray, TaskCard taskToBeAdded) {		
 		Date startDate = new Date();
 		try { //get the Start Date ONLY
@@ -329,17 +220,6 @@ public class Add {
 		setAllDayEnd(taskToBeAdded);
 	}
 
-	private static void setAllDayDetails(String[] argArray, TaskCard taskToBeAdded) {
-		taskToBeAdded.setName(argArray[0]);
-		taskToBeAdded.setType("AE");
-		taskToBeAdded.setFrequency("N");
-		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
-		} else {
-			taskToBeAdded.setPriority(2);
-		}
-	}
-	
 	private static void addTimedEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		boolean withEndDate = true; //to see whether endDate was input by user
 		
@@ -386,35 +266,6 @@ public class Add {
 		}
 	}
 
-	private static void setTimedEventWithoutEndDate(Date endTime, TaskCard taskToBeAdded) {
-		endDay.setTime(endTime);
-		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
-		//events are a couple hours apart and are on two sequential days
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventNextDayEnd(taskToBeAdded);
-		} else {
-		//events are only a couple hours apart and they're on the same day
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventSameDayEnd(taskToBeAdded);
-		}
-	}
-
-	private static void setTimedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
-		taskToBeAdded.setName(argArray[0]);
-		taskToBeAdded.setType("E");
-		taskToBeAdded.setFrequency("N");
-		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
-		} else {
-			taskToBeAdded.setPriority(2);
-		}
-	}
-	
-	private static void setTimedEventEnd(Date endDateAndTime, TaskCard taskToBeAdded) {
-		endDay.setTime(endDateAndTime);
-		taskToBeAdded.setEndDay(endDay);
-	}
-	
 	/**
 	 * Adds an event, all-day or (same day) timed event that repeats based on user preference
 	 * Frequency settings: Daily, Weekly, Monthly, Yearly
@@ -436,7 +287,7 @@ public class Add {
 			addTimedRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		}
 	}
-	
+
 	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
 		try { //get the Start Date AND Start Time
@@ -451,7 +302,7 @@ public class Add {
 		setAllDayStart(taskToBeAdded);
 		setAllDayEnd(taskToBeAdded);
 	}
-	
+
 	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
 		Date endTime = new Date();
@@ -483,6 +334,91 @@ public class Add {
 		}
 	}
 
+	private void setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
+		taskToBeAdded.setType("T");
+		taskToBeAdded.setFrequency("N");
+		if (argArray.length == 3) {
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
+		}
+	}
+	
+	private boolean setEndDateAndTime(String endDate, TaskCard taskToBeAdded) {
+		boolean success;
+		try {
+			endDay.setTime(dateAndTime.parse(endDate));
+			taskToBeAdded.setEndDay(endDay);
+			success = true;
+		} catch (ParseException e) {
+			success = false;
+		}
+		
+		return success;
+	}
+
+	private static void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("FT");
+		taskToBeAdded.setFrequency("N");
+		if (argArray.length == 2) {
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[1]));
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
+		}
+	}
+	
+	private boolean setStartDateAndTime(TaskCard taskToBeAdded) {
+		taskToBeAdded.setStartDay(today);
+		return true;
+	}
+	
+	private static void setFloatingEnd(TaskCard taskToBeAdded) {
+		endDay.set(9999, 11, 31, 23, 59);
+		taskToBeAdded.setEndDay(endDay);
+	}
+
+	private static void setAllDayDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("AE");
+		taskToBeAdded.setFrequency("N");
+		if (argArray.length == 3) {
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+		} else {
+			taskToBeAdded.setPriority(2);
+		}
+	}
+	
+	private static void setTimedEventWithoutEndDate(Date endTime, TaskCard taskToBeAdded) {
+		endDay.setTime(endTime);
+		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
+		//events are a couple hours apart and are on two sequential days
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventNextDayEnd(taskToBeAdded);
+		} else {
+		//events are only a couple hours apart and they're on the same day
+			setTimedEventStart(taskToBeAdded);
+			setTimedEventSameDayEnd(taskToBeAdded);
+		}
+	}
+
+	private static void setTimedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(argArray[0]);
+		taskToBeAdded.setType("E");
+		taskToBeAdded.setFrequency("N");
+		if (argArray.length == 3) {
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+		} else {
+			taskToBeAdded.setPriority(2);
+		}
+	}
+	
+	private static void setTimedEventEnd(Date endDateAndTime, TaskCard taskToBeAdded) {
+		endDay.setTime(endDateAndTime);
+		taskToBeAdded.setEndDay(endDay);
+	}
+	
 	private static void setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("RE");
@@ -546,7 +482,83 @@ public class Add {
 		addCmdTable.put("/add", 1);
 		addCmdTable.put("/addt", 2);
 		addCmdTable.put("/addf", 3);
-		addCmdTable.put("/adde", 3);
-		addCmdTable.put("/addr", 3);
+		addCmdTable.put("/adde", 4);
+		addCmdTable.put("/addr", 5);
 	}
+	
+	/*
+	public static String executeAdd(String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
+		String response = "";
+		initialiseAddCmdTable();
+		
+		if(checkAddCmdInput(tokenizedInput[0]) == true) {
+			//response = performAddCommand(tokenizedInput, fileLink);
+		} else {
+			response = FEEDBACK_UNRECOGNIZABLE_COMMAND;
+		}
+		return response;
+	}
+	*/
+	/*
+	private static String performAddCommand(String[] tokenizedInput, FileLinker fileLink) {
+		String response = "";
+		String taskDetails = "";
+		
+		if(tokenizedInput.length < 2) {
+			taskDetails = getTaskDetailsFromUser();
+			
+			if(taskDetails.equals(COMMAND_QUIT_TO_TOP)) {
+				response = null;
+				return response;
+			} else {
+				response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
+			}
+		} else {
+			taskDetails = tokenizedInput[1];
+			response = identifyAddCmdTypeAndPerform(tokenizedInput[0], taskDetails, fileLink);
+		}
+		
+		return response;
+	}
+
+	private static String getTaskDetailsFromUser() {
+		boolean enteredInput = false;
+		String taskDetails = "";
+		
+		while(enteredInput == false) {
+			print("You seem to be forgetting something. Please enter a task to be added.");
+			
+			if(scan.hasNext()) {
+				taskDetails = scan.nextLine();
+				enteredInput = true;
+			}
+		}
+		return taskDetails;
+	}
+	*/
+	/*
+	private static String identifyAddCmdTypeAndPerform(String cmd, String taskDetails, FileLinker fileLink) {
+		int addType = addCmdTable.get(cmd);
+		String response = "";
+	
+		switch(addType) {
+			case 1:
+			case 2:
+				response = addTask(taskDetails, fileLink);
+				break;
+			case 3:
+				addFloatingTask(taskDetails, fileLink);
+				break;
+			case 4:
+				addEvent(taskDetails, fileLink);
+				break;
+			case 5:
+				addRepeatingEvent(taskDetails, fileLink);
+				break;
+			default:
+				break;
+		} 
+		return response;
+	}
+	*/
 }
