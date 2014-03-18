@@ -28,6 +28,7 @@ public class CommandHandler {
 	public CommandHandler() {
 		addHandler = new Add();
 		deleteHandler = new Delete();
+		
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
 		
@@ -76,6 +77,7 @@ public class CommandHandler {
 			}
 		} else if(state_del == true) {
 			success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
+			
 			if(success == true) {
 				state_del = false;
 			} else {

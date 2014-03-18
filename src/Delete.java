@@ -116,6 +116,8 @@ public class Delete {
 						
 					if(success == false) {
 						state_inc_tasks = true;
+					} else {
+						state_inc_tasks = false;
 					}
 				}
 				break;
@@ -130,6 +132,8 @@ public class Delete {
 					
 					if(success == false) {
 						state_inc_event = true;
+					} else {
+						state_inc_event = false;
 					}
 				}
 				break;
@@ -144,6 +148,8 @@ public class Delete {
 						
 					if(success == false) {
 						state_comp_tasks = true;
+					} else {
+						state_comp_tasks = false;
 					}
 				}
 				break;
@@ -158,6 +164,8 @@ public class Delete {
 					
 					if(success == false) {
 						state_comp_event = true;
+					} else {
+						state_comp_event = false;
 					}
 				}
 				break;
