@@ -9,8 +9,7 @@ import java.text.SimpleDateFormat;
 public class Add {
 	private boolean state_add_float_task;
 	private boolean state_add_timed_task;
-	private boolean state_add_timed_event;
-	private boolean state_add_all_day_event;
+	private boolean state_add_event;
 	private boolean state_add_repeating_event;
 	
 	private static final int FIRST_ARGUMENT = 0;
@@ -36,6 +35,7 @@ public class Add {
 	
 	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
 	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
+	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String ADD_SUCCESS = "%s has been successfully added!";
 	private static final String COMMAND_QUIT_TO_TOP = "!q";
@@ -45,8 +45,7 @@ public class Add {
 		initialiseAddCmdTable();
 		state_add_float_task = false;
 		state_add_timed_task = false;
-		state_add_timed_event = false;
-		state_add_all_day_event = false;
+		state_add_event = false;
 		state_add_repeating_event = false;
 	}
 	
@@ -67,9 +66,7 @@ public class Add {
 			
 		} else if(state_add_timed_task) {
 			success = addTask(userInput, fileLink, dataUI);
-		} else if(state_add_timed_event) {
-			
-		} else if(state_add_all_day_event) {
+		} else if(state_add_event) {
 		
 		} else {
 			
@@ -95,13 +92,31 @@ public class Add {
 		switch(addCmdTable.get(cmd)) {
 			case ADD_TASK:
 			case ADD_TIMED_TASK:
-				success = addTask(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+				if(noIndexArgument) {
+					dataUI.setFeedback(FEEDBACK_PENDING_TIMED_TASK);
+					state_add_timed_task = true;
+					return success = false;
+				} else {
+					success = addTask(addInput, fileLink, dataUI);
+				}
 				break;
 			case ADD_FLOATING_TASK:
-				
+				if(noIndexArgument) {
+					dataUI.setFeedback(FEEDBACK_PENDING_TIMED_TASK);
+					state_add_float_task = true;
+					return success = false;
+				} else {
+					success = addFloatingTask(addInput, fileLink, dataUI);
+				}
 				break;
 			case ADD_EVENT:
-				
+				if(noIndexArgument) {
+					dataUI.setFeedback("You didn't enter a event! Please enter a event!");
+					state_add_event = true;
+					return success = false;
+				} else {
+					success = addEvent(addInput, fileLink, dataUI);
+				}
 				break;
 			case ADD_REPEATING_EVENT:
 				
@@ -111,14 +126,13 @@ public class Add {
 	}
 
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
-		RefreshUI.executeDis(fileLink, dataUI);
+		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNIZABLE_COMMAND);
 	}
 
 	private boolean newAddCmd() {
 		if(state_add_float_task == false && state_add_timed_task == false
-				&& state_add_timed_event == false && state_add_all_day_event == false
-				&& state_add_repeating_event == false)
+				&& state_add_event == false && state_add_repeating_event == false)
 			return true;
 		return false;
 	}
@@ -147,10 +161,11 @@ public class Add {
 		} else { 
 			
 			if(setEndDateAndTime(argArray[1], taskToBeAdded) == true) {
-				setTaskDetails(argArray, taskToBeAdded);
+				setTaskDetails(argArray, taskToBeAdded, dataUI);
 				setStartDateAndTime(taskToBeAdded);
 				fileLink.addHandling(taskToBeAdded);
-				RefreshUI.executeDis(fileLink, dataUI);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				
 				state_add_timed_task = false;
 				success = true;
 			} else {
@@ -167,19 +182,30 @@ public class Add {
 	 * Input Format: [Name], [Optional Priority]
 	 * @param argument
 	 * @author Omar Khalid
+	 * @param dataUI 
 	 */
-	private void addFloatingTask(String argument, FileLinker fileLink) {
-		boolean success;
-		
+	private boolean addFloatingTask(String argument, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+	
 		String argArray[] = argument.split(";");
 		TaskCard taskToBeAdded = new TaskCard();
 		
-		setFloatingTaskDetails(argArray, taskToBeAdded);
-		setStartDateAndTime(taskToBeAdded);
-		setFloatingEnd(taskToBeAdded);
-		
-		fileLink.addHandling(taskToBeAdded);
-		
+		if(argArray.length < 1 || argArray.length > 2) {
+			dataUI.setFeedback("That was an invalid format for a floating task! Please re-enter!");
+			state_add_float_task = true;
+			return success = false;
+		} else {
+			setFloatingTaskDetails(argArray, taskToBeAdded);
+			setStartDateAndTime(taskToBeAdded);
+			setFloatingEnd(taskToBeAdded);
+			
+			fileLink.addHandling(taskToBeAdded);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			
+			state_add_float_task = false;
+			success = true;
+		}
+		return success;
 	}
 
 	/**
@@ -192,32 +218,57 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 * @param fileLink 
+	 * @param dataUI 
 	 */
-	private static void addEvent(String argument, FileLinker fileLink) {
+	private boolean addEvent(String argument, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		
 		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
+		
+		if(argArray.length < 2 || argArray.length > 3) {
+			dataUI.setFeedback("That was an invalid format for an event! Please re-enter!");
+			state_add_event = true;
+			return success = false;
+		} else if(dateRange.length < 1) {
+			dataUI.setFeedback("You didn't specify a date or time! Please re-enter!");
+			state_add_event = true;
+			return success = false;
+		} else if(dateRange.length > 2) {
+			dataUI.setFeedback("You've entered an extra timing! Please re-enter!");
+			state_add_event = true;
+			return success = false;
+		}
+		
 		TaskCard taskToBeAdded = new TaskCard();
 		
 		if (dateRange.length == 2) {
-			addAllDayEvent (argArray, taskToBeAdded);
+			success = addAllDayEvent (argArray, taskToBeAdded, dataUI);
 		} else {
 			addTimedEvent (argArray, dateRange, taskToBeAdded);
 		}
+		
+		return success;
 	}
 
-	private static void addAllDayEvent (String[] argArray, TaskCard taskToBeAdded) {		
+	private boolean addAllDayEvent (String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {		
+		boolean success = false;
+		
 		Date startDate = new Date();
 		try { //get the Start Date ONLY
 			startDate = dateString.parse(argArray[1]);
 		} catch (ParseException e) {
-			// Ask user to input date and time in proper format here
-			e.printStackTrace();
+			dataUI.setFeedback("Please enter the date in a correct format");
+			state_add_event = true;
+			success = false;
 		}
 		
 		setAllDayDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDate);
 		setAllDayStart(taskToBeAdded);
 		setAllDayEnd(taskToBeAdded);
+	
+		return success;
 	}
 
 	private static void addTimedEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
@@ -334,12 +385,17 @@ public class Add {
 		}
 	}
 
-	private void setTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+	private void setTaskDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
+		boolean success = false;
 		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
 		taskToBeAdded.setType("T");
 		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+			try {
+				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+			} catch(NumberFormatException e) {
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the task that you want to add!");
+			}
 		} else {
 			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
 		}
@@ -384,7 +440,12 @@ public class Add {
 		taskToBeAdded.setType("AE");
 		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+			try {
+				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+			} catch(NumberFormatException e) {
+				
+			}
+			
 		} else {
 			taskToBeAdded.setPriority(2);
 		}
@@ -479,11 +540,11 @@ public class Add {
 	}
 	
 	private static void initialiseAddCmdTable() {
-		addCmdTable.put("/add", 1);
-		addCmdTable.put("/addt", 2);
-		addCmdTable.put("/addf", 3);
-		addCmdTable.put("/adde", 4);
-		addCmdTable.put("/addr", 5);
+		addCmdTable.put("/add", ADD_TASK);
+		addCmdTable.put("/addt", ADD_TIMED_TASK);
+		addCmdTable.put("/addf", ADD_FLOATING_TASK);
+		addCmdTable.put("/adde", ADD_EVENT);
+		addCmdTable.put("/addr", ADD_REPEATING_EVENT);
 	}
 	
 	/*
