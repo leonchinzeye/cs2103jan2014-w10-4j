@@ -31,12 +31,12 @@ public class RefreshUI {
 	 * error handle the /discard
 	 */
 	
-	public static boolean executeRefresh(FileLinker fileLink, DataUI dataToBe) {
+	public static boolean executeRefresh(FileLinker fileLink, DataUI dataUI) {
 		//should check for events that have passed the designated time (not done yet)
-		dataToBe.configureIncompleteTasks(fileLink);
-		dataToBe.configureIncompleteEvents(fileLink);
-		dataToBe.configureCompletedTasks(fileLink);
-		dataToBe.configureCompletedEvents(fileLink);
+		dataUI.configureIncompleteTasks(fileLink);
+		dataUI.configureIncompleteEvents(fileLink);
+		dataUI.configureCompletedTasks(fileLink);
+		dataUI.configureCompletedEvents(fileLink);
 		
 		return true;
 	}
