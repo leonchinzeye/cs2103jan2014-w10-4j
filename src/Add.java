@@ -37,7 +37,7 @@ public class Add {
 	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
 	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
-	private static final String ADD_SUCCESS = "%s has been successfully added!";
+	private static final String FEEDBACK_ADD_SUCCESS = "%s has been successfully added!";
 	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
@@ -160,9 +160,10 @@ public class Add {
 			return success = false;
 		} else { 
 			
-			if(setEndDateAndTime(argArray[1], taskToBeAdded) == true) {
-				setTaskDetails(argArray, taskToBeAdded, dataUI);
-				setStartDateAndTime(taskToBeAdded);
+			if(setEndDateAndTime(argArray[1], taskToBeAdded, dataUI) == true
+					&& setTaskDetails(argArray, taskToBeAdded, dataUI) == true
+					&& setStartDateAndTime(taskToBeAdded) == true) {
+				
 				fileLink.addHandling(taskToBeAdded);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 				
@@ -190,7 +191,7 @@ public class Add {
 		String argArray[] = argument.split(";");
 		TaskCard taskToBeAdded = new TaskCard();
 		
-		if(argArray.length < 1 || argArray.length > 2) {
+		if(argArray.length != 1) {
 			dataUI.setFeedback("That was an invalid format for a floating task! Please re-enter!");
 			state_add_float_task = true;
 			return success = false;
@@ -242,46 +243,59 @@ public class Add {
 		
 		TaskCard taskToBeAdded = new TaskCard();
 		
-		if (dateRange.length == 2) {
-			success = addAllDayEvent (argArray, taskToBeAdded, dataUI);
+		if (dateRange.length == 1) {
+			success = addAllDayEvent (argArray, taskToBeAdded, dataUI, fileLink);
 		} else {
-			addTimedEvent (argArray, dateRange, taskToBeAdded);
+			addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
 		}
 		
 		return success;
 	}
 
-	private boolean addAllDayEvent (String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {		
+	private boolean addAllDayEvent (String[] argArray, TaskCard taskToBeAdded, DataUI dataUI, FileLinker fileLink) {		
 		boolean success = false;
 		
 		Date startDate = new Date();
+		
 		try { //get the Start Date ONLY
 			startDate = dateString.parse(argArray[1]);
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please enter the date in a correct format");
 			state_add_event = true;
-			success = false;
+			return success = false;
 		}
 		
-		setAllDayDetails(argArray, taskToBeAdded);
-		startDay.setTime(startDate);
-		setAllDayStart(taskToBeAdded);
-		setAllDayEnd(taskToBeAdded);
-	
+		if(setAllDayDetails(argArray, taskToBeAdded, dataUI) == true) {
+			startDay.setTime(startDate);
+			setAllDayStart(taskToBeAdded);
+			setAllDayEnd(taskToBeAdded);
+			
+			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
+			fileLink.addEvent(taskToBeAdded);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			
+			state_add_event = false;
+			success = true;
+		} else {
+			state_add_event = true;
+			success = false;
+		}
 		return success;
 	}
 
-	private static void addTimedEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
+	private boolean addTimedEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded, DataUI dataUI, FileLinker fileLink) {
+		boolean success = false;
 		boolean withEndDate = true; //to see whether endDate was input by user
 		
 		Date startDateAndTime = new Date();
 		Date endDateAndTime = new Date();
 		Date endTime = new Date();
-		try { //get the Start Date AND Start Time
+		try { 																												//get the Start Date AND Start Time
 			startDateAndTime = dateAndTime.parse(dateRange[0].trim());
 		} catch (ParseException e) {
-			// Ask user to input date and time in proper format here
-			e.printStackTrace();
+			dataUI.setFeedback("Please re-enter the event with a proper time format!");
+			state_add_event = true;
+			return success = false;
 		}
 		
 		try { //get the End Date AND End Time
@@ -303,18 +317,32 @@ public class Add {
 			try { //get End Time ONLY
 				endTime = timeString.parse(dateRange[1].trim());
 			} catch (ParseException e) {
-				e.printStackTrace();
+				dataUI.setFeedback("You didn't specify an ending time for the event! Please re-enter with an ending time!");
+				state_add_event = true;
+				return success = false;
 			}
 		}
 		
-		setTimedEventDetails(argArray, taskToBeAdded);
-		startDay.setTime(startDateAndTime);
-		if (withEndDate) { //events span over a couple days
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventEnd(endDateAndTime, taskToBeAdded);
+		if(setTimedEventDetails(argArray, taskToBeAdded, dataUI)) {
+			startDay.setTime(startDateAndTime);
+			if (withEndDate) { //events span over a couple days
+				setTimedEventStart(taskToBeAdded);
+				setTimedEventEnd(endDateAndTime, taskToBeAdded);
+			} else {
+				setTimedEventWithoutEndDate(endTime, taskToBeAdded);
+			}
+			
+			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
+			fileLink.addEvent(taskToBeAdded);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			
+			state_add_event = false;
+			success = true;
 		} else {
-			setTimedEventWithoutEndDate(endTime, taskToBeAdded);
+			state_add_event = true;
+			return success = false;
 		}
+		return success;
 	}
 
 	/**
@@ -328,10 +356,16 @@ public class Add {
 	 * @param fileLink 
 	 */
 	private static void addRepeatingEvent(String argument, FileLinker fileLink) {
+		boolean success;
+		
 		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
 		TaskCard taskToBeAdded = new TaskCard();
 		
+		//check to see if missing parameters for input
+		if(argArray.length < 3 || argArray.length > 4) {
+			
+		}
 		if (dateRange.length == 2) {
 			addAllDayRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		} else {
@@ -385,7 +419,7 @@ public class Add {
 		}
 	}
 
-	private void setTaskDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
+	private boolean setTaskDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
 		boolean success = false;
 		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
 		taskToBeAdded.setType("T");
@@ -393,21 +427,26 @@ public class Add {
 		if (argArray.length == 3) {
 			try {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+				success = true;
 			} catch(NumberFormatException e) {
 				dataUI.setFeedback("Priority has to be a digit! Please re-enter the task that you want to add!");
+				return success = false;
 			}
 		} else {
 			taskToBeAdded.setPriority(DEFAULT_PRIORITY_TASK);
+			success = true;
 		}
+		return success;
 	}
 	
-	private boolean setEndDateAndTime(String endDate, TaskCard taskToBeAdded) {
+	private boolean setEndDateAndTime(String endDate, TaskCard taskToBeAdded, DataUI dataUI) {
 		boolean success;
 		try {
 			endDay.setTime(dateAndTime.parse(endDate));
 			taskToBeAdded.setEndDay(endDay);
 			success = true;
 		} catch (ParseException e) {
+			dataUI.setFeedback("Please re-enter task with a proper date format!");
 			success = false;
 		}
 		
@@ -418,11 +457,8 @@ public class Add {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("FT");
 		taskToBeAdded.setFrequency("N");
-		if (argArray.length == 2) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[1]));
-		} else {
-			taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
-		}
+		taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
+	
 	}
 	
 	private boolean setStartDateAndTime(TaskCard taskToBeAdded) {
@@ -435,20 +471,25 @@ public class Add {
 		taskToBeAdded.setEndDay(endDay);
 	}
 
-	private static void setAllDayDetails(String[] argArray, TaskCard taskToBeAdded) {
+	private boolean setAllDayDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
+		boolean success = false;
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("AE");
 		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
 			try {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+				success = true;
 			} catch(NumberFormatException e) {
-				
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the event you want to add!");
+				return success = false;
 			}
-			
 		} else {
 			taskToBeAdded.setPriority(2);
+			success = true;
 		}
+		
+		return success;
 	}
 	
 	private static void setTimedEventWithoutEndDate(Date endTime, TaskCard taskToBeAdded) {
@@ -464,15 +505,26 @@ public class Add {
 		}
 	}
 
-	private static void setTimedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
+	private boolean setTimedEventDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
+		boolean success = false;
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("E");
 		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
-			taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+			
+			try {
+				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
+				success = true;
+			} catch(NumberFormatException e) {
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the event you want to add!");
+				return success = false;
+			}
 		} else {
 			taskToBeAdded.setPriority(2);
+			success = true;
 		}
+		
+		return success;
 	}
 	
 	private static void setTimedEventEnd(Date endDateAndTime, TaskCard taskToBeAdded) {
