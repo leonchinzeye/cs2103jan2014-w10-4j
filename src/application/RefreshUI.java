@@ -1,5 +1,3 @@
-package application;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -39,6 +37,11 @@ public class RefreshUI {
 		dataUI.configureIncompleteEvents(fileLink);
 		dataUI.configureCompletedTasks(fileLink);
 		dataUI.configureCompletedEvents(fileLink);
+		
+		dataUI.configIncompleteTasks(fileLink);
+		dataUI.configIncompleteEvents(fileLink);
+		dataUI.configCompleteTasks(fileLink);
+		dataUI.configCompletedEvents(fileLink);
 		
 		return true;
 	}

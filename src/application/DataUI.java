@@ -1,4 +1,3 @@
-package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +47,11 @@ public class DataUI {
 		incEvent = new ArrayList<ArrayList<String>>();
 		compTasks = new ArrayList<ArrayList<String>>();
 		compEvent = new ArrayList<ArrayList<String>>();
+		
+		incompleteTasks = new ArrayList<TaskDataUI>();
+		incompleteEvents = new ArrayList<EventDataUI>();
+		completeTasks = new ArrayList<TaskDataUI>();
+		completeEvents = new ArrayList<EventDataUI>();
 	}
 	
 	public void configureIncompleteTasks(FileLinker fileLink) {
@@ -111,7 +115,7 @@ public class DataUI {
 	 * @param fileLink
 	 */
 	public void configIncompleteEvents(FileLinker fileLink) {
-		completeEvents = new ArrayList<EventDataUI>();
+		incompleteEvents = new ArrayList<EventDataUI>();
 		ArrayList<TaskCard> incompEvents = fileLink.getIncompleteEvents();
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
@@ -143,7 +147,7 @@ public class DataUI {
 				}
 			}
 			
-			completeEvents.add(eventData);
+			incompleteEvents.add(eventData);
 		}
 	}
 	
@@ -225,7 +229,7 @@ public class DataUI {
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-");	//start date
+				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-");		//start date
 				eventData.setStartTime("-");																		//no start time
 				eventData.setEndDate(dateFormat.format(startDay.getTime()));	//end date	
 				eventData.setEndTime("-");																		//no end time
