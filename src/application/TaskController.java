@@ -100,7 +100,6 @@ public class TaskController {
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		dui = new DataUI();
-		fileLink = new FileLinker();
 	}
 	
 	@FXML
@@ -138,6 +137,7 @@ public class TaskController {
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
+		fileLink = new FileLinker();
 		RefreshUI.executeRefresh(fileLink, dui);
 		incompleteEvents.addAll(dui.getIncompleteEvents());
 		incompleteTasks.addAll(dui.getIncompleteTasks());
@@ -160,5 +160,8 @@ public class TaskController {
 		response = dui.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		setUI(ui);
 	}
 }
