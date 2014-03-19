@@ -29,6 +29,8 @@ public class TaskController {
 	@FXML
 	private TableColumn<TaskDataUI, Integer> colTaskIDIncomplete;
 	@FXML
+	private TableColumn<TaskDataUI, String> colTaskPriorityIncomplete;
+	@FXML
 	private TableColumn<TaskDataUI, String> colTaskNameIncomplete;
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskEndDateIncomplete;
@@ -37,6 +39,8 @@ public class TaskController {
 	
 	@FXML
 	private TableColumn<EventDataUI, Integer> colEventIDIncomplete;
+	@FXML
+	private TableColumn<EventDataUI, String> colEventPriorityIncomplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventNameIncomplete;
 	@FXML
@@ -53,6 +57,8 @@ public class TaskController {
 	@FXML
 	private TableColumn<TaskDataUI, Integer> colTaskIDComplete;
 	@FXML
+	private TableColumn<TaskDataUI, String> colTaskPriorityComplete;
+	@FXML
 	private TableColumn<TaskDataUI, String> colTaskNameComplete;
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskEndDateComplete;
@@ -61,6 +67,8 @@ public class TaskController {
 	
 	@FXML
 	private TableColumn<EventDataUI, Integer> colEventIDComplete;
+	@FXML
+	private TableColumn<EventDataUI, String> colEventPriorityComplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventNameComplete;
 	@FXML
@@ -98,16 +106,34 @@ public class TaskController {
 	@FXML
 	private void initialize() {
 		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, Integer>("ID"));
+		colTaskPriorityIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
 		colTaskNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
-		//colTaskEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
-		//colTaskEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
+		colTaskEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
+		colTaskEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
+		
 		colEventIDIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, Integer>("ID"));
+		colEventPriorityIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("priority"));
 		colEventNameIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
-		//colEventStartDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
-		//colEventStartTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
-		//colEventEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
-		//colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
+		colEventStartDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
+		colEventStartTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
+		colEventEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
+		colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
 		colEventFrequencyIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
+		
+		colTaskIDComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, Integer>("ID"));
+		colTaskPriorityComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
+		colTaskNameComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
+		colTaskEndDateComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
+		colTaskEndTimeComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
+		
+		colEventIDComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, Integer>("ID"));
+		colEventPriorityComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("priority"));
+		colEventNameComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
+		colEventStartDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
+		colEventStartTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
+		colEventEndDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
+		colEventEndTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
+		colEventFrequencyComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
 	}
 	
 	public void setUI(UI ui) {
