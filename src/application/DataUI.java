@@ -69,6 +69,48 @@ public class DataUI {
 		}
 	}
 	
+	public void configureCompletedEvents(FileLinker fileLink) {
+		compEvent = new ArrayList<ArrayList<String>>();
+		ArrayList<TaskCard> completedEvents = fileLink.getIncompleteEvents();
+		
+		for(int i = 0; i < completedEvents.size(); i++) {
+			ArrayList<String> eventDetails = new ArrayList<String>();
+			TaskCard task = completedEvents.get(i);
+			
+			eventDetails = getInfoForEvents(task);
+			compEvent.add(eventDetails);
+		}		
+	}
+
+	public void configureIncompleteEvents(FileLinker fileLink) {
+		incEvent = new ArrayList<ArrayList<String>>();
+		ArrayList<TaskCard> incompleteEvents = fileLink.getIncompleteEvents();
+		
+		for(int i = 0; i < incompleteEvents.size(); i++) {
+			ArrayList<String> eventDetails = new ArrayList<String>();
+			TaskCard task = incompleteEvents.get(i);
+			
+			eventDetails = getInfoForEvents(task);
+			incEvent.add(eventDetails);
+		}
+	}
+	
+	public void configureCompletedTasks(FileLinker fileLink) {
+		compTasks = new ArrayList<ArrayList<String>>();
+		ArrayList<TaskCard> completedTasks = fileLink.getCompletedTasks();
+		
+		for(int i = 0; i < completedTasks.size(); i++) {
+			ArrayList<String> taskDetails = new ArrayList<String>();
+			TaskCard task = completedTasks.get(i);
+			
+			taskDetails = getInfoForTasks(task);
+			compTasks.add(taskDetails);
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * Incomplete Task 
 	 * @param fileLink
@@ -97,21 +139,7 @@ public class DataUI {
 			incompleteTasks.add(taskData);
 		}
 	}
-	
-	
-	public void configureIncompleteEvents(FileLinker fileLink) {
-		incEvent = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> incompleteEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 0; i < incompleteEvents.size(); i++) {
-			ArrayList<String> eventDetails = new ArrayList<String>();
-			TaskCard task = incompleteEvents.get(i);
-			
-			eventDetails = getInfoForEvents(task);
-			incEvent.add(eventDetails);
-		}
-	}
-	
+
 	/**
 	 * For incomplete Events
 	 * @param fileLink
@@ -152,23 +180,7 @@ public class DataUI {
 			incompleteEvents.add(eventData);
 		}
 	}
-	
-	public void configureCompletedTasks(FileLinker fileLink) {
-		compTasks = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> completedTasks = fileLink.getCompletedTasks();
-		
-		for(int i = 0; i < completedTasks.size(); i++) {
-			ArrayList<String> taskDetails = new ArrayList<String>();
-			TaskCard task = completedTasks.get(i);
-			
-			taskDetails = getInfoForTasks(task);
-			compTasks.add(taskDetails);
-		}
-	}
-	
-	
-	
-	
+
 	/**
 	 * Complete Task 
 	 * @param fileLink
@@ -196,20 +208,6 @@ public class DataUI {
 			}
 			completeTasks.add(taskData);
 		}
-	}
-	
-	
-	public void configureCompletedEvents(FileLinker fileLink) {
-		compEvent = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> completedEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 0; i < completedEvents.size(); i++) {
-			ArrayList<String> eventDetails = new ArrayList<String>();
-			TaskCard task = completedEvents.get(i);
-			
-			eventDetails = getInfoForEvents(task);
-			compEvent.add(eventDetails);
-		}		
 	}
 	
 	
@@ -326,6 +324,22 @@ public class DataUI {
 	
 	public ArrayList<ArrayList<String>> getCompEvent() {
 		return compEvent;
+	}
+	
+	public ArrayList<TaskDataUI> getIncompleteTasks() {
+		return incompleteTasks;
+	}
+		
+	public ArrayList<EventDataUI> getIncompleteEvents() {
+		return incompleteEvents;
+	}
+	
+	public ArrayList<TaskDataUI> getCompleteTasks() {
+		return completeTasks;
+	}
+	
+	public ArrayList<EventDataUI> getCompleteEvents() {
+		return completeEvents;
 	}
 	
 	public String getFeedback() {
