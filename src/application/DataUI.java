@@ -123,7 +123,7 @@ public class DataUI {
 				
 		for(int i = 1; i <= incompTasks.size(); i++) {
 			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i);
+			TaskCard task = incompTasks.get(i - 1);
 			
 			taskData.setID("" + i);
 			taskData.setPriority("" + task.getPriority());
@@ -150,7 +150,7 @@ public class DataUI {
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
 			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i);
+			TaskCard event = incompEvents.get(i - 1);
 			
 			eventData.setID("" + i);
 			eventData.setName(event.getName());
@@ -193,7 +193,7 @@ public class DataUI {
 				
 		for(int i = 1; i <= incompTasks.size(); i++) {
 			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i);
+			TaskCard task = incompTasks.get(i - 1);
 			
 			taskData.setID("" + i);
 			taskData.setPriority("" + task.getPriority());
@@ -221,7 +221,7 @@ public class DataUI {
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
 			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i);
+			TaskCard event = incompEvents.get(i - 1);
 			
 			eventData.setID("" + i);
 			eventData.setName(event.getName());
