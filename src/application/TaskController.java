@@ -27,7 +27,7 @@ public class TaskController {
 	private TableView<EventDataUI> eventTableComplete;
 	
 	@FXML
-	private TableColumn<TaskDataUI, Integer> colTaskIDIncomplete;
+	private TableColumn<TaskDataUI, String> colTaskIDIncomplete;
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskPriorityIncomplete;
 	@FXML
@@ -38,7 +38,7 @@ public class TaskController {
 	private TableColumn<TaskDataUI, String> colTaskEndTimeIncomplete;
 	
 	@FXML
-	private TableColumn<EventDataUI, Integer> colEventIDIncomplete;
+	private TableColumn<EventDataUI, String> colEventIDIncomplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventPriorityIncomplete;
 	@FXML
@@ -55,7 +55,7 @@ public class TaskController {
 	private TableColumn<EventDataUI, String> colEventFrequencyIncomplete;
 	
 	@FXML
-	private TableColumn<TaskDataUI, Integer> colTaskIDComplete;
+	private TableColumn<TaskDataUI, String> colTaskIDComplete;
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskPriorityComplete;
 	@FXML
@@ -66,7 +66,7 @@ public class TaskController {
 	private TableColumn<TaskDataUI, String> colTaskEndTimeComplete;
 	
 	@FXML
-	private TableColumn<EventDataUI, Integer> colEventIDComplete;
+	private TableColumn<EventDataUI, String> colEventIDComplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventPriorityComplete;
 	@FXML
@@ -105,13 +105,13 @@ public class TaskController {
 	
 	@FXML
 	private void initialize() {
-		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, Integer>("ID"));
+		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("ID"));
 		colTaskPriorityIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
 		colTaskNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
 		colTaskEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
 		colTaskEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
 		
-		colEventIDIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, Integer>("ID"));
+		colEventIDIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("ID"));
 		colEventPriorityIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("priority"));
 		colEventNameIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
 		colEventStartDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
@@ -120,13 +120,13 @@ public class TaskController {
 		colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
 		colEventFrequencyIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
 		
-		colTaskIDComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, Integer>("ID"));
+		colTaskIDComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("ID"));
 		colTaskPriorityComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
 		colTaskNameComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
 		colTaskEndDateComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
 		colTaskEndTimeComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
 		
-		colEventIDComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, Integer>("ID"));
+		colEventIDComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("ID"));
 		colEventPriorityComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("priority"));
 		colEventNameComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
 		colEventStartDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
@@ -138,6 +138,7 @@ public class TaskController {
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
+		RefreshUI.executeRefresh(fileLink, dui);
 		incompleteEvents.addAll(dui.getIncompleteEvents());
 		incompleteTasks.addAll(dui.getIncompleteTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
