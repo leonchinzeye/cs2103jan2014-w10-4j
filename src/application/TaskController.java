@@ -112,10 +112,15 @@ public class TaskController {
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
-		incompleteEvents.addAll(dui.getIncEvent());
-		incompleteTasks.addAll(dui.getIncTasks());
+		incompleteEvents.addAll(dui.getIncompleteEvents());
+		incompleteTasks.addAll(dui.getIncompleteTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
 		taskTableIncomplete.setItems(incompleteTasks);
+		
+		completedEvents.addAll(dui.getCompleteEvents());
+		completedTasks.addAll(dui.getCompleteTasks());
+		eventTableComplete.setItems(completedEvents);
+		taskTableComplete.setItems(completedTasks);
 	}
 	
 	@FXML
