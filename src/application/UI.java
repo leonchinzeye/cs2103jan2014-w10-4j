@@ -26,8 +26,6 @@ public class UI extends Application {
 			
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
-			//tc.parseInput(); //Giving out response of incorrect command input
 		} catch(IOException e) {
 			e.printStackTrace();
 		}

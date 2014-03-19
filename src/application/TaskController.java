@@ -18,61 +18,61 @@ public class TaskController {
 	@FXML
 	private Tab completeTab;
 	@FXML
-	private TableView<TaskCard> taskTableIncomplete;
+	private TableView<TaskDataUI> taskTableIncomplete;
 	@FXML
-	private TableView<TaskCard> eventTableIncomplete;
+	private TableView<EventDataUI> eventTableIncomplete;
 	@FXML
-	private TableView<TaskCard> taskTableComplete;
+	private TableView<TaskDataUI> taskTableComplete;
 	@FXML
-	private TableView<TaskCard> eventTableComplete;
+	private TableView<EventDataUI> eventTableComplete;
 	
 	@FXML
-	private TableColumn<TaskCard, Integer> colTaskIDIncomplete;
+	private TableColumn<TaskDataUI, Integer> colTaskIDIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskNameIncomplete;
+	private TableColumn<TaskDataUI, String> colTaskNameIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskEndDateIncomplete;
+	private TableColumn<TaskDataUI, String> colTaskEndDateIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskEndTimeIncomplete;
+	private TableColumn<TaskDataUI, String> colTaskEndTimeIncomplete;
 	
 	@FXML
-	private TableColumn<TaskCard, Integer> colEventIDIncomplete;
+	private TableColumn<EventDataUI, Integer> colEventIDIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventNameIncomplete;
+	private TableColumn<EventDataUI, String> colEventNameIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventStartDateIncomplete;
+	private TableColumn<EventDataUI, String> colEventStartDateIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventStartTimeIncomplete;
+	private TableColumn<EventDataUI, String> colEventStartTimeIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventEndDateIncomplete;
+	private TableColumn<EventDataUI, String> colEventEndDateIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventEndTimeIncomplete;
+	private TableColumn<EventDataUI, String> colEventEndTimeIncomplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventFrequencyIncomplete;
+	private TableColumn<EventDataUI, String> colEventFrequencyIncomplete;
 	
 	@FXML
-	private TableColumn<TaskCard, Integer> colTaskIDComplete;
+	private TableColumn<TaskDataUI, Integer> colTaskIDComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskNameComplete;
+	private TableColumn<TaskDataUI, String> colTaskNameComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskEndDateComplete;
+	private TableColumn<TaskDataUI, String> colTaskEndDateComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colTaskEndTimeComplete;
+	private TableColumn<TaskDataUI, String> colTaskEndTimeComplete;
 	
 	@FXML
-	private TableColumn<TaskCard, Integer> colEventIDComplete;
+	private TableColumn<EventDataUI, Integer> colEventIDComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventNameComplete;
+	private TableColumn<EventDataUI, String> colEventNameComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventStartDateComplete;
+	private TableColumn<EventDataUI, String> colEventStartDateComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventStartTimeComplete;
+	private TableColumn<EventDataUI, String> colEventStartTimeComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventEndDateComplete;
+	private TableColumn<EventDataUI, String> colEventEndDateComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventEndTimeComplete;
+	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
 	@FXML
-	private TableColumn<TaskCard, String> colEventFrequencyComplete;
+	private TableColumn<EventDataUI, String> colEventFrequencyComplete;
 	
 	@FXML
 	private TextField notification;
@@ -84,10 +84,10 @@ public class TaskController {
 	private FileLinker fileLink;
 	private DataUI dui;
 	
-	private final ObservableList<TaskCard> incompleteEvents = FXCollections.observableArrayList();
-	private final ObservableList<TaskCard> incompleteTasks = FXCollections.observableArrayList();
-	private final ObservableList<TaskCard> completedEvents = FXCollections.observableArrayList();
-	private final ObservableList<TaskCard> completedTasks = FXCollections.observableArrayList();
+	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
+	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
+	private final ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
+	private final ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
@@ -97,23 +97,23 @@ public class TaskController {
 	
 	@FXML
 	private void initialize() {
-		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, Integer>("ID"));
-		colTaskNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("name"));
-		//colTaskEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("endDate"));
-		//colTaskEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("endTime"));
-		colEventIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, Integer>("ID"));
-		colEventNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("name"));
-		//colEventStartDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("startDate"));
-		//colEventStartTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("startTime"));
-		//colEventEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("endDate"));
-		//colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("endTime"));
-		colEventFrequencyIncomplete.setCellValueFactory(new PropertyValueFactory<TaskCard, String>("frequency"));
+		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, Integer>("ID"));
+		colTaskNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
+		//colTaskEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endDate"));
+		//colTaskEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("endTime"));
+		colEventIDIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, Integer>("ID"));
+		colEventNameIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
+		//colEventStartDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
+		//colEventStartTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
+		//colEventEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
+		//colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
+		colEventFrequencyIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
 	}
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
-		incompleteEvents.addAll(fileLink.getIncompleteEvents());
-		incompleteTasks.addAll(fileLink.getIncompleteTasks());
+		incompleteEvents.addAll(dui.getIncEvent());
+		incompleteTasks.addAll(dui.getIncTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
 		taskTableIncomplete.setItems(incompleteTasks);
 	}
