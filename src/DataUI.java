@@ -110,7 +110,7 @@ public class DataUI {
 	 * @param fileLink
 	 */
 	public void configIncompleteEvents(FileLinker fileLink) {
-		completeEvents = new ArrayList<EventDataUI>();
+		incompleteEvents = new ArrayList<EventDataUI>();
 		ArrayList<TaskCard> incompEvents = fileLink.getIncompleteEvents();
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
@@ -142,7 +142,7 @@ public class DataUI {
 				}
 			}
 			
-			completeEvents.add(eventData);
+			incompleteEvents.add(eventData);
 		}
 	}
 	

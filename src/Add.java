@@ -35,6 +35,7 @@ public class Add {
 	private static final String FEEDBACK_INVALID_FORMAT_EVENT = "That was an invalid format for an event :( Please re-enter!";
 	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
 	private static final String FEEDBACK_MISSING_DATE = "You didn't specify a date or time! Please re-enter!";
+	private static final String FEEDBACK_MISSING_END_TIME = "You didn't specify an ending time for the event! Please re-enter with an ending time!";
 	private static final String FEEDBACK_EXTRA_DATE	= "You've entered an extra timing! Please re-enter!";
 	private static final String FEEDBACK_INVALID_PRIORITY_FORMAT = "Priority has to be a digit! Please re-enter the event you want to add!";
 	private static final String FEEDBACK_INVALID_START_TIME_FORMAT = "Please re-enter the event with a proper time format!";
@@ -431,7 +432,9 @@ public class Add {
 		boolean success = false;
 		
 		Date startDate = new Date();
+		Date endDateAndTime = new Date();
 		Date endTime = new Date();
+		boolean withEndDate = true;
 		
 		try { //get the Start Date AND Start Time
 			startDate = dateAndTime.parse(dateRange[0].trim());
@@ -441,11 +444,20 @@ public class Add {
 			return success = false;
 		}
 		
-		try { //get the End Time ONLY
-			endTime = timeString.parse(dateRange[1].trim());
+		try { //get the End Date AND End Time
+			endDateAndTime = dateAndTime.parse(dateRange[1].trim());
 		} catch (ParseException e) {
-			// Ask user to input date and time in proper format here
-			e.printStackTrace();
+			withEndDate = false;
+		}
+		
+		if(!withEndDate) {
+			try { //get the End Time ONLY
+				endTime = timeString.parse(dateRange[1].trim());
+			} catch (ParseException e) {
+				dataUI.setFeedback(FEEDBACK_MISSING_END_TIME);
+				state_add_repeating_event = true;
+				return success = false;
+			}
 		}
 		
 		setRepeatedEventDetails(argArray, taskToBeAdded, dataUI);
