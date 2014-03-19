@@ -1,18 +1,16 @@
+package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class EventDataUI {
+public class TaskDataUI {
 
-	private String ID; 
+	private String ID;    
 	private String Priority;
 	private String Name;
-	private String startDate;
-	private String startTime;
 	private String endDate;
 	private String endTime;
-	private String Frequency;
-	
+
 	public String getID() {
 		return ID;
 	}
@@ -31,18 +29,6 @@ public class EventDataUI {
 	public void setName(String name) {
 		Name = name;
 	}
-	public String getStartDate() {
-		return startDate;
-	}
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
-	}
-	public String getStartTime() {
-		return startTime;
-	}
-	public void setStartTime(String startTime) {
-		this.startTime = startTime;
-	}
 	public String getEndDate() {
 		return endDate;
 	}
@@ -55,11 +41,6 @@ public class EventDataUI {
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
-	public String getFrequency() {
-		return Frequency;
-	}
-	public void setFrequency(String frequency) {
-		Frequency = frequency;
-	}
-
+	
+	
 }

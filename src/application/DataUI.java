@@ -1,3 +1,4 @@
+package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -110,7 +111,7 @@ public class DataUI {
 	 * @param fileLink
 	 */
 	public void configIncompleteEvents(FileLinker fileLink) {
-		incompleteEvents = new ArrayList<EventDataUI>();
+		completeEvents = new ArrayList<EventDataUI>();
 		ArrayList<TaskCard> incompEvents = fileLink.getIncompleteEvents();
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
@@ -142,7 +143,7 @@ public class DataUI {
 				}
 			}
 			
-			incompleteEvents.add(eventData);
+			completeEvents.add(eventData);
 		}
 	}
 	

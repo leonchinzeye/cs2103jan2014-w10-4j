@@ -1,7 +1,10 @@
+package application;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -20,6 +23,7 @@ public class Add {
 	private static final int ADD_EVENT = 4;
 	private static final int ADD_REPEATING_EVENT = 5;
 	
+	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
 	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
@@ -29,19 +33,14 @@ public class Add {
 	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
 	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	private static boolean successWriteToFile = false;
 	
-	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command :( Please re-enter!";
-	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :( Please re-enter!";
-	private static final String FEEDBACK_INVALID_FORMAT_EVENT = "That was an invalid format for an event :( Please re-enter!";
+	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
+	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
 	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
-	private static final String FEEDBACK_MISSING_DATE = "You didn't specify a date or time! Please re-enter!";
-	private static final String FEEDBACK_MISSING_END_TIME = "You didn't specify an ending time for the event! Please re-enter with an ending time!";
-	private static final String FEEDBACK_EXTRA_DATE	= "You've entered an extra timing! Please re-enter!";
-	private static final String FEEDBACK_INVALID_PRIORITY_FORMAT = "Priority has to be a digit! Please re-enter the event you want to add!";
-	private static final String FEEDBACK_INVALID_START_TIME_FORMAT = "Please re-enter the event with a proper time format!";
-	private static final String FEEDBACK_ADD_SUCCESS = "%s has been successfully added!";
-	
 	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
+	private static final String FEEDBACK_ADD_SUCCESS = "%s has been successfully added!";
+	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
 	public Add() {
@@ -114,7 +113,7 @@ public class Add {
 				break;
 			case ADD_EVENT:
 				if(noIndexArgument) {
-					dataUI.setFeedback("You didn't enter an event! Please enter an event!");
+					dataUI.setFeedback("You didn't enter a event! Please enter a event!");
 					state_add_event = true;
 					return success = false;
 				} else {
@@ -122,13 +121,7 @@ public class Add {
 				}
 				break;
 			case ADD_REPEATING_EVENT:
-				if(noIndexArgument) {
-					dataUI.setFeedback("You didn't enter an event! Please enter an event!");
-					state_add_repeating_event = true;
-					return success = false;
-				} else {
-					success = addRepeatingEvent(addInput, fileLink, dataUI);
-				}
+				
 				break;
 		}
 		return success;
@@ -237,17 +230,15 @@ public class Add {
 		String[] dateRange = argArray[1].split("-");
 		
 		if(argArray.length < 2 || argArray.length > 3) {
-			dataUI.setFeedback(FEEDBACK_INVALID_FORMAT_EVENT);
+			dataUI.setFeedback("That was an invalid format for an event! Please re-enter!");
 			state_add_event = true;
 			return success = false;
-		} 
-		
-		if(dateRange.length < 1) {
-			dataUI.setFeedback(FEEDBACK_MISSING_DATE);
+		} else if(dateRange.length < 1) {
+			dataUI.setFeedback("You didn't specify a date or time! Please re-enter!");
 			state_add_event = true;
 			return success = false;
 		} else if(dateRange.length > 2) {
-			dataUI.setFeedback(FEEDBACK_EXTRA_DATE);
+			dataUI.setFeedback("You've entered an extra timing! Please re-enter!");
 			state_add_event = true;
 			return success = false;
 		}
@@ -257,7 +248,7 @@ public class Add {
 		if (dateRange.length == 1) {
 			success = addAllDayEvent (argArray, taskToBeAdded, dataUI, fileLink);
 		} else {
-			success = addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
+			addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
 		}
 		
 		return success;
@@ -304,7 +295,7 @@ public class Add {
 		try { 																												//get the Start Date AND Start Time
 			startDateAndTime = dateAndTime.parse(dateRange[0].trim());
 		} catch (ParseException e) {
-			dataUI.setFeedback(FEEDBACK_INVALID_START_TIME_FORMAT);
+			dataUI.setFeedback("Please re-enter the event with a proper time format!");
 			state_add_event = true;
 			return success = false;
 		}
@@ -353,7 +344,6 @@ public class Add {
 			state_add_event = true;
 			return success = false;
 		}
-		
 		return success;
 	}
 
@@ -367,8 +357,8 @@ public class Add {
 	 * @author Omar Khalid
 	 * @param fileLink 
 	 */
-	private boolean addRepeatingEvent(String argument, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
+	private static void addRepeatingEvent(String argument, FileLinker fileLink) {
+		boolean success;
 		
 		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
@@ -376,91 +366,48 @@ public class Add {
 		
 		//check to see if missing parameters for input
 		if(argArray.length < 3 || argArray.length > 4) {
-			dataUI.setFeedback(FEEDBACK_INVALID_FORMAT_EVENT);
-			state_add_repeating_event = true;
-			return success = false;
+			
 		}
-		
-		if(dateRange.length < 1) {
-			dataUI.setFeedback(FEEDBACK_MISSING_DATE);
-			state_add_repeating_event = true;
-			return success = false;
-		} else if(dateRange.length > 2) {
-			dataUI.setFeedback(FEEDBACK_EXTRA_DATE);
-			state_add_repeating_event = true;
-			return success = false;
-		}
-		
-		if (dateRange.length == 1) {
-			success = addAllDayRepeatingEvent(argArray, dateRange, taskToBeAdded, fileLink, dataUI);
+		if (dateRange.length == 2) {
+			addAllDayRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		} else {
-			success = addTimedRepeatingEvent(argArray, dateRange, taskToBeAdded, fileLink, dataUI);
+			addTimedRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		}
-		
-		if(success) {
-			state_add_repeating_event = false; 
-		}
-		
-		return success;
 	}
 
-	private boolean addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		
+	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
-		
 		try { //get the Start Date AND Start Time
 			startDate = dateAndTime.parse(dateRange[0]);
 		} catch (ParseException e) {
-			dataUI.setFeedback(FEEDBACK_INVALID_START_TIME_FORMAT);
-			state_add_repeating_event = true;
-			success = false;
+			// Ask user to input date and time in proper format here
+			e.printStackTrace();
 		}
 		
-		if(setRepeatedEventDetails(argArray, taskToBeAdded, dataUI)) {
-			startDay.setTime(startDate);		
-			setAllDayStart(taskToBeAdded);
-			setAllDayEnd(taskToBeAdded);
-			
-			state_add_repeating_event = false;
-			success = true;
-		}
-		return success;
+		setRepeatedEventDetails(argArray, taskToBeAdded);
+		startDay.setTime(startDate);		
+		setAllDayStart(taskToBeAdded);
+		setAllDayEnd(taskToBeAdded);
 	}
 
-	private boolean addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		
+	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Date startDate = new Date();
-		Date endDateAndTime = new Date();
 		Date endTime = new Date();
-		boolean withEndDate = true;
-		
 		try { //get the Start Date AND Start Time
 			startDate = dateAndTime.parse(dateRange[0].trim());
 		} catch (ParseException e) {
-			dataUI.setFeedback(FEEDBACK_INVALID_START_TIME_FORMAT);
-			state_add_repeating_event = true;
-			return success = false;
+			// Ask user to input date and time in proper format here
+			e.printStackTrace();
 		}
 		
-		try { //get the End Date AND End Time
-			endDateAndTime = dateAndTime.parse(dateRange[1].trim());
+		try { //get the End Time ONLY
+			endTime = timeString.parse(dateRange[1].trim());
 		} catch (ParseException e) {
-			withEndDate = false;
+			// Ask user to input date and time in proper format here
+			e.printStackTrace();
 		}
 		
-		if(!withEndDate) {
-			try { //get the End Time ONLY
-				endTime = timeString.parse(dateRange[1].trim());
-			} catch (ParseException e) {
-				dataUI.setFeedback(FEEDBACK_MISSING_END_TIME);
-				state_add_repeating_event = true;
-				return success = false;
-			}
-		}
-		
-		setRepeatedEventDetails(argArray, taskToBeAdded, dataUI);
+		setRepeatedEventDetails(argArray, taskToBeAdded);
 		startDay.setTime(startDate);
 		endDay.setTime(endTime);
 		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
@@ -472,8 +419,6 @@ public class Add {
 			setTimedEventStart(taskToBeAdded);
 			setTimedEventSameDayEnd(taskToBeAdded);
 		}
-		
-		return success;
 	}
 
 	private boolean setTaskDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
@@ -486,7 +431,7 @@ public class Add {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 				success = true;
 			} catch(NumberFormatException e) {
-				dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_FORMAT);
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the task that you want to add!");
 				return success = false;
 			}
 		} else {
@@ -515,6 +460,7 @@ public class Add {
 		taskToBeAdded.setType("FT");
 		taskToBeAdded.setFrequency("N");
 		taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
+	
 	}
 	
 	private boolean setStartDateAndTime(TaskCard taskToBeAdded) {
@@ -537,7 +483,7 @@ public class Add {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 				success = true;
 			} catch(NumberFormatException e) {
-				dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_FORMAT);
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the event you want to add!");
 				return success = false;
 			}
 		} else {
@@ -572,7 +518,7 @@ public class Add {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
 				success = true;
 			} catch(NumberFormatException e) {
-				dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_FORMAT);
+				dataUI.setFeedback("Priority has to be a digit! Please re-enter the event you want to add!");
 				return success = false;
 			}
 		} else {
@@ -588,37 +534,25 @@ public class Add {
 		taskToBeAdded.setEndDay(endDay);
 	}
 	
-	private boolean setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded, DataUI dataUI) {
-		boolean success = false;
-		
+	private static void setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("RE");
 		setEventFrequency(argArray[2], taskToBeAdded);
 		if (argArray.length == 4) {
-			try {
-				taskToBeAdded.setPriority(Integer.parseInt(argArray[3]));
-				success = true;
-			} catch(NumberFormatException e){
-				dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_FORMAT);
-				state_add_repeating_event = true;
-				return success = false;
-			}
+			taskToBeAdded.setPriority(Integer.parseInt(argArray[3]));
 		} else {
 			taskToBeAdded.setPriority(2);
-			success = true;
 		}
-		
-		return success;
 	}
 
 	private static void setEventFrequency(String freq, TaskCard taskToBeAdded) {
-		if (freq.equals("daily") || freq.equals("everyday")) {
+		if (freq.equals("daily")) {
 			taskToBeAdded.setFrequency("Daily");
-		} else if (freq.equals("weekly") || freq.equals("every week")) {
+		} else if (freq.equals("weekly")) {
 			taskToBeAdded.setFrequency("Weekly");
-		} else if (freq.equals("monthly") || freq.equals("every month")) {
+		} else if (freq.equals("monthly")) {
 			taskToBeAdded.setFrequency("Monthly");
-		} else if (freq.equals("yearly") || freq.equals("every year")) {
+		} else if (freq.equals("yearly")) {
 			taskToBeAdded.setFrequency("Yearly");
 		} else {
 			//output invalid frequency input, wait for correct input
