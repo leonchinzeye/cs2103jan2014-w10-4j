@@ -16,7 +16,7 @@ public class DeleteTest {
 		String wrongDelete = "/delete";
 		FileLinker deleteFileLinker = new FileLinker();
 		DataUI deleteUI = new DataUI();
-		deleteUI.configureIncompleteTasks(deleteFileLinker);
+		deleteUI.configIncompleteTasks(deleteFileLinker);
 		Delete newDeleteWithWrongCommand = new Delete();
 		newDeleteWithWrongCommand.executeDelete(wrongDelete, deleteFileLinker, deleteUI);
 		
@@ -29,7 +29,7 @@ public class DeleteTest {
 		String deleteIncompTaskNoID = "/dt";
 		FileLinker deleteFLForDTWithoutNum = new FileLinker();
 		DataUI deleteUIForValidDeleteName = new DataUI();
-		deleteUIForValidDeleteName.configureIncompleteTasks(deleteFLForDTWithoutNum);
+		deleteUIForValidDeleteName.configIncompleteTasks(deleteFLForDTWithoutNum);
 		Delete newDeleteForIncompTaskNoId = new Delete();
 		newDeleteForIncompTaskNoId.executeDelete(deleteIncompTaskNoID, deleteFLForDTWithoutNum, deleteUIForValidDeleteName);
 		
