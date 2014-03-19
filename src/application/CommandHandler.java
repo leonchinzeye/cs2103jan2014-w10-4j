@@ -3,7 +3,6 @@ import java.util.Scanner;
 
 public class CommandHandler {
 	
-	private Scanner scan = new Scanner(System.in);
 	private FileLinker fileLink;
 	private DataUI dataUI;
 	
@@ -23,7 +22,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, RESET, EXIT, INVALID
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID
 	}
 	
 	public CommandHandler() {
@@ -112,13 +111,11 @@ public class CommandHandler {
 				
 		switch(commandType) {
 			case ADD:
-				/*
-				success = addHandler.executeA(userInput, fileLink, dataUI);
+				success = addHandler.executeAdd(userInput, fileLink, dataUI);
 				if(success == false) {
 					state_add = true;
 				}
 				break;
-				*/
 			case RESET:
 				response = Reset.executeReset(tokenizedInput, fileLink, dataUI);
 				break;
@@ -134,6 +131,8 @@ public class CommandHandler {
 			case SEARCH:
 				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
 				break;
+			case MARK:
+				response = Mark.executeMark(userInput, fileLink, dataUI);
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -159,6 +158,8 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/search")) {
 		 	return COMMAND_TYPE.SEARCH;
+		} else if (commandTypeString.contains("/mark")) {
+		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
 		} else if (commandTypeString.contains("/exit")) {
