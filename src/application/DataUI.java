@@ -123,10 +123,10 @@ public class DataUI {
 				
 		for(int i = 1; i <= incompTasks.size(); i++) {
 			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i - 1);
-			
+			TaskCard task = incompTasks.get(i-1);
+			String priority = determinePriority(task.getPriority());
 			taskData.setID("" + i);
-			taskData.setPriority("" + task.getPriority());
+			taskData.setPriority(priority);
 			taskData.setName(task.getName());
 			if(task.getType().equals("FT")){
 				taskData.setEndTime("-");
@@ -150,11 +150,11 @@ public class DataUI {
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
 			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i - 1);
-			
+			TaskCard event = incompEvents.get(i-1);
+			String priority = determinePriority(event.getPriority());
 			eventData.setID("" + i);
 			eventData.setName(event.getName());
-			eventData.setPriority("" + event.getPriority());
+			eventData.setPriority(priority);
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
@@ -193,10 +193,11 @@ public class DataUI {
 				
 		for(int i = 1; i <= incompTasks.size(); i++) {
 			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i - 1);
+			TaskCard task = incompTasks.get(i-1);
+			String priority = determinePriority(task.getPriority());
 			
 			taskData.setID("" + i);
-			taskData.setPriority("" + task.getPriority());
+			taskData.setPriority(priority);
 			taskData.setName(task.getName());
 			if(task.getType().equals("FT")){
 				taskData.setEndTime("-");
@@ -221,11 +222,12 @@ public class DataUI {
 		
 		for(int i = 1; i <= incompEvents.size(); i++) {
 			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i - 1);
+			TaskCard event = incompEvents.get(i-1);
+			String priority = determinePriority(event.getPriority());
 			
 			eventData.setID("" + i);
 			eventData.setName(event.getName());
-			eventData.setPriority("" + event.getPriority());
+			eventData.setPriority(priority);
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
