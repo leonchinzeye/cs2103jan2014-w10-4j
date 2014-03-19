@@ -40,6 +40,11 @@ public class RefreshUI {
 		dataUI.configureCompletedTasks(fileLink);
 		dataUI.configureCompletedEvents(fileLink);
 		
+		dataUI.configIncompleteTasks(fileLink);
+		dataUI.configIncompleteEvents(fileLink);
+		dataUI.configCompleteTasks(fileLink);
+		dataUI.configCompletedEvents(fileLink);
+		
 		return true;
 	}
 
