@@ -21,19 +21,12 @@ import java.util.Calendar;
 public class DataUI {
 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	
-	private ArrayList<ArrayList<String>> incTasks;
-	private ArrayList<ArrayList<String>> incEvent;
-	private ArrayList<ArrayList<String>> compTasks;
-	private ArrayList<ArrayList<String>> compEvent;
-	
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");	
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
 	private ArrayList<EventDataUI> incompleteEvents;
 	private ArrayList<EventDataUI> completeEvents;
-	
 	
 	private String feedback = null;
 	
@@ -45,18 +38,191 @@ public class DataUI {
 	 * int cmdType: indicates the command type
 	 */
 	public DataUI() {
-		incTasks = new ArrayList<ArrayList<String>>();
-		incEvent = new ArrayList<ArrayList<String>>();
-		compTasks = new ArrayList<ArrayList<String>>();
-		compEvent = new ArrayList<ArrayList<String>>();
-		
 		incompleteTasks = new ArrayList<TaskDataUI>();
 		incompleteEvents = new ArrayList<EventDataUI>();
 		completeTasks = new ArrayList<TaskDataUI>();
 		completeEvents = new ArrayList<EventDataUI>();
 	}
 	
-	public void configureIncompleteTasks(FileLinker fileLink) {
+	/**
+	 * Incomplete Task 
+	 * @param fileLink
+	 * @author Atul
+	 * 
+	 */
+	public void configIncompleteTasks(FileLinker fileLink) {
+		incompleteTasks = new ArrayList<TaskDataUI>();
+		ArrayList<TaskCard> incompTasks = fileLink.getIncompleteTasks();
+				
+		for(int i = 1; i <= incompTasks.size(); i++) {
+			TaskDataUI taskData = new TaskDataUI();
+			TaskCard task = incompTasks.get(i - 1);
+			
+			taskData.setID("" + i);
+			String priority = determinePriority(task.getPriority());
+			taskData.setPriority("" + priority);
+			taskData.setName(task.getName());
+			if(task.getType().equals("FT")){
+				taskData.setEndTime("-");
+				taskData.setEndDate("-");
+			} else {
+				Calendar endDay = task.getEndDay();
+				taskData.setEndDate(dateFormat.format(endDay.getTime()));
+				taskData.setEndTime(timeFormat.format(endDay.getTime()));
+			}
+			incompleteTasks.add(taskData);
+		}
+	}
+
+	/**
+	 * For incomplete Events
+	 * @param fileLink
+	 */
+	public void configIncompleteEvents(FileLinker fileLink) {
+		incompleteEvents = new ArrayList<EventDataUI>();
+		ArrayList<TaskCard> incompEvents = fileLink.getIncompleteEvents();
+		
+		for(int i = 1; i <= incompEvents.size(); i++) {
+			EventDataUI eventData = new EventDataUI();
+			TaskCard event = incompEvents.get(i - 1);
+			
+			eventData.setID("" + i);
+			eventData.setName(event.getName());
+			String priority = determinePriority(event.getPriority());
+			eventData.setPriority("" + priority);
+			
+			if(event.getType().equals("AE")) {
+				Calendar startDay = event.getStartDay();
+				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-"); //start date
+				eventData.setStartTime("-"); //no start time
+				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
+				eventData.setEndTime("-"); //no end time
+				eventData.setFrequency("-"); //no frequency
+			} else {
+				Calendar startDay = event.getStartDay();
+				Calendar endDay = event.getEndDay();
+				eventData.setStartDate(dateFormat.format(startDay.getTime()));
+				eventData.setStartTime(timeFormat.format(startDay.getTime()));
+				eventData.setEndDate(dateFormat.format(endDay.getTime()));
+				eventData.setEndTime(timeFormat.format(endDay.getTime()));
+				if(event.getType().equals("E")) {
+					eventData.setFrequency("-");
+				} else {
+					eventData.setFrequency(event.getFrequency());
+				}
+			}
+			
+			incompleteEvents.add(eventData);
+		}
+	}
+
+	/**
+	 * Complete Task 
+	 * @param fileLink
+	 * @author Atul
+	 * 
+	 */
+	public void configCompleteTasks(FileLinker fileLink) {
+		completeTasks = new ArrayList<TaskDataUI>();
+		ArrayList<TaskCard> incompTasks = fileLink.getCompletedTasks();
+				
+		for(int i = 1; i <= incompTasks.size(); i++) {
+			TaskDataUI taskData = new TaskDataUI();
+			TaskCard task = incompTasks.get(i - 1);
+			
+			taskData.setID("" + i);
+			String priority = determinePriority(task.getPriority());
+			taskData.setPriority("" + priority);
+			taskData.setName(task.getName());
+			if(task.getType().equals("FT")){
+				taskData.setEndTime("-");
+				taskData.setEndDate("-");
+			} else {
+				Calendar endDay = task.getEndDay();
+				taskData.setEndDate(dateFormat.format(endDay.getTime()));
+				taskData.setEndTime(timeFormat.format(endDay.getTime()));
+			}
+			completeTasks.add(taskData);
+		}
+	}
+	
+	
+	/**
+	 * For Completed Events
+	 * @param fileLink
+	 */
+	public void configCompletedEvents(FileLinker fileLink) {
+		completeEvents = new ArrayList<EventDataUI>();
+		ArrayList<TaskCard> incompEvents = fileLink.getCompletedEvents();
+		
+		for(int i = 1; i <= incompEvents.size(); i++) {
+			EventDataUI eventData = new EventDataUI();
+			TaskCard event = incompEvents.get(i - 1);
+			
+			eventData.setID("" + i);
+			eventData.setName(event.getName());
+			String priority = determinePriority(event.getPriority());
+			eventData.setPriority("" + priority);
+			
+			if(event.getType().equals("AE")) {
+				Calendar startDay = event.getStartDay();
+				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-"); //start date
+				eventData.setStartTime("-"); //no start time
+				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
+				eventData.setEndTime("-"); //no end time
+				eventData.setFrequency("-"); //no frequency
+			} else {
+				Calendar startDay = event.getStartDay();
+				Calendar endDay = event.getEndDay();
+				eventData.setStartDate(dateFormat.format(startDay.getTime()));
+				eventData.setStartTime(timeFormat.format(startDay.getTime()));
+				eventData.setEndDate(dateFormat.format(endDay.getTime()));
+				eventData.setEndTime(timeFormat.format(endDay.getTime()));
+				if(event.getType().equals("E")) {
+					eventData.setFrequency("-");
+				} else {
+					eventData.setFrequency(event.getFrequency());
+				}
+			}
+			
+			completeEvents.add(eventData);
+		}
+	}
+	
+	private String determinePriority(int priority) {
+		if(priority == 1) {
+			return "LOW";
+		} else if(priority == 2) {
+			return "MED";
+		} else
+			return "HIGH";
+	}
+	
+	public ArrayList<TaskDataUI> getIncompleteTasks() {
+		return incompleteTasks;
+	}
+		
+	public ArrayList<EventDataUI> getIncompleteEvents() {
+		return incompleteEvents;
+	}
+	
+	public ArrayList<TaskDataUI> getCompleteTasks() {
+		return completeTasks;
+	}
+	
+	public ArrayList<EventDataUI> getCompleteEvents() {
+		return completeEvents;
+	}
+	
+	public String getFeedback() {
+		return feedback;
+	}
+	
+	public void setFeedback(String message) {
+		feedback = message;
+	}
+	
+	/*public void configureIncompleteTasks(FileLinker fileLink) {
 		incTasks = new ArrayList<ArrayList<String>>();
 		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
 				
@@ -108,152 +274,6 @@ public class DataUI {
 		}
 	}
 	
-	
-	
-	
-	/**
-	 * Incomplete Task 
-	 * @param fileLink
-	 * @author Atul
-	 * 
-	 */
-	public void configIncompleteTasks(FileLinker fileLink) {
-		incompleteTasks = new ArrayList<TaskDataUI>();
-		ArrayList<TaskCard> incompTasks = fileLink.getIncompleteTasks();
-				
-		for(int i = 1; i <= incompTasks.size(); i++) {
-			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i-1);
-			String priority = determinePriority(task.getPriority());
-			taskData.setID("" + i);
-			taskData.setPriority(priority);
-			taskData.setName(task.getName());
-			if(task.getType().equals("FT")){
-				taskData.setEndTime("-");
-				taskData.setEndDate("-");
-			} else {
-				Calendar endDay = task.getEndDay();
-				taskData.setEndDate(dateFormat.format(endDay.getTime()));
-				taskData.setEndTime(timeFormat.format(endDay.getTime()));
-			}
-			incompleteTasks.add(taskData);
-		}
-	}
-
-	/**
-	 * For incomplete Events
-	 * @param fileLink
-	 */
-	public void configIncompleteEvents(FileLinker fileLink) {
-		incompleteEvents = new ArrayList<EventDataUI>();
-		ArrayList<TaskCard> incompEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 1; i <= incompEvents.size(); i++) {
-			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i-1);
-			String priority = determinePriority(event.getPriority());
-			eventData.setID("" + i);
-			eventData.setName(event.getName());
-			eventData.setPriority(priority);
-			
-			if(event.getType().equals("AE")) {
-				Calendar startDay = event.getStartDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-");	//start date
-				eventData.setStartTime("-");																		//no start time
-				eventData.setEndDate(dateFormat.format(startDay.getTime()));	//end date	
-				eventData.setEndTime("-");																		//no end time
-				eventData.setFrequency("-");																		//no frequency
-			} else {
-				Calendar startDay = event.getStartDay();
-				Calendar endDay = event.getEndDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()));
-				eventData.setStartTime(timeFormat.format(startDay.getTime()));
-				eventData.setEndDate(dateFormat.format(endDay.getTime()));
-				eventData.setEndTime(timeFormat.format(endDay.getTime()));
-				if(event.getType().equals("E")) {
-					eventData.setFrequency("-");
-				} else {
-					eventData.setFrequency(event.getFrequency());
-				}
-			}
-			
-			incompleteEvents.add(eventData);
-		}
-	}
-
-	/**
-	 * Complete Task 
-	 * @param fileLink
-	 * @author Atul
-	 * 
-	 */
-	public void configCompleteTasks(FileLinker fileLink) {
-		completeTasks = new ArrayList<TaskDataUI>();
-		ArrayList<TaskCard> incompTasks = fileLink.getCompletedTasks();
-				
-		for(int i = 1; i <= incompTasks.size(); i++) {
-			TaskDataUI taskData = new TaskDataUI();
-			TaskCard task = incompTasks.get(i-1);
-			String priority = determinePriority(task.getPriority());
-			
-			taskData.setID("" + i);
-			taskData.setPriority(priority);
-			taskData.setName(task.getName());
-			if(task.getType().equals("FT")){
-				taskData.setEndTime("-");
-				taskData.setEndDate("-");
-			} else {
-				Calendar endDay = task.getEndDay();
-				taskData.setEndDate(dateFormat.format(endDay.getTime()));
-				taskData.setEndTime(timeFormat.format(endDay.getTime()));
-			}
-			completeTasks.add(taskData);
-		}
-	}
-	
-	
-	/**
-	 * For Completed Events
-	 * @param fileLink
-	 */
-	public void configCompletedEvents(FileLinker fileLink) {
-		completeEvents = new ArrayList<EventDataUI>();
-		ArrayList<TaskCard> incompEvents = fileLink.getCompletedEvents();
-		
-		for(int i = 1; i <= incompEvents.size(); i++) {
-			EventDataUI eventData = new EventDataUI();
-			TaskCard event = incompEvents.get(i-1);
-			String priority = determinePriority(event.getPriority());
-			
-			eventData.setID("" + i);
-			eventData.setName(event.getName());
-			eventData.setPriority(priority);
-			
-			if(event.getType().equals("AE")) {
-				Calendar startDay = event.getStartDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-");		//start date
-				eventData.setStartTime("-");																		//no start time
-				eventData.setEndDate(dateFormat.format(startDay.getTime()));	//end date	
-				eventData.setEndTime("-");																		//no end time
-				eventData.setFrequency("-");																		//no frequency
-			} else {
-				Calendar startDay = event.getStartDay();
-				Calendar endDay = event.getEndDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()));
-				eventData.setStartTime(timeFormat.format(startDay.getTime()));
-				eventData.setEndDate(dateFormat.format(endDay.getTime()));
-				eventData.setEndTime(timeFormat.format(endDay.getTime()));
-				if(event.getType().equals("E")) {
-					eventData.setFrequency("-");
-				} else {
-					eventData.setFrequency(event.getFrequency());
-				}
-			}
-			
-			completeEvents.add(eventData);
-		}
-	}
-	
 	private ArrayList<String> getInfoForTasks(TaskCard task) {
 		ArrayList<String> taskDetails = new ArrayList<String>();
 		
@@ -301,54 +321,5 @@ public class DataUI {
 		} 
 		
 		return eventDetails;
-	}
-	
-	private String determinePriority(int priority) {
-		if(priority == 1) {
-			return "low";
-		} else if(priority == 2) {
-			return "med";
-		} else
-			return "high";
-	}
-	
-	public ArrayList<ArrayList<String>> getIncTasks() {
-		return incTasks;
-	}
-	
-	public ArrayList<ArrayList<String>> getIncEvent() {
-		return incEvent;
-	}
-	
-	public ArrayList<ArrayList<String>> getCompTasks() {
-		return compTasks;
-	}
-	
-	public ArrayList<ArrayList<String>> getCompEvent() {
-		return compEvent;
-	}
-	
-	public ArrayList<TaskDataUI> getIncompleteTasks() {
-		return incompleteTasks;
-	}
-		
-	public ArrayList<EventDataUI> getIncompleteEvents() {
-		return incompleteEvents;
-	}
-	
-	public ArrayList<TaskDataUI> getCompleteTasks() {
-		return completeTasks;
-	}
-	
-	public ArrayList<EventDataUI> getCompleteEvents() {
-		return completeEvents;
-	}
-	
-	public String getFeedback() {
-		return feedback;
-	}
-	
-	public void setFeedback(String message) {
-		feedback = message;
-	}
+	}*/
 }

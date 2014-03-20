@@ -15,6 +15,10 @@ public class Mark {
 		
 	}
 	
+	public static String executeMark(String userInput, FileLinker fileLink, DataUI dataUI) {
+		return null;
+	}
+	
 	/**
 	 * this method is supposed to mark those events which are repeated
 	 * for shifting the repeated ones to their next designated date
