@@ -1,10 +1,8 @@
 package application;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -23,7 +21,6 @@ public class Add {
 	private static final int ADD_EVENT = 4;
 	private static final int ADD_REPEATING_EVENT = 5;
 	
-	private static Scanner scan = new Scanner(System.in);
 	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
 	private static final int DEFAULT_PRIORITY_TASK = 2;
 	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
@@ -160,15 +157,14 @@ public class Add {
 			dataUI.setFeedback(FEEDBACK_INVALID_FORMAT_TASK);
 			state_add_timed_task = true;
 			return success = false;
-		} else { 
-			
+		} else {
 			if(setEndDateAndTime(argArray[1], taskToBeAdded, dataUI) == true
 					&& setTaskDetails(argArray, taskToBeAdded, dataUI) == true
 					&& setStartDateAndTime(taskToBeAdded) == true) {
 				
 				fileLink.addHandling(taskToBeAdded);
 				RefreshUI.executeRefresh(fileLink, dataUI);
-				
+				dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
 				state_add_timed_task = false;
 				success = true;
 			} else {
@@ -248,7 +244,7 @@ public class Add {
 		if (dateRange.length == 1) {
 			success = addAllDayEvent (argArray, taskToBeAdded, dataUI, fileLink);
 		} else {
-			addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
+			success = addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
 		}
 		
 		return success;
@@ -257,23 +253,20 @@ public class Add {
 	private boolean addAllDayEvent (String[] argArray, TaskCard taskToBeAdded, DataUI dataUI, FileLinker fileLink) {		
 		boolean success = false;
 		
-		Date startDate = new Date();
-		
 		try { //get the Start Date ONLY
-			startDate = dateString.parse(argArray[1]);
+			startDay.setTime(dateString.parse(argArray[1]));
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please enter the date in a correct format");
 			state_add_event = true;
-			return success = false;
+			success = false;
 		}
 		
 		if(setAllDayDetails(argArray, taskToBeAdded, dataUI) == true) {
-			startDay.setTime(startDate);
 			setAllDayStart(taskToBeAdded);
 			setAllDayEnd(taskToBeAdded);
 			
 			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
-			fileLink.addEvent(taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
 			state_add_event = false;
@@ -289,11 +282,10 @@ public class Add {
 		boolean success = false;
 		boolean withEndDate = true; //to see whether endDate was input by user
 		
-		Date startDateAndTime = new Date();
-		Date endDateAndTime = new Date();
-		Date endTime = new Date();
-		try { 																												//get the Start Date AND Start Time
-			startDateAndTime = dateAndTime.parse(dateRange[0].trim());
+		Calendar endTime = new GregorianCalendar();
+		
+		try { //get the Start Date AND Start Time
+			startDay.setTime(dateAndTime.parse(dateRange[0].trim()));
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please re-enter the event with a proper time format!");
 			state_add_event = true;
@@ -301,7 +293,7 @@ public class Add {
 		}
 		
 		try { //get the End Date AND End Time
-			endDateAndTime = dateAndTime.parse(dateRange[1].trim());
+			endDay.setTime(dateAndTime.parse(dateRange[1].trim()));
 		} catch (ParseException e) {
 			withEndDate = false;
 		}
@@ -317,7 +309,7 @@ public class Add {
 		 */
 		if (!withEndDate) { //if End Date was not input
 			try { //get End Time ONLY
-				endTime = timeString.parse(dateRange[1].trim());
+				endTime.setTime(timeString.parse(dateRange[1].trim()));
 			} catch (ParseException e) {
 				dataUI.setFeedback("You didn't specify an ending time for the event! Please re-enter with an ending time!");
 				state_add_event = true;
@@ -326,16 +318,15 @@ public class Add {
 		}
 		
 		if(setTimedEventDetails(argArray, taskToBeAdded, dataUI)) {
-			startDay.setTime(startDateAndTime);
 			if (withEndDate) { //events span over a couple days
-				setTimedEventStart(taskToBeAdded);
-				setTimedEventEnd(endDateAndTime, taskToBeAdded);
+				taskToBeAdded.setStartDay(startDay);
+				taskToBeAdded.setEndDay(endDay);
 			} else {
 				setTimedEventWithoutEndDate(endTime, taskToBeAdded);
 			}
 			
 			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
-			fileLink.addEvent(taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
 			state_add_event = false;
@@ -376,48 +367,43 @@ public class Add {
 	}
 
 	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
-		Date startDate = new Date();
 		try { //get the Start Date AND Start Time
-			startDate = dateAndTime.parse(dateRange[0]);
+			startDay.setTime(dateAndTime.parse(dateRange[0]));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
 		}
 		
-		setRepeatedEventDetails(argArray, taskToBeAdded);
-		startDay.setTime(startDate);		
+		setRepeatedEventDetails(argArray, taskToBeAdded);	
 		setAllDayStart(taskToBeAdded);
 		setAllDayEnd(taskToBeAdded);
 	}
 
 	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
-		Date startDate = new Date();
-		Date endTime = new Date();
+		Calendar endTime = new GregorianCalendar();
 		try { //get the Start Date AND Start Time
-			startDate = dateAndTime.parse(dateRange[0].trim());
+			startDay.setTime(dateAndTime.parse(dateRange[0].trim()));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
 		}
 		
 		try { //get the End Time ONLY
-			endTime = timeString.parse(dateRange[1].trim());
+			endTime.setTime(timeString.parse(dateRange[1].trim()));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
 		}
 		
 		setRepeatedEventDetails(argArray, taskToBeAdded);
-		startDay.setTime(startDate);
-		endDay.setTime(endTime);
-		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
+		if (endTime.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
 		//events are a couple hours apart and are on two sequential days
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventNextDayEnd(taskToBeAdded);
+			taskToBeAdded.setStartDay(startDay);
+			setTimedEventNextDayEnd(taskToBeAdded, endTime);
 		} else {
 		//events are only a couple hours apart and they're on the same day
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventSameDayEnd(taskToBeAdded);
+			taskToBeAdded.setStartDay(startDay);
+			setTimedEventSameDayEnd(taskToBeAdded, endTime);
 		}
 	}
 
@@ -494,16 +480,15 @@ public class Add {
 		return success;
 	}
 	
-	private static void setTimedEventWithoutEndDate(Date endTime, TaskCard taskToBeAdded) {
-		endDay.setTime(endTime);
-		if (endDay.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
+	private static void setTimedEventWithoutEndDate(Calendar endTime, TaskCard taskToBeAdded) {
+		if (endTime.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
 		//events are a couple hours apart and are on two sequential days
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventNextDayEnd(taskToBeAdded);
+			taskToBeAdded.setStartDay(startDay);
+			setTimedEventNextDayEnd(taskToBeAdded, endTime);
 		} else {
 		//events are only a couple hours apart and they're on the same day
-			setTimedEventStart(taskToBeAdded);
-			setTimedEventSameDayEnd(taskToBeAdded);
+			taskToBeAdded.setStartDay(startDay);
+			setTimedEventSameDayEnd(taskToBeAdded, endTime);
 		}
 	}
 
@@ -527,11 +512,6 @@ public class Add {
 		}
 		
 		return success;
-	}
-	
-	private static void setTimedEventEnd(Date endDateAndTime, TaskCard taskToBeAdded) {
-		endDay.setTime(endDateAndTime);
-		taskToBeAdded.setEndDay(endDay);
 	}
 	
 	private static void setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
@@ -566,31 +546,22 @@ public class Add {
 	}
 	
 	private static void setAllDayEnd(TaskCard taskToBeAdded) {
-		startDay.set(Calendar.HOUR_OF_DAY, 23);
-		startDay.set(Calendar.MINUTE, 59);
-		taskToBeAdded.setEndDay(startDay);
+		endDay = (Calendar) startDay.clone();
+		endDay.set(Calendar.HOUR_OF_DAY, 23);
+		endDay.set(Calendar.MINUTE, 59);
+		taskToBeAdded.setEndDay(endDay);
 	}
 	
-	private static void setTimedEventStart(TaskCard taskToBeAdded) {
-		taskToBeAdded.setStartDay(startDay);
+	private static void setTimedEventNextDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
+		endDay = (Calendar) startDay.clone();
+		endDay.add(Calendar.DATE, 1);
+		setTimedEventSameDayEnd(taskToBeAdded, endTime);
 	}
 	
-	private static void setTimedEventNextDayEnd(TaskCard taskToBeAdded) {
-		startDay.add(Calendar.DATE, 1);
-		setTimedEventSameDayEnd(taskToBeAdded);
-	}
-	
-	private static void setTimedEventSameDayEnd(TaskCard taskToBeAdded) {
-		taskToBeAdded.setEndDay(startDay);
-	}
-	
-	private static boolean checkAddCmdInput(String cmd) {
-		boolean isCorrectCmd = false;
-		
-		if(addCmdTable.containsKey(cmd)) {
-			isCorrectCmd = true;
-		}
-		return isCorrectCmd;
+	private static void setTimedEventSameDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
+		endDay.set(Calendar.HOUR_OF_DAY, endTime.get(Calendar.HOUR_OF_DAY));
+		endDay.set(Calendar.MINUTE, endTime.get(Calendar.MINUTE));
+		taskToBeAdded.setEndDay(endDay);
 	}
 	
 	private static void initialiseAddCmdTable() {

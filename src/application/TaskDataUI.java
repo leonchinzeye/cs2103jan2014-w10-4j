@@ -1,46 +1,88 @@
 package application;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
+
+import javafx.beans.property.SimpleStringProperty;
 
 public class TaskDataUI {
 
-	private String ID;    
-	private String Priority;
-	private String Name;
-	private String endDate;
-	private String endTime;
+	private SimpleStringProperty ID;    
+	private SimpleStringProperty Priority;
+	private SimpleStringProperty Name;
+	private SimpleStringProperty endDate;
+	private SimpleStringProperty endTime;
+	
+	public TaskDataUI() {
+		this.ID = new SimpleStringProperty();
+		this.Priority = new SimpleStringProperty();
+		this.Name = new SimpleStringProperty();
+		this.endDate = new SimpleStringProperty();
+		this.endTime = new SimpleStringProperty();
+	}
+	
+	private TaskDataUI(String id, String p, String n, String endD, String endT) {
+		this.ID = new SimpleStringProperty(id);
+		this.Priority = new SimpleStringProperty(p);
+		this.Name = new SimpleStringProperty(n);
+		this.endDate = new SimpleStringProperty(endD);
+		this.endTime = new SimpleStringProperty(endT);
+	}
 
 	public String getID() {
+		return ID.get();
+	}
+	
+	public void setID(String id) {
+		ID.set(id);
+	}
+	
+	public String getPriority() {
+		return Priority.get();
+	}
+	
+	public void setPriority(String p) {
+		Priority.set(p);
+	}
+	
+	public String getName() {
+		return Name.get();
+	}
+	
+	public void setName(String n) {
+		Name.set(n);
+	}
+	
+	public String getEndDate() {
+		return endDate.get();
+	}
+	
+	public void setEndDate(String endD) {
+		endDate.set(endD);
+	}
+	
+	public String getEndTime() {
+		return endTime.get();
+	}
+	
+	public void setEndTime(String endT) {
+		endTime.set(endT);
+	}
+	
+	public SimpleStringProperty idProperty() {
 		return ID;
 	}
-	public void setID(String iD) {
-		ID = iD;
-	}
-	public String getPriority() {
+	
+	public SimpleStringProperty priorityProperty() {
 		return Priority;
 	}
-	public void setPriority(String priority) {
-		Priority = priority;
-	}
-	public String getName() {
+	
+	public SimpleStringProperty nameProperty() {
 		return Name;
 	}
-	public void setName(String name) {
-		Name = name;
-	}
-	public String getEndDate() {
+	
+	public SimpleStringProperty endDateProperty() {
 		return endDate;
 	}
-	public void setEndDate(String endDate) {
-		this.endDate = endDate;
-	}
-	public String getEndTime() {
+	
+	public SimpleStringProperty endTimeProperty() {
 		return endTime;
 	}
-	public void setEndTime(String endTime) {
-		this.endTime = endTime;
-	}
-	
-	
 }

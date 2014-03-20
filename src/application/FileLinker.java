@@ -21,20 +21,6 @@ public class FileLinker {
 		this.completedEvents = Storage.openFile(Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
 	}
 	
-	public void addEvent(TaskCard taskToBeAdded) {
-		incompleteEvents.add(taskToBeAdded);
-		callStorageWriteIncompleteEvents();
-	}
-	
-	/**
-	 * method that add logic will call to update modified data to the file
-	 * @param arrayToBeUpdated
-	 */
-	public void addHandling(TaskCard taskToBeAdded) {
-		incompleteTasks.add(taskToBeAdded);
-		callStorageWriteIncompleteTasks();
-	}
-		
 	public ArrayList<TaskCard> getIncompleteTasks() {
 		return incompleteTasks;
 	}
@@ -51,18 +37,46 @@ public class FileLinker {
 		return completedEvents;
 	}
 	
-	public boolean deleteHandling(int taskNumberToBeDelete, int fileToBeDeleted) {
-		if(fileToBeDeleted == 1) {
-			incompleteTasks.remove(taskNumberToBeDelete);
-			callStorageWriteIncompleteTasks();
-		} else if(fileToBeDeleted == 2) {
-			incompleteEvents.remove(taskNumberToBeDelete);
+	/**
+	 * method that add logic will call to update modified data to the file
+	 * @param arrayToBeUpdated
+	 */
+	public void addHandling(TaskCard taskToBeAdded) {
+		if (taskToBeAdded.getType().contains("E")) { //if it's an Event
+			incompleteEvents.add(taskToBeAdded);
 			callStorageWriteIncompleteEvents();
-		} else if(fileToBeDeleted == 3) {
-			completedTasks.remove(taskNumberToBeDelete);
+		} else { //if it's a Task
+			incompleteTasks.add(taskToBeAdded);
+			callStorageWriteIncompleteTasks();
+		}
+	}
+	
+	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted) {
+		if (taskToBeMarked.getType().contains("E")) {
+			completedEvents.add(taskToBeMarked);
+			callStorageWriteCompletedEvents();
+			
+			deleteHandling(taskNumberToBeDeleted, 2);
+		} else {
+			completedTasks.add(taskToBeMarked);
+			callStorageWriteCompletedTasks();
+			
+			deleteHandling(taskNumberToBeDeleted, 1);
+		}
+	}
+	
+	public boolean deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
+			incompleteTasks.remove(taskNumberToBeDeleted);
+			callStorageWriteIncompleteTasks();
+		} else if(fileToBeDeletedFrom == 2) {
+			incompleteEvents.remove(taskNumberToBeDeleted);
+			callStorageWriteIncompleteEvents();
+		} else if(fileToBeDeletedFrom == 3) {
+			completedTasks.remove(taskNumberToBeDeleted);
 			callStorageWriteCompletedTasks();
 		} else {
-			completedEvents.remove(taskNumberToBeDelete);
+			completedEvents.remove(taskNumberToBeDeleted);
 			callStorageWriteCompletedEvents();
 		}
 		return true;
