@@ -7,21 +7,21 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="anchor" onKeyTyped="#returnLastInput" prefHeight="600.0" prefWidth="640.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+<AnchorPane fx:id="anchor" disable="false" mouseTransparent="false" onKeyPressed="#anchorKeystrokes" prefHeight="600.0" prefWidth="640.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
   <!-- TODO Add Nodes -->
   <children>
-    <Text fx:id="title" layoutX="14.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
+    <Text fx:id="title" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
       <font>
         <Font name="Vivaldi Italic" size="36.0" />
       </font>
     </Text>
-    <TextField fx:id="command" layoutX="14.0" layoutY="564.0" onAction="#parseInput" prefWidth="612.0" promptText="Feed me!" />
-    <TextField fx:id="notification" blendMode="DARKEN" disable="false" editable="false" focusTraversable="true" layoutX="14.0" layoutY="535.0" mouseTransparent="true" prefWidth="612.0" promptText="Read me!" text="" visible="true">
+    <TextField fx:id="command" layoutX="14.0" layoutY="564.0" onAction="#parseInput" onKeyPressed="#returnLastInput" prefWidth="612.0" promptText="Feed me!" />
+    <TextField fx:id="notification" blendMode="DARKEN" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="535.0" mouseTransparent="true" prefWidth="612.0" promptText="Read me!" text="" visible="true">
       <effect>
         <ColorAdjust contrast="-0.32061068702290074" />
       </effect>
     </TextField>
-    <TabPane fx:id="tab" layoutX="14.0" layoutY="58.0" prefHeight="464.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="tab" layoutX="14.0" layoutY="58.0" onKeyPressed="#changeTab" prefHeight="464.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="incompleteTab" text="Incomplete">
           <content>
@@ -29,7 +29,7 @@
               <children>
                 <Accordion fx:id="incompleteAccordion" layoutX="0.0" layoutY="0.0" prefHeight="433.0" prefWidth="612.0">
                   <expandedPane>
-                    <TitledPane fx:id="eventPaneIncomplete" animated="false" text="Events">
+                    <TitledPane fx:id="eventPaneIncomplete" animated="false" onKeyPressed="#changePanel" text="Events">
                       <content>
                         <AnchorPane id="Content" fx:id="incompleteEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -52,7 +52,7 @@
                   </expandedPane>
                   <panes>
                     <fx:reference source="eventPaneIncomplete" />
-                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneIncomplete" animated="false" text="Tasks">
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneIncomplete" animated="false" onKeyPressed="#changePanel" text="Tasks">
                       <content>
                         <AnchorPane id="Content" fx:id="incompleteTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -81,7 +81,7 @@
               <children>
                 <Accordion id="event" fx:id="completeAccordion" layoutX="0.0" layoutY="0.0" prefHeight="433.0" prefWidth="612.0">
                   <expandedPane>
-                    <TitledPane id="eventPaneIncomplete" fx:id="eventPaneComplete" animated="false" text="Events">
+                    <TitledPane id="eventPaneIncomplete" fx:id="eventPaneComplete" animated="false" onKeyPressed="#changePanel" text="Events">
                       <content>
                         <AnchorPane id="Content" fx:id="completeEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -104,7 +104,7 @@
                   </expandedPane>
                   <panes>
                     <fx:reference source="eventPaneComplete" />
-                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneComplete" animated="false" text="Tasks">
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneComplete" animated="false" onKeyPressed="#changePanel" text="Tasks">
                       <content>
                         <AnchorPane id="Content" fx:id="completeTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>

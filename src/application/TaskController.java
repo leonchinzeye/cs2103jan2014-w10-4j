@@ -5,25 +5,33 @@ import java.util.Stack;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Tab;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 
 public class TaskController {
 	@FXML
-	private AnchorPane anchor;
-	@FXML
 	private TabPane tab;
+	
 	@FXML
-	private Tab incompleteTab;
+	private Accordion incompleteAccordion;
 	@FXML
-	private Tab completeTab;
+	private Accordion completeAccordion;
+	@FXML
+	private TitledPane eventPaneIncomplete;
+	@FXML
+	private TitledPane taskPaneIncomplete;
+	@FXML
+	private TitledPane eventPaneComplete;
+	@FXML
+	private TitledPane taskPaneComplete;
+	
 	@FXML
 	private TableView<TaskDataUI> taskTableIncomplete;
 	@FXML
@@ -181,12 +189,68 @@ public class TaskController {
 	}
 	
 	@FXML
-	public String returnLastInput() { //BROKEN
-		String lastInput = "";
-		if (KeyEvent.KEY_PRESSED.equals(KeyCode.UP)) {
-			lastInput = prevInputs.pop();
-			nextInputs.add(lastInput);
+	public void anchorKeystrokes(KeyEvent key) {
+		focusTextInput(key);
+		changePanel(key);
+	}
+	
+	@FXML
+	public void focusTextInput(KeyEvent key) {
+		if (key.getCode().equals(KeyCode.SLASH)) {
+			command.requestFocus();
+			command.end();
 		}
-		return lastInput;
+	}
+	
+	@FXML
+	public void changePanel(KeyEvent key) {
+		if (key.isShiftDown() && key.getCode().equals(KeyCode.UP)) {
+			if (eventPaneIncomplete.isExpanded()) {
+				taskPaneIncomplete.setExpanded(true);
+				taskPaneComplete.setExpanded(true);
+			}
+		} else if (key.isShiftDown() && key.getCode().equals(KeyCode.DOWN)) {
+			if (taskPaneIncomplete.isExpanded()) {
+				eventPaneIncomplete.setExpanded(true);
+				eventPaneComplete.setExpanded(true);
+			}
+		}
+	}
+	
+	@FXML
+	public void changeTab(KeyEvent key) {
+		if (key.isShiftDown() && (key.getCode().equals(KeyCode.RIGHT)) || (key.getCode().equals(KeyCode.LEFT))) {
+			if (tab.getSelectionModel().isSelected(0)) {
+				tab.getSelectionModel().selectNext();
+			} else {
+				tab.getSelectionModel().selectPrevious();
+			}
+		}
+	}
+	
+	@FXML
+	public void returnLastInput(KeyEvent key) { //BROKEN
+		String lastInput = "";
+		String nextInput = "";
+		
+		if(key.getCode().equals(KeyCode.UP)) {
+			if (command.getText().equals(lastInput)) {
+				nextInputs.add(command.getText());
+			}
+			if (!prevInputs.isEmpty()) {
+				lastInput = prevInputs.pop();
+				command.appendText(lastInput);
+				command.end();
+			}
+		} else if(key.getCode().equals(KeyCode.DOWN)) {	
+				if (nextInputs.isEmpty()) {
+					command.clear();
+				} else {
+					nextInput = nextInputs.pop();
+					command.appendText(nextInput);
+					command.end();
+					prevInputs.add(nextInput);
+				}
+			}
 	}
 }
