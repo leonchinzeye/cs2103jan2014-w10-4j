@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Stack;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -9,8 +11,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 
 public class TaskController {
+	@FXML
+	private AnchorPane anchor;
 	@FXML
 	private TabPane tab;
 	@FXML
@@ -88,6 +95,8 @@ public class TaskController {
 	private TextField command;
 	
 	private UI ui = new UI();
+	private Stack<String> prevInputs = new Stack<String>();
+	private Stack<String> nextInputs = new Stack<String>();
 	private CommandHandler commandHandle;
 	private FileLinker fileLink;
 	private DataUI dui;
@@ -153,7 +162,11 @@ public class TaskController {
 	@FXML
 	public void parseInput() {
 		String response = "";
-		dui = commandHandle.executeCmd(command.getText());
+		String lastInput = "";
+		lastInput = command.getText();
+		prevInputs.add(lastInput);
+		
+		dui = commandHandle.executeCmd(lastInput);
 		if (dui.equals(null)) {
 			response = "Read me!";
 		}
@@ -162,6 +175,18 @@ public class TaskController {
 		command.clear(); //clears the input text field
 		incompleteEvents.removeAll(incompleteEvents);
 		incompleteTasks.removeAll(incompleteTasks);
+		completedEvents.removeAll(completedEvents);
+		completedTasks.removeAll(completedTasks);
 		setUI(ui);
+	}
+	
+	@FXML
+	public String returnLastInput() { //BROKEN
+		String lastInput = "";
+		if (KeyEvent.KEY_PRESSED.equals(KeyCode.UP)) {
+			lastInput = prevInputs.pop();
+			nextInputs.add(lastInput);
+		}
+		return lastInput;
 	}
 }

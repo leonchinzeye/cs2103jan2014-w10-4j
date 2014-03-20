@@ -1,5 +1,4 @@
 package application;
-import java.util.Scanner;
 
 public class CommandHandler {
 	
@@ -9,12 +8,14 @@ public class CommandHandler {
 	//handlers
 	private static Add addHandler;
 	private static Delete deleteHandler;
+	private static Mark markHandler;
 	
 	private static String quitToTop = "!q";
 	
 	private boolean state_add;
 	private boolean state_del;
 	private boolean state_edit;
+	private boolean state_mark;
 	private boolean state_ref;
 	private boolean state_search;
 	
@@ -28,6 +29,7 @@ public class CommandHandler {
 	public CommandHandler() {
 		addHandler = new Add();
 		deleteHandler = new Delete();
+		markHandler = new Mark();
 		
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
@@ -83,6 +85,14 @@ public class CommandHandler {
 			} else {
 				state_del = true;
 			}
+		} else if(state_mark == true) {
+			success = markHandler.executeMark(userInput, fileLink, dataUI);
+			
+			if(success == true) {
+				state_mark = false;
+			} else {
+				state_mark = true;
+			}
 		} else if(state_edit == true) {
 			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
 		} else if(state_ref == true) {
@@ -93,7 +103,7 @@ public class CommandHandler {
 	}
 
 	private boolean newCommand() {
-		if(state_add == false && state_del == false && state_edit == false 
+		if(state_add == false && state_del == false && state_mark == false && state_edit == false 
 				&& state_ref == false && state_search == false)
 			return true;
 		
@@ -132,7 +142,11 @@ public class CommandHandler {
 				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
 				break;
 			case MARK:
-				response = Mark.executeMark(userInput, fileLink, dataUI);
+				success = markHandler.executeMark(userInput, fileLink, dataUI);
+				if (success == false) {
+					state_mark = true;
+				}
+				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -158,7 +172,7 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/search")) {
 		 	return COMMAND_TYPE.SEARCH;
-		} else if (commandTypeString.contains("/mark")) {
+		} else if (commandTypeString.contains("/mark") || commandTypeString.contains("/unmark")) {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
@@ -172,6 +186,7 @@ public class CommandHandler {
 	private void resetStates() {
 		state_add = false;
 		state_del = false;
+		state_mark = false;
 		state_edit = false;
 		state_ref = false;
 		state_search = false;

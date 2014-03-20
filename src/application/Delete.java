@@ -7,7 +7,7 @@ import java.util.HashMap;
  * @author leon
  *
  */
-public class Delete {	
+public class Delete {
 	
 	private static final int DELETE_INCOMPLETE_TASKS = 1;
 	private static final int DELETE_INCOMPLETE_EVENTS = 2;
@@ -26,7 +26,7 @@ public class Delete {
 	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
-	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();	
+	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	
 	private boolean state_inc_tasks;
 	private boolean state_inc_event;

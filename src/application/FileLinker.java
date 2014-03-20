@@ -51,17 +51,28 @@ public class FileLinker {
 		}
 	}
 	
-	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted) {
-		if (taskToBeMarked.getType().contains("E")) {
+	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
+			int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
+			completedTasks.add(taskToBeMarked);
+			callStorageWriteIncompleteTasks();
+			
+			deleteHandling(taskNumberToBeDeleted, 2);
+		} else if(fileToBeDeletedFrom == 2) {
 			completedEvents.add(taskToBeMarked);
 			callStorageWriteCompletedEvents();
 			
-			deleteHandling(taskNumberToBeDeleted, 2);
-		} else {
-			completedTasks.add(taskToBeMarked);
-			callStorageWriteCompletedTasks();
-			
 			deleteHandling(taskNumberToBeDeleted, 1);
+		} else if(fileToBeDeletedFrom == 3) {
+			incompleteTasks.add(taskToBeMarked);
+			callStorageWriteIncompleteTasks();
+			
+			deleteHandling(taskNumberToBeDeleted, 3);
+		} else {
+			incompleteEvents.add(taskToBeMarked);
+			callStorageWriteIncompleteEvents();
+			
+			deleteHandling(taskNumberToBeDeleted, 4);
 		}
 	}
 	
