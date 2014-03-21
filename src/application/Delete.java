@@ -63,7 +63,7 @@ public class Delete {
 			
 			if(cmdTable.containsKey(cmd) != true) {
 				notRecognisableCmd(fileLink, dataUI);
-				return success = false;
+				return success = true;
 			} else {
 				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
@@ -289,6 +289,13 @@ public class Delete {
 		return false;
 	}
 
+	private void resetStates() {
+		state_inc_tasks = false;
+		state_inc_event = false;
+		state_comp_tasks = false;
+		state_comp_event = false;
+	}
+	
 	private void initialiseCmdTable() {
 		cmdTable.put("/dt", DELETE_INCOMPLETE_TASKS);
 		cmdTable.put("/de", DELETE_INCOMPLETE_EVENTS);

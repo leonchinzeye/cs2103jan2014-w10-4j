@@ -86,6 +86,7 @@ public class CommandHandler {
 				state_del = true;
 			}
 		} else if(state_mark == true) {
+			/*
 			success = markHandler.executeMark(userInput, fileLink, dataUI);
 			
 			if(success == true) {
@@ -93,6 +94,7 @@ public class CommandHandler {
 			} else {
 				state_mark = true;
 			}
+			*/
 		} else if(state_edit == true) {
 			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
 		} else if(state_ref == true) {
@@ -142,11 +144,13 @@ public class CommandHandler {
 				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
 				break;
 			case MARK:
+				/*
 				success = markHandler.executeMark(userInput, fileLink, dataUI);
 				if (success == false) {
 					state_mark = true;
 				}
 				break;
+				*/
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
