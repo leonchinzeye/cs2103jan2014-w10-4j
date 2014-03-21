@@ -564,6 +564,13 @@ public class Add {
 		taskToBeAdded.setEndDay(endDay);
 	}
 	
+	private void resetStates() {
+		state_add_float_task = false;
+		state_add_timed_task = false;
+		state_add_event = false;
+		state_add_repeating_event = false;
+	}
+	
 	private static void initialiseAddCmdTable() {
 		addCmdTable.put("/add", ADD_TASK);
 		addCmdTable.put("/addt", ADD_TIMED_TASK);
