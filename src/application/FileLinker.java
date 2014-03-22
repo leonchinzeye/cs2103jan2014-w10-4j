@@ -14,27 +14,68 @@ public class FileLinker {
 	private ArrayList<TaskCard> completedTasks;
 	private ArrayList<TaskCard> completedEvents;
 	
+	private ArrayList<TaskCard> searchIncTasks;
+	private ArrayList<TaskCard> searchIncEvents;
+	private ArrayList<TaskCard> searchCompTasks;
+	private ArrayList<TaskCard> searchCompEvents;
+	
+	private ArrayList<Integer> incTasksIndex;
+	private ArrayList<Integer> incEventsIndex;
+	private ArrayList<Integer> compTasksIndex;
+	private ArrayList<Integer> compEventsIndex;
+	
+	private boolean state_search;
+	
 	public FileLinker() {
 		this.incompleteTasks = Storage.openFile(Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 		this.incompleteEvents = Storage.openFile(Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
 		this.completedTasks = Storage.openFile(Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
 		this.completedEvents = Storage.openFile(Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
+		
+		this.searchIncTasks = new ArrayList<TaskCard>();
+		this.searchIncEvents = new ArrayList<TaskCard>();
+		this.searchCompTasks = new ArrayList<TaskCard>();
+		this.searchCompEvents = new ArrayList<TaskCard>();
+		
+		this.incTasksIndex = new ArrayList<Integer>();
+		this.incEventsIndex = new ArrayList<Integer>();
+		this.compTasksIndex = new ArrayList<Integer>();
+		this.compEventsIndex = new ArrayList<Integer>();
+		
+		this.state_search = false;
+		
 	}
 	
 	public ArrayList<TaskCard> getIncompleteTasks() {
-		return incompleteTasks;
+		if(state_search) {
+			return searchIncTasks;
+		} else {
+			return incompleteTasks;
+		}
 	}
 	
 	public ArrayList<TaskCard> getIncompleteEvents() {
-		return incompleteEvents;
+		if(state_search) {
+			return searchIncEvents;
+		} else {
+			return incompleteEvents;
+		}
 	}
 	
 	public ArrayList<TaskCard> getCompletedTasks() {
-		return completedTasks;
+		if(state_search) {
+			return searchCompTasks;
+		} else {
+			return completedTasks;
+		}
 	}
 	
 	public ArrayList<TaskCard> getCompletedEvents() {
-		return completedEvents;
+		if(state_search) {
+			return searchCompEvents;
+		} else {
+			return completedEvents;
+		}
 	}
 	
 	/**
