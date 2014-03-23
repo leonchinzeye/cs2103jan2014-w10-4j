@@ -8,6 +8,7 @@ public class CommandHandler {
 	//handlers
 	private static Add addHandler;
 	private static Delete deleteHandler;
+	private static Search searchHandler;
 	private static Mark markHandler;
 	private static Edit editHandler;
 	
@@ -30,6 +31,7 @@ public class CommandHandler {
 	public CommandHandler() {
 		addHandler = new Add();
 		deleteHandler = new Delete();
+		searchHandler = new Search();
 		markHandler = new Mark();
 		editHandler = new Edit();
 		
@@ -103,7 +105,13 @@ public class CommandHandler {
 		} else if(state_ref == true) {
 			RefreshUI.executeRefresh(fileLink, dataUI);
 		} else if(state_search == true) {
-			//Search.executeSearch(userInput, fileLink, dataToBePassedToUI);
+			success = searchHandler.executeSearch(userInput, fileLink, dataUI);
+			
+			if(success) {
+				state_search = false;
+			} else {
+				state_search = true;
+			}
 		}
 	}
 
@@ -142,12 +150,14 @@ public class CommandHandler {
 				break;
 			case EDIT:
 				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
-				
 				if(success==false)
 					state_edit = true;
 					break;
 			case SEARCH:
-				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
+				success = searchHandler.executeSearch(userInput, fileLink, dataUI);
+				if(!success) {
+					state_search = true;
+				}
 				break;
 			case MARK:
 				/*
@@ -178,9 +188,9 @@ public class CommandHandler {
 			return COMMAND_TYPE.DELETE;
 		} else if (commandTypeString.contains("/clear")) {
 		 	return COMMAND_TYPE.CLEAR;
-		} else if (commandTypeString.contains("/edit")) {
+		} else if (commandTypeString.contains("/e")) {
 		 	return COMMAND_TYPE.EDIT;
-		} else if (commandTypeString.contains("/search")) {
+		} else if (commandTypeString.contains("/s")) {
 		 	return COMMAND_TYPE.SEARCH;
 		} else if (commandTypeString.contains("/mark") || commandTypeString.contains("/unmark")) {
 		 	return COMMAND_TYPE.MARK;
