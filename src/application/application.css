@@ -1,0 +1,13 @@
+.root{
+	-fx-background-color: #fffafa;
+	-fx-font-family: cursive;
+}
+
+.anchor{
+	-fx-font-family: cursive; 
+}
+
+.button{
+	-fx-font-family: cursive;
+	-fx-font-weight: bold;
+}
