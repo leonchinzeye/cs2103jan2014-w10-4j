@@ -5,9 +5,19 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 public class Search {
+	
+	private HashMap<String, Integer> cmdTable;
+	
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
+	
+	public Search() {
+		cmdTable = new HashMap<String, Integer>();
+		initCmdTable();
+		
+	}
 	
 	/**
 	 * Possible search keywords:
@@ -16,14 +26,11 @@ public class Search {
 	 * @author Omar Khalid
 	 * @param dataToBePassedToUI 
 	 */
-	public static String executeSearch(String[] cmdArray, FileLinker fileLink, DataUI dataToBePassedToUI) {
-		if (cmdArray[1].equals("today")){
-			return searchToday(fileLink);
-		} /*else if (!cmdArray[1].isEmpty()){
-			return searchByKey();
-		}*/ else {
-			return null;
-		}
+	public boolean executeSearch(String userInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
+		boolean success = false;
+
+		
+		return success;
 	}
 	
 	private static String searchToday(FileLinker fileLink) {
@@ -51,6 +58,12 @@ public class Search {
 			}
 		}
 		return finalOutput;
+	}
+
+	private void initCmdTable() {
+		cmdTable.put("today", 1);
+		cmdTable.put("tomorrow", 2);
+		cmdTable.put("next week", 3);
 	}
 	
 	private static class SortPriority implements Comparator<TaskCard> {
