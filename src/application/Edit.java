@@ -346,6 +346,19 @@ public class Edit {
 		 * again helper functions would be good 
 		 */
 		
+		/*
+		 * identifying formatting
+		 * 1) split based on (";")
+		 * 2) idenfity length of the string[];
+		 * 3) for loop with i running from 0 to length of string[]
+		 * 		- get string[i]
+		 * 		- split based on ":"
+		 * 		- if the array != 2 means error
+		 * 		- if the fields that he type don't make sense, just throw error message eg dataUI.setfeedback(blah blah)
+		 * 4) if success, perform edit
+		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
+		 */
+		
 		fileLink.editHandling(task, userEnteredID, 1);
 		return success;
 	}
