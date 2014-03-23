@@ -139,7 +139,7 @@ public class FileLinker {
 	 * @param arrayToBeUpdated
 	 */
 	
-	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified) {
+	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeDeletedFrom) {
 		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
 		callStorageWriteIncompleteTasks();
 		return true;
