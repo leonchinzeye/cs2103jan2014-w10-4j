@@ -1,415 +1,316 @@
 package application;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.GregorianCalendar;
-import java.util.Scanner;
+import java.util.HashMap;
 
+/**
+ * 
+ * @author leon
+ *
+ */
 public class Edit {
+	
+	private static final int EDIT_INCOMPLETE_TASKS = 1;
+	private static final int EDIT_INCOMPLETE_EVENTS = 2;
+	private static final int EDIT_COMPLETE_TASK = 3;
+	private static final int EDIT_COMPLETE_EVENTS = 4;
+	
+	private static final int FIRST_ARGUMENT = 0;
+	private static final int SECOND_ARGUMENT = 1;
+		
+	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an incomplete task to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an incomplete event to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You didn't specify an complete task to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You didn't specify an complete event to delete! Please enter an ID to delete!";
+	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
+	private static final String FEEDBACK_DELETION_RANGE = "Please enter a valid number between 1 to %d!";
+	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
+	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
+	
+	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
+	
+	private boolean state_inc_tasks;
+	private boolean state_inc_event;
+	private boolean state_comp_tasks;
+	private boolean state_comp_event;
+	
+	public Edit() {
+		initialiseCmdTable();
+		state_inc_tasks = false;
+		state_inc_event = false;
+		state_comp_tasks = false;
+		state_comp_event = false;
+	}
+
 	/**
-	 * First, edit will see whether the keyword exists.
-	 * Next, it will check whether it's a date.
-	 * If yes, it will search for the date in the to do list.
-	 * If no, it will see whether it's a digit.
-	 * If yes, it will search for the digit in the task name or task date in the list.
-	 * If no, it will search for the keyword in the task name in the list.
-	 * If not found, it will return the appropriate message.
-	 * @param cmdArray
+	 * this method checks if the program is currently in any edit error handling state
+	 * if it is, it calls the individual edit methods
+	 * else, it will identify what type of edit command the user has entered before
+	 * handling the user input
+	 * if errors still persist, it will remain in a state of error
+	 * @param userInput
 	 * @param fileLink
+	 * @param dataUI
 	 * @return
-	 * @author Omar Khalid
+	 * the return type will signal to commandhandler whether the delete was successful
+	 * or that there was an error involved
 	 */
-	
-	private static Scanner scan = new Scanner(System.in);
-	private static ArrayList<Integer> editIndex = new ArrayList<Integer>();
-	private static int indexNumber;
-	private static int nextIndexNumber;
-	private static TaskCard editedTask;
-	private static boolean editedFileLinkResponse = false;
-	private static boolean isDate = false;
-	private static boolean isPriority = false;
-	private static boolean isInteger = false;
-	private static boolean editedFlag = false;
-	private static boolean quitSecondMenu = false;
-	private static String keyword = "";
-	private static String response = "";
-	private static Calendar dateQuery = GregorianCalendar.getInstance();
-	private static Calendar editedDate = GregorianCalendar.getInstance();
-	private static Calendar editedTime = GregorianCalendar.getInstance();
-	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
-	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
-	
-	private static final String EDIT_SUCCESS = "Your edit was successful!\n%s";
-	private static final String EDIT_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
-	private static final String KEYWORD_NOT_ENTERED = "You seem to have forgotten something! Please type in a keyword to search for: ";
-	private static final String KEYWORD_NOT_FOUND = "We can't seem to find \"%s\" in our records :(";
-	private static final String NOT_DIGIT_ENTERED = "You seem to have mistakenly entered something that is not a digit!";
-	private static final String INVALID_INPUT_PROMPT_WITH_RANGE = "Please enter something between 1 and %d: ";
-	private static final String FIRST_MENU_QUERY = "Which task would you like to edit?";
-	private static final String SECOND_MENU_QUERY = "What attribute would you like to change?";
-	private static final String INCORRECT_TIME_INPUT = "We can't seem to recognize the time that you have entered. :( \nPlease try again: ";
-	private static final String INCORRECT_DATE_INPUT = "We can't seem to recognize a date from what you entered. :( \nPlease try again: ";
-	private static final String COMMAND_QUIT_TO_TOP = "!q";
-	
-	public static String executeEdit (String[] tokenizedInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
+	public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
 		
-		//check whether there's an argument for edit
+		if(newEditCmd()) {
+			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+			String cmd = tokenizedInput[FIRST_ARGUMENT];
+			
+			if(cmdTable.containsKey(cmd) != true) {
+				notRecognisableCmd(fileLink, dataUI);
+				return success = true;
+			} else {
+				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
+			}
+		} else if(state_inc_tasks == true) {
+			success = performIncTaskEdit(userInput, fileLink, dataUI);
+			if(success == true) {
+				state_inc_tasks = false;
+			}
+		} else if(state_inc_event == true) {
+			success = performIncEventEdit(userInput, fileLink, dataUI);
+			if(success == true) {
+				state_inc_event = false;
+			}
+		} else if(state_comp_tasks == true) {
+			success = performCompTaskEdit(userInput, fileLink, dataUI);
+			if(success == true) {
+				state_comp_tasks = false;
+			}
+		} else {
+			success = performCompEventEdit(userInput, fileLink, dataUI);
+			if(success == true) {
+				state_comp_event= false;
+			}
+		}
+		return success;
+	}
+	
+	//the actual editing
+	
+	public boolean executeEdit(String secondUserInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		
+		return success;
+	}
+	
+	private boolean identifyCmdAndPerform(String[] tokenizedInput,
+			FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		boolean noIndexArgument = false;
+		String userIndex = null;
+		
 		if(tokenizedInput.length < 2) {
-			keyword = getKeywordFromUser();
-			if (keyword.equals(COMMAND_QUIT_TO_TOP)) {
-				response = null;
-				return response;
-			}
+			noIndexArgument = true;
 		} else {
-			keyword = tokenizedInput[1];
+			userIndex = tokenizedInput[SECOND_ARGUMENT];
 		}
 		
-		checkKeywordType(keyword);
-		editList = editFilter(fileLink);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
 		
-		if (editList.isEmpty()) {
-			print(String.format(KEYWORD_NOT_FOUND, keyword));
-			return null;
-		} else {
-			firstEditMenu(editList);
-		}
-		
-		if (editedFlag == false) {
-			return null;
-		} else {
-			editedFileLinkResponse = fileLink.editHandling(editedTask, editIndex.get(indexNumber - 1));
-		}
-		
-		if (editedFileLinkResponse == true) {
-			response = String.format(EDIT_SUCCESS, editedTask.getTaskString());
-		} else {
-			response = EDIT_FAILURE;
-		}
-		editIndex.clear(); //this clears the Index for future use
-		return response;
-	}
-
-	/**
-	 * Check whether keyword is a date, an integer, or a string.
-	 * @param keyword
-	 * @author Omar Khalid
-	 */
-	private static void checkKeywordType(String keyword) {
-		isInteger = checkIsInteger(keyword);
-		isDate = checkIsDate(keyword);
-		isPriority = checkIsPriority(keyword);
-	}
-
-	private static ArrayList<TaskCard> editFilter(FileLinker fileLink) {
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-
-		if (isDate == true) {
-			editList = searchByDate(fileLink);
-		} else if (isInteger == true) {
-			editList = searchByDigit(fileLink);
-		} else if (isPriority == true) {
-			editList = searchByPriority(fileLink);
-		} else {
-			editList = searchByKeyword(fileLink);
-		}
-		
-		return editList;
-	}
-
-	private static ArrayList<TaskCard> editBasedOnDate(FileLinker fileLink) {
-		return null;
-	}
-
-	private static ArrayList<TaskCard> searchByDate(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		
-		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (dateQuery.equals(incompleteTasks.get(i).getStartDay())
-				|| dateQuery.equals(incompleteTasks.get(i).getEndDay())) {
-				editList.add(incompleteTasks.get(i));
-				editIndex.add(i);
-			}
-		}
-		return editList;
-	}
-	
-	private static ArrayList<TaskCard> searchByDigit(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
-				editList.add(incompleteTasks.get(i));
-				editIndex.add(i);
-			}
-		}
-		return editList;
-	}
-	
-	private static ArrayList<TaskCard> searchByKeyword(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (incompleteTasks.get(i).getTaskString().contains(keyword)) {
-				editList.add(incompleteTasks.get(i));
-				editIndex.add(i);
-			}
-		}
-		return editList;
-	}
-	
-	private static ArrayList<TaskCard> searchByPriority(FileLinker fileLink) {
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-		ArrayList<TaskCard> editList = new ArrayList<TaskCard>();
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		
-		for (int i = 0; i < numberOfIncompleteTasks; i++) {
-			if (keyword.length() == incompleteTasks.get(i).getPriority()) {
-				editList.add(incompleteTasks.get(i));
-				editIndex.add(i);
-			}
-		}
-		return editList;
-	}
-	
-	private static void firstEditMenu(ArrayList<TaskCard> editList) {
-		printFirstMenu(editList);
-		
-		boolean correctUserInput = false;
-		while(correctUserInput == false) {
-			String userInput = scan.nextLine();
-			if(userInput.equals(COMMAND_QUIT_TO_TOP)) {
-				break;
-			} else if (checkIsInteger(userInput) == false) {
-				print(NOT_DIGIT_ENTERED);
-				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, editList.size()));
-			} else {
-				indexNumber = Integer.parseInt(userInput);
-				if (indexNumber > editList.size() || indexNumber < 1) {
-					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, editList.size()));
+		switch(cmdTable.get(cmd)) {
+			case EDIT_INCOMPLETE_TASKS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
+					state_inc_tasks = true;
+					
+					return success = false;
 				} else {
-					correctUserInput = true;
-					editedTask = editList.get(indexNumber - 1);		
-					while (quitSecondMenu == false) {
-						secondEditMenu(editList);
+					success = performIncTaskEdit(userIndex, fileLink, dataUI);
+						
+					if(success == false) {
+						state_inc_tasks = true;
+					} else {
+						state_inc_tasks = false;
 					}
 				}
-			}
-		}
-	}
-
-	private static void printFirstMenu(ArrayList<TaskCard> editList) {
-		Collections.sort(editList, new SortPriority());
-		print(FIRST_MENU_QUERY);
-		for (int j = 0; j < editList.size(); j++) {
-			print(j+1 + ". " + editList.get(j).getTaskString());
-		}
-	}
-
-	private static void secondEditMenu(ArrayList<TaskCard> editList) {
-		printSecondMenu();
-		
-		boolean correctNextIndex = false;
-		while(correctNextIndex == false) {
-			String nextIndex = scan.nextLine();
-			if(nextIndex.equals("7")) {
-				quitSecondMenu = true;
 				break;
-			} else if (!checkIsInteger(nextIndex)){
-				print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 7));
-			} else {
-				nextIndexNumber = Integer.parseInt(nextIndex);
-				if (nextIndexNumber > 6 || nextIndexNumber < 1) {
-					print(String.format(INVALID_INPUT_PROMPT_WITH_RANGE, 7));
+			case EDIT_INCOMPLETE_EVENTS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
+					state_inc_event = true;
+					
+					return success = false;
 				} else {
-					correctNextIndex = true;
-					editTaskAttribute(nextIndexNumber, editList);
-					if (editedFlag == true) {
-						print(editedTask.getTaskString());
+					success = performIncEventEdit(userIndex, fileLink, dataUI);
+					
+					if(success == false) {
+						state_inc_event = true;
+					} else {
+						state_inc_event = false;
 					}
 				}
-			}
-		}
-	}
-
-	private static void printSecondMenu() {
-		print(SECOND_MENU_QUERY);
-		print("1. Name");
-		print("2. Start date");
-		print("3. End date");
-		print("4. Start time");
-		print("5. End time");
-		print("6. Priority");
-		print("7. Exit");
-	}
-
-	private static void editTaskAttribute(int nextIndex, ArrayList<TaskCard> editList) {
-		switch (nextIndex) {
-			case 1:
-				print("Please enter a new name for this task: ");
-				String newName = scan.nextLine();
-				editedTask.setName(newName);
-				editedFlag = true;
 				break;
-			case 2:
-				print("Please enter a new start date for this task: ");
-				editedDate = editList.get(indexNumber - 1).getStartDay();
-				editDate();
-				editedTask.setStartDay(editedDate);
-				editedFlag = true;
+			case EDIT_COMPLETE_TASK:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
+					state_comp_tasks = true;
+					
+					return success = false;
+				} else {
+					success = performCompTaskEdit(userIndex, fileLink, dataUI);
+						
+					if(success == false) {
+						state_comp_tasks = true;
+					} else {
+						state_comp_tasks = false;
+					}
+				}
 				break;
-			case 3:
-				print("Please enter a new end date for this task: ");
-				editedDate = editList.get(indexNumber - 1).getEndDay();
-				editedTask.setEndDay(editedDate);
-				editedFlag = true;
-				break;
-			case 4:
-				print("Please enter a new start time for this task: ");
-				editedTime = editList.get(indexNumber - 1).getStartDay();
-				editTime();
-				editedTask.setStartDay(editedTime);
-				editedFlag = true;
-				break;
-			case 5:
-				print("Please enter a new end time for this task: ");
-				editedTime = editList.get(indexNumber - 1).getEndDay();
-				editTime();
-				editedTask.setEndDay(editedTime);
-				editedFlag = true;
-				break;
-			case 6:
-				print("Please enter a new priority for this task: ");
-				int priority = scan.nextInt();
-				editedTask.setPriority(priority);
-				editedFlag = true;
-				break;
-			case 7:
+			case EDIT_COMPLETE_EVENTS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
+					state_comp_event = true;
+					
+					return success = false;
+				} else {
+					success = performCompEventEdit(userIndex, fileLink, dataUI);
+					
+					if(success == false) {
+						state_comp_event = true;
+					} else {
+						state_comp_event = false;
+					}
+				}
 				break;
 			default:
 				break;
 		}
+		
+		return success;
 	}
 
-	private static void editDate() {
-		boolean correctDateInput = false;
-		while (correctDateInput == false) {
-			String newDate = scan.nextLine();
-			try {
-				dateString.parse(newDate);
-				correctDateInput = true;
-			} catch(ParseException e) {
-				print(INCORRECT_DATE_INPUT);
-			}
+	private boolean performIncTaskEdit(String userIndex, FileLinker fileLink, DataUI dataUI) {
+		boolean success = true;
+		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
+		
+		try {
+			int editIndex = Integer.parseInt(userIndex);
 			
-			if (correctDateInput == true) {
-				String[] dateArray = newDate.split("/");
-				int[] date = new int[dateArray.length];
-				for (int i = 0; i < dateArray.length; i++) {
-					date[i] = Integer.parseInt(dateArray[i]);
-				}
-				int day = date[0];
-				int month = date[1];
-				int year = date[2];
-				editedDate.set(Calendar.DAY_OF_MONTH, day);
-				editedDate.set(Calendar.MONTH, month - 1);
-				editedDate.set(Calendar.YEAR, year);
+			if(editIndex < 0 || editIndex > incTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incTasks.size()));
+				return success = false;
+			} 
+			//edit this one for the edit function to work 
+			else {
+				TaskCard task = incTasks.get(editIndex - 1);
+				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
+				
+				fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
+				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
+			return success = false;
 		}
-	}
-	
-	private static void editTime() {
-		boolean correctTimeInput = false;
-		while (correctTimeInput == false) {
-			String newTime = scan.nextLine();
-			try {
-				timeString.parse(newTime);
-				correctTimeInput = true;
-			} catch(ParseException e) {
-				print(INCORRECT_TIME_INPUT);
-			}
-			
-			if (correctTimeInput == true) {
-				String[] timeArray = newTime.split(":");
-				int[] time = new int[timeArray.length];
-				for (int i = 0; i < timeArray.length; i++) {
-					time[i] = Integer.parseInt(timeArray[i]);
-				}
-				int hour = time[0];
-				int minute = time[1];
-				editedTime.set(Calendar.HOUR, hour);
-				editedTime.set(Calendar.MINUTE, minute);
-			}
-		}
+		
+		return success;
 	}
 
-	private static boolean checkIsDate(String query) {
-		boolean isDate;
-		//check if keyword is a date
+	private boolean performIncEventEdit(String userIndex, FileLinker fileLink,
+			DataUI dataUI) {
+		boolean success = true;
+		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
+		
 		try {
-			dateQuery.setTime(dateAndTime.parse(query));
-			dateQuery.setTime(dateString.parse(query));
-			dateQuery.setTime(timeString.parse(query));
-			isDate = true;
-		} catch (ParseException e){
-			isDate = false;
+			int editIndex = Integer.parseInt(userIndex);
+			
+			if(editIndex < 0 || editIndex > incEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incEvent.size()));
+				return success = false;
+			} else {
+				TaskCard event = incEvent.get(editIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
+				fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_EVENTS);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
+			success = false;
 		}
-		return isDate;
+		
+		return success;
 	}
-	
-	private static boolean checkIsInteger(String keyword) {
-		boolean isInteger;
-		//check if keyword is a digit
+
+	private boolean performCompTaskEdit(String userIndex, FileLinker fileLink,
+			DataUI dataUI) {
+		boolean success = true;
+		ArrayList<TaskCard> compTasks = fileLink.getIncompleteTasks();
+		
 		try {
-			Integer.parseInt(keyword);
-			isInteger = true;
-		} catch (NumberFormatException e) {
-			isInteger = false;
+			int editIndex = Integer.parseInt(userIndex);
+			
+			if(editIndex < 0 || editIndex > compTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compTasks.size()));
+				return success = false;
+			} else {
+				TaskCard task = compTasks.get(editIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
+				fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compTasks.size()));
+			return success = false;
 		}
-		return isInteger;
+		
+		return success;
 	}
-	
-	private static boolean checkIsPriority(String keyword) {
-		if (keyword.equals("*") || keyword.equals("**") || keyword.equals("***")) {
+
+	private boolean performCompEventEdit(String userIndex, FileLinker fileLink,
+			DataUI dataUI) {
+		boolean success = true;
+		ArrayList<TaskCard> compEvent = fileLink.getIncompleteEvents();
+		
+		try {
+			int editIndex = Integer.parseInt(userIndex);
+			
+			if(editIndex < 0 || editIndex > compEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compEvent.size()));
+				return success = false;
+			} else {
+				TaskCard event = compEvent.get(editIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
+				fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_EVENTS);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compEvent.size()));
+			success = false;
+		}
+		
+		return success;
+	}
+
+	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
+	}
+
+	private boolean newEditCmd() {
+		if(state_inc_tasks == false && state_inc_event == false
+				&& state_comp_tasks == false && state_comp_event == false) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
+	}
+
+	private void resetStates() {
+		state_inc_tasks = false;
+		state_inc_event = false;
+		state_comp_tasks = false;
+		state_comp_event = false;
 	}
 	
-	private static String getKeywordFromUser() {
-		boolean enteredAction = false;
-		String keyword = "";
-		while(enteredAction == false) {
-			System.out.println(KEYWORD_NOT_ENTERED);
-			
-			if(scan.hasNext()) {
-				keyword = scan.nextLine();
-				enteredAction = true;
-			}
-		}
-		return keyword;
-	}
-	
-	private static void print(String toPrint) {
-		System.out.println(toPrint);
-	}
-	
-	private static class SortPriority implements Comparator<TaskCard> {
-		public int compare(TaskCard o1, TaskCard o2) {
-			Integer i1 = (Integer) o1.getPriority();
-			Integer i2 = (Integer) o2.getPriority();
-			return i2.compareTo(i1);
-		}
+	private void initialiseCmdTable() {
+		cmdTable.put("/et", EDIT_INCOMPLETE_TASKS);
+		cmdTable.put("/ee", EDIT_INCOMPLETE_EVENTS);
+		cmdTable.put("/etc", EDIT_COMPLETE_TASK);
+		cmdTable.put("/eec", EDIT_COMPLETE_EVENTS);
 	}
 }

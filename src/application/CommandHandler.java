@@ -9,6 +9,7 @@ public class CommandHandler {
 	private static Add addHandler;
 	private static Delete deleteHandler;
 	private static Mark markHandler;
+	private static Edit editHandler;
 	
 	private static String quitToTop = "!q";
 	
@@ -30,6 +31,7 @@ public class CommandHandler {
 		addHandler = new Add();
 		deleteHandler = new Delete();
 		markHandler = new Mark();
+		editHandler = new Edit();
 		
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
@@ -96,6 +98,7 @@ public class CommandHandler {
 			}
 			*/
 		} else if(state_edit == true) {
+			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
 			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
 		} else if(state_ref == true) {
 			RefreshUI.executeRefresh(fileLink, dataUI);
@@ -138,8 +141,11 @@ public class CommandHandler {
 				}
 				break;
 			case EDIT:
-				response = Edit.executeEdit(tokenizedInput, fileLink, dataUI);
-				break;
+				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
+				
+				if(success==false)
+					state_edit = true;
+					break;
 			case SEARCH:
 				response = Search.executeSearch(tokenizedInput, fileLink, dataUI);
 				break;
