@@ -28,17 +28,26 @@ public class Edit {
 	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	
+	private Integer userEnteredID;
+	
 	private boolean state_inc_tasks;
 	private boolean state_inc_event;
 	private boolean state_comp_tasks;
 	private boolean state_comp_event;
 	
+	private boolean state_input_inc_tasks;
+	
 	public Edit() {
 		initialiseCmdTable();
+		
+		userEnteredID = null;
+		
 		state_inc_tasks = false;
 		state_inc_event = false;
 		state_comp_tasks = false;
 		state_comp_event = false;
+		
+		state_input_inc_tasks = false;
 	}
 
 	/**
@@ -54,8 +63,8 @@ public class Edit {
 	 * the return type will signal to commandhandler whether the delete was successful
 	 * or that there was an error involved
 	 */
-	public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
+		public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI) {
 		
 		if(newEditCmd()) {
 			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
@@ -71,6 +80,8 @@ public class Edit {
 			success = performIncTaskEdit(userInput, fileLink, dataUI);
 			if(success == true) {
 				state_inc_tasks = false;
+				state_input_inc_tasks = true;
+				return success = false;
 			}
 		} else if(state_inc_event == true) {
 			success = performIncEventEdit(userInput, fileLink, dataUI);
@@ -82,12 +93,23 @@ public class Edit {
 			if(success == true) {
 				state_comp_tasks = false;
 			}
-		} else {
+			
+		} else if(state_comp_event) {
 			success = performCompEventEdit(userInput, fileLink, dataUI);
 			if(success == true) {
 				state_comp_event= false;
 			}
+		} else if(state_input_inc_tasks) {
+			success = checkIncInputAndPerform(userInput, fileLink, dataUI);
+			if(success) {
+				resetStates();
+				state_input_inc_tasks = false;
+			}
 		}
+		/*
+		 * implement the other 4 else if for the 2nd layer states
+		 * these will call the 4 extra functions that you will implement to perform the specific edits
+		 */
 		return success;
 	}
 	
@@ -185,6 +207,13 @@ public class Edit {
 		return success;
 	}
 
+	/**
+	 * should name it checkAndGetIncTaskID
+	 * @param userIndex
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private boolean performIncTaskEdit(String userIndex, FileLinker fileLink, DataUI dataUI) {
 		boolean success = true;
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
@@ -199,8 +228,11 @@ public class Edit {
 			//edit this one for the edit function to work 
 			else {
 				TaskCard task = incTasks.get(editIndex - 1);
+				
+				//set feedback should be
 				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
 				
+				//this filelink should not be called
 				fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
@@ -287,6 +319,37 @@ public class Edit {
 		return success;
 	}
 
+	/**
+	 * performs the actual edit
+	 * create a new task card, put in details from the old one that he didn't want to change
+	 * put in new ones that he wanted to change
+	 * and call filelinker to edit it. Make sure you pass a new taskcard with the id that the user entered initially
+	 * @param dataUI 
+	 * @param fileLink 
+	 * @return
+	 */
+	private boolean checkIncInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
+		boolean success = false;
+		TaskCard task = new TaskCard();
+		
+		/*
+		 * first step is to check if all the parameters make sense
+		 */
+		
+		/*
+		 * second step is to pull out the details that he did not want to edit and put them in
+		 * helper functions would be good for abstraction
+		 */
+		
+		/*
+		 * 3rd step would be to put the new details that he wanted to edit
+		 * again helper functions would be good 
+		 */
+		
+		fileLink.editHandling(task, userEnteredID, 1);
+		return success;
+	}
+	
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
@@ -294,7 +357,10 @@ public class Edit {
 
 	private boolean newEditCmd() {
 		if(state_inc_tasks == false && state_inc_event == false
-				&& state_comp_tasks == false && state_comp_event == false) {
+				&& state_comp_tasks == false && state_comp_event == false
+				/*
+				 * here you need to check for the other 4 states also and make sure that they are false
+				 */) {
 			return true;
 		}
 		return false;
