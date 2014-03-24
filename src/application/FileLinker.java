@@ -134,11 +134,17 @@ public class FileLinker {
 		return true;
 	}
 	
+	public boolean searchHandling(ArrayList<Integer> incTasksList, ArrayList<Integer> incEventsList,
+			ArrayList<Integer> compTasksList, ArrayList<Integer> compEventsList) {
+		state_search = true;
+		
+		return true;
+	}
+	
 	/**
 	 * method for edit logic that will update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	
 	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeDeletedFrom) {
 		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
 		callStorageWriteIncompleteTasks();
@@ -175,5 +181,9 @@ public class FileLinker {
 	private void callStorageWriteCompletedEvents() {
 		int numberOfCompletedEvents = completedEvents.size();
 		Storage.writeFile(completedEvents, numberOfCompletedEvents, Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
+	}
+	
+	public void resetState() {
+		state_search = false;
 	}
 }

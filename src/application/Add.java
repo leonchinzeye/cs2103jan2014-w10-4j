@@ -21,15 +21,15 @@ public class Add {
 	private static final int ADD_EVENT = 4;
 	private static final int ADD_REPEATING_EVENT = 5;
 	
-	private static HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
-	private static final int DEFAULT_PRIORITY_TASK = 2;
-	private static final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
-	private static Calendar today = GregorianCalendar.getInstance();
-	private static Calendar startDay = GregorianCalendar.getInstance();
-	private static Calendar endDay = Calendar.getInstance();
-	private static SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
-	private static SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	private HashMap<String, Integer> addCmdTable = new HashMap<String, Integer>();
+	private final int DEFAULT_PRIORITY_TASK = 2;
+	private final int DEFAULT_PRIORITY_FLOATING_TASK = 1;
+	private Calendar today = GregorianCalendar.getInstance();
+	private Calendar startDay = GregorianCalendar.getInstance();
+	private Calendar endDay = Calendar.getInstance();
+	private SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
 	private static boolean successWriteToFile = false;
 	
 	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
@@ -42,10 +42,13 @@ public class Add {
 	
 	public Add() {
 		initialiseAddCmdTable();
+		
 		state_add_float_task = false;
 		state_add_timed_task = false;
 		state_add_event = false;
 		state_add_repeating_event = false;
+		
+		dateAndTime.setLenient(false);
 	}
 	
 	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI) {
@@ -348,7 +351,7 @@ public class Add {
 	 * @author Omar Khalid
 	 * @param fileLink 
 	 */
-	private static void addRepeatingEvent(String argument, FileLinker fileLink) {
+	private void addRepeatingEvent(String argument, FileLinker fileLink) {
 		boolean success;
 		
 		String[] argArray = argument.split(";");
@@ -366,7 +369,7 @@ public class Add {
 		}
 	}
 
-	private static void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
+	private void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		try { //get the Start Date AND Start Time
 			startDay.setTime(dateAndTime.parse(dateRange[0]));
 		} catch (ParseException e) {
@@ -379,7 +382,7 @@ public class Add {
 		setAllDayEnd(taskToBeAdded);
 	}
 
-	private static void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
+	private void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Calendar endTime = new GregorianCalendar();
 		try { //get the Start Date AND Start Time
 			startDay.setTime(dateAndTime.parse(dateRange[0].trim()));
@@ -429,9 +432,11 @@ public class Add {
 	
 	private boolean setEndDateAndTime(String endDate, TaskCard taskToBeAdded, DataUI dataUI) {
 		boolean success;
+		Calendar end = Calendar.getInstance();
+		
 		try {
-			endDay.setTime(dateAndTime.parse(endDate));
-			taskToBeAdded.setEndDay(endDay);
+			end.setTime(dateAndTime.parse(endDate));
+			taskToBeAdded.setEndDay(end);
 			success = true;
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please re-enter task with a proper date format!");
@@ -441,7 +446,7 @@ public class Add {
 		return success;
 	}
 
-	private static void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
+	private void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("FT");
 		taskToBeAdded.setFrequency("N");
@@ -454,7 +459,7 @@ public class Add {
 		return true;
 	}
 	
-	private static void setFloatingEnd(TaskCard taskToBeAdded) {
+	private void setFloatingEnd(TaskCard taskToBeAdded) {
 		endDay.set(9999, 11, 31, 23, 59);
 		taskToBeAdded.setEndDay(endDay);
 	}
@@ -480,7 +485,7 @@ public class Add {
 		return success;
 	}
 	
-	private static void setTimedEventWithoutEndDate(Calendar endTime, TaskCard taskToBeAdded) {
+	private void setTimedEventWithoutEndDate(Calendar endTime, TaskCard taskToBeAdded) {
 		if (endTime.get(Calendar.HOUR_OF_DAY) < startDay.get(Calendar.HOUR_OF_DAY)) {
 		//events are a couple hours apart and are on two sequential days
 			taskToBeAdded.setStartDay(startDay);
@@ -539,26 +544,26 @@ public class Add {
 		}
 	}
 	
-	private static void setAllDayStart(TaskCard taskToBeAdded) {
+	private void setAllDayStart(TaskCard taskToBeAdded) {
 		startDay.set(Calendar.HOUR_OF_DAY, 00);
 		startDay.set(Calendar.MINUTE, 00);
 		taskToBeAdded.setStartDay(startDay);
 	}
 	
-	private static void setAllDayEnd(TaskCard taskToBeAdded) {
+	private void setAllDayEnd(TaskCard taskToBeAdded) {
 		endDay = (Calendar) startDay.clone();
 		endDay.set(Calendar.HOUR_OF_DAY, 23);
 		endDay.set(Calendar.MINUTE, 59);
 		taskToBeAdded.setEndDay(endDay);
 	}
 	
-	private static void setTimedEventNextDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
+	private void setTimedEventNextDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
 		endDay = (Calendar) startDay.clone();
 		endDay.add(Calendar.DATE, 1);
 		setTimedEventSameDayEnd(taskToBeAdded, endTime);
 	}
 	
-	private static void setTimedEventSameDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
+	private void setTimedEventSameDayEnd(TaskCard taskToBeAdded, Calendar endTime) {
 		endDay.set(Calendar.HOUR_OF_DAY, endTime.get(Calendar.HOUR_OF_DAY));
 		endDay.set(Calendar.MINUTE, endTime.get(Calendar.MINUTE));
 		taskToBeAdded.setEndDay(endDay);
@@ -571,7 +576,7 @@ public class Add {
 		state_add_repeating_event = false;
 	}
 	
-	private static void initialiseAddCmdTable() {
+	private void initialiseAddCmdTable() {
 		addCmdTable.put("/add", ADD_TASK);
 		addCmdTable.put("/addt", ADD_TIMED_TASK);
 		addCmdTable.put("/addf", ADD_FLOATING_TASK);
