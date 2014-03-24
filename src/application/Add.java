@@ -30,14 +30,11 @@ public class Add {
 	private SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
-	private static boolean successWriteToFile = false;
 	
 	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
 	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
 	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
-	private static final String ADD_FAILURE = "Something seemed to have gone wrong somewhere :(. Please try something else instead.";
 	private static final String FEEDBACK_ADD_SUCCESS = "%s has been successfully added!";
-	private static final String COMMAND_QUIT_TO_TOP = "!q";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
 	public Add() {
@@ -65,15 +62,22 @@ public class Add {
 				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
 		} else if(state_add_float_task) {
+			success = addFloatingTask(userInput, fileLink, dataUI);
 			
 		} else if(state_add_timed_task) {
 			success = addTask(userInput, fileLink, dataUI);
+			
 		} else if(state_add_event) {
-		
+			success = addEvent(userInput, fileLink, dataUI);
+			
 		} else {
+			success = addRepeatingEvent(userInput, fileLink, dataUI);
 			
 		}
 		
+		if(success) {
+			resetStates();
+		}
 		return success;
 	}
 	
@@ -113,7 +117,7 @@ public class Add {
 				break;
 			case ADD_EVENT:
 				if(noIndexArgument) {
-					dataUI.setFeedback("You didn't enter a event! Please enter a event!");
+					dataUI.setFeedback("You didn't enter an event! Please enter an event!");
 					state_add_event = true;
 					return success = false;
 				} else {
@@ -121,7 +125,13 @@ public class Add {
 				}
 				break;
 			case ADD_REPEATING_EVENT:
-				
+				if(noIndexArgument) {
+					dataUI.setFeedback("You didn't enter an event! Please enter an event");
+					state_add_repeating_event = true;
+					return success = false;
+				} else {
+					success = addRepeatingEvent(addInput, fileLink, dataUI);
+				}
 				break;
 		}
 		return success;
@@ -245,9 +255,9 @@ public class Add {
 		TaskCard taskToBeAdded = new TaskCard();
 		
 		if (dateRange.length == 1) {
-			success = addAllDayEvent (argArray, taskToBeAdded, dataUI, fileLink);
+			success = addAllDayEvent(argArray, taskToBeAdded, dataUI, fileLink);
 		} else {
-			success = addTimedEvent (argArray, dateRange, taskToBeAdded, dataUI, fileLink);
+			success = addTimedEvent(argArray, dateRange, taskToBeAdded, dataUI, fileLink);
 		}
 		
 		return success;
@@ -350,8 +360,9 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 * @param fileLink 
+	 * @return 
 	 */
-	private void addRepeatingEvent(String argument, FileLinker fileLink) {
+	private boolean addRepeatingEvent(String argument, FileLinker fileLink, DataUI dataUI) {
 		boolean success;
 		
 		String[] argArray = argument.split(";");
