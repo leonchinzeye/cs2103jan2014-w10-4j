@@ -38,3 +38,5 @@ an /adde)
 13) Hitting !q after entering a nothing does not quit the feedback message but other dt and de work
 
 14) Deleting tasks also causes the table to be cut off
+
+15) whenever you /add task, when adding the next task, the previous one will take the date of the current one (partially fixed - due to the global variable endday)
