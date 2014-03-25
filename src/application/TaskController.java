@@ -1,5 +1,7 @@
 package application;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Stack;
 
 import javafx.application.Platform;
@@ -106,10 +108,10 @@ public class TaskController {
 	private TextField command;
 	
 	private UI ui = new UI();
-	private Stack<String> prevInputs = new Stack<String>();
-	private Stack<String> nextInputs = new Stack<String>();
+	private Stack<String> history = new Stack<String>();
+	private Stack<String> forward = new Stack<String>();
+	//private Queue<String> nextInputs = new LinkedList<String>();
 	private CommandHandler commandHandle;
-	private FileLinker fileLink;
 	private DataUI dataUI;
 	
 	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
@@ -193,7 +195,7 @@ public class TaskController {
 		String response = "";
 		String lastInput = "";
 		lastInput = command.getText();
-		prevInputs.add(lastInput);
+		history.add(lastInput);
 		
 		dataUI = commandHandle.executeCmd(lastInput);
 		if (dataUI.equals(null)) {
@@ -255,27 +257,20 @@ public class TaskController {
 		String nextInput = "";
 		
 		if(key.getCode().equals(KeyCode.UP)) {
-			if (!prevInputs.isEmpty()) {
-				lastInput = prevInputs.pop();
+			if (!history.isEmpty()) {
+				lastInput = history.pop();
 				command.setText(lastInput);
 				command.end();
-				if (key.getCode().equals(KeyCode.UP)) {
-					if (!prevInputs.isEmpty()) {
-						nextInputs.add(command.getText());
-						lastInput = prevInputs.pop();
-						command.setText(lastInput);
-						command.end();
-					}
-				}
+				forward.push(lastInput);
 			}
-		} else if(key.getCode().equals(KeyCode.DOWN)) {	
-				if (nextInputs.isEmpty()) {
+		} else if(key.getCode().equals(KeyCode.DOWN)) {
+				history.push(forward.pop());
+				if (forward.isEmpty()) {
 					command.clear();
 				} else {
-					nextInput = nextInputs.pop();
-					command.appendText(nextInput);
+					nextInput = forward.peek();
+					command.setText(nextInput);
 					command.end();
-					prevInputs.add(nextInput);
 				}
 			}
 	}
