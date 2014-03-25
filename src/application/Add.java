@@ -27,14 +27,14 @@ public class Add {
 	private Calendar today = GregorianCalendar.getInstance();
 	private Calendar startDay = GregorianCalendar.getInstance();
 	private Calendar endDay = Calendar.getInstance();
-	private SimpleDateFormat dateAndTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
-	private SimpleDateFormat timeString = new SimpleDateFormat("HH:mm");
+	private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	
 	private static final String FEEDBACK_UNRECOGNIZABLE_COMMAND = "That was an unrecognisable add command! :(";
 	private static final String FEEDBACK_INVALID_FORMAT_TASK = "That was an invalid format for adding a task :(";
 	private static final String FEEDBACK_PENDING_TIMED_TASK = "You didn't enter a task! Please enter a task!"; 
-	private static final String FEEDBACK_ADD_SUCCESS = "%s has been successfully added!";
+	private static final String FEEDBACK_ADD_TASK_SUCCESS = "Task added!";
 	//Calendar.MONTH is 0-based, so every instance call for month has to be incremented by 1
 	
 	public Add() {
@@ -45,7 +45,9 @@ public class Add {
 		state_add_event = false;
 		state_add_repeating_event = false;
 		
-		dateAndTime.setLenient(false);
+		dateAndTimeFormat.setLenient(false);
+		dateFormat.setLenient(false);
+		timeFormat.setLenient(false);
 	}
 	
 	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI) {
@@ -57,7 +59,7 @@ public class Add {
 			
 			if(addCmdTable.containsKey(cmd) != true) {
 				notRecognisableCmd(fileLink, dataUI);
-				return success = false;
+				return success = true;
 			} else {
 				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
@@ -177,7 +179,7 @@ public class Add {
 				
 				fileLink.addHandling(taskToBeAdded);
 				RefreshUI.executeRefresh(fileLink, dataUI);
-				dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
+				dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
 				state_add_timed_task = false;
 				success = true;
 			} else {
@@ -211,6 +213,7 @@ public class Add {
 			setStartDateAndTime(taskToBeAdded);
 			setFloatingEnd(taskToBeAdded);
 			
+			dataUI.setFeedback(FEEDBACK_ADD_TASK_SUCCESS);
 			fileLink.addHandling(taskToBeAdded);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
@@ -267,7 +270,7 @@ public class Add {
 		boolean success = false;
 		
 		try { //get the Start Date ONLY
-			startDay.setTime(dateString.parse(argArray[1]));
+			startDay.setTime(dateFormat.parse(argArray[1]));
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please enter the date in a correct format");
 			state_add_event = true;
@@ -278,7 +281,7 @@ public class Add {
 			setAllDayStart(taskToBeAdded);
 			setAllDayEnd(taskToBeAdded);
 			
-			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
+			dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
 			fileLink.addHandling(taskToBeAdded);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
@@ -298,7 +301,7 @@ public class Add {
 		Calendar endTime = new GregorianCalendar();
 		
 		try { //get the Start Date AND Start Time
-			startDay.setTime(dateAndTime.parse(dateRange[0].trim()));
+			startDay.setTime(dateAndTimeFormat.parse(dateRange[0].trim()));
 		} catch (ParseException e) {
 			dataUI.setFeedback("Please re-enter the event with a proper time format!");
 			state_add_event = true;
@@ -306,7 +309,7 @@ public class Add {
 		}
 		
 		try { //get the End Date AND End Time
-			endDay.setTime(dateAndTime.parse(dateRange[1].trim()));
+			endDay.setTime(dateAndTimeFormat.parse(dateRange[1].trim()));
 		} catch (ParseException e) {
 			withEndDate = false;
 		}
@@ -322,7 +325,7 @@ public class Add {
 		 */
 		if (!withEndDate) { //if End Date was not input
 			try { //get End Time ONLY
-				endTime.setTime(timeString.parse(dateRange[1].trim()));
+				endTime.setTime(timeFormat.parse(dateRange[1].trim()));
 			} catch (ParseException e) {
 				dataUI.setFeedback("You didn't specify an ending time for the event! Please re-enter with an ending time!");
 				state_add_event = true;
@@ -338,7 +341,7 @@ public class Add {
 				setTimedEventWithoutEndDate(endTime, taskToBeAdded);
 			}
 			
-			dataUI.setFeedback(String.format(FEEDBACK_ADD_SUCCESS, argArray[0]));
+			dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
 			fileLink.addHandling(taskToBeAdded);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
@@ -383,7 +386,7 @@ public class Add {
 
 	private void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		try { //get the Start Date AND Start Time
-			startDay.setTime(dateAndTime.parse(dateRange[0]));
+			startDay.setTime(dateAndTimeFormat.parse(dateRange[0]));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
@@ -397,14 +400,14 @@ public class Add {
 	private void addTimedRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
 		Calendar endTime = new GregorianCalendar();
 		try { //get the Start Date AND Start Time
-			startDay.setTime(dateAndTime.parse(dateRange[0].trim()));
+			startDay.setTime(dateAndTimeFormat.parse(dateRange[0].trim()));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
 		}
 		
 		try { //get the End Time ONLY
-			endTime.setTime(timeString.parse(dateRange[1].trim()));
+			endTime.setTime(timeFormat.parse(dateRange[1].trim()));
 		} catch (ParseException e) {
 			// Ask user to input date and time in proper format here
 			e.printStackTrace();
@@ -447,7 +450,7 @@ public class Add {
 		Calendar end = Calendar.getInstance();
 		
 		try {
-			end.setTime(dateAndTime.parse(endDate));
+			end.setTime(dateAndTimeFormat.parse(endDate));
 			taskToBeAdded.setEndDay(end);
 			success = true;
 		} catch (ParseException e) {
