@@ -93,7 +93,7 @@ public class DataUI {
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-"); //start date
+				eventData.setStartDate(dateFormat.format(startDay.getTime())); //start date
 				eventData.setStartTime("-"); //no start time
 				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
 				eventData.setEndTime("-"); //no end time
@@ -166,7 +166,7 @@ public class DataUI {
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
-				eventData.setStartDate(dateFormat.format(startDay.getTime()) + "-"); //start date
+				eventData.setStartDate(dateFormat.format(startDay.getTime())); //start date
 				eventData.setStartTime("-"); //no start time
 				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
 				eventData.setEndTime("-"); //no end time

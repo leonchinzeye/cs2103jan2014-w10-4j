@@ -157,7 +157,7 @@ public class TaskController {
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
-		fileLink = new FileLinker();
+		dataUI = commandHandle.getDataUI();
 		
 		incompleteAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
 			@Override public void changed(ObservableValue<? extends TitledPane> property, final TitledPane oldPane, final TitledPane newPane) {
@@ -177,7 +177,6 @@ public class TaskController {
 			}
 		});
 		
-		RefreshUI.executeRefresh(fileLink, dataUI);
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
