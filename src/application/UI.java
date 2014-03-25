@@ -21,6 +21,11 @@ public class UI extends Application {
 			Parent root = (Parent) loader.load();
 			Scene scene = new Scene(root,640,600);
 			
+			
+			//CSS file
+			scene.getStylesheets().add("application/application.css");
+			
+			//
 			TaskController tc = loader.getController();
 			tc.setUI(this);
 			
