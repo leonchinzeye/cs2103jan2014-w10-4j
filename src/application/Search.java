@@ -64,6 +64,17 @@ public class Search {
 	  state_error = true;
   }
 	
+	/**
+	 * checks to see what the search is
+	 * it can be either 3 possiblities
+	 * 1) search by a date
+	 * 2)	search using reserved keywords
+	 * 3) a normal search using user defined keywords
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 */
 	private void checkKeywordAndIdentify(String searchInput, FileLinker fileLink,
       DataUI dataUI) {
 
@@ -82,6 +93,13 @@ public class Search {
 	  performNormalSearch(searchInput, fileLink, dataUI);
   }
 
+	/**
+	 * takes in the user specified date and searches for tasks that have that date
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 */
 	private void searchByDate(String searchInput, FileLinker fileLink,
 	    DataUI dataUI) {
 		 ArrayList<Integer> incTaskIndex = searchIncompleteTasksByDate(searchInput, fileLink);
@@ -92,6 +110,13 @@ public class Search {
 		 fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
 	}
 
+	/**
+	 * user input has been identified as a reserved keyword and will perform roles based on that
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 */
 	private void searchByKeyword(String searchInput, FileLinker fileLink,
 	    DataUI dataUI) {
 		ArrayList<Integer> incTaskIndex = new ArrayList<Integer>();
@@ -226,7 +251,7 @@ public class Search {
 		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
 		
 	  int priority;
-	  if(searchInput == "LOW") {
+	  if(searchInput.equals("LOW")) {
 	  	priority = 1;
 	  } else if(searchInput == "MED") {
 	  	priority = 2;
