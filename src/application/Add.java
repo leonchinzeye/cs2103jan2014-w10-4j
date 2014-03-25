@@ -363,7 +363,7 @@ public class Add {
 	 * @return 
 	 */
 	private boolean addRepeatingEvent(String argument, FileLinker fileLink, DataUI dataUI) {
-		boolean success;
+		boolean success = false;
 		
 		String[] argArray = argument.split(";");
 		String[] dateRange = argArray[1].split("-");
@@ -378,6 +378,7 @@ public class Add {
 		} else {
 			addTimedRepeatingEvent (argArray, dateRange, taskToBeAdded);
 		}
+		return success;
 	}
 
 	private void addAllDayRepeatingEvent(String[] argArray, String[] dateRange, TaskCard taskToBeAdded) {
