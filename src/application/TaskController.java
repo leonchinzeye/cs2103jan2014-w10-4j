@@ -2,6 +2,9 @@ package application;
 
 import java.util.Stack;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -107,7 +110,7 @@ public class TaskController {
 	private Stack<String> nextInputs = new Stack<String>();
 	private CommandHandler commandHandle;
 	private FileLinker fileLink;
-	private DataUI dui;
+	private DataUI dataUI;
 	
 	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
@@ -116,11 +119,11 @@ public class TaskController {
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
-		dui = new DataUI();
+		dataUI = new DataUI();
 	}
 	
 	@FXML
-	private void initialize() {		
+	private void initialize() {
 		colTaskIDIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("ID"));
 		colTaskPriorityIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
 		colTaskNameIncomplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("name"));
@@ -155,14 +158,33 @@ public class TaskController {
 	public void setUI(UI ui) {
 		this.ui = ui;
 		fileLink = new FileLinker();
-		RefreshUI.executeRefresh(fileLink, dui);
-		incompleteEvents.addAll(dui.getIncompleteEvents());
-		incompleteTasks.addAll(dui.getIncompleteTasks());
+		
+		incompleteAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
+			@Override public void changed(ObservableValue<? extends TitledPane> property, final TitledPane oldPane, final TitledPane newPane) {
+				if (oldPane != null) oldPane.setCollapsible(true);
+				if (newPane != null) Platform.runLater(new Runnable() { @Override public void run() {
+					newPane.setCollapsible(false);
+				}});
+			}
+		});
+		
+		completeAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
+			@Override public void changed(ObservableValue<? extends TitledPane> property, final TitledPane oldPane, final TitledPane newPane) {
+				if (oldPane != null) oldPane.setCollapsible(true);
+				if (newPane != null) Platform.runLater(new Runnable() { @Override public void run() {
+					newPane.setCollapsible(false);
+				}});
+			}
+		});
+		
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		incompleteEvents.addAll(dataUI.getIncompleteEvents());
+		incompleteTasks.addAll(dataUI.getIncompleteTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
 		taskTableIncomplete.setItems(incompleteTasks);
 		
-		completedEvents.addAll(dui.getCompleteEvents());
-		completedTasks.addAll(dui.getCompleteTasks());
+		completedEvents.addAll(dataUI.getCompleteEvents());
+		completedTasks.addAll(dataUI.getCompleteTasks());
 		eventTableComplete.setItems(completedEvents);
 		taskTableComplete.setItems(completedTasks);
 	}
@@ -174,11 +196,11 @@ public class TaskController {
 		lastInput = command.getText();
 		prevInputs.add(lastInput);
 		
-		dui = commandHandle.executeCmd(lastInput);
-		if (dui.equals(null)) {
+		dataUI = commandHandle.executeCmd(lastInput);
+		if (dataUI.equals(null)) {
 			response = "Read me!";
 		}
-		response = dui.getFeedback();
+		response = dataUI.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
 		incompleteEvents.removeAll(incompleteEvents);
