@@ -34,13 +34,6 @@ public class Search {
 		state_error = false;
 	}
 	
-	/**
-	 * Possible search keywords:
-	 * Chronological - Today, Tomorrow
-	 * @return
-	 * @author Omar Khalid
-	 * @param dataToBePassedToUI 
-	 */
 	public boolean executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
@@ -84,11 +77,12 @@ public class Search {
 
 	private void searchByDate(String searchInput, FileLinker fileLink,
 	    DataUI dataUI) {
-		 ArrayList<Integer> IncTaskIndex = searchIncompleteTasksByDate(searchInput, fileLink);
-		 ArrayList<Integer> IncEventIndex = searchIncompleteEventsByDate(searchInput, fileLink);
-		 ArrayList<Integer> CompTaskIndex = searchCompleteTasksByDate(searchInput, fileLink);
-		 ArrayList<Integer> CompEventIndex = searchCompleteEventByDate(searchInput, fileLink);
-	  
+		 ArrayList<Integer> incTaskIndex = searchIncompleteTasksByDate(searchInput, fileLink);
+		 ArrayList<Integer> incEventIndex = searchIncompleteEventsByDate(searchInput, fileLink);
+		 ArrayList<Integer> compTaskIndex = searchCompleteTasksByDate(searchInput, fileLink);
+		 ArrayList<Integer> compEventIndex = searchCompleteEventByDate(searchInput, fileLink);
+	 
+		 fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
 	}
 
 	private void searchByKeyword(String searchInput, FileLinker fileLink,
@@ -109,10 +103,22 @@ public class Search {
 				break;
 		}
 	  
+		fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
+	}
+
+	private void performNormalSearch(String searchInput, FileLinker fileLink,
+	    DataUI dataUI) {
+	  ArrayList<Integer> incTaskIndex = searchIncompleteTasks(searchInput, fileLink);
+	  ArrayList<Integer> incEventIndex = searchIncompleteEvents(searchInput, fileLink);
+	  ArrayList<Integer> compTaskIndex = searchCompleteTasks(searchInput, fileLink);
+	  ArrayList<Integer> compEventIndex = searchCompleteEvent(searchInput, fileLink);
+	  
+	  fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
+
 	}
 
 	private ArrayList<Integer> searchIncTaskToday(FileLinker fileLink,
-      DataUI dataUI) {
+	    DataUI dataUI) {
 	  ArrayList<Integer> index = new ArrayList<Integer>();
 	  ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
 	  
