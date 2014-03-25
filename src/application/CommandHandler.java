@@ -167,13 +167,11 @@ public class CommandHandler {
 				resetStates();
 				break;
 			case MARK:
-				/*
 				success = markHandler.executeMark(userInput, fileLink, dataUI);
 				if (success == false) {
 					state_mark = true;
 				}
 				break;
-				*/
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -198,7 +196,7 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/s")) {
 		 	return COMMAND_TYPE.SEARCH;
-		} else if (commandTypeString.contains("/mark") || commandTypeString.contains("/unmark")) {
+		} else if (commandTypeString.contains("/m")) {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
