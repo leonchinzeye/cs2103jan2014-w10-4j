@@ -5,12 +5,14 @@
 .input {
 	-fx-background-color: #2F2F32;
 	-fx-text-fill: #FFFFFF;
-	-fx-highlight-fill: #76b900;
+	-fx-highlight-fill: green;
 }
 
 .feedback {
-	-fx-background-color: #FFFFFF;
-	-fx-text-fill: #000000
+	-fx-background-color: silver;
+	-fx-border-color: darkgreen;
+	-fx-border-width: 2px;
+	-fx-text-fill: black; 
 }
 
 /*Tab Pane*/
@@ -83,7 +85,7 @@
 }
 
 .table-view {
-	-fx-control-inner-background: #3c3c3c;
+	-fx-control-inner-background: #494949;
 	-fx-padding: 0px;
 }
 
