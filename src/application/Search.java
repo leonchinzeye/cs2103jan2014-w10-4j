@@ -149,6 +149,14 @@ public class Search {
 		fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
 	}
 
+	/**
+	 * this method searches based on frequency for repeated events for incomplete tasks
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncTaskFreq(String searchInput,
       FileLinker fileLink, DataUI dataUI) {
 	  ArrayList<Integer> index = new ArrayList<Integer>();
@@ -173,6 +181,14 @@ public class Search {
 		return index;
   }
 
+	/**
+	 * this method searches based on freq for repeated events for incomplete events
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncEventFreq(String searchInput,
       FileLinker fileLink, DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -197,6 +213,14 @@ public class Search {
 		return index;
   }
 
+	/**
+	 * this method searches based on freq for repeated events for completed tasks
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompTaskFreq(String searchInput,
       FileLinker fileLink, DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -245,6 +269,14 @@ public class Search {
 		return index;
   }
 
+	/**
+	 * searches based on priority for incompleted tasks
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncTaskPriority(String searchInput, FileLinker fileLink,
       DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -253,7 +285,7 @@ public class Search {
 	  int priority;
 	  if(searchInput.equals("LOW")) {
 	  	priority = 1;
-	  } else if(searchInput == "MED") {
+	  } else if(searchInput.equals("MED")) {
 	  	priority = 2;
 	  } else {
 	  	priority = 3;
@@ -269,15 +301,23 @@ public class Search {
 	  return index;
   }
 
+	/**
+	 * searches based on priority for incomplete events
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncEventPriority(String searchInput, FileLinker fileLink,
       DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		ArrayList<TaskCard> incTask = fileLink.getIncompleteEvents();
 		
 	  int priority;
-	  if(searchInput == "LOW") {
+	  if(searchInput.equals("LOW")) {
 	  	priority = 1;
-	  } else if(searchInput == "MED") {
+	  } else if(searchInput.equals("MED")) {
 	  	priority = 2;
 	  } else {
 	  	priority = 3;
@@ -293,15 +333,23 @@ public class Search {
 	  return index;
   }
 
+	/**
+	 * searches based on priority for completed tasks
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompTaskPriority(String searchInput, FileLinker fileLink,
       DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
 		ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
 		
 	  int priority;
-	  if(searchInput == "LOW") {
+	  if(searchInput.equals("LOW")) {
 	  	priority = 1;
-	  } else if(searchInput == "MED") {
+	  } else if(searchInput.equals("MED")) {
 	  	priority = 2;
 	  } else {
 	  	priority = 3;
@@ -316,16 +364,24 @@ public class Search {
 	  
 	  return index;
   }
-
+	
+	/**
+	 * searches based on priority for completed events
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompEventPriority(String searchInput, FileLinker fileLink,
       DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
-		ArrayList<TaskCard> compEvent = fileLink.getIncompleteTasks();
+		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
 		
 	  int priority;
-	  if(searchInput == "LOW") {
+	  if(searchInput.equals("LOW")) {
 	  	priority = 1;
-	  } else if(searchInput == "MED") {
+	  } else if(searchInput.equals("MED")) {
 	  	priority = 2;
 	  } else {
 	  	priority = 3;
@@ -341,6 +397,13 @@ public class Search {
 	  return index;
   }
 
+	/**
+	 * searches based on user keyword
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @param dataUI
+	 */
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 	    DataUI dataUI) {
 	  ArrayList<Integer> incTaskIndex = searchIncompleteTasks(searchInput, fileLink);
@@ -352,6 +415,13 @@ public class Search {
 
 	}
 
+	/**
+	 * searches incomplete tasks that can be done today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncTaskToday(FileLinker fileLink,
 	    DataUI dataUI) {
 	  ArrayList<Integer> index = new ArrayList<Integer>();
@@ -367,6 +437,13 @@ public class Search {
 	  return index;
 	}
 
+	/**
+	 * searches incomplete events that happen today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncEventToday(FileLinker fileLink,
 	    DataUI dataUI) {
 		Date todayStartRange = setTodayStartRange();
@@ -389,6 +466,13 @@ public class Search {
 	  return index;
 	}
 
+	/**
+	 * searches completed tasks that were done today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompTaskToday(FileLinker fileLink,
 	    DataUI dataUI) {
 		ArrayList<Integer> index = new ArrayList<Integer>();
@@ -404,6 +488,13 @@ public class Search {
 	  return index;
 	}
 
+	/**
+	 * searches completed events that took place today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompEventToday(FileLinker fileLink,
 	    DataUI dataUI) {
 		Date todayStartRange = setTodayStartRange();
@@ -426,6 +517,13 @@ public class Search {
 	  return index;
 	}
 
+	/**
+	 * searches incomplete tasks for a specific due date
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncompleteTasksByDate(String searchInput,
       FileLinker fileLink) {
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
@@ -445,6 +543,13 @@ public class Search {
 	  return indexes;
   }
 
+	/**
+	 * searches incomplete events that fall on that date
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncompleteEventsByDate(String searchInput,
       FileLinker fileLink) {
 		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
@@ -465,6 +570,13 @@ public class Search {
 	  return indexes;
   }
 
+	/**
+	 * searches completed tasks that are due on that date
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompleteTasksByDate(String searchInput,
       FileLinker fileLink) {
 		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
@@ -484,6 +596,13 @@ public class Search {
 	  return indexes;
   }
 
+	/**
+	 * searches completed events that passed on that day
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompleteEventByDate(String searchInput,
       FileLinker fileLink) {
 		ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
@@ -504,6 +623,13 @@ public class Search {
 	  return indexes;
   }
 
+	/**
+	 * searches incomplete tasks for a user defined keyword
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncompleteTasks(String searchInput, FileLinker fileLink) {
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
 	  ArrayList<Integer> indexes = new ArrayList<Integer>();
@@ -520,6 +646,13 @@ public class Search {
 	  return indexes;
   }
 
+	/**
+	 * searches incomplete events for a user defined keyword
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchIncompleteEvents(String searchInput, FileLinker fileLink) {
 		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
 	  ArrayList<Integer> indexes = new ArrayList<Integer>();
@@ -536,6 +669,13 @@ public class Search {
 	  return indexes;
 	}
 
+	/**
+	 * searches completed tasks for a user defined keyword
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompleteTasks(String searchInput, FileLinker fileLink) {
 		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
 	  ArrayList<Integer> indexes = new ArrayList<Integer>();
@@ -552,6 +692,13 @@ public class Search {
 	  return indexes;
 	}
 
+	/**
+	 * searches completed events for a user defined keyword
+	 * @author leon
+	 * @param searchInput
+	 * @param fileLink
+	 * @return
+	 */
 	private ArrayList<Integer> searchCompleteEvent(String searchInput, FileLinker fileLink) {
 	  ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
 	  ArrayList<Integer> indexes = new ArrayList<Integer>();
