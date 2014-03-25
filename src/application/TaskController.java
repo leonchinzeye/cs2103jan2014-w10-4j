@@ -255,13 +255,18 @@ public class TaskController {
 		String nextInput = "";
 		
 		if(key.getCode().equals(KeyCode.UP)) {
-			if (command.getText().equals(lastInput)) {
-				nextInputs.add(command.getText());
-			}
 			if (!prevInputs.isEmpty()) {
 				lastInput = prevInputs.pop();
-				command.appendText(lastInput);
+				command.setText(lastInput);
 				command.end();
+				if (key.getCode().equals(KeyCode.UP)) {
+					if (!prevInputs.isEmpty()) {
+						nextInputs.add(command.getText());
+						lastInput = prevInputs.pop();
+						command.setText(lastInput);
+						command.end();
+					}
+				}
 			}
 		} else if(key.getCode().equals(KeyCode.DOWN)) {	
 				if (nextInputs.isEmpty()) {
