@@ -210,4 +210,8 @@ public class CommandHandler {
 		state_ref = false;
 		state_search = false;
 	}
+	
+	public DataUI getDataUI() {
+		return dataUI;
+	}
 }
