@@ -272,10 +272,10 @@ public class Mark {
 	}
 	
 	private void initialiseCmdTable() {
-		cmdTable.put("/markt", MARK_INCOMPLETE_TASKS);
-		cmdTable.put("/marke", MARK_INCOMPLETE_EVENTS);
-		cmdTable.put("/unmarkt", MARK_COMPLETE_TASKS);
-		cmdTable.put("/unmarke", MARK_COMPLETE_EVENTS);
+		cmdTable.put("/mt", MARK_INCOMPLETE_TASKS);
+		cmdTable.put("/me", MARK_INCOMPLETE_EVENTS);
+		cmdTable.put("/mut", MARK_COMPLETE_TASKS);
+		cmdTable.put("/mue", MARK_COMPLETE_EVENTS);
 	}
 	
 	/**
