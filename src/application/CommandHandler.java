@@ -74,6 +74,7 @@ public class CommandHandler {
 		boolean success;
 		
 		if(state_add == true) {
+			fileLink.resetState();
 			success = addHandler.executeAdd(userInput, fileLink, dataUI);
 			
 			if(success == true) {
@@ -133,6 +134,7 @@ public class CommandHandler {
 				
 		switch(commandType) {
 			case ADD:
+				fileLink.resetState();
 				success = addHandler.executeAdd(userInput, fileLink, dataUI);
 				if(success == false) {
 					state_add = true;
