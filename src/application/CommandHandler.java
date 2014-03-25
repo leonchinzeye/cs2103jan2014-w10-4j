@@ -25,7 +25,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER
 	}
 	
 	public CommandHandler() {
@@ -159,6 +159,11 @@ public class CommandHandler {
 					state_search = true;
 				}
 				break;
+			case ENTER:
+				fileLink.resetState();
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				resetStates();
+				break;
 			case MARK:
 				/*
 				success = markHandler.executeMark(userInput, fileLink, dataUI);
@@ -195,6 +200,8 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
+		} else if (commandTypeString.isEmpty()) {
+			return COMMAND_TYPE.ENTER;
 		} else if (commandTypeString.contains("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {

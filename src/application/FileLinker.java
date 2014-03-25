@@ -119,16 +119,40 @@ public class FileLinker {
 	
 	public boolean deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
-			incompleteTasks.remove(taskNumberToBeDeleted);
+			if(state_search) {
+				int indexToBeDeleted = incTasksIndex.get(taskNumberToBeDeleted);
+				incompleteTasks.remove(indexToBeDeleted); 
+				searchIncTasks.remove(taskNumberToBeDeleted);
+			} else {
+				incompleteTasks.remove(taskNumberToBeDeleted);
+			}
 			callStorageWriteIncompleteTasks();
 		} else if(fileToBeDeletedFrom == 2) {
-			incompleteEvents.remove(taskNumberToBeDeleted);
+			if(state_search) {
+				int indexToBeDeleted = incEventsIndex.get(taskNumberToBeDeleted);
+				incompleteEvents.remove(indexToBeDeleted);
+				searchIncEvents.remove(taskNumberToBeDeleted);
+			} else {
+				incompleteEvents.remove(taskNumberToBeDeleted);
+			}
 			callStorageWriteIncompleteEvents();
 		} else if(fileToBeDeletedFrom == 3) {
-			completedTasks.remove(taskNumberToBeDeleted);
+			if(state_search) {
+				int indexToBeDeleted = compTasksIndex.get(taskNumberToBeDeleted);
+				completedTasks.remove(indexToBeDeleted);
+				searchCompTasks.remove(taskNumberToBeDeleted);
+			} else {
+				completedTasks.remove(taskNumberToBeDeleted);	
+			}
 			callStorageWriteCompletedTasks();
 		} else {
-			completedEvents.remove(taskNumberToBeDeleted);
+			if(state_search) {
+				int indexToBeDeleted = compEventsIndex.get(taskNumberToBeDeleted);
+				completedEvents.remove(indexToBeDeleted);
+				searchCompEvents.remove(taskNumberToBeDeleted);
+			} else {
+				completedEvents.remove(taskNumberToBeDeleted);
+			}
 			callStorageWriteCompletedEvents();
 		}
 		return true;
@@ -138,6 +162,8 @@ public class FileLinker {
 			ArrayList<Integer> compTasksList, ArrayList<Integer> compEventsList) {
 		state_search = true;
 		
+		initSearchArrays();
+		
 		fillIncTaskSearch(incTasksList);
 		fillIncEventsSearch(incEventsList);
 		fillCompTasksSearch(compTasksList);
@@ -146,9 +172,17 @@ public class FileLinker {
 		return true;
 	}
 	
+	private void initSearchArrays() {
+	  searchIncTasks = new ArrayList<TaskCard>();
+	  searchIncEvents = new ArrayList<TaskCard>();
+	  searchCompTasks = new ArrayList<TaskCard>();
+	  searchCompEvents = new ArrayList<TaskCard>();
+  }
+
 	private void fillIncTaskSearch(ArrayList<Integer> incTasksList) {
 		for(int i = 0; i < incTasksList.size(); i++) {
 			int index = incTasksList.get(i);
+			incTasksIndex.add(index);
 			TaskCard searchedTask = incompleteTasks.get(index);
 			searchIncTasks.add(searchedTask);
 		}
@@ -157,24 +191,27 @@ public class FileLinker {
 	private void fillIncEventsSearch(ArrayList<Integer> incEventsList) {
 		for(int i = 0; i < incEventsList.size(); i++) {
 			int index = incEventsList.get(i);
+			incEventsIndex.add(index);
 			TaskCard searchedTask = incompleteEvents.get(index);
-			searchIncTasks.add(searchedTask);
+			searchIncEvents.add(searchedTask);
 		}	  
   }
 
 	private void fillCompTasksSearch(ArrayList<Integer> compTasksList) {
 		for(int i = 0; i < compTasksList.size(); i++) {
 			int index = compTasksList.get(i);
+			compTasksIndex.add(index);
 			TaskCard searchedTask = completedTasks.get(index);
-			searchIncTasks.add(searchedTask);
+			searchCompTasks.add(searchedTask);
 		}
   }
 
 	private void fillCompEventsSearch(ArrayList<Integer> compEventsList) {
 		for(int i = 0; i < compEventsList.size(); i++) {
 			int index = compEventsList.get(i);
+			compEventsIndex.add(index);
 			TaskCard searchedTask = completedEvents.get(index);
-			searchIncTasks.add(searchedTask);
+			searchCompEvents.add(searchedTask);
 		}
   }
 
