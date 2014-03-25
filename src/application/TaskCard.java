@@ -10,6 +10,7 @@ public class TaskCard {
 	/*
 	 * task types: T and FT
 	 * event types: E, RE, AE
+	 * frequency types: D, M, Y
 	 */
 	private String type;
 	private int priority = 0;

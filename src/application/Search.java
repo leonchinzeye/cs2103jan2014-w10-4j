@@ -13,6 +13,10 @@ public class Search {
 
 	private static final int SECOND_ARGUMENT = 1;
 	
+	private static final int SEARCH_TODAY = 1;
+	private static final int SEARCH_PRIORITY = 2;
+	private static final int SEARCH_FREQUENCY = 3;
+
 	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you want to search for?";
 
 	private HashMap<String, Integer> reservedKeywords;
@@ -44,10 +48,13 @@ public class Search {
 				return false;
 			} else {
 				checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+				RefreshUI.executeRefresh(fileLink, dataUI);
 				success = true;
 			}
 		} else {
 			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			success = true;
 		}
 		return success;
 	}
@@ -93,18 +100,221 @@ public class Search {
 		ArrayList<Integer> compEventIndex = new ArrayList<Integer>();
 		
 		switch(reservedKeywords.get(searchInput)) {
-			case 1:
+			case SEARCH_TODAY:
 				incTaskIndex = searchIncTaskToday(fileLink, dataUI);
 				incEventIndex = searchIncEventToday(fileLink, dataUI);
 				compTaskIndex = searchCompTaskToday(fileLink, dataUI);
 				compEventIndex = searchCompEventToday(fileLink, dataUI);
 				break;
+			case SEARCH_PRIORITY:
+				incTaskIndex = searchIncTaskPriority(searchInput, fileLink, dataUI);
+				incEventIndex = searchIncEventPriority(searchInput, fileLink, dataUI);
+				compTaskIndex = searchCompTaskPriority(searchInput, fileLink, dataUI);
+				compEventIndex = searchCompEventPriority(searchInput, fileLink, dataUI);
+				break;
+			case SEARCH_FREQUENCY:
+				incTaskIndex = searchIncTaskFreq(searchInput, fileLink, dataUI);
+				incEventIndex = searchIncEventFreq(searchInput, fileLink, dataUI);
+				compTaskIndex = searchCompTaskFreq(searchInput, fileLink, dataUI);
+				compEventIndex = searchCompEventFreq(searchInput, fileLink, dataUI);
 			default:
 				break;
 		}
 	  
 		fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
 	}
+
+	private ArrayList<Integer> searchIncTaskFreq(String searchInput,
+      FileLinker fileLink, DataUI dataUI) {
+	  ArrayList<Integer> index = new ArrayList<Integer>();
+	  ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
+	  
+	  String freq;
+	  if(searchInput.equals("daily")) {
+	  	freq = "D";
+	  } else if(searchInput.equals("monthly")) {
+	  	freq = "M";
+	  } else {
+	  	freq = "Y";
+	  }
+	  
+	  for(int i = 0; i < incTask.size(); i++) {
+	  	TaskCard task = incTask.get(i);
+	  	if(task.getFrequency() == freq) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+		return index;
+  }
+
+	private ArrayList<Integer> searchIncEventFreq(String searchInput,
+      FileLinker fileLink, DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+	  ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
+	  
+	  String freq;
+	  if(searchInput.equals("daily")) {
+	  	freq = "D";
+	  } else if(searchInput.equals("monthly")) {
+	  	freq = "M";
+	  } else {
+	  	freq = "Y";
+	  }
+	  
+	  for(int i = 0; i < incEvent.size(); i++) {
+	  	TaskCard event = incEvent.get(i);
+	  	if(event.getFrequency() == freq) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+		return index;
+  }
+
+	private ArrayList<Integer> searchCompTaskFreq(String searchInput,
+      FileLinker fileLink, DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+	  ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
+	  
+	  String freq;
+	  if(searchInput.equals("daily")) {
+	  	freq = "D";
+	  } else if(searchInput.equals("monthly")) {
+	  	freq = "M";
+	  } else {
+	  	freq = "Y";
+	  }
+	  
+	  for(int i = 0; i < compTask.size(); i++) {
+	  	TaskCard task = compTask.get(i);
+	  	if(task.getFrequency() == freq) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+		return index;
+  }
+
+	private ArrayList<Integer> searchCompEventFreq(String searchInput,
+      FileLinker fileLink, DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+	  ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
+	  
+	  String freq;
+	  if(searchInput.equals("daily")) {
+	  	freq = "D";
+	  } else if(searchInput.equals("monthly")) {
+	  	freq = "M";
+	  } else {
+	  	freq = "Y";
+	  }
+	  
+	  for(int i = 0; i < compEvent.size(); i++) {
+	  	TaskCard event = compEvent.get(i);
+	  	if(event.getFrequency() == freq) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+		return index;
+  }
+
+	private ArrayList<Integer> searchIncTaskPriority(String searchInput, FileLinker fileLink,
+      DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
+		
+	  int priority;
+	  if(searchInput == "LOW") {
+	  	priority = 1;
+	  } else if(searchInput == "MED") {
+	  	priority = 2;
+	  } else {
+	  	priority = 3;
+	  }
+	  
+	  for(int i = 0; i < incTask.size(); i++) {
+	  	TaskCard task = incTask.get(i);
+	  	if(task.getPriority() == priority) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+	  return index;
+  }
+
+	private ArrayList<Integer> searchIncEventPriority(String searchInput, FileLinker fileLink,
+      DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		ArrayList<TaskCard> incTask = fileLink.getIncompleteEvents();
+		
+	  int priority;
+	  if(searchInput == "LOW") {
+	  	priority = 1;
+	  } else if(searchInput == "MED") {
+	  	priority = 2;
+	  } else {
+	  	priority = 3;
+	  }
+	  
+	  for(int i = 0; i < incTask.size(); i++) {
+	  	TaskCard event = incTask.get(i);
+	  	if(event.getPriority() == priority) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+	  return index;
+  }
+
+	private ArrayList<Integer> searchCompTaskPriority(String searchInput, FileLinker fileLink,
+      DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
+		
+	  int priority;
+	  if(searchInput == "LOW") {
+	  	priority = 1;
+	  } else if(searchInput == "MED") {
+	  	priority = 2;
+	  } else {
+	  	priority = 3;
+	  }
+	  
+	  for(int i = 0; i < compTask.size(); i++) {
+	  	TaskCard task = compTask.get(i);
+	  	if(task.getPriority() == priority) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+	  return index;
+  }
+
+	private ArrayList<Integer> searchCompEventPriority(String searchInput, FileLinker fileLink,
+      DataUI dataUI) {
+		ArrayList<Integer> index = new ArrayList<Integer>();
+		ArrayList<TaskCard> compEvent = fileLink.getIncompleteTasks();
+		
+	  int priority;
+	  if(searchInput == "LOW") {
+	  	priority = 1;
+	  } else if(searchInput == "MED") {
+	  	priority = 2;
+	  } else {
+	  	priority = 3;
+	  }
+	  
+	  for(int i = 0; i < compEvent.size(); i++) {
+	  	TaskCard event = compEvent.get(i);
+	  	if(event.getPriority() == priority) {
+	  		index.add(i);
+	  	}
+	  }
+	  
+	  return index;
+  }
 
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 	    DataUI dataUI) {
@@ -129,7 +339,7 @@ public class Search {
 	  	}
 	  }
 		
-	  return null;
+	  return index;
 	}
 
 	private ArrayList<Integer> searchIncEventToday(FileLinker fileLink,
@@ -166,7 +376,7 @@ public class Search {
 	  	}
 	  }
 		
-	  return null;
+	  return index;
 	}
 
 	private ArrayList<Integer> searchCompEventToday(FileLinker fileLink,
@@ -333,7 +543,8 @@ public class Search {
 	  return indexes;
 	}
 	
-	private Date setTodayStartRange() {
+	@SuppressWarnings("deprecation")
+  private Date setTodayStartRange() {
 		Date date = new Date();
 		date.setHours(0);
 		date.setMinutes(0);
@@ -342,7 +553,8 @@ public class Search {
 		return date;
 	}
 
-	private Date setTodayEndRange() {
+	@SuppressWarnings("deprecation")
+  private Date setTodayEndRange() {
 		Date date = new Date();
 		date.setHours(23);
 		date.setMinutes(59);
@@ -377,12 +589,12 @@ public class Search {
 	
 	private void initKeywordTable() {
 		reservedKeywords.put("today", 1);
-		reservedKeywords.put("tomorrow", 2);
-		reservedKeywords.put("tmr", 2);
-		reservedKeywords.put("next week", 3);
-		reservedKeywords.put("daily", 4);
-		reservedKeywords.put("weekly", 5);
-		reservedKeywords.put("yearly", 6);
+		reservedKeywords.put("LOW", 2);
+		reservedKeywords.put("MED", 2);
+		reservedKeywords.put("HIGH", 2);
+		reservedKeywords.put("daily", 3);
+		reservedKeywords.put("weekly", 3);
+		reservedKeywords.put("yearly", 3);
 	}
 	
 	private static class SortPriority implements Comparator<TaskCard> {

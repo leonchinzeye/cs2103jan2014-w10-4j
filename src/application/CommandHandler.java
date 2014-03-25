@@ -66,7 +66,7 @@ public class CommandHandler {
 
 	/**
 	 * in calling this method, this means that the program is currently in one of the error
-	 * handling states. it checks for the state it is in and calles the affected handler
+	 * handling states. it checks for the state it is in and calls the affected handler
 	 * directly
 	 * @param userInput
 	 */
@@ -124,14 +124,12 @@ public class CommandHandler {
 		return false;
 	}
 
-	public String executeCommand(String userInput) {
+	public void executeCommand(String userInput) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
-		
-		String response = "";
 				
 		switch(commandType) {
 			case ADD:
@@ -141,7 +139,7 @@ public class CommandHandler {
 				}
 				break;
 			case RESET:
-				response = Reset.executeReset(tokenizedInput, fileLink, dataUI);
+				//success = Reset.executeReset(tokenizedInput, fileLink, dataUI);
 				break;
 			case DELETE:
 				success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
@@ -178,7 +176,6 @@ public class CommandHandler {
 			default:
 				break;
 		}
-		return response;
 	}
 	
 	private COMMAND_TYPE determineCommandType(String commandTypeString) {
@@ -198,7 +195,7 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.contains("/reset")) {
 			return COMMAND_TYPE.RESET;
-		} else if (commandTypeString.contains("/exit")) {
+		} else if (commandTypeString.contains("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {
 			return COMMAND_TYPE.INVALID;

@@ -138,9 +138,46 @@ public class FileLinker {
 			ArrayList<Integer> compTasksList, ArrayList<Integer> compEventsList) {
 		state_search = true;
 		
+		fillIncTaskSearch(incTasksList);
+		fillIncEventsSearch(incEventsList);
+		fillCompTasksSearch(compTasksList);
+		fillCompEventsSearch(compEventsList);
+		
 		return true;
 	}
 	
+	private void fillIncTaskSearch(ArrayList<Integer> incTasksList) {
+		for(int i = 0; i < incTasksList.size(); i++) {
+			int index = incTasksList.get(i);
+			TaskCard searchedTask = incompleteTasks.get(index);
+			searchIncTasks.add(searchedTask);
+		}
+  }
+
+	private void fillIncEventsSearch(ArrayList<Integer> incEventsList) {
+		for(int i = 0; i < incEventsList.size(); i++) {
+			int index = incEventsList.get(i);
+			TaskCard searchedTask = incompleteEvents.get(index);
+			searchIncTasks.add(searchedTask);
+		}	  
+  }
+
+	private void fillCompTasksSearch(ArrayList<Integer> compTasksList) {
+		for(int i = 0; i < compTasksList.size(); i++) {
+			int index = compTasksList.get(i);
+			TaskCard searchedTask = completedTasks.get(index);
+			searchIncTasks.add(searchedTask);
+		}
+  }
+
+	private void fillCompEventsSearch(ArrayList<Integer> compEventsList) {
+		for(int i = 0; i < compEventsList.size(); i++) {
+			int index = compEventsList.get(i);
+			TaskCard searchedTask = completedEvents.get(index);
+			searchIncTasks.add(searchedTask);
+		}
+  }
+
 	/**
 	 * method for edit logic that will update modified data to the file
 	 * @param arrayToBeUpdated
