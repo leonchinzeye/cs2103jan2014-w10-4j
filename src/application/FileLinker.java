@@ -220,8 +220,25 @@ public class FileLinker {
 	 * @param arrayToBeUpdated
 	 */
 	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeDeletedFrom) {
-		incompleteTasks.set(taskNumberToBeModified, modifiedTask);
-		callStorageWriteIncompleteTasks();
+		if(fileToBeDeletedFrom == 1) {
+			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteIncompleteTasks();
+		}
+		
+		else if (fileToBeDeletedFrom == 2) {
+			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteIncompleteEvents();
+		}
+		
+		else if (fileToBeDeletedFrom == 3) {
+			completedTasks.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteCompletedTasks();
+		}
+		
+		else if (fileToBeDeletedFrom == 4) {
+			completedEvents.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteCompletedEvents();
+		}
 		return true;
 	}
 	
