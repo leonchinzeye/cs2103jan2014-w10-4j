@@ -1,10 +1,17 @@
+package application;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class TaskCard {
 	
+	private static final int MAX_PRIORITY = 3;
 	private String name;
+	/*
+	 * task types: T and FT
+	 * event types: E, RE, AE
+	 * frequency types: D, M, Y
+	 */
 	private String type;
 	private int priority = 0;
 	private String frequency = "";
@@ -12,7 +19,7 @@ public class TaskCard {
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
-
+	
 	public TaskCard(){
 		
 	}
@@ -67,8 +74,12 @@ public class TaskCard {
 	
 	public String getTaskString() {
 		taskString = "";
-		for (int i = 0; i < priority; i++) {
-			taskString += "*";
+		for (int i = 0; i < MAX_PRIORITY; i++) {
+			if (priority > i) {
+				taskString += "*";
+			} else {
+				taskString += " ";
+			}
 		}
 		if(type.equals("FT")){
 			taskString += name + ", " + dateString.format(startDay.getTime()); 
@@ -82,5 +93,7 @@ public class TaskCard {
 		
 		return taskString;
 	}
+
+
 }
 
