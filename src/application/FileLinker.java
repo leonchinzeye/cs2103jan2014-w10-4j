@@ -96,14 +96,14 @@ public class FileLinker {
 			int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
 			completedTasks.add(taskToBeMarked);
-			callStorageWriteIncompleteTasks();
+			callStorageWriteCompletedTasks();
 			
-			deleteHandling(taskNumberToBeDeleted, 2);
+			deleteHandling(taskNumberToBeDeleted, 1);
 		} else if(fileToBeDeletedFrom == 2) {
 			completedEvents.add(taskToBeMarked);
 			callStorageWriteCompletedEvents();
 			
-			deleteHandling(taskNumberToBeDeleted, 1);
+			deleteHandling(taskNumberToBeDeleted, 2);
 		} else if(fileToBeDeletedFrom == 3) {
 			incompleteTasks.add(taskToBeMarked);
 			callStorageWriteIncompleteTasks();
