@@ -1,7 +1,5 @@
 package application;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 
 import javafx.application.Platform;
@@ -71,8 +69,6 @@ public class TaskController {
 	private TableColumn<EventDataUI, String> colEventEndDateIncomplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeIncomplete;
-	@FXML
-	private TableColumn<EventDataUI, String> colEventFrequencyIncomplete;
 	
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskIDComplete;
@@ -99,8 +95,6 @@ public class TaskController {
 	private TableColumn<EventDataUI, String> colEventEndDateComplete;
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
-	@FXML
-	private TableColumn<EventDataUI, String> colEventFrequencyComplete;
 	
 	@FXML
 	private TextField notification;
@@ -110,7 +104,6 @@ public class TaskController {
 	private UI ui = new UI();
 	private Stack<String> history = new Stack<String>();
 	private Stack<String> forward = new Stack<String>();
-	//private Queue<String> nextInputs = new LinkedList<String>();
 	private CommandHandler commandHandle;
 	private DataUI dataUI;
 	
@@ -139,7 +132,6 @@ public class TaskController {
 		colEventStartTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
 		colEventEndDateIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
 		colEventEndTimeIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
-		colEventFrequencyIncomplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
 		
 		colTaskIDComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("ID"));
 		colTaskPriorityComplete.setCellValueFactory(new PropertyValueFactory<TaskDataUI, String>("priority"));
@@ -154,7 +146,6 @@ public class TaskController {
 		colEventStartTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
 		colEventEndDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
 		colEventEndTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
-		colEventFrequencyComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("frequency"));
 	}
 	
 	public void setUI(UI ui) {
