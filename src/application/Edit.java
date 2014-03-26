@@ -1126,10 +1126,8 @@ public class Edit {
 
 	private boolean newEditCmd() {
 		if(state_inc_tasks == false && state_inc_event == false
-				&& state_comp_tasks == false && state_comp_event == false
-				/*
-				 * here you need to check for the other 4 states also and make sure that they are false
-				 */) {
+		&& state_comp_tasks == false && state_comp_event == false && state_input_inc_tasks == false
+		&& state_input_inc_event == false && state_input_comp_tasks == false && state_input_comp_event == false) {
 			return true;
 		}
 		return false;
@@ -1140,6 +1138,11 @@ public class Edit {
 		state_inc_event = false;
 		state_comp_tasks = false;
 		state_comp_event = false;
+		
+		state_input_inc_tasks = false;
+		state_input_inc_event = false;
+		state_input_comp_tasks = false;
+		state_input_comp_event = false;
 	}
 	
 	private void initialiseCmdTable() {
