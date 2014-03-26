@@ -5,7 +5,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class AddTest {
-	
+	/**
+	 * The AddTest will try to implement all the possible variations of successful 
+	 * and unsuccessful adds Task and Events  
+	 * 
+	 */
 	@Test
 	public void testExecuteAdd() {
 		
@@ -28,6 +32,10 @@ public class AddTest {
 		
 		assertEquals("You didn't enter a task! Please enter a task!", addWithoutEntry.getFeedback());
 		
+		/*
+		 * This is an Equivalence partition as any number of tokenizers more than 3 will produce
+		 * the same output	
+		 */
 		String addWithTooManyTokenizers = "/add this; is; something; yes";
 		FileLinker addTokenLinker = new FileLinker();
 		DataUI addTokenUI = new DataUI();
@@ -37,6 +45,18 @@ public class AddTest {
 		
 		assertEquals("That was an invalid format for adding a task :(", addTokenUI.getFeedback());
 		
+		/*
+		 * Successful add for the task 
+		 * 
+		 */
+		String addFloatingTask = "/addf A new Task";
+		FileLinker addFLinker = new FileLinker();
+		DataUI addfUI = new DataUI();
+		addfUI.configIncompleteTasks(addFLinker);
+		Add newAddFProper = new Add();
+		newAddFProper.executeAdd(addFloatingTask, addFLinker, addfUI);
+		
+		assertEquals ("Task added!", addfUI.getFeedback());
 		
 	}
 	
