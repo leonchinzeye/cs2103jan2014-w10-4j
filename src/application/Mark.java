@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * this class is to mark tasks that the user has deemed completed
- * it should encompass the ability to check for the current time 
- * and if it sees that an event has passed it's designated time,
- * it will be marked as done
- * does not include tasks
- * @author leon
+ * This class allows the user to mark tasks as complete or
+ * mark completed tasks as incomplete.
+ * @author Omar Khalid
  *
  */
 public class Mark {
@@ -276,15 +273,5 @@ public class Mark {
 		cmdTable.put("/me", MARK_INCOMPLETE_EVENTS);
 		cmdTable.put("/mut", MARK_COMPLETE_TASKS);
 		cmdTable.put("/mue", MARK_COMPLETE_EVENTS);
-	}
-	
-	/**
-	 * this method is supposed to mark those events which are repeated
-	 * for shifting the repeated ones to their next designated date
-	 * @author leon
-	 * @param
-	 */
-	public static void markRepeated() {
-		
 	}
 }

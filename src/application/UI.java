@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 
@@ -19,13 +20,11 @@ public class UI extends Application {
 		try {
 			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
 			Parent root = (Parent) loader.load();
-			Scene scene = new Scene(root,640,600);
-			
+			Scene scene = new Scene(root,640,430);
 			
 			//CSS file
-			scene.getStylesheets().add("application/application.css");
+			scene.getStylesheets().add("application/emerald.css");
 			
-			//
 			TaskController tc = loader.getController();
 			tc.setUI(this);
 			
