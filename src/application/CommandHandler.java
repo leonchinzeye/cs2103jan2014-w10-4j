@@ -91,7 +91,6 @@ public class CommandHandler {
 				state_del = true;
 			}
 		} else if(state_mark == true) {
-			/*
 			success = markHandler.executeMark(userInput, fileLink, dataUI);
 			
 			if(success == true) {
@@ -99,7 +98,6 @@ public class CommandHandler {
 			} else {
 				state_mark = true;
 			}
-			*/
 		} else if(state_edit == true) {
 			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
 			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
