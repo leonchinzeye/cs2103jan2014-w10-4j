@@ -1,8 +1,8 @@
+package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -10,11 +10,19 @@ import java.io.FileWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * this class is responsible for reading from and writing to 
+ * the designated files
+ * @author leon
+ *
+ */
 public class Storage {
 
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
 	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
+	public static final String INCOMPLETE_EVENTS_STORAGE_FILE_NAME = "incompleteevents.txt";
 	public static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
+	public static final String COMPLETED_EVENTS_STORAGE_FILE_NAME = "completedevents.txt";
 	
 	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
 	
@@ -38,23 +46,18 @@ public class Storage {
 	private static int endMinute = 0;
 	
 	public Storage() {
-		loadFileDetails();
-	}
 	
-	public static void loadFileDetails() {
-		openCompletedStorageFile();
-		openIncompleteStorageFile();
 	}
 
 	/*
 	 * When writing to the program, will instantiate a new TaskCard object with the parameters
 	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
 	 */
-	public static ArrayList<TaskCard> openCompletedStorageFile() {
-		ArrayList<TaskCard> completedTasks = new ArrayList<TaskCard>();
+	public static ArrayList<TaskCard> openFile(String fileName) {
+		ArrayList<TaskCard> file = new ArrayList<TaskCard>();
 		
 		try {
-			FileReader fileRead = new FileReader(COMPLETED_TASKS_STORAGE_FILE_NAME);
+			FileReader fileRead = new FileReader(fileName);
 			BufferedReader buffRead = new BufferedReader(fileRead);
 			
 			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
@@ -66,43 +69,52 @@ public class Storage {
 				taskDetails = getTaskDetailsFromFile(buffRead);
 				setTaskDetailsForReading(taskDetails, task);
 				
-				completedTasks.add(task);
+				file.add(task);
 			}
 			
 			buffRead.close();
-		} catch (FileNotFoundException ex) {
-			createEmptyFile(COMPLETED_TASKS_STORAGE_FILE_NAME);
-		} catch (IOException ex) {
-			//throw error reading file message
+		} catch(FileNotFoundException ex) {
+			createEmptyFile(fileName);
+		} catch(IOException ex) {
+			
 		}
-		return completedTasks;
+		
+		return file;
 	}
 	
-	public static ArrayList<TaskCard> openIncompleteStorageFile() {
-		ArrayList<TaskCard> incompleteTasks = new ArrayList<TaskCard>();
-		
+	public static void writeFile(ArrayList<TaskCard> file, int fileSize, String fileName) {
 		try {
-			FileReader fileRead = new FileReader(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-			BufferedReader buffRead = new BufferedReader(fileRead);
+			FileWriter fileWrite = new FileWriter(fileName);
+			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
 			
-			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
+			buffWrite.write("" + fileSize);
+			buffWrite.newLine();
 			
-			for(int i = 0; i < numberOfTaskCards; i++) {
-				TaskCard task = new TaskCard();
-				ArrayList<String> taskDetails = new ArrayList<String>();
-				
-				taskDetails = getTaskDetailsFromFile(buffRead);
-				setTaskDetailsForReading(taskDetails, task);
-				
-				incompleteTasks.add(task);
+			for(int i = 0; i < fileSize; i++) {
+				TaskCard task = file.get(i);
+				writeTaskCardDetails(buffWrite, task);
 			}
-			buffRead.close();
-		} catch (FileNotFoundException ex) {
-			createEmptyFile(INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-		} catch (IOException ex) {
-			//throw error reading file message
+			
+			buffWrite.close();
+		} catch(IOException ex) {
+			
 		}
-		return incompleteTasks;
+	}
+
+	private static void writeTaskCardDetails(BufferedWriter buffWrite,
+			TaskCard task) {
+		try {
+			buffWrite.write("" + task.getName());
+			buffWrite.newLine();
+			
+			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
+					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
+			
+			buffWrite.write(detailsToBeWritten);
+			buffWrite.newLine();
+		} catch(IOException ex) {
+			//error writing to file message
+		}	
 	}
 
 	private static ArrayList<String> getTaskDetailsFromFile(
@@ -156,67 +168,19 @@ public class Storage {
 		task.setFrequency(restOfDetails[5]);
 		task.setPriority(Integer.parseInt(restOfDetails[6]));
 	}
-	
+
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
 		int numberOfTasks = emptyArrayList.size();
 		
 		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
-			writeIncompleteTasksFile(emptyArrayList, numberOfTasks);
+			writeFile(emptyArrayList, numberOfTasks, INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		} else if(fileStorageName == COMPLETED_TASKS_STORAGE_FILE_NAME) {
+			writeFile(emptyArrayList, numberOfTasks, COMPLETED_TASKS_STORAGE_FILE_NAME);
+		} else if(fileStorageName == INCOMPLETE_EVENTS_STORAGE_FILE_NAME) {
+			writeFile(emptyArrayList, numberOfTasks, INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
 		} else {
-			writeCompleteTasksFile(emptyArrayList, numberOfTasks);
+			writeFile(emptyArrayList, numberOfTasks, COMPLETED_EVENTS_STORAGE_FILE_NAME);
 		}
-	}
-	
-	public static void writeCompleteTasksFile(ArrayList<TaskCard> completedTasks, int numberOfCompletedTasks) {
-		try {
-			FileWriter fileWrite = new FileWriter(COMPLETED_TASKS_STORAGE_FILE_NAME);		
-			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
-			
-			buffWrite.write("" + numberOfCompletedTasks);
-			buffWrite.newLine();
-			
-			for(int i = 0; i < numberOfCompletedTasks; i++) {
-				TaskCard task = completedTasks.get(i);
-				writeTaskCardDetails(buffWrite, task);
-			}
-			buffWrite.close();
-		} catch(IOException ex) {
-			//print error writing to file message
-		}
-	}
-	
-	public static void writeIncompleteTasksFile(ArrayList<TaskCard> incompleteTasks, int numberOfIncompleteTasks) {
-		try {
-			FileWriter fileWrite = new FileWriter(INCOMPLETE_TASKS_STORAGE_FILE_NAME);		
-			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
-			
-			buffWrite.write("" + numberOfIncompleteTasks);
-			buffWrite.newLine();
-			
-			for(int i = 0; i < numberOfIncompleteTasks; i++) {
-				TaskCard task = incompleteTasks.get(i);
-				writeTaskCardDetails(buffWrite, task);
-			}
-			buffWrite.close();
-		} catch(IOException ex) {
-			//print error writing to file message
-		}
-	}
-
-	private static void writeTaskCardDetails(BufferedWriter buffWrite,
-			TaskCard task) {
-		try {
-			buffWrite.write("" + task.getName());
-			buffWrite.newLine();
-			
-			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
-					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
-			
-			buffWrite.write(detailsToBeWritten);
-			buffWrite.newLine();
-		} catch(IOException ex) {
-			//error writing to file message
-		}	
 	}
 }

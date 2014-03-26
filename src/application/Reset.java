@@ -1,3 +1,4 @@
+package application;
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Calendar;
@@ -45,7 +46,7 @@ public class Reset {
 		
 	}
 
-	public static String executeReset(String[] userInput, FileLinker fileLink) {
+	public static String executeReset(String[] userInput, FileLinker fileLink, DataUI dataToBePassedToUI) {
 		initialiseCmdTypes();
 		String action = null;
 		
