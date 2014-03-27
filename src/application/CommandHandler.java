@@ -11,6 +11,7 @@ public class CommandHandler {
 	private static Search searchHandler;
 	private static Mark markHandler;
 	private static Edit editHandler;
+	private static Undo undoHandler;
 	
 	private static String quitToTop = "!q";
 	
@@ -34,6 +35,7 @@ public class CommandHandler {
 		searchHandler = new Search();
 		markHandler = new Mark();
 		editHandler = new Edit();
+		undoHandler = new Undo();
 		
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
@@ -51,7 +53,7 @@ public class CommandHandler {
 	 */
 	public DataUI executeCmd(String userInput) {
 		if(newCommand()) {
-			executeCommand(userInput);
+			checkCmdAndPerform(userInput);
 		} else {
 			if(userInput.equals(quitToTop) == false) {
 				checkStatesAndPerform(userInput);
@@ -100,7 +102,8 @@ public class CommandHandler {
 			}
 		} else if(state_edit == true) {
 			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
-			//Edit.executeEdit(userInput, fileLink, dataToBePassedToUI);
+			
+			
 		} else if(state_ref == true) {
 			RefreshUI.executeRefresh(fileLink, dataUI);
 		} else if(state_search == true) {
@@ -123,7 +126,7 @@ public class CommandHandler {
 		return false;
 	}
 
-	public void executeCommand(String userInput) {
+	private void checkCmdAndPerform(String userInput) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		

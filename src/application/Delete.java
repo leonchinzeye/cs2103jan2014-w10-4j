@@ -68,25 +68,17 @@ public class Delete {
 				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 			}
 		} else if(state_inc_tasks == true) {
-			success = performIncTaskDelete(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_tasks = false;
-			}
+			success = performIncTaskDelete(userInput, fileLink, dataUI);	
 		} else if(state_inc_event == true) {
 			success = performIncEventDelete(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_event = false;
-			}
 		} else if(state_comp_tasks == true) {
 			success = performCompTaskDelete(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_comp_tasks = false;
-			}
 		} else {
 			success = performCompEventDelete(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_comp_event= false;
-			}
+		}
+		
+		if(success) {
+			resetStates();
 		}
 		return success;
 	}
