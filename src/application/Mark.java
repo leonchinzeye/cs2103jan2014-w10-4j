@@ -44,7 +44,7 @@ public class Mark {
 		state_comp_event = false;
 	}
 	
-	public boolean executeMark(String userInput, FileLinker fileLink, DataUI dataUI) {
+	public boolean executeMark(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		
 		if(newMarkCmd()) {

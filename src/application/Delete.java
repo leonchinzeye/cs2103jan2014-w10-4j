@@ -50,11 +50,12 @@ public class Delete {
 	 * @param userInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param undoHandler 
 	 * @return
 	 * the return type will signal to commandhandler whether the delete was successful
 	 * or that there was an error involved
 	 */
-	public boolean executeDelete(String userInput, FileLinker fileLink, DataUI dataUI) {
+	public boolean executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		
 		if(newDeleteCmd()) {

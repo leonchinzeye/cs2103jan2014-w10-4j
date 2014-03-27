@@ -85,7 +85,7 @@ public class Edit {
 	 * or that there was an error involved
 	 */
 		boolean success = false;
-		public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI) {
+		public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		
 		if(newEditCmd()) {
 			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
