@@ -77,7 +77,7 @@ public class CommandHandler {
 		
 		if(state_add == true) {
 			fileLink.resetState();
-			success = addHandler.executeAdd(userInput, fileLink, dataUI);
+			success = addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
 			
 			if(success == true) {
 				state_add = false;
@@ -85,7 +85,7 @@ public class CommandHandler {
 				state_add = true;
 			}
 		} else if(state_del == true) {
-			success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
+			success = deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
 			
 			if(success == true) {
 				state_del = false;
@@ -93,7 +93,7 @@ public class CommandHandler {
 				state_del = true;
 			}
 		} else if(state_mark == true) {
-			success = markHandler.executeMark(userInput, fileLink, dataUI);
+			success = markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
 			
 			if(success == true) {
 				state_mark = false;
@@ -101,7 +101,7 @@ public class CommandHandler {
 				state_mark = true;
 			}
 		} else if(state_edit == true) {
-			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
+			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
 			
 			
 		} else if(state_ref == true) {
@@ -136,7 +136,7 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				fileLink.resetState();
-				success = addHandler.executeAdd(userInput, fileLink, dataUI);
+				success = addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
 				if(success == false) {
 					state_add = true;
 				}
@@ -145,13 +145,13 @@ public class CommandHandler {
 				//success = Reset.executeReset(tokenizedInput, fileLink, dataUI);
 				break;
 			case DELETE:
-				success = deleteHandler.executeDelete(userInput, fileLink, dataUI);
+				success = deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
 				if(success == false) {
 					state_del = true;
 				}
 				break;
 			case EDIT:
-				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI);
+				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
 				if(success==false)
 					state_edit = true;
 					break;
@@ -168,7 +168,7 @@ public class CommandHandler {
 				resetStates();
 				break;
 			case MARK:
-				success = markHandler.executeMark(userInput, fileLink, dataUI);
+				success = markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
 				if (success == false) {
 					state_mark = true;
 				}
@@ -191,16 +191,12 @@ public class CommandHandler {
 			return COMMAND_TYPE.ADD;
 		} else if (commandTypeString.contains("/d")) {
 			return COMMAND_TYPE.DELETE;
-		} else if (commandTypeString.contains("/clear")) {
-		 	return COMMAND_TYPE.CLEAR;
 		} else if (commandTypeString.contains("/e")) {
 		 	return COMMAND_TYPE.EDIT;
 		} else if (commandTypeString.contains("/s")) {
 		 	return COMMAND_TYPE.SEARCH;
 		} else if (commandTypeString.contains("/m")) {
 		 	return COMMAND_TYPE.MARK;
-		} else if (commandTypeString.contains("/reset")) {
-			return COMMAND_TYPE.RESET;
 		} else if (commandTypeString.isEmpty()) {
 			return COMMAND_TYPE.ENTER;
 		} else if (commandTypeString.contains("/x")) {

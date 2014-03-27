@@ -50,7 +50,7 @@ public class Add {
 		timeFormat.setLenient(false);
 	}
 	
-	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI) {
+	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		
 		if(newAddCmd()) {
