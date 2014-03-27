@@ -117,6 +117,52 @@ public class FileLinker {
 		}
 	}
 	
+	/**
+	 * method for edit logic that will update modified data to the file
+	 * @param arrayToBeUpdated
+	 */
+	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeDeletedFrom) {				
+
+		if(fileToBeDeletedFrom == 1) {
+			if(state_search) {
+				searchIncTasks.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incTasksIndex.get(taskNumberToBeModified);
+			}	
+			
+			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteIncompleteTasks();
+		}
+		
+		else if (fileToBeDeletedFrom == 2) {
+			if(state_search) {
+				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incEventsIndex.get(taskNumberToBeModified);
+			}
+			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteIncompleteEvents();
+		}
+		
+		else if (fileToBeDeletedFrom == 3) {
+			if(state_search) {
+				searchCompTasks.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = compTasksIndex.get(taskNumberToBeModified);
+			}
+			completedTasks.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteCompletedTasks();
+		}
+		
+		else if (fileToBeDeletedFrom == 4) {
+			if(state_search) {
+				searchCompEvents.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = compEventsIndex.get(taskNumberToBeModified);
+			}
+			completedEvents.set(taskNumberToBeModified, modifiedTask);
+			callStorageWriteCompletedEvents();
+		}
+	
+	return true;
+	}
+
 	public boolean deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
 			if(state_search) {
@@ -215,33 +261,6 @@ public class FileLinker {
 		}
   }
 
-	/**
-	 * method for edit logic that will update modified data to the file
-	 * @param arrayToBeUpdated
-	 */
-	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeDeletedFrom) {
-		if(fileToBeDeletedFrom == 1) {
-			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteIncompleteTasks();
-		}
-		
-		else if (fileToBeDeletedFrom == 2) {
-			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteIncompleteEvents();
-		}
-		
-		else if (fileToBeDeletedFrom == 3) {
-			completedTasks.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteCompletedTasks();
-		}
-		
-		else if (fileToBeDeletedFrom == 4) {
-			completedEvents.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteCompletedEvents();
-		}
-		return true;
-	}
-	
 	public void resetIncompleteHandling() {
 		incompleteTasks = new ArrayList<TaskCard>();
 		int numberOfIncompleteTasks = incompleteTasks.size();
