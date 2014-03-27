@@ -81,7 +81,7 @@ public class Edit {
 	 * @param fileLink
 	 * @param dataUI
 	 * @return
-	 * the return type will signal to commandhandler whether the delete was successful
+	 * the return type will signal to commandhandler whether the edit was successful
 	 * or that there was an error involved
 	 */
 		boolean success = false;
@@ -167,11 +167,7 @@ public class Edit {
 	
 	//the actual editing
 	
-	public boolean executeEdit(String secondUserInput, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		
-		return success;
-	}
+	
 	
 	private boolean identifyCmdAndPerform(String[] tokenizedInput,
 			FileLinker fileLink, DataUI dataUI) {
@@ -528,6 +524,7 @@ public class Edit {
 			
 		}
 		
+		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);
 		fileLink.editHandling(task, userEnteredID, 1);
 		return success;
@@ -745,7 +742,7 @@ public class Edit {
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);
-		fileLink.editHandling(event, userEnteredID, 1);
+		fileLink.editHandling(event, userEnteredID, 2);
 		return success;
 	}
 	
@@ -898,7 +895,7 @@ public class Edit {
 		}
 		
 		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);
-		fileLink.editHandling(task, userEnteredID, 1);
+		fileLink.editHandling(task, userEnteredID, 3);
 		return success;
 	}
 	
@@ -1114,7 +1111,7 @@ public class Edit {
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);
-		fileLink.editHandling(event, userEnteredID, 1);
+		fileLink.editHandling(event, userEnteredID, 4);
 		return success;
 	}
 	
