@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Undo {
 
-	private ArrayList<String> cmdTypeUndo;
-	private ArrayList<String> cmdTypeRedo;
+	private ArrayList<String> undoCmdType;
+	private ArrayList<String> redoCmdType;
 	
 	private ArrayList<Integer> undoFileToBeModified;
 	private ArrayList<Integer> redoFileToBeModified;
@@ -16,7 +16,8 @@ public class Undo {
 	private ArrayList<TaskCard> undoTasksNew;
 	private ArrayList<TaskCard> redoTasksNew;
 	
-	private int indexOfLastCmd;
+	private int indexOfLastCmdUndo;
+	private int indexOfLastCmdRedo;
 
 	public enum COMMAND_TYPE {
 		ADD, DELETE, EDIT, MARK
@@ -33,7 +34,7 @@ public class Undo {
 	 * @param taskIndex
 	 * @return
 	 */
-	public boolean storeUndo(String command, int fileModified, TaskCard oldTask, TaskCard newTask, int taskIndex) {
+	public boolean storeUndo(String command, int fileModified, TaskCard oldTask, TaskCard newTask) {
 		boolean success = false;
 		
 		COMMAND_TYPE cmdType = determineCmdType(command);
@@ -43,13 +44,13 @@ public class Undo {
 				addUndoStorage(oldTask, fileModified);
 				break;
 			case DELETE:
-				deleteUndoStorage(oldTask, taskIndex, fileModified);
+				deleteUndoStorage(oldTask, fileModified);
 				break;
 			case EDIT:
-				editUndoStorage(oldTask, newTask, taskIndex, fileModified);
+				editUndoStorage(oldTask, newTask, fileModified);
 				break;
 			case MARK:
-				markUndoStorage(oldTask, taskIndex, fileModified);
+				markUndoStorage(oldTask, fileModified);
 				break;
 				
 			default:
@@ -60,7 +61,7 @@ public class Undo {
 	}
 	
 	public void executeUndo(FileLinker fileLink) {
-		if(indexOfLastCmd == 0) {
+		if(indexOfLastCmdUndo < 0) {
 			return;
 		} else {
 			identifyUndoAndPerform(fileLink);
@@ -68,12 +69,15 @@ public class Undo {
 	}
 	
 	public void executeRedo(FileLinker fileLink) {
-		
+		if(indexOfLastCmdRedo < 0) {
+			return;
+		} else {
+			identifyRedoAndPerform(fileLink);
+		}
 	}
 
 	private void identifyUndoAndPerform(FileLinker fileLink) {
-		int lastActionIndex = cmdTypeUndo.size() - 1;
-	  String actionToBeDone = cmdTypeUndo.get(lastActionIndex);
+	  String actionToBeDone = undoCmdType.get(indexOfLastCmdUndo);
 	  
 	  switch(actionToBeDone) {
 	  	case "add":
@@ -90,12 +94,29 @@ public class Undo {
 	  	default:
 	  		break;
 	  }
-	  
   }
 
+	private void identifyRedoAndPerform(FileLinker fileLink) {
+		String actionToBeDone = redoCmdType.get(indexOfLastCmdRedo);
+		
+		switch(actionToBeDone) {
+			case "add":
+				redoAdd(fileLink);
+				break;
+			case "delete":
+				redoDelete(fileLink);
+				break;
+			case "edit":
+				redoEdit(fileLink);
+				break;
+			case "mark":
+				redoMark(fileLink);
+		}
+	}
+
 	private void undoAdd(FileLinker fileLink) {
-		TaskCard taskToBeUndone = undoTasksOld.get(indexOfLastCmd);
-		int modifiedFile = undoFileToBeModified.get(indexOfLastCmd);
+		TaskCard taskToBeUndone = undoTasksOld.get(indexOfLastCmdUndo);
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
 		ArrayList<TaskCard> arrayToBeModified;
 	  if(modifiedFile == 1) {
 	  	arrayToBeModified = fileLink.getIncompleteTasks();
@@ -108,74 +129,122 @@ public class Undo {
 	  
 	  pushUndoToRedo();
   }
-
-	private void pushUndoToRedo() {
-	  redoTasksOld.add(undoTasksOld.get(indexOfLastCmd));
-	  redoTasksNew.add(undoTasksNew.get(indexOfLastCmd));
-	  cmdTypeRedo.add(cmdTypeUndo.get(indexOfLastCmd));
-	  redoFileToBeModified.add(undoFileToBeModified.get(indexOfLastCmd));
-	  indexOfLastCmd--;
-  }
 	
-	private void pushRedoToUndo() {
+	private void redoAdd(FileLinker fileLink) {
+		TaskCard taskToBeRedone = redoTasksOld.get(indexOfLastCmdRedo); 
 		
+		fileLink.addHandling(taskToBeRedone);
+		
+		pushRedoToUndo();
 	}
 
 	private void undoDelete(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
 	  
+	  //must consider deleting from completed tasks too
+	  fileLink.addHandling(taskToBeAddedBack);
+	  
+	  pushUndoToRedo();
   }
+
+	private void redoDelete(FileLinker fileLink) {
+		TaskCard taskToBeDeletedBack = redoTasksOld.get(indexOfLastCmdRedo);
+		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+		ArrayList<TaskCard> arrayToBeModified;
+		
+		if(modifiedFile == 1) {
+			arrayToBeModified = fileLink.getIncompleteTasks();
+		} else {
+			arrayToBeModified = fileLink.getIncompleteEvents();
+		}
+	  
+		int indexOfTaskToBeDeleted = arrayToBeModified.indexOf(taskToBeDeletedBack);
+		fileLink.deleteHandling(indexOfTaskToBeDeleted, modifiedFile);
+		
+		pushRedoToUndo();
+	}
 
 	private void undoEdit(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
 	  
   }
 
+	private void redoEdit(FileLinker fileLink) {
+	  // TODO Auto-generated method stub
+	  
+	}
+
 	private void undoMark(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
 	  
   }
 
+	private void redoMark(FileLinker fileLink) {
+	  // TODO Auto-generated method stub
+	  
+	}
+
+	private void pushUndoToRedo() {
+	  redoTasksOld.add(undoTasksOld.get(indexOfLastCmdUndo));
+	  redoTasksNew.add(undoTasksNew.get(indexOfLastCmdUndo));
+	  redoCmdType.add(undoCmdType.get(indexOfLastCmdUndo));
+	  redoFileToBeModified.add(undoFileToBeModified.get(indexOfLastCmdUndo));
+	  indexOfLastCmdUndo--;
+	  indexOfLastCmdRedo++;
+	}
+
+	private void pushRedoToUndo() {
+		undoTasksOld.add(redoTasksOld.get(indexOfLastCmdRedo));
+	  undoTasksNew.add(redoTasksNew.get(indexOfLastCmdRedo));
+	  undoCmdType.add(redoCmdType.get(indexOfLastCmdRedo));
+	  undoFileToBeModified.add(redoFileToBeModified.get(indexOfLastCmdRedo));
+	  indexOfLastCmdRedo--;
+	  indexOfLastCmdUndo++;
+	}
+
 	private void addUndoStorage(TaskCard task, int fileModified) {
-		cmdTypeUndo.add("add");
+		undoCmdType.add("add");
 		undoTasksOld.add(task);
 		undoTasksNew.add(null);
 		undoFileToBeModified.add(fileModified);
-		indexOfLastCmd++;
+		indexOfLastCmdUndo++;
   }
 
-	private void deleteUndoStorage(TaskCard task, int taskIndex, int fileModified) {
-	  cmdTypeUndo.add("delete");
+	private void deleteUndoStorage(TaskCard task, int fileModified) {
+	  undoCmdType.add("delete");
 	  undoTasksOld.add(task);
 	  undoTasksNew.add(null);
 	  undoFileToBeModified.add(fileModified);
-	  indexOfLastCmd++;
+	  indexOfLastCmdUndo++;
   }
 
-	private void editUndoStorage(TaskCard oldTask, TaskCard newTask, int taskIndex, int fileModified) {
-	  cmdTypeUndo.add("edit");
+	private void editUndoStorage(TaskCard oldTask, TaskCard newTask, int fileModified) {
+	  undoCmdType.add("edit");
 	  undoTasksOld.add(oldTask);
 	  undoTasksNew.add(newTask);
 	  undoFileToBeModified.add(fileModified);
-	  indexOfLastCmd++;
+	  indexOfLastCmdUndo++;
   }
 
-	private void markUndoStorage(TaskCard task, int taskIndex, int fileModified) {
-		cmdTypeUndo.add("mark");
+	private void markUndoStorage(TaskCard task, int fileModified) {
+		undoCmdType.add("mark");
 		undoTasksOld.add(task);
 		undoTasksNew.add(null);
 		undoFileToBeModified.add(fileModified);
-		indexOfLastCmd++;
+		indexOfLastCmdUndo++;
 	}
 
 	public void flushRedo() {
-		cmdTypeRedo = new ArrayList<String>();
+		redoCmdType = new ArrayList<String>();
+		undoFileToBeModified = new ArrayList<Integer>();
 		redoTasksOld = new ArrayList<TaskCard>();
+		redoTasksNew = new ArrayList<TaskCard>();
+		indexOfLastCmdRedo = -1;
 	}
 	
 	private void initVariables() {
-	  cmdTypeUndo = new ArrayList<String>();
-	  cmdTypeRedo = new ArrayList<String>();
+	  undoCmdType = new ArrayList<String>();
+	  redoCmdType = new ArrayList<String>();
 	  
 	  undoFileToBeModified = new ArrayList<Integer>();
 	  redoFileToBeModified = new ArrayList<Integer>();
@@ -186,7 +255,8 @@ public class Undo {
 	  undoTasksNew = new ArrayList<TaskCard>();
 	  redoTasksNew= new ArrayList<TaskCard>();
 	  
-	  indexOfLastCmd = 0;
+	  indexOfLastCmdUndo = -1;
+	  indexOfLastCmdRedo = -1;
   }
 	
 	private COMMAND_TYPE determineCmdType(String cmd) {

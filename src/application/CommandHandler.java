@@ -26,7 +26,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO
 	}
 	
 	public CommandHandler() {
@@ -175,6 +175,14 @@ public class CommandHandler {
 					state_mark = true;
 				}
 				break;
+			case UNDO:
+				undoHandler.executeUndo(fileLink);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				break;
+			case REDO:
+				undoHandler.executeRedo(fileLink);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -201,6 +209,10 @@ public class CommandHandler {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.isEmpty()) {
 			return COMMAND_TYPE.ENTER;
+		} else if(commandTypeString.equals("undo")) {
+			return COMMAND_TYPE.UNDO;
+		} else if(commandTypeString.equals("redo")) {
+			return COMMAND_TYPE.REDO;
 		} else if (commandTypeString.contains("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {
