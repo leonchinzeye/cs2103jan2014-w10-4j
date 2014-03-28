@@ -20,7 +20,7 @@ public class Edit {
 	
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
-		
+	
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an incomplete task to edit! Please enter an ID to edit!";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an incomplete event to edit! Please enter an ID to edit!";
 	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You didn't specify an complete task to edit! Please enter an ID to edit!";
@@ -70,7 +70,7 @@ public class Edit {
 		dateFormat.setLenient(false);
 		timeFormat.setLenient(false);
 	}
-
+	
 	/**
 	 * this method checks if the program is currently in any edit error handling state
 	 * if it is, it calls the individual edit methods
@@ -84,9 +84,9 @@ public class Edit {
 	 * the return type will signal to commandhandler whether the edit was successful
 	 * or that there was an error involved
 	 */
+	
+	public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
-		public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
-		
 		if(newEditCmd()) {
 			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 			String cmd = tokenizedInput[FIRST_ARGUMENT];
@@ -116,8 +116,7 @@ public class Edit {
 			if(success == true) {
 				state_comp_tasks = false;
 				state_input_comp_tasks = true;
-				return success = false;
-				
+				return success = false;	
 			}
 			
 		} else if(state_comp_event) {
@@ -192,7 +191,7 @@ public class Edit {
 					return success = false;
 				} else {
 					success = checkAndGetIncTaskID(userIndex, fileLink, dataUI);
-						
+					
 					if(success) {
 						state_input_inc_tasks = true;
 						state_inc_tasks = false;
@@ -227,7 +226,7 @@ public class Edit {
 					return success = false;
 				} else {
 					success = checkAndGetCompTaskID(userIndex, fileLink, dataUI);
-						
+					
 					if(success == false) {
 						state_comp_tasks = true;
 					} else {
@@ -257,7 +256,7 @@ public class Edit {
 		
 		return success;
 	}
-
+	
 	/**
 	 * should name it checkAndGetIncTaskID
 	 * @param userIndex
@@ -275,18 +274,12 @@ public class Edit {
 			if(editIndex < 0 || editIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incTasks.size()));
 				return success = false;
-			} 
-			//edit this one for the edit function to work 
-			else {
+			} else {
 				TaskCard task = incTasks.get(editIndex - 1);
 				
-				//set feedback should be
 				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
 				userEnteredID = editIndex;
 				success = true;
-				//this filelink should not be called
-				//fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
-				//RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
@@ -295,7 +288,7 @@ public class Edit {
 		
 		return success;
 	}
-
+	
 	private boolean checkAndGetIncEventID(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
 		boolean success = true;
@@ -321,7 +314,7 @@ public class Edit {
 		
 		return success;
 	}
-
+	
 	private boolean checkAndGetCompTaskID(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
 		boolean success = true;
@@ -347,7 +340,7 @@ public class Edit {
 		
 		return success;
 	}
-
+	
 	private boolean checkAndGetCompEventID(String userIndex, FileLinker fileLink,
 			DataUI dataUI) {
 		boolean success = true;
@@ -373,7 +366,7 @@ public class Edit {
 		
 		return success;
 	}
-
+	
 	/**
 	 * performs the actual edit
 	 * create a new task card, put in details from the old one that he didn't want to change
@@ -384,25 +377,26 @@ public class Edit {
 	 * @return
 	 */
 	private boolean checkIncTaskInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		TaskCard task = new TaskCard();
-		TaskCard replacementTask = new TaskCard();
-		String[] tokenizedInput;
+		boolean success = true;
 		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
+		TaskCard origTask = incTask.get(userEnteredID - 1);
+		TaskCard replacementTask = new TaskCard();
+		
+		replacementTask.setStartDay(origTask.getStartDay());
+		
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeEndDate = false;
-
 		
 		boolean isDateAndTime = false;
 		boolean isDate = false;
 		boolean isTime = false;
 		
+		String[] tokenizedInput = userInput.split(";");
+		
 		/*
 		 * first step is to check if all the parameters make sense
 		 */
-		
-		tokenizedInput = userInput.split(";");
 		
 		for(int i = 0; i < tokenizedInput.length; i++) {
 			if(!(tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
@@ -422,17 +416,18 @@ public class Edit {
 		 * second step is to pull out the details that he did not want to edit and put them in
 		 * helper functions would be good for abstraction
 		 */
-		task = incTask.get(userEnteredID - 1);
 		if(changeName == false) {
-			replacementTask.setName(task.getName());
-		}
+			replacementTask.setName(origTask.getName());
+		} 
 		
-		else if (changePriority == false) {
-			replacementTask.setPriority(task.getPriority());
-		}
+		if (changePriority == false) {
+			replacementTask.setPriority(origTask.getPriority());
+			
+		}  
 		
-		else if (changeEndDate == false) {
-			replacementTask.setEndDay(task.getEndDay());
+		if(changeEndDate == false) {
+			replacementTask.setEndDay(origTask.getEndDay());
+			replacementTask.setType(origTask.getType());
 		}
 		
 		
@@ -454,11 +449,9 @@ public class Edit {
 		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
 		 */
 		
-		String[] tokensForEditing = tokenizedInput;
-		
-		for(int i=0; i<tokensForEditing.length; i++) {
+		for(int i = 0; i < tokenizedInput.length; i++) {
 			
-			parameterToEnter = tokensForEditing[i].split(":", 2);
+			parameterToEnter = tokenizedInput[i].split(":", 2);
 			
 			if(parameterToEnter.length != 2) {
 				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
@@ -466,16 +459,20 @@ public class Edit {
 				replacementTask.setName(parameterToEnter[1].trim());
 			} else if(parameterToEnter[0].contains("Priority")) {
 				//check the String if LOW then set to 1, MED etc.
-				if(parameterToEnter[1].equals("LOW"))
+				if(parameterToEnter[1].equals("LOW")) {
 					replacementTask.setPriority(1);
-				else if(parameterToEnter[1].equals("MED"))
+				} else if(parameterToEnter[1].equals("MED")) {
 					replacementTask.setPriority(2);
-				else if(parameterToEnter[1].equals("HIGH"))
+				} else if(parameterToEnter[1].equals("HIGH")) {
 					replacementTask.setPriority(3);
+				} else {
+					dataUI.setFeedback("You've entered an invalid priority level :(");
+					return false;
+				}
 			} else if(parameterToEnter[0].contains("EndDate")) {
 				String endDateEntry = parameterToEnter[1].trim();
 				
-				
+				//check if time changes (reserved keywords: nth, empty, nothing) 
 				
 				try {
 					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
@@ -513,9 +510,7 @@ public class Edit {
 				if((isDateAndTime && isTime && isDate) == false) {
 					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				}
-				
-			} 
-			
+			}
 		}
 		
 		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);
@@ -557,7 +552,7 @@ public class Edit {
 		
 		for(int i = 0; i<tokenizedInput.length; i++) {
 			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-
+				
 				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
 				return success = false;
 			}
@@ -770,7 +765,7 @@ public class Edit {
 		
 		for(int i = 0; i<tokenizedInput.length; i++) {
 			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-
+				
 				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
 				return success = false;
 			}
@@ -926,7 +921,7 @@ public class Edit {
 		
 		for(int i = 0; i<tokenizedInput.length; i++) {
 			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-
+				
 				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
 				return success = false;
 			}
@@ -1114,26 +1109,21 @@ public class Edit {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND);
 	}
-
+	
 	private boolean newEditCmd() {
 		if(state_inc_tasks == false && state_inc_event == false
-		&& state_comp_tasks == false && state_comp_event == false && state_input_inc_tasks == false
-		&& state_input_inc_event == false && state_input_comp_tasks == false && state_input_comp_event == false) {
+				&& state_comp_tasks == false && state_comp_event == false && state_input_inc_tasks == false
+				&& state_input_inc_event == false && state_input_comp_tasks == false && state_input_comp_event == false) {
 			return true;
 		}
 		return false;
 	}
-
+	
 	private void resetStates() {
 		state_inc_tasks = false;
 		state_inc_event = false;
 		state_comp_tasks = false;
 		state_comp_event = false;
-		
-		state_input_inc_tasks = false;
-		state_input_inc_event = false;
-		state_input_comp_tasks = false;
-		state_input_comp_event = false;
 	}
 	
 	private void initialiseCmdTable() {

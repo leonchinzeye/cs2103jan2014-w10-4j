@@ -101,8 +101,10 @@ public class CommandHandler {
 				state_mark = true;
 			}
 		} else if(state_edit == true) {
-			editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
-			
+			success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
+			if(success) {
+				resetStates();
+			}
 			
 		} else if(state_ref == true) {
 			RefreshUI.executeRefresh(fileLink, dataUI);
