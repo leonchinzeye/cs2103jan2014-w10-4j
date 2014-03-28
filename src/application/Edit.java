@@ -193,10 +193,13 @@ public class Edit {
 				} else {
 					success = checkAndGetIncTaskID(userIndex, fileLink, dataUI);
 						
-					if(success == false) {
-						state_inc_tasks = true;
-					} else {
+					if(success) {
+						state_input_inc_tasks = true;
 						state_inc_tasks = false;
+						return false;
+					} else {
+						state_inc_tasks = true;
+						success = false;
 					}
 				}
 				break;
@@ -280,6 +283,7 @@ public class Edit {
 				//set feedback should be
 				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
 				userEnteredID = editIndex;
+				success = true;
 				//this filelink should not be called
 				//fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
 				//RefreshUI.executeRefresh(fileLink, dataUI);
@@ -400,35 +404,25 @@ public class Edit {
 		
 		tokenizedInput = userInput.split(";");
 		
-		for(int i = 0; i<tokenizedInput.length; i++) {
-			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate")
-					|| tokenizedInput[i].contains("StartDate") || tokenizedInput[i].contains("Frequency"))) {
-
+		for(int i = 0; i < tokenizedInput.length; i++) {
+			if(!(tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
 				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
+				
 				return success = false;
-			}
-			
-			else if(tokenizedInput[i].contains("Name")) {
+			} else if(tokenizedInput[i].contains("Name")) {
 				changeName = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Priority")) {
+			} else if(tokenizedInput[i].contains("Priority")) {
 				changePriority = true;
-			}
-			
-			
-			else if(tokenizedInput[i].contains("EndDate")) {
+			} else if(tokenizedInput[i].contains("EndDate")) {
 				changeEndDate = true;
 			}
-			
-			
 		}
 		
 		/*
 		 * second step is to pull out the details that he did not want to edit and put them in
 		 * helper functions would be good for abstraction
 		 */
-		task = incTask.get(userEnteredID);
+		task = incTask.get(userEnteredID - 1);
 		if(changeName == false) {
 			replacementTask.setName(task.getName());
 		}
@@ -469,7 +463,7 @@ public class Edit {
 			if(parameterToEnter.length != 2) {
 				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
 			} else if(parameterToEnter[0].contains("Name")){
-				replacementTask.setName(parameterToEnter[1]);
+				replacementTask.setName(parameterToEnter[1].trim());
 			} else if(parameterToEnter[0].contains("Priority")) {
 				//check the String if LOW then set to 1, MED etc.
 				if(parameterToEnter[1].equals("LOW"))
@@ -524,9 +518,9 @@ public class Edit {
 			
 		}
 		
-		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);
-		fileLink.editHandling(task, userEnteredID, 1);
+		fileLink.editHandling(replacementTask, userEnteredID, 1);
+		RefreshUI.executeRefresh(fileLink, dataUI);
 		return success;
 	}
 	

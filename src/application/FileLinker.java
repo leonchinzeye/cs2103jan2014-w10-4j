@@ -129,7 +129,7 @@ public class FileLinker {
 				taskNumberToBeModified = incTasksIndex.get(taskNumberToBeModified);
 			}	
 			
-			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+			incompleteTasks.set(taskNumberToBeModified - 1, modifiedTask);
 			callStorageWriteIncompleteTasks();
 		}
 		
