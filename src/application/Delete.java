@@ -66,16 +66,16 @@ public class Delete {
 				notRecognisableCmd(fileLink, dataUI);
 				return success = true;
 			} else {
-				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
+				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
 			}
 		} else if(state_inc_tasks == true) {
-			success = performIncTaskDelete(userInput, fileLink, dataUI);	
+			success = performIncTaskDelete(userInput, fileLink, dataUI, undoHandler);	
 		} else if(state_inc_event == true) {
-			success = performIncEventDelete(userInput, fileLink, dataUI);
+			success = performIncEventDelete(userInput, fileLink, dataUI, undoHandler);
 		} else if(state_comp_tasks == true) {
-			success = performCompTaskDelete(userInput, fileLink, dataUI);
+			success = performCompTaskDelete(userInput, fileLink, dataUI, undoHandler);
 		} else {
-			success = performCompEventDelete(userInput, fileLink, dataUI);
+			success = performCompEventDelete(userInput, fileLink, dataUI, undoHandler);
 		}
 		
 		if(success) {
@@ -85,7 +85,7 @@ public class Delete {
 	}
 	
 	private boolean identifyCmdAndPerform(String[] tokenizedInput,
-			FileLinker fileLink, DataUI dataUI) {
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -106,7 +106,7 @@ public class Delete {
 					
 					return success = false;
 				} else {
-					success = performIncTaskDelete(userIndex, fileLink, dataUI);
+					success = performIncTaskDelete(userIndex, fileLink, dataUI, undoHandler);
 						
 					if(success == false) {
 						state_inc_tasks = true;
@@ -122,7 +122,7 @@ public class Delete {
 					
 					return success = false;
 				} else {
-					success = performIncEventDelete(userIndex, fileLink, dataUI);
+					success = performIncEventDelete(userIndex, fileLink, dataUI, undoHandler);
 					
 					if(success == false) {
 						state_inc_event = true;
@@ -138,7 +138,7 @@ public class Delete {
 					
 					return success = false;
 				} else {
-					success = performCompTaskDelete(userIndex, fileLink, dataUI);
+					success = performCompTaskDelete(userIndex, fileLink, dataUI, undoHandler);
 						
 					if(success == false) {
 						state_comp_tasks = true;
@@ -154,7 +154,7 @@ public class Delete {
 					
 					return success = false;
 				} else {
-					success = performCompEventDelete(userIndex, fileLink, dataUI);
+					success = performCompEventDelete(userIndex, fileLink, dataUI, undoHandler);
 					
 					if(success == false) {
 						state_comp_event = true;
@@ -170,7 +170,7 @@ public class Delete {
 		return success;
 	}
 
-	private boolean performIncTaskDelete(String userIndex, FileLinker fileLink, DataUI dataUI) {
+	private boolean performIncTaskDelete(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
 		
@@ -184,6 +184,8 @@ public class Delete {
 				TaskCard task = incTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
+				
+				undoHandler.storeUndo("delete", DELETE_INCOMPLETE_TASKS, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -195,7 +197,7 @@ public class Delete {
 	}
 
 	private boolean performIncEventDelete(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
+			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
 		
@@ -220,7 +222,7 @@ public class Delete {
 	}
 
 	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
+			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compTasks = fileLink.getIncompleteTasks();
 		
@@ -245,7 +247,7 @@ public class Delete {
 	}
 
 	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
+			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compEvent = fileLink.getIncompleteEvents();
 		
