@@ -1,14 +1,21 @@
+/*
+ * Things to include:
+ * autocomplete
+ * help page
+ * autofocus to edited table
+ * 
+ */
+
 package application;
 
 import java.util.Stack;
 
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import np.com.ngopal.control.AutoFillTextBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -17,10 +24,33 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 
 public class TaskController {
 	@FXML
+	private AnchorPane anchor;
+	@FXML
+	private AnchorPane helpAnchor;
+	@FXML
+	private AnchorPane helpAnchor2;
+	@FXML
 	private TabPane tab;
+	@FXML
+	private Tab helpTab;
+	@FXML
+	private Pane validPane;
+	
+	@FXML
+	private TextField notification;
+	@FXML
+	private TextField command;
+	
+	@FXML
+	private Text eventCounter;
+	@FXML
+	private Text taskCounter;
 	
 	@FXML
 	private Accordion incompleteAccordion;
@@ -96,11 +126,6 @@ public class TaskController {
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
 	
-	@FXML
-	private TextField notification;
-	@FXML
-	private TextField command;
-	
 	private UI ui = new UI();
 	private Stack<String> history = new Stack<String>();
 	private Stack<String> forward = new Stack<String>();
@@ -115,6 +140,9 @@ public class TaskController {
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		dataUI = new DataUI();
+		eventCounter = new Text("Events: 0");
+		taskCounter = new Text("Tasks: 0");
+		validPane = new Pane();
 	}
 	
 	@FXML
@@ -146,29 +174,58 @@ public class TaskController {
 		colEventStartTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
 		colEventEndDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
 		colEventEndTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
+		
+		dataUI = commandHandle.getDataUI();
+		
+		incompleteEvents.addAll(dataUI.getIncompleteEvents());
+		incompleteTasks.addAll(dataUI.getIncompleteTasks());
+		completedEvents.addAll(dataUI.getCompleteEvents());
+		completedTasks.addAll(dataUI.getCompleteTasks());
+		
+		eventCounter.setText("Events: " + incompleteEvents.size());
+		taskCounter.setText("Tasks: " + incompleteTasks.size());
+		
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		completedEvents.removeAll(completedEvents);
+		completedTasks.removeAll(completedTasks);
+		
+		validPane.setStyle("-fx-background-color: green;");
 	}
+	
+	@FXML
+	public void parseInput() {
+		String response = "";
+		String lastInput = "";
+			
+		lastInput = command.getText();
+		history.add(lastInput);
+		
+		dataUI = commandHandle.executeCmd(lastInput);
+		response = dataUI.getFeedback();
+		notification.setText(response);
+		command.clear(); //clears the input text field
+		
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		completedEvents.removeAll(completedEvents);
+		completedTasks.removeAll(completedTasks);
+		setUI(ui);
+		updateCounter();
+	}
+
+	private void updateCounter() {
+	  if (tab.getSelectionModel().isSelected(0)) {
+			eventCounter.setText("Events: " + incompleteEvents.size());
+			taskCounter.setText("Tasks: " + incompleteTasks.size());
+		} else if (tab.getSelectionModel().isSelected(1)) {
+			eventCounter.setText("Events: " + completedEvents.size());
+			taskCounter.setText("Tasks: " + completedTasks.size());
+		}
+  }
 	
 	public void setUI(UI ui) {
 		this.ui = ui;
-		dataUI = commandHandle.getDataUI();
-		
-		incompleteAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
-			@Override public void changed(ObservableValue<? extends TitledPane> property, final TitledPane oldPane, final TitledPane newPane) {
-				if (oldPane != null) oldPane.setCollapsible(true);
-				if (newPane != null) Platform.runLater(new Runnable() { @Override public void run() {
-					newPane.setCollapsible(false);
-				}});
-			}
-		});
-		
-		completeAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
-			@Override public void changed(ObservableValue<? extends TitledPane> property, final TitledPane oldPane, final TitledPane newPane) {
-				if (oldPane != null) oldPane.setCollapsible(true);
-				if (newPane != null) Platform.runLater(new Runnable() { @Override public void run() {
-					newPane.setCollapsible(false);
-				}});
-			}
-		});
 		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
@@ -182,68 +239,143 @@ public class TaskController {
 	}
 	
 	@FXML
-	public void parseInput() {
-		String response = "";
-		String lastInput = "";
-		lastInput = command.getText();
-		history.add(lastInput);
-		
-		dataUI = commandHandle.executeCmd(lastInput);
-		if (dataUI.equals(null)) {
-			response = "Read me!";
+	public void keystrokes(KeyEvent key) {
+		if (command.isFocused()) {
+			anchor.requestFocus();
+		} else {
+			focusTextInput(key);
 		}
-		response = dataUI.getFeedback();
-		notification.setText(response);
-		command.clear(); //clears the input text field
-		incompleteEvents.removeAll(incompleteEvents);
-		incompleteTasks.removeAll(incompleteTasks);
-		completedEvents.removeAll(completedEvents);
-		completedTasks.removeAll(completedTasks);
-		setUI(ui);
-	}
-	
-	@FXML
-	public void anchorKeystrokes(KeyEvent key) {
-		focusTextInput(key);
 		changePanel(key);
-	}
-	
-	@FXML
-	public void focusTextInput(KeyEvent key) {
-		if (key.getCode().equals(KeyCode.SLASH)) {
-			command.requestFocus();
-			command.end();
-		}
+		changeTab(key);
 	}
 	
 	@FXML
 	public void changePanel(KeyEvent key) {
-		if (key.isShiftDown() && key.getCode().equals(KeyCode.UP)) {
+		if (key.isShiftDown() && (key.getCode().equals(KeyCode.UP) || key.getCode().equals(KeyCode.DOWN))) {
 			if (eventPaneIncomplete.isExpanded()) {
 				taskPaneIncomplete.setExpanded(true);
 				taskPaneComplete.setExpanded(true);
-			}
-		} else if (key.isShiftDown() && key.getCode().equals(KeyCode.DOWN)) {
-			if (taskPaneIncomplete.isExpanded()) {
+			} else if (taskPaneIncomplete.isExpanded()) {
 				eventPaneIncomplete.setExpanded(true);
-				eventPaneComplete.setExpanded(true);
+				eventPaneComplete.setExpanded(true);			
 			}
 		}
 	}
 	
 	@FXML
 	public void changeTab(KeyEvent key) {
-		if (key.isShiftDown() && (key.getCode().equals(KeyCode.RIGHT)) || (key.getCode().equals(KeyCode.LEFT))) {
-			if (tab.getSelectionModel().isSelected(0)) {
-				tab.getSelectionModel().selectNext();
-			} else {
-				tab.getSelectionModel().selectPrevious();
-			}
+		if (key.isShiftDown() && (key.getCode().equals(KeyCode.RIGHT) || key.getCode().equals(KeyCode.LEFT))) {
+			switchTabs();
+		} else if (key.getCode().equals(KeyCode.ESCAPE)) {
+			backToMain();
+		} else if (key.isShiftDown() && key.getCode().equals(KeyCode.H)) {
+			tab.getSelectionModel().select(helpTab);
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {
+			helpAnchor.setVisible(false);
+			helpAnchor2.setVisible(true);
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {
+			helpAnchor.setVisible(true);
+			helpAnchor2.setVisible(false);
+		}
+	}
+
+	private void switchTabs() {
+	  notification.setText("Read me!");
+	  command.setPromptText("Feed me!");
+	  command.setMouseTransparent(false);
+	  command.setFocusTraversable(true);
+	  if (!tab.getSelectionModel().isSelected(0)) {
+	  	tab.getSelectionModel().select(0);
+	  	helpAnchor.setVisible(false);
+	  	helpAnchor2.setVisible(false);
+	  } else if (!tab.getSelectionModel().isSelected(1)){
+	  	tab.getSelectionModel().select(1);
+	  	helpAnchor.setVisible(false);
+	  	helpAnchor2.setVisible(false);
+	  }
+  }
+	
+	private void backToMain() {
+	  tab.getSelectionModel().select(0);
+	  helpAnchor.setVisible(false);
+	  helpAnchor2.setVisible(false);
+	  notification.setText("Read me!");
+	  command.setPromptText("Feed me!");
+	  command.setMouseTransparent(false);
+	  command.setFocusTraversable(true);
+  }
+	
+	@FXML
+	public void openIncompleteTab() {
+		eventCounter.setText("Events: " + incompleteEvents.size());
+		taskCounter.setText("Tasks: " + incompleteTasks.size());
+		notification.setDisable(false);
+		command.setDisable(false);
+	}
+	
+	@FXML
+	public void openCompleteTab() {
+		eventCounter.setText("Events: " + completedEvents.size());
+		taskCounter.setText("Tasks: " + completedTasks.size());
+		notification.setDisable(false);
+		command.setDisable(false);
+	}
+	
+	@FXML
+	public void openHelpTab() {
+		eventCounter.setText("Events: 0");
+		taskCounter.setText("Tasks: 0");
+		notification.setText("This will return responses to you based on your commands.");
+		command.setPromptText("This is where you enter your commands.");
+		command.setMouseTransparent(true);
+		command.setFocusTraversable(false);
+		helpAnchor.setVisible(true);
+	}
+	
+	@FXML
+	public void focusTextInput(KeyEvent key) {
+		if (key.getCode().equals(KeyCode.A) || 
+				key.getCode().equals(KeyCode.D) ||
+				key.getCode().equals(KeyCode.E) ||
+				key.getCode().equals(KeyCode.M) ||
+				key.getCode().equals(KeyCode.U) ||
+				key.getCode().equals(KeyCode.R) ||
+				key.getCode().equals(KeyCode.SPACE)) {
+			command.requestFocus();
+			command.end();
 		}
 	}
 	
 	@FXML
-	public void returnLastInput(KeyEvent key) { //BROKEN
+	public void setResponseBasedOnCommand(KeyEvent key) {
+		if (command.getText().equals("add")) {
+			notification.setText("add <Name> due by <DD/MM> OR add <Name>; <DD/MM/YYYY> <HH:mm>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("del")) {
+			notification.setText("del <t/e><Integer>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("edit")) {
+			notification.setText("edit <t/e><Integer>; <Attribute>: <Edited entry>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("mark")) {
+			notification.setText("mark <t/e><Integer>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("unmark")) {
+			notification.setText("unmark <t/e><Integer>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("search")) {
+			notification.setText("search <Query OR Priority OR Date>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("")) {
+			validPane.setStyle("-fx-background-color: green;");
+		} else {
+			notification.setText("Read me!");
+			validPane.setStyle("-fx-background-color: red;");
+		}
+	}
+	
+	@FXML
+	public void returnLastInput(KeyEvent key) {
 		String lastInput = "";
 		String nextInput = "";
 		
@@ -255,14 +387,14 @@ public class TaskController {
 				forward.push(lastInput);
 			}
 		} else if(key.getCode().equals(KeyCode.DOWN)) {
-				history.push(forward.pop());
-				if (forward.isEmpty()) {
-					command.clear();
-				} else {
-					nextInput = forward.peek();
-					command.setText(nextInput);
-					command.end();
-				}
+			history.push(forward.pop());
+			if (forward.isEmpty()) {
+				command.clear();
+			} else {
+				nextInput = forward.peek();
+				command.setText(nextInput);
+				command.end();
 			}
+		}
 	}
 }
