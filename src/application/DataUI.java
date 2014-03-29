@@ -20,6 +20,7 @@ import java.util.Calendar;
  */
 public class DataUI {
 
+	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");	
 	
@@ -28,7 +29,7 @@ public class DataUI {
 	private ArrayList<EventDataUI> incompleteEvents;
 	private ArrayList<EventDataUI> completeEvents;
 	
-	private String feedback = null;
+	private String feedback = DEFAULT_FEEDBACK;
 	
 	/**
 	 * Constructor for DataUI

@@ -10,7 +10,7 @@
 <?import javafx.scene.text.*?>
 <?import np.com.ngopal.control.AutoFillTextBox.*?>
 
-<AnchorPane fx:id="anchor" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyPressed="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+<AnchorPane fx:id="anchor" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
   <!-- TODO Add Nodes -->
   <children>
     <Text fx:id="title" disable="false" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
@@ -24,7 +24,7 @@
       </font>
     </Text>
     <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="591.0" layoutY="385.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
-    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyPressed="#returnLastInput" onKeyReleased="#setResponseBasedOnCommand" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
+    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="342.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <Text fx:id="taskCounter" layoutX="565.0" layoutY="88.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks: 0" textAlignment="RIGHT">
       <font>

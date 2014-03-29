@@ -2,11 +2,7 @@ package application;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class Search {
@@ -21,8 +17,6 @@ public class Search {
 
 	private HashMap<String, Integer> reservedKeywords;
 	
-	private boolean state_error;
-	
 	private static Date today;
 	private static SimpleDateFormat fullDateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
@@ -34,34 +28,26 @@ public class Search {
 		today = new Date();
 		fullDateString.setLenient(false);
 		dateString.setLenient(false);
-		
-		state_error = false;
 	}
 	
 	public boolean executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
-
-		if(newCmd()) {			
-			if(!checkForArg(tokenizedInput)) {
-				noArgument(dataUI);
-				return false;
-			} else {
-				checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
-				RefreshUI.executeRefresh(fileLink, dataUI);
-				success = true;
-			}
+			
+		if(!checkForArg(tokenizedInput)) {
+			noArgument(dataUI);
+			return false;
 		} else {
 			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			success = true;
 		}
+		dataUI.setFeedback("Displaying results for \"" + tokenizedInput[1] + "\"");
 		return success;
 	}
 
 	private void noArgument(DataUI dataUI) {
 	  dataUI.setFeedback(FEEDBACK_SEARCH_PROMPT);
-	  state_error = true;
   }
 	
 	/**
@@ -751,13 +737,6 @@ public class Search {
 	  	return true;
 	  }
   }
-
-	private boolean newCmd() {
-	  if(state_error) {
-	  	return false;
-	  }
-	  return true;
-  }
 	
 	private void initKeywordTable() {
 		reservedKeywords.put("today", 1);
@@ -767,41 +746,5 @@ public class Search {
 		reservedKeywords.put("daily", 3);
 		reservedKeywords.put("weekly", 3);
 		reservedKeywords.put("yearly", 3);
-	}
-	
-	private static class SortPriority implements Comparator<TaskCard> {
-		public int compare(TaskCard o1, TaskCard o2) {
-			Integer i1 = (Integer) o1.getPriority();
-			Integer i2 = (Integer) o2.getPriority();
-			return i2.compareTo(i1);
-		}
-	}
-	
-	
-	private static String searchToday(FileLinker fileLink) {
-		ArrayList <TaskCard> incomplete = fileLink.getIncompleteTasks();
-		ArrayList <TaskCard> todayTasks = new ArrayList<TaskCard>();
-		Calendar today = GregorianCalendar.getInstance();
-		String dateForToday = dateString.format(today.getTime());
-		String finalOutput = dateForToday + "\n";
-		for (int i = 0; i < Storage.numberOfIncompleteTasks; i++) {
-			if (incomplete.get(i).getEndDay().after(today)) { //need to take repeating tasks into consideration
-				if (incomplete.get(i).getType() != "FT") { //don't display floating tasks
-					todayTasks.add(incomplete.get(i));
-				}
-			}
-		}
-		if (todayTasks.isEmpty()) {
-			finalOutput += "You have nothing for today!";
-		} else {
-			Collections.sort(todayTasks, new SortPriority());
-			for (int i = 0; i < todayTasks.size(); i++) {
-				if (i > 0) {
-					finalOutput += "\n";
-				}
-				finalOutput += todayTasks.get(i).getTaskString();
-			}
-		}
-		return finalOutput;
 	}
 }

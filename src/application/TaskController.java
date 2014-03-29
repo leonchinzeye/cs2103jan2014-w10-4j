@@ -226,6 +226,7 @@ public class TaskController {
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
+		command.requestFocus();
 		
 		/*
 		 * Retrieves the new information to be shown in the tables.
@@ -283,15 +284,39 @@ public class TaskController {
 	 * @author Omar Khalid
 	 */
 	@FXML
-	public void keystrokes(KeyEvent key) {
-		if (command.isFocused() && !key.isShiftDown()) {//if the user is in the middle of typing something
-			anchor.requestFocus();
-		} else {
-			focusTextInput(key);//check if the user wants to type something
+	public void keystrokes(KeyEvent key) {		
+		if (key.getCode().equals(KeyCode.ESCAPE)) {
+			commandHandle.executeCmd("");
+			backToMain();
 		}
+		focusTextInput(key);//check if the user wants to type something
 		scrollTable(key);
 		changePanel(key);//shortcuts to change between panels
 		changeTab(key);//shortcuts to change between tabs
+	}
+	
+	/**
+	 * Sets the view to default.
+	 * @author Omar Khalid
+	 */
+	private void backToMain() {
+	  tab.getSelectionModel().select(0);
+	  eventPaneIncomplete.setExpanded(true);
+	  setUI(ui);
+	  updateCounter();
+	  helpAnchor.setVisible(false);
+	  helpAnchor2.setVisible(false);
+	  notification.setText("Read me!");
+	  command.setPromptText("Feed me!");
+	  command.setMouseTransparent(false);
+	  command.setFocusTraversable(true);
+  }
+	
+	public void focusTextInput(KeyEvent key) {
+		if (key.getCode().equals(KeyCode.ENTER)) {
+			command.requestFocus();
+			command.end();
+		}
 	}
 	
 	/**
@@ -358,9 +383,8 @@ public class TaskController {
 	
 	/**
 	 * 1. Change the tab between only the Incomplete and Complete tabs with Ctrl+Tab.
-	 * 2. Go back to main page with Esc.
-	 * 3. Change to the Help page with Ctrl+H.
-	 * 4. Change between Help pages with Left and Right arrow keys.
+	 * 2. Change to the Help page with Ctrl+H.
+	 * 3. Change between Help pages with Left and Right arrow keys.
 	 * @param key
 	 * @author Omar Khalid
 	 */
@@ -368,16 +392,14 @@ public class TaskController {
 	public void changeTab(KeyEvent key) {
 		if (key.isControlDown() && key.getCode().equals(KeyCode.TAB)) {						//1
 			switchTabs();
-		} else if (key.getCode().equals(KeyCode.ESCAPE)) {												//2
-			backToMain();
-		} else if (key.isControlDown() && key.getCode().equals(KeyCode.H)) {			//3
+		} else if (key.isControlDown() && key.getCode().equals(KeyCode.H)) {			//2
 			tab.getSelectionModel().select(helpTab);
-		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {	//4
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {	//3
 			helpAnchor.setVisible(false);
 			helpAnchor2.setVisible(true);
 			notification.setText("Listed above are the accepted commands and their proper formats.");
 			command.setPromptText("Use the UP and DOWN arrow keys to scroll through your command history.");
-		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {	//4
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {	//3
 			helpAnchor.setVisible(true);
 			helpAnchor2.setVisible(false);
 			notification.setText("This will return responses to you based on your commands.");
@@ -397,18 +419,6 @@ public class TaskController {
 	  	helpAnchor.setVisible(false);
 	  	helpAnchor2.setVisible(false);
 	  }
-  }
-	
-	private void backToMain() {
-	  tab.getSelectionModel().select(0);
-	  setUI(ui);
-	  updateCounter();
-	  helpAnchor.setVisible(false);
-	  helpAnchor2.setVisible(false);
-	  notification.setText("Read me!");
-	  command.setPromptText("Feed me!");
-	  command.setMouseTransparent(false);
-	  command.setFocusTraversable(true);
   }
 	
 	@FXML
@@ -446,22 +456,11 @@ public class TaskController {
 	}
 	
 	@FXML
-	public void focusTextInput(KeyEvent key) {
-		if (key.getCode().equals(KeyCode.A) || 
-				key.getCode().equals(KeyCode.D) ||
-				key.getCode().equals(KeyCode.E) ||
-				key.getCode().equals(KeyCode.H) ||
-				key.getCode().equals(KeyCode.M) ||
-				key.getCode().equals(KeyCode.S) ||
-				key.getCode().equals(KeyCode.U) ||
-				key.getCode().equals(KeyCode.V) ||
-				key.getCode().equals(KeyCode.SPACE)) {
-			command.requestFocus();
-			command.end();
-		}
+	public void commandTextFieldKeystrokes (KeyEvent key) {
+		setResponseBasedOnCommand(key);
+		returnLastInput(key);
 	}
 	
-	@FXML
 	public void setResponseBasedOnCommand(KeyEvent key) {
 		if (command.getText().equals("add")) {
 			notification.setText("add <Name> due by <DD/MM> OR add <Name>; <DD/MM/YYYY> <HH:mm>");
@@ -494,7 +493,6 @@ public class TaskController {
 		}
 	}
 	
-	@FXML
 	public void returnLastInput(KeyEvent key) {
 		String lastInput = "";
 		String nextInput = "";
@@ -505,13 +503,15 @@ public class TaskController {
 				command.setText(lastInput);
 				command.end();
 				forward.push(lastInput);
+			} else {
+				command.clear();
 			}
 		} else if(key.getCode().equals(KeyCode.DOWN)) {
-			history.push(forward.pop());
 			if (forward.isEmpty()) {
 				command.clear();
 			} else {
-				nextInput = forward.peek();
+				nextInput = forward.pop();
+				history.push(nextInput);
 				command.setText(nextInput);
 				command.end();
 			}
