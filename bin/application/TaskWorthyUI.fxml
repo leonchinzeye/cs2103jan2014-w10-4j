@@ -18,7 +18,7 @@
         <Font name="Moire" size="40.0" />
       </font>
     </Text>
-    <Text layoutX="423.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Shift+H to access the Help guide">
+    <Text layoutX="428.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+H to access the Help guide">
       <font>
         <Font name="Moire" size="12.0" />
       </font>
@@ -189,7 +189,7 @@
         </Tab>
       </tabs>
     </TabPane>
-    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="true">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="421.0" layoutY="6.0" prefHeight="42.0" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="573.0" layoutY="62.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
@@ -202,7 +202,7 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="87.0" layoutY="13.0" prefHeight="42.0" prefWidth="323.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Shift+Left or Shift+Right to switch between the tabs." visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="167.0" layoutY="13.0" prefHeight="42.0" prefWidth="239.74609375" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab to switch between the tabs." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="70.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
@@ -291,7 +291,7 @@
         <Line id="endDateLine" endX="-155.0" endY="28.0" layoutX="580.0" layoutY="188.0" startX="-85.0" startY="-26.0" visible="true" />
         <Line id="endTimeLine" endX="-156.0" endY="28.0" layoutX="658.0" layoutY="187.0" startX="-86.0" startY="-25.0" visible="true" />
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="126.0" layoutY="201.0" prefHeight="34.999908447265625" prefWidth="378.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="true" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="4.0" layoutY="296.0" prefHeight="42.0" prefWidth="269.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Shift+Up or Shift+Down to show or hide it." visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="4.0" layoutY="296.0" prefHeight="42.0" prefWidth="269.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down to show or hide it." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="279.0" layoutY="329.0" rotate="90.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />

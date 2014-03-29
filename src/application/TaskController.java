@@ -1,7 +1,6 @@
 /*
  * Things to include:
  * autocomplete
- * help page
  * autofocus to edited table
  * 
  */
@@ -143,6 +142,7 @@ public class TaskController {
 		eventCounter = new Text("Events: 0");
 		taskCounter = new Text("Tasks: 0");
 		validPane = new Pane();
+		helpAnchor = new AnchorPane();
 	}
 	
 	@FXML
@@ -175,6 +175,11 @@ public class TaskController {
 		colEventEndDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
 		colEventEndTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
 		
+		validPane.setStyle("-fx-background-color: green;");
+		
+		/*
+		 * The lines below will set the task counter upon starting the program.
+		 */
 		dataUI = commandHandle.getDataUI();
 		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
@@ -189,31 +194,45 @@ public class TaskController {
 		incompleteTasks.removeAll(incompleteTasks);
 		completedEvents.removeAll(completedEvents);
 		completedTasks.removeAll(completedTasks);
-		
-		validPane.setStyle("-fx-background-color: green;");
 	}
 	
+	/**
+	 * The main method to take in input and send it to CommandHandler to execute
+	 * @author Omar Khalid
+	 */
 	@FXML
 	public void parseInput() {
 		String response = "";
 		String lastInput = "";
 			
 		lastInput = command.getText();
-		history.add(lastInput);
+		history.add(lastInput); //stores the last entered line to command history to be accessed by the up/down buttons.
 		
 		dataUI = commandHandle.executeCmd(lastInput);
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
 		
+		/*
+		 * The four lines below clears the table so that new information can be shown.
+		 */
 		incompleteEvents.removeAll(incompleteEvents);
 		incompleteTasks.removeAll(incompleteTasks);
 		completedEvents.removeAll(completedEvents);
 		completedTasks.removeAll(completedTasks);
+		
+		/*
+		 * Retrieves the new information to be shown in the tables.
+		 * Also updates the task counter accordingly.
+		 */
 		setUI(ui);
 		updateCounter();
 	}
 
+	/**
+	 * Updates the counter based on the tab currently shown.
+	 * @author Omar Khalid
+	 */
 	private void updateCounter() {
 	  if (tab.getSelectionModel().isSelected(0)) {
 			eventCounter.setText("Events: " + incompleteEvents.size());
@@ -224,6 +243,11 @@ public class TaskController {
 		}
   }
 	
+	/**
+	 * Retrieves the information to be shown in the tables.
+	 * @param ui
+	 * @author Omar Khalid
+	 */
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
@@ -238,20 +262,30 @@ public class TaskController {
 		taskTableComplete.setItems(completedTasks);
 	}
 	
+	/**
+	 * The default keyboard shortcuts that allow the user to switch between panels and tabs
+	 * as well as to change the focus to the text field without using the mouse.
+	 * @param key
+	 * @author Omar Khalid
+	 */
 	@FXML
 	public void keystrokes(KeyEvent key) {
-		if (command.isFocused()) {
+		if (command.isFocused()) {//if the user is in the middle of typing something
 			anchor.requestFocus();
 		} else {
-			focusTextInput(key);
+			focusTextInput(key);//check if the user wants to type something
 		}
-		changePanel(key);
-		changeTab(key);
+		changePanel(key);//shortcuts to change between panels
+		changeTab(key);//shortcuts to change between tabs
 	}
 	
+	/**
+	 * Change the panel to be expanded with Ctrl+UP or Ctrl+DOWN.
+	 * @param key
+	 */
 	@FXML
 	public void changePanel(KeyEvent key) {
-		if (key.isShiftDown() && (key.getCode().equals(KeyCode.UP) || key.getCode().equals(KeyCode.DOWN))) {
+		if (key.isControlDown() && (key.getCode().equals(KeyCode.UP) || key.getCode().equals(KeyCode.DOWN))) {
 			if (eventPaneIncomplete.isExpanded()) {
 				taskPaneIncomplete.setExpanded(true);
 				taskPaneComplete.setExpanded(true);
@@ -262,18 +296,26 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * 1. Change the tab between only the Incomplete and Complete tabs with Ctrl+Tab.
+	 * 2. Go back to main page with Esc.
+	 * 3. Change to the Help page with Ctrl+H.
+	 * 4. Change between Help pages with Left and Right arrow keys.
+	 * @param key
+	 * @author Omar Khalid
+	 */
 	@FXML
 	public void changeTab(KeyEvent key) {
-		if (key.isShiftDown() && (key.getCode().equals(KeyCode.RIGHT) || key.getCode().equals(KeyCode.LEFT))) {
+		if (key.isControlDown() && key.getCode().equals(KeyCode.TAB)) {						//1
 			switchTabs();
-		} else if (key.getCode().equals(KeyCode.ESCAPE)) {
+		} else if (key.getCode().equals(KeyCode.ESCAPE)) {												//2
 			backToMain();
-		} else if (key.isShiftDown() && key.getCode().equals(KeyCode.H)) {
+		} else if (key.isControlDown() && key.getCode().equals(KeyCode.H)) {			//3
 			tab.getSelectionModel().select(helpTab);
-		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {	//4
 			helpAnchor.setVisible(false);
 			helpAnchor2.setVisible(true);
-		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {
+		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {	//4
 			helpAnchor.setVisible(true);
 			helpAnchor2.setVisible(false);
 		}
@@ -311,6 +353,7 @@ public class TaskController {
 		taskCounter.setText("Tasks: " + incompleteTasks.size());
 		notification.setDisable(false);
 		command.setDisable(false);
+		helpAnchor.setVisible(false);
 	}
 	
 	@FXML
@@ -319,6 +362,7 @@ public class TaskController {
 		taskCounter.setText("Tasks: " + completedTasks.size());
 		notification.setDisable(false);
 		command.setDisable(false);
+		helpAnchor.setVisible(false);
 	}
 	
 	@FXML
