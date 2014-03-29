@@ -157,6 +157,8 @@ public class Delete {
 				TaskCard event = incEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				
+				undoHandler.storeUndo("delete", DELETE_INCOMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -182,6 +184,8 @@ public class Delete {
 				TaskCard task = compTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
+				
+				undoHandler.storeUndo("delete", DELETE_COMPLETE_TASK, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -207,6 +211,8 @@ public class Delete {
 				TaskCard event = compEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				
+				undoHandler.storeUndo("delete", DELETE_COMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {

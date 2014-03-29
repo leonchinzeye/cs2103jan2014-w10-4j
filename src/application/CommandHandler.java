@@ -75,9 +75,9 @@ public class CommandHandler {
 				markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case UNDO:
-				undoHandler.executeUndo(fileLink);
+				String response = undoHandler.executeUndo(fileLink);
 				RefreshUI.executeRefresh(fileLink, dataUI);
-				dataUI.setFeedback(null);
+				dataUI.setFeedback(response);
 				break;
 			case REDO:
 				undoHandler.executeRedo(fileLink);
