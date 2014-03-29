@@ -82,13 +82,19 @@ public class FileLinker {
 	 * method that add logic will call to update modified data to the file
 	 * @param arrayToBeUpdated
 	 */
-	public void addHandling(TaskCard taskToBeAdded) {
-		if (taskToBeAdded.getType().contains("E")) { //if it's an Event
-			incompleteEvents.add(taskToBeAdded);
-			callStorageWriteIncompleteEvents();
-		} else { //if it's a Task
+	public void addHandling(TaskCard taskToBeAdded, int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
 			incompleteTasks.add(taskToBeAdded);
 			callStorageWriteIncompleteTasks();
+		} else if(fileToBeDeletedFrom == 2) {
+			incompleteEvents.add(taskToBeAdded);
+			callStorageWriteIncompleteEvents();
+		} else if(fileToBeDeletedFrom == 3) {
+			completedTasks.add(taskToBeAdded);
+			callStorageWriteCompletedTasks();
+		} else {
+			completedEvents.add(taskToBeAdded);
+			callStorageWriteCompletedEvents();
 		}
 	}
 	

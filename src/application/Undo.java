@@ -132,17 +132,19 @@ public class Undo {
 	
 	private void redoAdd(FileLinker fileLink) {
 		TaskCard taskToBeRedone = redoTasksOld.get(indexOfLastCmdRedo); 
+		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
 		
-		fileLink.addHandling(taskToBeRedone);
+		fileLink.addHandling(taskToBeRedone, modifiedFile);
 		
 		pushRedoToUndo();
 	}
 
 	private void undoDelete(FileLinker fileLink) {
 	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
 	  
 	  //must consider deleting from completed tasks too
-	  fileLink.addHandling(taskToBeAddedBack);
+	  fileLink.addHandling(taskToBeAddedBack, modifiedFile);
 	  
 	  pushUndoToRedo();
   }
@@ -283,3 +285,4 @@ public class Undo {
 		}
 	}
 }
+
