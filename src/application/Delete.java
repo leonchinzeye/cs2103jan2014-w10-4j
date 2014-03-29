@@ -80,6 +80,7 @@ public class Delete {
 		
 		if(success) {
 			resetStates();
+			undoHandler.flushRedo();
 		}
 		return success;
 	}
