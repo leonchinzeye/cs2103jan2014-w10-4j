@@ -7,14 +7,11 @@
 
 package application;
 
-import java.awt.Scrollbar;
 import java.util.Stack;
 
-import np.com.ngopal.control.AutoFillTextBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
@@ -436,6 +433,7 @@ public class TaskController {
 	
 	@FXML
 	public void openHelpTab() {
+		anchor.requestFocus();
 		eventCounter.setText("Events: 0");
 		taskCounter.setText("Tasks: 0");
 		notification.setText("This will return responses to you based on your commands.");
@@ -452,6 +450,7 @@ public class TaskController {
 				key.getCode().equals(KeyCode.E) ||
 				key.getCode().equals(KeyCode.H) ||
 				key.getCode().equals(KeyCode.M) ||
+				key.getCode().equals(KeyCode.S) ||
 				key.getCode().equals(KeyCode.U) ||
 				key.getCode().equals(KeyCode.V) ||
 				key.getCode().equals(KeyCode.SPACE)) {
