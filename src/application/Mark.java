@@ -29,50 +29,30 @@ public class Mark {
 	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
-	private boolean state_inc_tasks;
-	private boolean state_inc_event;
-	private boolean state_comp_tasks;
-	private boolean state_comp_event;
-	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	
 	public Mark() {
 		initialiseCmdTable();
-		state_inc_tasks = false;
-		state_inc_event = false;
-		state_comp_tasks = false;
-		state_comp_event = false;
 	}
 	
-	public boolean executeMark(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
-		
-		if(newMarkCmd()) {
-			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
-			String cmd = tokenizedInput[FIRST_ARGUMENT];
+
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-			if(cmdTable.containsKey(cmd) != true) {
-				notRecognisableCmd(fileLink, dataUI);
-				return success = false;
-			} else {
-				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
-			}
-		} else if(state_inc_tasks == true) {
-			success = performIncTaskMark(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_tasks = false;
-			}
+		if(cmdTable.containsKey(cmd) != true) {
+			notRecognisableCmd(fileLink, dataUI);
 		} else {
-			success = performIncEventMark(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_event = false;
-			}
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
 		}
-		return success;
+		
+		if(success) {
+			undoHandler.flushRedo();
+		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput,
-			FileLinker fileLink, DataUI dataUI) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -88,73 +68,39 @@ public class Mark {
 		switch(cmdTable.get(cmd)) {
 			case MARK_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
-					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
-					state_inc_tasks = true;
-					
+					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);		
 					return success = false;
 				} else {
 					success = performIncTaskMark(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_inc_tasks = true;
-					} else {
-						state_inc_tasks = false;
-					}
 				}
 				break;
-				
 			case MARK_INCOMPLETE_EVENTS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
-					state_inc_event = true;
-					
 					return success = false;
 				} else {
 					success = performIncEventMark(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_inc_event = true;
-					} else {
-						state_inc_event = false;
-					}
 				}
 				break;
 			case MARK_COMPLETE_TASKS:
 				if(noIndexArgument == true) {
-					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
-					state_comp_tasks = true;
-					
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
 					return success = false;
 				} else {
 					success = performComTaskMark(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_comp_tasks = true;
-					} else {
-						state_comp_tasks = false;
-					}
 				}
 				break;
 			case MARK_COMPLETE_EVENTS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
-					state_comp_event = true;
-					
 					return success = false;
 				} else {
 					success = performComEventMark(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_comp_event = true;
-					} else {
-						state_comp_event = false;
-					}
 				}
 				break;
 			default:
 				break;
 		}
-		
 		return success;
 	}
 
@@ -165,7 +111,7 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex < 0 || markedIndex > incTasks.size()) {
+			if(markedIndex <= 0 || markedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incTasks.size()));
 				return success = false;
 			} else {
@@ -178,7 +124,6 @@ public class Mark {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
 			return success = false;
 		}
-		
 		return success;
 	}
 
@@ -190,8 +135,8 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex < 0 || markIndex > incEvent.size()) {
-				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, incEvent.size()));
+			if(markIndex <= 0 || markIndex > incEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incEvent.size()));
 				return success = false;
 			} else {
 				TaskCard eventToBeMarked = incEvent.get(markIndex - 1);
@@ -203,7 +148,6 @@ public class Mark {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
 			success = false;
 		}
-		
 		return success;
 	}
 	
@@ -214,7 +158,7 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex < 0 || markedIndex > comTasks.size()) {
+			if(markedIndex <= 0 || markedIndex > comTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comTasks.size()));
 				return success = false;
 			} else {
@@ -227,7 +171,6 @@ public class Mark {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, comTasks.size()));
 			return success = false;
 		}
-		
 		return success;
 	}
 
@@ -238,8 +181,8 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex < 0 || markIndex > comEvent.size()) {
-				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, comEvent.size()));
+			if(markIndex <= 0 || markIndex > comEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comEvent.size()));
 				return success = false;
 			} else {
 				TaskCard eventToBeMarked = comEvent.get(markIndex - 1);
@@ -251,7 +194,6 @@ public class Mark {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, comEvent.size()));
 			success = false;
 		}
-		
 		return success;
 	}
 	
@@ -259,19 +201,11 @@ public class Mark {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_MARK_COMMAND);
 	}
-
-	private boolean newMarkCmd() {
-		if(state_inc_tasks == false && state_inc_event == false
-				&& state_comp_tasks == false && state_comp_event == false) {
-			return true;
-		}
-		return false;
-	}
 	
 	private void initialiseCmdTable() {
-		cmdTable.put("/mt", MARK_INCOMPLETE_TASKS);
-		cmdTable.put("/me", MARK_INCOMPLETE_EVENTS);
-		cmdTable.put("/mut", MARK_COMPLETE_TASKS);
-		cmdTable.put("/mue", MARK_COMPLETE_EVENTS);
+		cmdTable.put("markt", MARK_INCOMPLETE_TASKS);
+		cmdTable.put("marke", MARK_INCOMPLETE_EVENTS);
+		cmdTable.put("unmarkt", MARK_COMPLETE_TASKS);
+		cmdTable.put("unmarke", MARK_COMPLETE_EVENTS);
 	}
 }

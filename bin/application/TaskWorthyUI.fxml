@@ -10,7 +10,7 @@
 <?import javafx.scene.text.*?>
 <?import np.com.ngopal.control.AutoFillTextBox.*?>
 
-<AnchorPane fx:id="anchor" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyPressed="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+<AnchorPane fx:id="anchor" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
   <!-- TODO Add Nodes -->
   <children>
     <Text fx:id="title" disable="false" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
@@ -24,7 +24,7 @@
       </font>
     </Text>
     <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="591.0" layoutY="385.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
-    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyPressed="#returnLastInput" onKeyReleased="#setResponseBasedOnCommand" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
+    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="342.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <Text fx:id="taskCounter" layoutX="565.0" layoutY="88.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks: 0" textAlignment="RIGHT">
       <font>
@@ -192,18 +192,7 @@
     </TabPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="421.0" layoutY="6.0" prefHeight="42.0" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="573.0" layoutY="62.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="167.0" layoutY="13.0" prefHeight="42.0" prefWidth="239.74609375" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab to switch between the tabs." visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="269.0" layoutY="6.0" prefHeight="48.3984375" prefWidth="365.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab OR &quot;view &lt;Tab name&gt;&quot; to switch between the tabs." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="70.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
@@ -292,7 +281,7 @@
         <Line id="endDateLine" endX="-155.0" endY="28.0" layoutX="580.0" layoutY="188.0" startX="-85.0" startY="-26.0" visible="true" />
         <Line id="endTimeLine" endX="-156.0" endY="28.0" layoutX="658.0" layoutY="187.0" startX="-86.0" startY="-25.0" visible="true" />
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="126.0" layoutY="201.0" prefHeight="34.999908447265625" prefWidth="378.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="true" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="91.0" layoutY="297.0" prefHeight="42.0" prefWidth="269.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down to show or hide it." visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="91.0" layoutY="289.0" prefHeight="54.0" prefWidth="265.263916015625" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down OR &#10;the command &quot;view &lt;Panel name&gt;&quot; to show it." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="86.0" layoutY="332.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
@@ -325,9 +314,20 @@
     </AnchorPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="201.0" layoutY="207.0" mouseTransparent="true" prefHeight="125.0" prefWidth="250.0" styleClass="TextArea" text="Accpetable Commands:&#10;&quot;add &lt;Name&gt; due by &lt;DD/MM&gt;&quot;&#10;&quot;add &lt;Name&gt;; &lt;DD/MM/YYYY&gt; &lt;HH:mm&gt;&quot;&#10;&quot;del &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;edit &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;mark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;unmark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;search &lt;Query OR Priority OR Date&gt;&quot;" visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="207.0" layoutY="205.0" mouseTransparent="true" prefHeight="134.0" prefWidth="250.0" styleClass="TextArea" text="&quot;add &lt;Name&gt; due by &lt;DD/MM&gt;&quot;&#10;&quot;add &lt;Name&gt;; &lt;DD/MM/YYYY&gt; &lt;HH:mm&gt;&quot;&#10;&quot;del &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;edit &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;mark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;unmark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;search &lt;Query OR Priority OR Date&gt;&quot;&#10;&quot;undo/redo&quot;&#10;&quot;view &lt;Tab/Panel&gt;&quot;" visible="true" wrapText="true" />
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="193.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="241.0" rotate="90.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="426.0" layoutY="3.0" prefHeight="43.0001220703125" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="595.0" layoutY="62.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />

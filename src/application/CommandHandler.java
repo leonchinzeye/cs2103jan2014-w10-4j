@@ -13,15 +13,6 @@ public class CommandHandler {
 	private static Edit editHandler;
 	private static Undo undoHandler;
 	
-	private static String quitToTop = "!q";
-	
-	private boolean state_add;
-	private boolean state_del;
-	private boolean state_edit;
-	private boolean state_mark;
-	private boolean state_ref;
-	private boolean state_search;
-	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
 	
@@ -41,8 +32,6 @@ public class CommandHandler {
 		dataUI = new DataUI();
 		
 		RefreshUI.executeRefresh(fileLink, dataUI);
-		
-		resetStates();
 	}
 	
 	/**
@@ -52,81 +41,8 @@ public class CommandHandler {
 	 * @return
 	 */
 	public DataUI executeCmd(String userInput) {
-		if(newCommand()) {
-			checkCmdAndPerform(userInput);
-		} else {
-			if(userInput.equals(quitToTop) == false) {
-				checkStatesAndPerform(userInput);
-			} else {
-				resetStates();
-				dataUI.setFeedback(null);
-			}
-		}
-		
+		checkCmdAndPerform(userInput);	
 		return dataUI;
-	}
-
-	/**
-	 * in calling this method, this means that the program is currently in one of the error
-	 * handling states. it checks for the state it is in and calls the affected handler
-	 * directly
-	 * @param userInput
-	 */
-	private void checkStatesAndPerform(String userInput) {
-		boolean success;
-		
-		if(state_add == true) {
-			fileLink.resetState();
-			success = addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
-			
-			if(success == true) {
-				state_add = false;
-			} else {
-				state_add = true;
-			}
-		} else if(state_del == true) {
-			success = deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
-			
-			if(success == true) {
-				state_del = false;
-			} else {
-				state_del = true;
-			}
-		} else if(state_mark == true) {
-			success = markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
-			
-			if(success == true) {
-				state_mark = false;
-			} else {
-				state_mark = true;
-			}
-		} else if(state_edit == true) {
-			success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
-			if(success) {
-				resetStates();
-			}
-			
-		} else if(state_ref == true) {
-			RefreshUI.executeRefresh(fileLink, dataUI);
-			
-		} else if(state_search == true) {
-			fileLink.resetState();
-			success = searchHandler.executeSearch(userInput, fileLink, dataUI);
-			
-			if(success) {
-				state_search = false;
-			} else {
-				state_search = true;
-			}
-		}
-	}
-
-	private boolean newCommand() {
-		if(state_add == false && state_del == false && state_mark == false && state_edit == false 
-				&& state_ref == false && state_search == false)
-			return true;
-		
-		return false;
 	}
 
 	private void checkCmdAndPerform(String userInput) {
@@ -140,38 +56,23 @@ public class CommandHandler {
 			case ADD:
 				fileLink.resetState();
 				success = addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
-				if(success == false) {
-					state_add = true;
-				}
 				break;
 			case DELETE:
-				success = deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
-				if(success == false) {
-					state_del = true;
-				}
+				deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case EDIT:
 				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
-				if(success==false)
-					state_edit = true;
-					break;
+				break;
 			case SEARCH:
 				fileLink.resetState();
 				success = searchHandler.executeSearch(userInput, fileLink, dataUI);
-				if(!success) {
-					state_search = true;
-				}
 				break;
 			case ENTER:
 				fileLink.resetState();
 				RefreshUI.executeRefresh(fileLink, dataUI);
-				resetStates();
 				break;
 			case MARK:
-				success = markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
-				if (success == false) {
-					state_mark = true;
-				}
+				markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case UNDO:
 				undoHandler.executeUndo(fileLink);
@@ -197,15 +98,15 @@ public class CommandHandler {
 	private COMMAND_TYPE determineCommandType(String commandTypeString) {
 		commandTypeString = commandTypeString.toLowerCase();
 		
-		if (commandTypeString.contains("/add")) {
+		if (commandTypeString.contains("add")) {
 			return COMMAND_TYPE.ADD;
-		} else if (commandTypeString.contains("/d")) {
+		} else if (commandTypeString.contains("del")) {
 			return COMMAND_TYPE.DELETE;
-		} else if (commandTypeString.contains("/e")) {
+		} else if (commandTypeString.contains("edit")) {
 		 	return COMMAND_TYPE.EDIT;
-		} else if (commandTypeString.contains("/s")) {
+		} else if (commandTypeString.contains("search")) {
 		 	return COMMAND_TYPE.SEARCH;
-		} else if (commandTypeString.contains("/m")) {
+		} else if (commandTypeString.contains("mark")) {
 		 	return COMMAND_TYPE.MARK;
 		} else if (commandTypeString.isEmpty()) {
 			return COMMAND_TYPE.ENTER;
@@ -213,20 +114,11 @@ public class CommandHandler {
 			return COMMAND_TYPE.UNDO;
 		} else if(commandTypeString.equals("redo")) {
 			return COMMAND_TYPE.REDO;
-		} else if (commandTypeString.contains("/x")) {
+		} else if (commandTypeString.contains("exit")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
 		}
-	}
-	
-	private void resetStates() {
-		state_add = false;
-		state_del = false;
-		state_mark = false;
-		state_edit = false;
-		state_ref = false;
-		state_search = false;
 	}
 	
 	public DataUI getDataUI() {
