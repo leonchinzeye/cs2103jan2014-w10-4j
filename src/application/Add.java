@@ -15,6 +15,9 @@ public class Add {
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 	
+	private static final int ADD_TO_TASKS_FILE = 1;
+	private static final int ADD_TO_EVENTS_FILE = 2;
+	
 	private static final int ADD_TASK = 1;
 	private static final int ADD_TIMED_TASK = 2;
 	private static final int ADD_FLOATING_TASK = 3;
@@ -61,16 +64,16 @@ public class Add {
 				notRecognisableCmd(fileLink, dataUI);
 				return success = true;
 			} else {
-				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
+				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
 			}
 		} else if(state_add_float_task) {
-			success = addFloatingTask(userInput, fileLink, dataUI);
+			success = addFloatingTask(userInput, fileLink, dataUI, undoHandler);
 			
 		} else if(state_add_timed_task) {
-			success = addTask(userInput, fileLink, dataUI);
+			success = addTask(userInput, fileLink, dataUI, undoHandler);
 			
 		} else if(state_add_event) {
-			success = addEvent(userInput, fileLink, dataUI);
+			success = addEvent(userInput, fileLink, dataUI, undoHandler);
 			
 		} else {
 			success = addRepeatingEvent(userInput, fileLink, dataUI);
@@ -79,12 +82,13 @@ public class Add {
 		
 		if(success) {
 			resetStates();
+			undoHandler.flushRedo();
 		}
 		return success;
 	}
 	
 	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink,
-			DataUI dataUI) {
+			DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String addInput = null;
@@ -105,7 +109,7 @@ public class Add {
 					state_add_timed_task = true;
 					return success = false;
 				} else {
-					success = addTask(addInput, fileLink, dataUI);
+					success = addTask(addInput, fileLink, dataUI, undoHandler);
 				}
 				break;
 			case ADD_FLOATING_TASK:
@@ -114,7 +118,7 @@ public class Add {
 					state_add_float_task = true;
 					return success = false;
 				} else {
-					success = addFloatingTask(addInput, fileLink, dataUI);
+					success = addFloatingTask(addInput, fileLink, dataUI, undoHandler);
 				}
 				break;
 			case ADD_EVENT:
@@ -123,7 +127,7 @@ public class Add {
 					state_add_event = true;
 					return success = false;
 				} else {
-					success = addEvent(addInput, fileLink, dataUI);
+					success = addEvent(addInput, fileLink, dataUI, undoHandler);
 				}
 				break;
 			case ADD_REPEATING_EVENT:
@@ -161,8 +165,9 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 * @param dataUI 
+	 * @param undoHandler 
 	 */
-	private boolean addTask(String argument, FileLinker fileLink, DataUI dataUI) {
+	private boolean addTask(String argument, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success;
 		
 		String[] argArray = argument.split(";");
@@ -177,9 +182,10 @@ public class Add {
 					&& setTaskDetails(argArray, taskToBeAdded, dataUI) == true
 					&& setStartDateAndTime(taskToBeAdded) == true) {
 				
-				fileLink.addHandling(taskToBeAdded);
+				fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS_FILE);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 				dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
+				undoHandler.storeUndo("add", ADD_TO_TASKS_FILE, taskToBeAdded, null);
 				state_add_timed_task = false;
 				success = true;
 			} else {
@@ -197,8 +203,9 @@ public class Add {
 	 * @param argument
 	 * @author Omar Khalid
 	 * @param dataUI 
+	 * @param undoHandler 
 	 */
-	private boolean addFloatingTask(String argument, FileLinker fileLink, DataUI dataUI) {
+	private boolean addFloatingTask(String argument, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 	
 		String argArray[] = argument.split(";");
@@ -214,9 +221,9 @@ public class Add {
 			setFloatingEnd(taskToBeAdded);
 			
 			dataUI.setFeedback(FEEDBACK_ADD_TASK_SUCCESS);
-			fileLink.addHandling(taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS_FILE);
 			RefreshUI.executeRefresh(fileLink, dataUI);
-			
+			undoHandler.storeUndo("add", ADD_TO_TASKS_FILE, taskToBeAdded, null);
 			state_add_float_task = false;
 			success = true;
 		}
@@ -234,8 +241,9 @@ public class Add {
 	 * @author Omar Khalid
 	 * @param fileLink 
 	 * @param dataUI 
+	 * @param undoHandler 
 	 */
-	private boolean addEvent(String argument, FileLinker fileLink, DataUI dataUI) {
+	private boolean addEvent(String argument, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		
 		String[] argArray = argument.split(";");
@@ -263,6 +271,9 @@ public class Add {
 			success = addTimedEvent(argArray, dateRange, taskToBeAdded, dataUI, fileLink);
 		}
 		
+		if(success) {
+			undoHandler.storeUndo("add", ADD_TO_EVENTS_FILE, taskToBeAdded, null);
+		}
 		return success;
 	}
 
@@ -282,7 +293,7 @@ public class Add {
 			setAllDayEnd(taskToBeAdded);
 			
 			dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
-			fileLink.addHandling(taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded, ADD_TO_EVENTS_FILE);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
 			state_add_event = false;
@@ -342,7 +353,7 @@ public class Add {
 			}
 			
 			dataUI.setFeedback(String.format(FEEDBACK_ADD_TASK_SUCCESS, argArray[0]));
-			fileLink.addHandling(taskToBeAdded);
+			fileLink.addHandling(taskToBeAdded, ADD_TO_EVENTS_FILE);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			
 			state_add_event = false;
