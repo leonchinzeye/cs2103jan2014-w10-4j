@@ -189,7 +189,7 @@
         </Tab>
       </tabs>
     </TabPane>
-    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="true">
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="421.0" layoutY="6.0" prefHeight="42.0" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="573.0" layoutY="62.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
