@@ -24,7 +24,7 @@
       </font>
     </Text>
     <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="591.0" layoutY="385.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
-    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyPressed="#returnLastInput" onKeyTyped="#setResponseBasedOnCommand" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
+    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyPressed="#returnLastInput" onKeyReleased="#setResponseBasedOnCommand" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="342.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <Text fx:id="taskCounter" layoutX="565.0" layoutY="88.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks: 0" textAlignment="RIGHT">
       <font>
@@ -40,7 +40,7 @@
               <children>
                 <Accordion fx:id="incompleteAccordion" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
                   <expandedPane>
-                    <TitledPane fx:id="eventPaneIncomplete" animated="false" mouseTransparent="true" onKeyPressed="#changePanel" text="Events">
+                    <TitledPane fx:id="eventPaneIncomplete" animated="false" focusTraversable="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Events">
                       <content>
                         <AnchorPane id="Content" fx:id="incompleteEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -62,7 +62,7 @@
                   </expandedPane>
                   <panes>
                     <fx:reference source="eventPaneIncomplete" />
-                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneIncomplete" animated="false" graphicTextGap="4.0" mouseTransparent="true" onKeyPressed="#changePanel" text="Tasks">
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneIncomplete" animated="false" graphicTextGap="4.0" mouseTransparent="false" onKeyPressed="#changePanel" text="Tasks">
                       <content>
                         <AnchorPane id="Content" fx:id="incompleteTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -91,7 +91,7 @@
               <children>
                 <Accordion id="event" fx:id="completeAccordion" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
                   <expandedPane>
-                    <TitledPane id="eventPaneIncomplete" fx:id="eventPaneComplete" animated="false" mouseTransparent="true" onKeyPressed="#changePanel" text="Events">
+                    <TitledPane id="eventPaneIncomplete" fx:id="eventPaneComplete" animated="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Events">
                       <content>
                         <AnchorPane id="Content" fx:id="completeEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -113,7 +113,7 @@
                   </expandedPane>
                   <panes>
                     <fx:reference source="eventPaneComplete" />
-                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneComplete" animated="false" mouseTransparent="true" onKeyPressed="#changePanel" text="Tasks">
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneComplete" animated="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Tasks">
                       <content>
                         <AnchorPane id="Content" fx:id="completeTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>

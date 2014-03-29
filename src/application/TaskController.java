@@ -7,13 +7,16 @@
 
 package application;
 
+import java.awt.Scrollbar;
 import java.util.Stack;
 
 import np.com.ngopal.control.AutoFillTextBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -36,6 +39,10 @@ public class TaskController {
 	private AnchorPane helpAnchor2;
 	@FXML
 	private TabPane tab;
+	@FXML
+	private Tab incompleteTab;
+	@FXML
+	private Tab completeTab;
 	@FXML
 	private Tab helpTab;
 	@FXML
@@ -204,22 +211,24 @@ public class TaskController {
 	public void parseInput() {
 		String response = "";
 		String lastInput = "";
-			
+		
+		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
 		history.add(lastInput); //stores the last entered line to command history to be accessed by the up/down buttons.
 		
+		if (lastInput.equals("help")) {
+			tab.getSelectionModel().select(helpTab);
+		} else if (lastInput.equalsIgnoreCase("view incomplete")) {
+			tab.getSelectionModel().select(incompleteTab);
+		} else if (lastInput.equalsIgnoreCase("view completed")) {
+			tab.getSelectionModel().select(completeTab);
+		}
+		anchor.requestFocus();
+			
 		dataUI = commandHandle.executeCmd(lastInput);
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
-		
-		/*
-		 * The four lines below clears the table so that new information can be shown.
-		 */
-		incompleteEvents.removeAll(incompleteEvents);
-		incompleteTasks.removeAll(incompleteTasks);
-		completedEvents.removeAll(completedEvents);
-		completedTasks.removeAll(completedTasks);
 		
 		/*
 		 * Retrieves the new information to be shown in the tables.
@@ -251,6 +260,14 @@ public class TaskController {
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
+		/*
+		 * The four lines below clears the table so that new information can be shown.
+		 */
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		completedEvents.removeAll(completedEvents);
+		completedTasks.removeAll(completedTasks);
+		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
 		eventTableIncomplete.setItems(incompleteEvents);
@@ -270,13 +287,59 @@ public class TaskController {
 	 */
 	@FXML
 	public void keystrokes(KeyEvent key) {
-		if (command.isFocused()) {//if the user is in the middle of typing something
+		if (command.isFocused() && !key.isShiftDown()) {//if the user is in the middle of typing something
 			anchor.requestFocus();
 		} else {
 			focusTextInput(key);//check if the user wants to type something
 		}
+		scrollTable(key);
 		changePanel(key);//shortcuts to change between panels
 		changeTab(key);//shortcuts to change between tabs
+	}
+	
+	/**
+	 * Scrolls the currently shown table up or down.
+	 * @param key
+	 * @author Omar Khalid
+	 */
+	public void scrollTable(KeyEvent key) {
+		if (key.isControlDown() && key.getCode().equals(KeyCode.PERIOD)) {
+			if (tab.getSelectionModel().isSelected(0)) {
+				if (eventPaneIncomplete.isExpanded()) {
+					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() + 0.5);
+				} else {
+					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() + 0.5);
+				}
+			} else if (tab.getSelectionModel().isSelected(1)) {
+				if (eventPaneComplete.isExpanded()) {
+					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() + 0.5);
+				} else {
+					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() + 0.5);
+				}
+			}
+		} else if (key.isControlDown() && key.getCode().equals(KeyCode.COMMA)) {
+			if (tab.getSelectionModel().isSelected(0)) {
+				if (eventPaneIncomplete.isExpanded()) {
+					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() - 0.5);
+				} else {
+					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() - 0.5);
+				}
+			} else if (tab.getSelectionModel().isSelected(1)) {
+				if (eventPaneComplete.isExpanded()) {
+					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() - 0.5);
+				} else {
+					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
+					bar.setValue(bar.getValue() - 0.5);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -331,11 +394,11 @@ public class TaskController {
 	  command.setMouseTransparent(false);
 	  command.setFocusTraversable(true);
 	  if (!tab.getSelectionModel().isSelected(0)) {
-	  	tab.getSelectionModel().select(0);
+	  	tab.getSelectionModel().select(incompleteTab);
 	  	helpAnchor.setVisible(false);
 	  	helpAnchor2.setVisible(false);
 	  } else if (!tab.getSelectionModel().isSelected(1)){
-	  	tab.getSelectionModel().select(1);
+	  	tab.getSelectionModel().select(completeTab);
 	  	helpAnchor.setVisible(false);
 	  	helpAnchor2.setVisible(false);
 	  }
@@ -343,6 +406,8 @@ public class TaskController {
 	
 	private void backToMain() {
 	  tab.getSelectionModel().select(0);
+	  setUI(ui);
+	  updateCounter();
 	  helpAnchor.setVisible(false);
 	  helpAnchor2.setVisible(false);
 	  notification.setText("Read me!");
@@ -385,9 +450,10 @@ public class TaskController {
 		if (key.getCode().equals(KeyCode.A) || 
 				key.getCode().equals(KeyCode.D) ||
 				key.getCode().equals(KeyCode.E) ||
+				key.getCode().equals(KeyCode.H) ||
 				key.getCode().equals(KeyCode.M) ||
 				key.getCode().equals(KeyCode.U) ||
-				key.getCode().equals(KeyCode.R) ||
+				key.getCode().equals(KeyCode.V) ||
 				key.getCode().equals(KeyCode.SPACE)) {
 			command.requestFocus();
 			command.end();
@@ -405,6 +471,8 @@ public class TaskController {
 		} else if (command.getText().equals("edit")) {
 			notification.setText("edit <t/e><Integer>; <Attribute>: <Edited entry>");
 			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("help")) {
+			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("mark")) {
 			notification.setText("mark <t/e><Integer>");
 			validPane.setStyle("-fx-background-color: green;");
@@ -413,6 +481,9 @@ public class TaskController {
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("search")) {
 			notification.setText("search <Query OR Priority OR Date>");
+			validPane.setStyle("-fx-background-color: green;");
+		} else if (command.getText().equals("view")) {
+			notification.setText("view <Incomplete OR Completed>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("")) {
 			validPane.setStyle("-fx-background-color: green;");
