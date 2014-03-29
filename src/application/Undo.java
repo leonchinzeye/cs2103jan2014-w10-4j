@@ -189,6 +189,12 @@ public class Undo {
 	  redoTasksNew.add(undoTasksNew.get(indexOfLastCmdUndo));
 	  redoCmdType.add(undoCmdType.get(indexOfLastCmdUndo));
 	  redoFileToBeModified.add(undoFileToBeModified.get(indexOfLastCmdUndo));
+	  
+	  undoTasksOld.remove(indexOfLastCmdUndo);
+	  undoTasksNew.remove(indexOfLastCmdUndo);
+	  undoCmdType.remove(indexOfLastCmdUndo);
+	  undoFileToBeModified.remove(indexOfLastCmdUndo);
+	  
 	  indexOfLastCmdUndo--;
 	  indexOfLastCmdRedo++;
 	}
@@ -198,6 +204,12 @@ public class Undo {
 	  undoTasksNew.add(redoTasksNew.get(indexOfLastCmdRedo));
 	  undoCmdType.add(redoCmdType.get(indexOfLastCmdRedo));
 	  undoFileToBeModified.add(redoFileToBeModified.get(indexOfLastCmdRedo));
+	  
+	  redoTasksOld.remove(indexOfLastCmdRedo);
+	  redoTasksNew.remove(indexOfLastCmdRedo);
+	  redoCmdType.remove(indexOfLastCmdRedo);
+	  redoFileToBeModified.remove(indexOfLastCmdRedo);
+	  
 	  indexOfLastCmdRedo--;
 	  indexOfLastCmdUndo++;
 	}
@@ -236,7 +248,7 @@ public class Undo {
 
 	public void flushRedo() {
 		redoCmdType = new ArrayList<String>();
-		undoFileToBeModified = new ArrayList<Integer>();
+		redoFileToBeModified = new ArrayList<Integer>();
 		redoTasksOld = new ArrayList<TaskCard>();
 		redoTasksNew = new ArrayList<TaskCard>();
 		indexOfLastCmdRedo = -1;
