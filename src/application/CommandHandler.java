@@ -178,10 +178,12 @@ public class CommandHandler {
 			case UNDO:
 				undoHandler.executeUndo(fileLink);
 				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback(null);
 				break;
 			case REDO:
 				undoHandler.executeRedo(fileLink);
 				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback(null);
 				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
