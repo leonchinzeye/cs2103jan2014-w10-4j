@@ -108,6 +108,7 @@ public class CommandHandler {
 			
 		} else if(state_ref == true) {
 			RefreshUI.executeRefresh(fileLink, dataUI);
+			
 		} else if(state_search == true) {
 			fileLink.resetState();
 			success = searchHandler.executeSearch(userInput, fileLink, dataUI);
