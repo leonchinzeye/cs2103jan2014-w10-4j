@@ -15,16 +15,15 @@ public class Edit {
 	
 	private static final int EDIT_INCOMPLETE_TASKS = 1;
 	private static final int EDIT_INCOMPLETE_EVENTS = 2;
-	private static final int EDIT_COMPLETE_TASK = 3;
-	private static final int EDIT_COMPLETE_EVENTS = 4;
 	
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
+	private static final int THIRD_ARGUMENT = 2;
 	
-	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an incomplete task to edit! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an incomplete event to edit! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You didn't specify an complete task to edit! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You didn't specify an complete event to edit! Please enter an ID to edit!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an task to edit! Please enter an ID to edit!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an event to edit! Please enter an ID to edit!";
+	private static final String FEEDBACK_PENDING_EVENT_ATTRIBUTES = "You didn't specify anything to edit for event %s!";
+	private static final String FEEDBACK_PENDING_TASK_ATTRIBUTES = "You didn't specify anything to edit for task %s!";
 	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been edited!";
 	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been edited!";
 	private static final String FEEDBACK_EDITION_RANGE = "Please enter a valid number between 1 to %d!";
@@ -37,35 +36,11 @@ public class Edit {
 	private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-	private String[] parameterToEnter;
-	
-	//state to check if the command is of known format  
-	private boolean state_inc_tasks;
-	private boolean state_inc_event;
-	private boolean state_comp_tasks;
-	private boolean state_comp_event;
-	
-	//states for second layer of checks 
-	private boolean state_input_inc_tasks;
-	private boolean state_input_inc_event;
-	private boolean state_input_comp_tasks;
-	private boolean state_input_comp_event;
+	private String[] parameterToEdit;
 	
 	public Edit() {
 		initialiseCmdTable();
-		
-		userEnteredID = null;
-		
-		state_inc_tasks = false;
-		state_inc_event = false;
-		state_comp_tasks = false;
-		state_comp_event = false;
-		
-		state_input_inc_tasks = false;
-		state_input_inc_event = false;
-		state_input_comp_tasks = false;
-		state_input_comp_event = false;
-		
+		userEnteredID = null;		
 		dateAndTimeFormat.setLenient(false);
 		dateFormat.setLenient(false);
 		timeFormat.setLenient(false);
@@ -84,286 +59,131 @@ public class Edit {
 	 * the return type will signal to commandhandler whether the edit was successful
 	 * or that there was an error involved
 	 */
-	
-	public boolean checkBeforeExecuteEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
-		if(newEditCmd()) {
-			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
-			String cmd = tokenizedInput[FIRST_ARGUMENT];
+
+		String[] tokenizedInput = userInput.trim().split("\\s+", 3);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-			if(cmdTable.containsKey(cmd) != true) {
-				notRecognisableCmd(fileLink, dataUI);
-				return success = true;
-			} else {
-				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
-			}
-		} else if(state_inc_tasks == true) {
-			success = checkAndGetIncTaskID(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_tasks = false;
-				state_input_inc_tasks = true;
-				return success = false;
-			}
-		} else if(state_inc_event == true) {
-			success = checkAndGetIncEventID(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_inc_event = false;
-				state_input_inc_event = true;
-				return success = false;
-			}
-		} else if(state_comp_tasks == true) {
-			success = checkAndGetCompTaskID(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_comp_tasks = false;
-				state_input_comp_tasks = true;
-				return success = false;	
-			}
-			
-		} else if(state_comp_event) {
-			success = checkAndGetCompEventID(userInput, fileLink, dataUI);
-			if(success == true) {
-				state_comp_event = false;
-				state_input_comp_event = true;
-				return success = false;
-			}
-		} else if(state_input_inc_tasks) {
-			success = checkIncTaskInputAndPerform(userInput, fileLink, dataUI);
-			if(success) {
-				resetStates();
-				state_input_inc_tasks = false;
-			}
+		if(cmdTable.containsKey(cmd) != true) {
+			notRecognisableCmd(fileLink, dataUI);
+		} else {
+			success = identifyCmdAndPerform(cmd, tokenizedInput, fileLink, dataUI);
 		}
 		
-		else if(state_input_inc_event) {
-			success = checkIncEventInputAndPerform(userInput, fileLink, dataUI);
-			if(success) {
-				resetStates();
-				state_input_inc_event = false;
-			}
+		if(success) {
+			undoHandler.flushRedo();
 		}
-		
-		else if(state_input_comp_tasks) {
-			success = checkCompTaskInputAndPerform(userInput, fileLink, dataUI);
-			if(success) {
-				resetStates();
-				state_input_comp_tasks = false;
-			}
-		}
-		
-		else if(state_input_comp_event) {
-			success = checkCompEventInputAndPerform(userInput, fileLink, dataUI);
-			if(success) {
-				resetStates();
-				state_input_comp_event = false;
-			}
-		}
-		/*
-		 * implement the other 4 else if for the 2nd layer states
-		 * these will call the 4 extra functions that you will implement to perform the specific edits
-		 */
-		return success;
 	}
 	
-	//the actual editing
-	
-	
-	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput,
-			FileLinker fileLink, DataUI dataUI) {
+	private boolean identifyCmdAndPerform(String cmd, String[] tokenizedInput, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
 		boolean noIndexArgument = false;
+		boolean noAttributesArgument = false;
+		boolean noIndexOrAttributesArgument = false;
 		String userIndex = null;
+		String attributesToEdit = null;
+		int size = 0;
 		
-		if(tokenizedInput.length < 2) {
-			noIndexArgument = true;
-		} else {
-			userIndex = tokenizedInput[SECOND_ARGUMENT];
+		if (cmd.equals("editt")) {
+			ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
+			size = incTasks.size();
+		} else if (cmd.equals("edite")) {
+			ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
+			size = incEvents.size();
 		}
 		
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
+		if (tokenizedInput.length < 2) {
+			noIndexOrAttributesArgument = true; //if there's no index in the argument
+		} else if (tokenizedInput.length < 3) {
+			userIndex = tokenizedInput[1];
+			try {
+				Integer.parseInt(tokenizedInput[1]);
+			} catch(NumberFormatException ex) {
+				noIndexArgument = true;
+			}
+			noAttributesArgument = true; //if there's no specified attribute in the argument
+		} else {
+			userIndex = tokenizedInput[SECOND_ARGUMENT];
+			attributesToEdit = tokenizedInput[THIRD_ARGUMENT];
+		}
 		
 		switch(cmdTable.get(cmd)) {
 			case EDIT_INCOMPLETE_TASKS:
-				if(noIndexArgument == true) {
+				if (noIndexArgument == true) {
+					dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));
+					return success = false;
+				} else if (noIndexOrAttributesArgument) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
-					state_inc_tasks = true;
-					
+					return success = false;
+				} else if (noAttributesArgument) {
+					dataUI.setFeedback(String.format(FEEDBACK_PENDING_TASK_ATTRIBUTES, userIndex));
 					return success = false;
 				} else {
-					success = checkAndGetIncTaskID(userIndex, fileLink, dataUI);
-					
-					if(success) {
-						state_input_inc_tasks = true;
-						state_inc_tasks = false;
-						return false;
-					} else {
-						state_inc_tasks = true;
-						success = false;
-					}
+					success = checkAndGetIncTaskID(userIndex, attributesToEdit, fileLink, dataUI);
 				}
 				break;
 			case EDIT_INCOMPLETE_EVENTS:
-				if(noIndexArgument == true) {
+				if (noIndexArgument == true) {
+					dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));
+					return success = false;
+				} else if (noIndexOrAttributesArgument) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
-					state_inc_event = true;
-					
+					return success = false;
+				} else if (noAttributesArgument) {
+					dataUI.setFeedback(String.format(FEEDBACK_PENDING_EVENT_ATTRIBUTES, userIndex));
 					return success = false;
 				} else {
-					success = checkAndGetIncEventID(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_inc_event = true;
-					} else {
-						state_inc_event = false;
-					}
-				}
-				break;
-			case EDIT_COMPLETE_TASK:
-				if(noIndexArgument == true) {
-					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
-					state_comp_tasks = true;
-					
-					return success = false;
-				} else {
-					success = checkAndGetCompTaskID(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_comp_tasks = true;
-					} else {
-						state_comp_tasks = false;
-					}
-				}
-				break;
-			case EDIT_COMPLETE_EVENTS:
-				if(noIndexArgument == true) {
-					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
-					state_comp_event = true;
-					
-					return success = false;
-				} else {
-					success = checkAndGetCompEventID(userIndex, fileLink, dataUI);
-					
-					if(success == false) {
-						state_comp_event = true;
-					} else {
-						state_comp_event = false;
-					}
+					success = checkAndGetIncEventID(userIndex, attributesToEdit, fileLink, dataUI);
 				}
 				break;
 			default:
 				break;
 		}
-		
 		return success;
 	}
 	
-	/**
-	 * should name it checkAndGetIncTaskID
-	 * @param userIndex
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private boolean checkAndGetIncTaskID(String userIndex, FileLinker fileLink, DataUI dataUI) {
+	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI) {
 		boolean success = true;
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
 		
 		try {
 			int editIndex = Integer.parseInt(userIndex);
 			
-			if(editIndex < 0 || editIndex > incTasks.size()) {
+			if(editIndex <= 0 || editIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incTasks.size()));
 				return success = false;
 			} else {
 				TaskCard task = incTasks.get(editIndex - 1);
-				
-				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
 				userEnteredID = editIndex;
-				success = true;
+				success = performIncTaskEdit(task, attributesToEdit, fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
 			return success = false;
 		}
-		
 		return success;
 	}
 	
-	private boolean checkAndGetIncEventID(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
+	private boolean checkAndGetIncEventID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI) {
 		boolean success = true;
 		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
 		
 		try {
 			int editIndex = Integer.parseInt(userIndex);
 			
-			if(editIndex < 0 || editIndex > incEvent.size()) {
+			if(editIndex <= 0 || editIndex > incEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incEvent.size()));
 				return success = false;
 			} else {
 				TaskCard event = incEvent.get(editIndex - 1);
-				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", event.getName()));
 				userEnteredID = editIndex;
-				//fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_EVENTS);
-				//RefreshUI.executeRefresh(fileLink, dataUI);
+				performIncEventEdit(event, attributesToEdit, fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
 			success = false;
-		}
-		
-		return success;
-	}
-	
-	private boolean checkAndGetCompTaskID(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
-		boolean success = true;
-		ArrayList<TaskCard> compTasks = fileLink.getIncompleteTasks();
-		
-		try {
-			int editIndex = Integer.parseInt(userIndex);
-			
-			if(editIndex < 0 || editIndex > compTasks.size()) {
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, compTasks.size()));
-				return success = false;
-			} else {
-				TaskCard task = compTasks.get(editIndex - 1);
-				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", task.getName()));
-				userEnteredID = editIndex;
-				//fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_TASKS);
-				//RefreshUI.executeRefresh(fileLink, dataUI);
-			}
-		} catch(NumberFormatException ex) {
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compTasks.size()));
-			return success = false;
-		}
-		
-		return success;
-	}
-	
-	private boolean checkAndGetCompEventID(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
-		boolean success = true;
-		ArrayList<TaskCard> compEvent = fileLink.getIncompleteEvents();
-		
-		try {
-			int editIndex = Integer.parseInt(userIndex);
-			
-			if(editIndex < 0 || editIndex > compEvent.size()) {
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, compEvent.size()));
-				return success = false;
-			} else {
-				TaskCard event = compEvent.get(editIndex - 1);
-				dataUI.setFeedback(String.format("Please list the parameters you would like to change for %s task based on the column headers", event.getName()));
-				userEnteredID = editIndex;
-				//fileLink.deleteHandling(editIndex - 1, EDIT_INCOMPLETE_EVENTS);
-				//RefreshUI.executeRefresh(fileLink, dataUI);
-			}
-		} catch(NumberFormatException ex) {
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compEvent.size()));
-			success = false;
-		}
-		
+		}		
 		return success;
 	}
 	
@@ -376,10 +196,8 @@ public class Edit {
 	 * @param fileLink 
 	 * @return
 	 */
-	private boolean checkIncTaskInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
+	private boolean performIncTaskEdit(TaskCard origTask, String attributes, FileLinker fileLink, DataUI dataUI) {
 		boolean success = true;
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
-		TaskCard origTask = incTask.get(userEnteredID - 1);
 		TaskCard replacementTask = new TaskCard();
 		
 		replacementTask.setStartDay(origTask.getStartDay());
@@ -387,59 +205,65 @@ public class Edit {
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeEndDate = false;
+		boolean changeEndTime = false;
 		
 		boolean isDateAndTime = false;
 		boolean isDate = false;
 		boolean isTime = false;
 		
-		String[] tokenizedInput = userInput.split(";");
+		String[] tokenizedAttributes = attributes.split(";");
 		
 		/*
 		 * first step is to check if all the parameters make sense
 		 */
 		
-		for(int i = 0; i < tokenizedInput.length; i++) {
-			if(!(tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
-				
-				return success = false;
-			} else if(tokenizedInput[i].contains("Name")) {
+		for(int i = 0; i < tokenizedAttributes.length; i++) {
+			if (tokenizedAttributes[i].contains("Name: ")) {
 				changeName = true;
-			} else if(tokenizedInput[i].contains("Priority")) {
+			}
+			if (tokenizedAttributes[i].contains("Priority: ")) {
 				changePriority = true;
-			} else if(tokenizedInput[i].contains("EndDate")) {
+			}
+			if (tokenizedAttributes[i].contains("End Date: ")) {
 				changeEndDate = true;
+			}
+			if (tokenizedAttributes[i].contains("End Time: ")) {
+				changeEndTime = true;
+			}
+			if (!changeName && !changePriority && !changeEndDate && !changeEndTime) {
+				return success = false;
 			}
 		}
 		
-		/*
-		 * second step is to pull out the details that he did not want to edit and put them in
-		 * helper functions would be good for abstraction
-		 */
 		if(changeName == false) {
 			replacementTask.setName(origTask.getName());
-		} 
+		}
 		
 		if (changePriority == false) {
 			replacementTask.setPriority(origTask.getPriority());
 			
-		}  
+		}
 		
+		/*
+		 * Need to correct this one.
+		 */
 		if(changeEndDate == false) {
 			replacementTask.setEndDay(origTask.getEndDay());
 			replacementTask.setType(origTask.getType());
 		}
 		
-		
 		/*
-		 * 3rd step would be to put the new details that he wanted to edit
-		 * again helper functions would be good 
+		 * Need to correct this one too.
 		 */
+		if(changeEndTime == false) {
+			replacementTask.setEndDay(origTask.getEndDay());
+			replacementTask.setType(origTask.getType());
+		}
 		
 		/*
 		 * identifying formatting
 		 * 1) split based on (";")
-		 * 2) idenfity length of the string[];
+		 * 2) identify length of the string[];
 		 * 3) for loop with i running from 0 to length of string[]
 		 * 		- get string[i]
 		 * 		- split based on ":"
@@ -449,31 +273,31 @@ public class Edit {
 		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
 		 */
 		
-		for(int i = 0; i < tokenizedInput.length; i++) {
+		for(int i = 0; i < tokenizedAttributes.length; i++) {
+			parameterToEdit = tokenizedAttributes[i].split(":", 2);
 			
-			parameterToEnter = tokenizedInput[i].split(":", 2);
-			
-			if(parameterToEnter.length != 2) {
-				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
-			} else if(parameterToEnter[0].contains("Name")){
-				replacementTask.setName(parameterToEnter[1].trim());
-			} else if(parameterToEnter[0].contains("Priority")) {
+			if (parameterToEdit.length != 2) {
+				dataUI.setFeedback(String.format("You seem to have left %s blank!", parameterToEdit[0]));
+			} else if (parameterToEdit[0].equalsIgnoreCase("Name")){
+				replacementTask.setName(parameterToEdit[1].trim());
+			} else if (parameterToEdit[0].equalsIgnoreCase("Priority")) {
 				//check the String if LOW then set to 1, MED etc.
-				if(parameterToEnter[1].equals("LOW")) {
+				if (parameterToEdit[1].trim().equalsIgnoreCase("low")) {
 					replacementTask.setPriority(1);
-				} else if(parameterToEnter[1].equals("MED")) {
+				} else if (parameterToEdit[1].trim().equalsIgnoreCase("med")) {
 					replacementTask.setPriority(2);
-				} else if(parameterToEnter[1].equals("HIGH")) {
+				} else if (parameterToEdit[1].trim().equalsIgnoreCase("high")) {
 					replacementTask.setPriority(3);
 				} else {
 					dataUI.setFeedback("You've entered an invalid priority level :(");
 					return false;
 				}
-			} else if(parameterToEnter[0].contains("EndDate")) {
-				String endDateEntry = parameterToEnter[1].trim();
-				
+			} else if(parameterToEdit[0].equalsIgnoreCase("End Date")) {
+				/*
+				 * Need to fix this whole section, and need to add End Time editing below
+				 */
+				String endDateEntry = parameterToEdit[1].trim();				
 				//check if time changes (reserved keywords: nth, empty, nothing) 
-				
 				try {
 					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
 					Calendar cal = Calendar.getInstance();
@@ -522,23 +346,22 @@ public class Edit {
 	/**
 	 * Function for editing incomplete Events
 	 * 
-	 * @param userInput
+	 * @param attributes
 	 * @param fileLink
 	 * @param dataUI
 	 * @return
 	 */
 	
-	private boolean checkIncEventInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
+	private boolean performIncEventEdit(TaskCard origEvent, String attributes, FileLinker fileLink, DataUI dataUI) {
 		boolean success = false;
-		TaskCard event = new TaskCard();
 		TaskCard replacementEvent = new TaskCard();
-		String[] tokenizedInput;
-		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
+		
 		boolean changeName = false;
 		boolean changePriority = false;
-		boolean changeEndDate = false;
 		boolean changeStartDate = false;
-		boolean changeFrequency = false;
+		boolean changeStartTime = false;
+		boolean changeEndDate = false;
+		boolean changeEndTime = false;
 		
 		boolean isDateAndTime = false;
 		boolean isDate = false;
@@ -547,35 +370,32 @@ public class Edit {
 		/*
 		 * first step is to check if all the parameters make sense
 		 */
+		String[] tokenizedInput = attributes.split(";");
 		
-		tokenizedInput = userInput.split(";");
-		
-		for(int i = 0; i<tokenizedInput.length; i++) {
-			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-				
-				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
+		for (int i = 0; i < tokenizedInput.length; i++) {
+			if (!(tokenizedInput[i].contains("Name: ") && tokenizedInput[i].equals("Priority: ") &&
+					tokenizedInput[i].equals("Start Date: ") &&	tokenizedInput[i].contains("Start Time: ") && 
+					tokenizedInput[i].contains("End Date: ") && tokenizedInput[i].contains("End Time: "))) {
 				return success = false;
-			}
-			
-			else if(tokenizedInput[i].contains("Name")) {
-				changeName = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Priority")) {
-				changePriority = true;
-			}
-			
-			
-			else if(tokenizedInput[i].contains("EndDate")) {
-				changeEndDate = true;
-			}
-			
-			else if(tokenizedInput[i].contains("StartDate")) {
-				changeStartDate = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Frequency")) {
-				changeFrequency = true;
+			} else {
+				if (tokenizedInput[i].contains("Name: ")) {
+					changeName = true;
+				}
+				if (tokenizedInput[i].contains("Priority: ")) {
+					changePriority = true;
+				}
+				if (tokenizedInput[i].contains("Start Date: ")) {
+					changeStartDate = true;
+				}
+				if (tokenizedInput[i].contains("Start Time: ")) {
+					changeStartTime = true;
+				}
+				if (tokenizedInput[i].contains("End Date: ")) {
+					changeEndDate = true;
+				} 
+				if (tokenizedInput[i].contains("End Time: ")) {
+					changeEndTime = true;
+				}
 			}
 		}
 		
@@ -583,36 +403,20 @@ public class Edit {
 		 * second step is to pull out the details that he did not want to edit and put them in
 		 * helper functions would be good for abstraction
 		 */
-		event = incEvent.get(userEnteredID);
 		if(changeName == false) {
-			replacementEvent.setName(event.getName());
+			replacementEvent.setName(origEvent.getName());
+		} else if (changePriority == false) {
+			replacementEvent.setPriority(origEvent.getPriority());
+		} else if (changeEndDate == false) {
+			replacementEvent.setEndDay(origEvent.getEndDay());
+		} else if (changeStartDate == false) {
+			replacementEvent.setStartDay(origEvent.getStartDay());
 		}
-		
-		else if (changePriority == false) {
-			replacementEvent.setPriority(event.getPriority());
-		}
-		
-		else if (changeEndDate == false) {
-			replacementEvent.setEndDay(event.getEndDay());
-		}
-		
-		else if (changeStartDate == false) {
-			replacementEvent.setStartDay(event.getStartDay());
-		}
-		
-		else if (changeFrequency == false) {
-			replacementEvent.setFrequency(event.getFrequency());
-		}
-		
-		/*
-		 * 3rd step would be to put the new details that he wanted to edit
-		 * again helper functions would be good 
-		 */
 		
 		/*
 		 * identifying formatting
 		 * 1) split based on (";")
-		 * 2) idenfity length of the string[];
+		 * 2) identify length of the string[];
 		 * 3) for loop with i running from 0 to length of string[]
 		 * 		- get string[i]
 		 * 		- split based on ":"
@@ -621,31 +425,29 @@ public class Edit {
 		 * 4) if success, perform edit
 		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
 		 */
+		String[] tokensForAttributes = tokenizedInput;
 		
-		String[] tokensForEditing = tokenizedInput;
-		
-		for(int i=0; i<tokensForEditing.length; i++) {
+		for (int i = 0; i < tokensForAttributes.length; i++) {
+			parameterToEdit = tokensForAttributes[i].split(":", 2);
 			
-			parameterToEnter = tokensForEditing[i].split(":", 2);
-			
-			if(parameterToEnter.length != 2) {
-				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
-			} else if(parameterToEnter[0].contains("Name")){
-				replacementEvent.setName(parameterToEnter[1]);
-			} else if(parameterToEnter[0].contains("Priority")) {
+			if (parameterToEdit.length != 2) {
+				dataUI.setFeedback(String.format("You seem to have left %s blank!", parameterToEdit[0]));
+			} else if (parameterToEdit[0].equalsIgnoreCase("Name")){
+				replacementEvent.setName(parameterToEdit[1].trim());
+			} else if (parameterToEdit[0].equalsIgnoreCase("Priority")) {
 				//check the String if LOW then set to 1, MED etc.
-				if(parameterToEnter[1].equals("LOW"))
+				if (parameterToEdit[1].trim().equalsIgnoreCase("low")) {
 					replacementEvent.setPriority(1);
-				else if(parameterToEnter[1].equals("MED"))
+				}	else if (parameterToEdit[1].trim().equalsIgnoreCase("med")) {
 					replacementEvent.setPriority(2);
-				else if(parameterToEnter[1].equals("HIGH"))
+				} else if (parameterToEdit[1].trim().equalsIgnoreCase("high")) {
 					replacementEvent.setPriority(3);
-			} else if(parameterToEnter[0].contains("Frequency")) {
-				//check if the String is 
-				replacementEvent.setFrequency(parameterToEnter[1]);;
-			} else if(parameterToEnter[0].contains("EndDate")) {
-				
-				String endDateEntry = parameterToEnter[1].trim();
+				}
+				/*
+				 * Need to settle edit for Start Date, Start Time, End Date, and End Time below.
+				 */
+			} else if (parameterToEdit[0].equalsIgnoreCase("Start Date")) {
+				String endDateEntry = parameterToEdit[1].trim();
 				
 				try {
 					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
@@ -654,7 +456,7 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isDateAndTime = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					//may be date or time format only
 				}
 				
@@ -665,7 +467,7 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isDate = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					
 				}
 				
@@ -676,17 +478,15 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isTime = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					
 				}
 				
-				if((isDateAndTime && isTime && isDate) == false) {
+				if ((isDateAndTime && isTime && isDate) == false) {
 					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				}
-				
-			} else if(parameterToEnter[0].contains("StartDate")) {
-				
-				String startDateEntry = parameterToEnter[1].trim();
+				}		
+			} else if (parameterToEdit[0].contains("End Date")) {
+				String startDateEntry = parameterToEdit[1].trim();
 				
 				try {
 					Date changeDate = dateAndTimeFormat.parse(startDateEntry);
@@ -695,7 +495,7 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isDateAndTime = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					//may be date or time format only
 				}
 				
@@ -706,7 +506,7 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isDate = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					
 				}
 				
@@ -717,419 +517,28 @@ public class Edit {
 					replacementEvent.setEndDay(cal);
 					isTime = true;
 					continue;
-				} catch(ParseException e) {
+				} catch (ParseException e) {
 					
 				}
 				
-				if((isDateAndTime && isTime && isDate) == false) {
+				if ((isDateAndTime && isTime && isDate) == false) {
 					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				}
-				
 			}
-			
-			
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);
-		fileLink.editHandling(event, userEnteredID, 2);
+		fileLink.editHandling(origEvent, userEnteredID, 2);
 		return success;
 	}
-	
-	/**
-	 * Complete task edit
-	 * @param userInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	
-	private boolean checkCompTaskInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		TaskCard task = new TaskCard();
-		TaskCard replacementTask = new TaskCard();
-		String[] tokenizedInput;
-		ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
-		boolean changeName = false;
-		boolean changePriority = false;
-		boolean changeEndDate = false;
-		
-		boolean isDateAndTime = false;
-		boolean isDate = false;
-		boolean isTime = false;
-		
-		/*
-		 * first step is to check if all the parameters make sense
-		 */
-		
-		tokenizedInput = userInput.split(";");
-		
-		for(int i = 0; i<tokenizedInput.length; i++) {
-			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-				
-				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
-				return success = false;
-			}
-			
-			else if(tokenizedInput[i].contains("Name")) {
-				changeName = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Priority")) {
-				changePriority = true;
-			}
-			
-			
-			else if(tokenizedInput[i].contains("EndDate")) {
-				changeEndDate = true;
-			}
-		}
-		
-		/*
-		 * second step is to pull out the details that he did not want to edit and put them in
-		 * helper functions would be good for abstraction
-		 */
-		task = compTask.get(userEnteredID);
-		if(changeName == false) {
-			replacementTask.setName(task.getName());
-		}
-		
-		else if (changePriority == false) {
-			replacementTask.setPriority(task.getPriority());
-		}
-		
-		else if (changeEndDate == false) {
-			replacementTask.setEndDay(task.getEndDay());
-		}
-		
-		
-		/*
-		 * 3rd step would be to put the new details that he wanted to edit
-		 * again helper functions would be good 
-		 */
-		
-		/*
-		 * identifying formatting
-		 * 1) split based on (";")
-		 * 2) idenfity length of the string[];
-		 * 3) for loop with i running from 0 to length of string[]
-		 * 		- get string[i]
-		 * 		- split based on ":"
-		 * 		- if the array != 2 means error
-		 * 		- if the fields that he type don't make sense, just throw error message eg dataUI.setfeedback(blah blah)
-		 * 4) if success, perform edit
-		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
-		 */
-		
-		String[] tokensForEditing = tokenizedInput;
-		
-		for(int i=0; i<tokensForEditing.length; i++) {
-			
-			parameterToEnter = tokensForEditing[i].split(":", 2);
-			
-			if(parameterToEnter.length != 2) {
-				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
-			} else if(parameterToEnter[0].contains("Name")){
-				replacementTask.setName(parameterToEnter[1]);
-			} else if(parameterToEnter[0].contains("Priority")) {
-				//check the String if LOW then set to 1, MED etc.
-				if(parameterToEnter[1].equals("LOW"))
-					replacementTask.setPriority(1);
-				else if(parameterToEnter[1].equals("MED"))
-					replacementTask.setPriority(2);
-				else if(parameterToEnter[1].equals("HIGH"))
-					replacementTask.setPriority(3);
-			} else if(parameterToEnter[0].contains("EndDate")) {
-				
-				String endDateEntry = parameterToEnter[1].trim();
-				
-				try {
-					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementTask.setEndDay(cal);
-					isDateAndTime = true;
-					continue;
-				} catch(ParseException e) {
-					//may be date or time format only
-				}
-				
-				try {
-					Date changeDate = dateFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementTask.setEndDay(cal);
-					isDate = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				try {
-					Date changeDate = timeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementTask.setEndDay(cal);
-					isTime = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				if((isDateAndTime && isTime && isDate) == false) {
-					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				}
-				
-			} 
-			
-		}
-		
-		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);
-		fileLink.editHandling(task, userEnteredID, 3);
-		return success;
-	}
-	
-	/**
-	 * Complete Event Edit
-	 * 
-	 * @param userInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	
-	private boolean checkCompEventInputAndPerform(String userInput, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
-		TaskCard event = new TaskCard();
-		TaskCard replacementEvent = new TaskCard();
-		String[] tokenizedInput;
-		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
-		boolean changeName = false;
-		boolean changePriority = false;
-		boolean changeEndDate = false;
-		boolean changeStartDate = false;
-		boolean changeFrequency = false;
-		
-		boolean isDateAndTime = false;
-		boolean isDate = false;
-		boolean isTime = false;
-		
-		/*
-		 * first step is to check if all the parameters make sense
-		 */
-		
-		tokenizedInput = userInput.split(";");
-		
-		for(int i = 0; i<tokenizedInput.length; i++) {
-			if((tokenizedInput[i].contains("Name") || tokenizedInput[i].equals("Priority") || tokenizedInput[i].equals("EndDate"))) {
-				
-				dataUI.setFeedback("TaskWorthy could not understand the format entered :(");
-				return success = false;
-			}
-			
-			else if(tokenizedInput[i].contains("Name")) {
-				changeName = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Priority")) {
-				changePriority = true;
-			}
-			
-			
-			else if(tokenizedInput[i].contains("EndDate")) {
-				changeEndDate = true;
-			}
-			
-			else if(tokenizedInput[i].contains("StartDate")) {
-				changeStartDate = true;
-			}
-			
-			else if(tokenizedInput[i].contains("Frequency")) {
-				changeFrequency = true;
-			}
-		}
-		
-		/*
-		 * second step is to pull out the details that he did not want to edit and put them in
-		 * helper functions would be good for abstraction
-		 */
-		event = compEvent.get(userEnteredID);
-		if(changeName == false) {
-			replacementEvent.setName(event.getName());
-		}
-		
-		else if (changePriority == false) {
-			replacementEvent.setPriority(event.getPriority());
-		}
-		
-		else if (changeEndDate == false) {
-			replacementEvent.setEndDay(event.getEndDay());
-		}
-		
-		else if (changeStartDate == false) {
-			replacementEvent.setStartDay(event.getStartDay());
-		}
-		
-		else if (changeFrequency == false) {
-			replacementEvent.setFrequency(event.getFrequency());
-		}
-		
-		/*
-		 * 3rd step would be to put the new details that he wanted to edit
-		 * again helper functions would be good 
-		 */
-		
-		/*
-		 * identifying formatting
-		 * 1) split based on (";")
-		 * 2) idenfity length of the string[];
-		 * 3) for loop with i running from 0 to length of string[]
-		 * 		- get string[i]
-		 * 		- split based on ":"
-		 * 		- if the array != 2 means error
-		 * 		- if the fields that he type don't make sense, just throw error message eg dataUI.setfeedback(blah blah)
-		 * 4) if success, perform edit
-		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
-		 */
-		
-		String[] tokensForEditing = tokenizedInput;
-		
-		for(int i=0; i<tokensForEditing.length; i++) {
-			
-			parameterToEnter = tokensForEditing[i].split(":", 2);
-			
-			if(parameterToEnter.length != 2) {
-				dataUI.setFeedback("TaskWorthy seems to not have found any change to the field entered :(");
-			} else if(parameterToEnter[0].contains("Name")){
-				replacementEvent.setName(parameterToEnter[1]);
-			} else if(parameterToEnter[0].contains("Priority")) {
-				//check the String if LOW then set to 1, MED etc.
-				if(parameterToEnter[1].equals("LOW"))
-					replacementEvent.setPriority(1);
-				else if(parameterToEnter[1].equals("MED"))
-					replacementEvent.setPriority(2);
-				else if(parameterToEnter[1].equals("HIGH"))
-					replacementEvent.setPriority(3);
-			} else if(parameterToEnter[0].contains("Frequency")) {
-				//check if the String is 
-				replacementEvent.setFrequency(parameterToEnter[1]);;
-			} else if(parameterToEnter[0].contains("EndDate")) {
-				
-				String endDateEntry = parameterToEnter[1].trim();
-				
-				try {
-					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isDateAndTime = true;
-					continue;
-				} catch(ParseException e) {
-					//may be date or time format only
-				}
-				
-				try {
-					Date changeDate = dateFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isDate = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				try {
-					Date changeDate = timeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isTime = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				if((isDateAndTime && isTime && isDate) == false) {
-					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				}
-				
-			} else if(parameterToEnter[0].contains("StartDate")) {
-				
-				String startDateEntry = parameterToEnter[1].trim();
-				
-				try {
-					Date changeDate = dateAndTimeFormat.parse(startDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setStartDay(cal);
-					isDateAndTime = true;
-					continue;
-				} catch(ParseException e) {
-					//may be date or time format only
-				}
-				
-				try {
-					Date changeDate = dateFormat.parse(startDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setStartDay(cal);
-					isDate = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				try {
-					Date changeDate = timeFormat.parse(startDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setStartDay(cal);
-					isTime = true;
-					continue;
-				} catch(ParseException e) {
-					
-				}
-				
-				if((isDateAndTime && isTime && isDate) == false) {
-					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				}
-				
-			}
-			
-			
-		}
-		
-		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);
-		fileLink.editHandling(event, userEnteredID, 4);
-		return success;
-	}
-	
 	
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND);
 	}
 	
-	private boolean newEditCmd() {
-		if(state_inc_tasks == false && state_inc_event == false
-				&& state_comp_tasks == false && state_comp_event == false && state_input_inc_tasks == false
-				&& state_input_inc_event == false && state_input_comp_tasks == false && state_input_comp_event == false) {
-			return true;
-		}
-		return false;
-	}
-	
-	private void resetStates() {
-		state_inc_tasks = false;
-		state_inc_event = false;
-		state_comp_tasks = false;
-		state_comp_event = false;
-	}
-	
 	private void initialiseCmdTable() {
-		cmdTable.put("/et", EDIT_INCOMPLETE_TASKS);
-		cmdTable.put("/ee", EDIT_INCOMPLETE_EVENTS);
-		cmdTable.put("/etc", EDIT_COMPLETE_TASK);
-		cmdTable.put("/eec", EDIT_COMPLETE_EVENTS);
+		cmdTable.put("editt", EDIT_INCOMPLETE_TASKS);
+		cmdTable.put("edite", EDIT_INCOMPLETE_EVENTS);
 	}
 }

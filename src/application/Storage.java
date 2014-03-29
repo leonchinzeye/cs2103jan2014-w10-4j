@@ -108,7 +108,7 @@ public class Storage {
 			buffWrite.newLine();
 			
 			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
-					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getFrequency() + " " + task.getPriority();
+					" " + dateString.format(task.getEndDay().getTime()) + " " + " " + task.getPriority();
 			
 			buffWrite.write(detailsToBeWritten);
 			buffWrite.newLine();
@@ -131,8 +131,7 @@ public class Storage {
 		}
 	}
 
-	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,
-			TaskCard task) {
+	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,	TaskCard task) {
 		
 		task.setName(taskDetails.get(0));
 		
@@ -164,9 +163,7 @@ public class Storage {
 		
 		task.setStartDay(startDay);
 		task.setEndDay(endDay);
-		
-		task.setFrequency(restOfDetails[5]);
-		task.setPriority(Integer.parseInt(restOfDetails[6]));
+		task.setPriority(Integer.parseInt(restOfDetails[5]));
 	}
 
 	private static void createEmptyFile(String fileStorageName) {

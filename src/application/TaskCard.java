@@ -10,19 +10,16 @@ public class TaskCard {
 	private String name;
 	/*
 	 * task types: T and FT
-	 * event types: E, RE, AE
-	 * frequency types: D, M, Y
+	 * event types: E
 	 */
 	private String type;
 	private int priority = 0;
-	private String frequency = "";
 	private Calendar startDay = new GregorianCalendar();
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
 	
 	public TaskCard(){
-		
 	}
 
 	public String getName() {
@@ -39,14 +36,6 @@ public class TaskCard {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getFrequency() {
-		return frequency;
-	}
-
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
 	}
 
 	public int getPriority() {
@@ -86,15 +75,9 @@ public class TaskCard {
 			taskString += name + ", " + dateString.format(startDay.getTime()); 
 		} else {
 			taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
-			if (!frequency.equals("N")) {
-				taskString += " " + frequency;
-			}
 		}
-				
 		
 		return taskString;
 	}
-
-
 }
 
