@@ -157,6 +157,7 @@
                                 <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Time" />
                               </columns>
                             </TableView>
+                            <ScrollBar layoutX="597.0" layoutY="29.0" orientation="VERTICAL" prefHeight="157.19921875" />
                           </children>
                         </AnchorPane>
                       </content>
@@ -291,8 +292,8 @@
         <Line id="endDateLine" endX="-155.0" endY="28.0" layoutX="580.0" layoutY="188.0" startX="-85.0" startY="-26.0" visible="true" />
         <Line id="endTimeLine" endX="-156.0" endY="28.0" layoutX="658.0" layoutY="187.0" startX="-86.0" startY="-25.0" visible="true" />
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="126.0" layoutY="201.0" prefHeight="34.999908447265625" prefWidth="378.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="true" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="4.0" layoutY="296.0" prefHeight="42.0" prefWidth="269.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down to show or hide it." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="279.0" layoutY="329.0" rotate="90.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="91.0" layoutY="297.0" prefHeight="42.0" prefWidth="269.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down to show or hide it." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="86.0" layoutY="332.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -325,6 +326,17 @@
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="201.0" layoutY="207.0" mouseTransparent="true" prefHeight="125.0" prefWidth="250.0" styleClass="TextArea" text="Accpetable Commands:&#10;&quot;add &lt;Name&gt; due by &lt;DD/MM&gt;&quot;&#10;&quot;add &lt;Name&gt;; &lt;DD/MM/YYYY&gt; &lt;HH:mm&gt;&quot;&#10;&quot;del &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;edit &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;mark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;unmark &lt;t/e&gt;&lt;Digit&gt;&quot;&#10;&quot;search &lt;Query OR Priority OR Date&gt;&quot;" visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="193.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="241.0" rotate="90.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
         <Text font="$x3" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
         <Text font="$x3" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>

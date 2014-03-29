@@ -84,42 +84,29 @@ public class FileLinker {
 	 */
 	public void addHandling(TaskCard taskToBeAdded, int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
+			if(state_search) {
+				searchIncTasks.add(taskToBeAdded);
+			}
 			incompleteTasks.add(taskToBeAdded);
 			callStorageWriteIncompleteTasks();
 		} else if(fileToBeDeletedFrom == 2) {
+			if(state_search) {
+				searchIncEvents.add(taskToBeAdded);
+			}
 			incompleteEvents.add(taskToBeAdded);
 			callStorageWriteIncompleteEvents();
 		} else if(fileToBeDeletedFrom == 3) {
+			if(state_search) {
+				searchCompTasks.add(taskToBeAdded);
+			}
 			completedTasks.add(taskToBeAdded);
 			callStorageWriteCompletedTasks();
 		} else {
+			if(state_search) {
+				searchCompEvents.add(taskToBeAdded);
+			}
 			completedEvents.add(taskToBeAdded);
 			callStorageWriteCompletedEvents();
-		}
-	}
-	
-	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
-			int fileToBeDeletedFrom) {
-		if(fileToBeDeletedFrom == 1) {
-			completedTasks.add(taskToBeMarked);
-			callStorageWriteIncompleteTasks();
-			
-			deleteHandling(taskNumberToBeDeleted, 2);
-		} else if(fileToBeDeletedFrom == 2) {
-			completedEvents.add(taskToBeMarked);
-			callStorageWriteCompletedEvents();
-			
-			deleteHandling(taskNumberToBeDeleted, 1);
-		} else if(fileToBeDeletedFrom == 3) {
-			incompleteTasks.add(taskToBeMarked);
-			callStorageWriteIncompleteTasks();
-			
-			deleteHandling(taskNumberToBeDeleted, 3);
-		} else {
-			incompleteEvents.add(taskToBeMarked);
-			callStorageWriteIncompleteEvents();
-			
-			deleteHandling(taskNumberToBeDeleted, 4);
 		}
 	}
 	
@@ -166,7 +153,7 @@ public class FileLinker {
 			callStorageWriteCompletedEvents();
 		}
 	
-	return true;
+		return true;
 	}
 
 	public boolean deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
@@ -210,6 +197,54 @@ public class FileLinker {
 		return true;
 	}
 	
+	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
+			int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
+			if(state_search) {
+				searchCompTasks.add(taskToBeMarked);
+				compTasksIndex.add(completedTasks.size());
+			} 
+			
+			completedTasks.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 1);
+			
+			callStorageWriteCompletedTasks();
+			
+		} else if(fileToBeDeletedFrom == 2) {
+			if(state_search) {
+				searchCompEvents.add(taskToBeMarked);
+				compEventsIndex.add(completedEvents.size());
+			}
+			
+			completedEvents.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 2);
+			
+			callStorageWriteCompletedEvents();
+			
+		} else if(fileToBeDeletedFrom == 3) {
+			if(state_search) {
+				searchIncTasks.add(taskToBeMarked);
+				incTasksIndex.add(incompleteTasks.size());
+			}
+			
+			incompleteTasks.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 3);
+			
+			callStorageWriteIncompleteTasks();
+		
+		} else {
+			if(state_search) {
+				searchIncEvents.add(taskToBeMarked);
+				incEventsIndex.add(incompleteEvents.size());
+			}
+			
+			incompleteEvents.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 4);
+			
+			callStorageWriteIncompleteEvents();
+		}
+	}
+
 	public boolean searchHandling(ArrayList<Integer> incTasksList, ArrayList<Integer> incEventsList,
 			ArrayList<Integer> compTasksList, ArrayList<Integer> compEventsList) {
 		state_search = true;
