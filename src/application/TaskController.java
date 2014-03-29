@@ -386,8 +386,6 @@ public class TaskController {
 	}
 
 	private void switchTabs() {
-	  notification.setText("Read me!");
-	  command.setPromptText("Feed me!");
 	  command.setMouseTransparent(false);
 	  command.setFocusTraversable(true);
 	  if (!tab.getSelectionModel().isSelected(0)) {
@@ -415,6 +413,8 @@ public class TaskController {
 	
 	@FXML
 	public void openIncompleteTab() {
+		notification.setText("Read me!");
+	  command.setPromptText("Feed me!");
 		eventCounter.setText("Events: " + incompleteEvents.size());
 		taskCounter.setText("Tasks: " + incompleteTasks.size());
 		notification.setDisable(false);
@@ -424,6 +424,8 @@ public class TaskController {
 	
 	@FXML
 	public void openCompleteTab() {
+		notification.setText("Read me!");
+	  command.setPromptText("Feed me!");
 		eventCounter.setText("Events: " + completedEvents.size());
 		taskCounter.setText("Tasks: " + completedTasks.size());
 		notification.setDisable(false);
