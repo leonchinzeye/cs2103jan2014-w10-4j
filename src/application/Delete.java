@@ -28,17 +28,8 @@ public class Delete {
 	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	
-	private boolean state_inc_tasks;
-	private boolean state_inc_event;
-	private boolean state_comp_tasks;
-	private boolean state_comp_event;
-	
 	public Delete() {
 		initialiseCmdTable();
-		state_inc_tasks = false;
-		state_inc_event = false;
-		state_comp_tasks = false;
-		state_comp_event = false;
 	}
 
 	/**
@@ -55,34 +46,21 @@ public class Delete {
 	 * the return type will signal to commandhandler whether the delete was successful
 	 * or that there was an error involved
 	 */
-	public boolean executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
-		
-		if(newDeleteCmd()) {
-			String[] tokenizedInput = userInput.trim().split("\\s+", 2);
-			String cmd = tokenizedInput[FIRST_ARGUMENT];
+
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-			if(cmdTable.containsKey(cmd) != true) {
-				notRecognisableCmd(fileLink, dataUI);
-				return success = true;
-			} else {
-				success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
-			}
-		} else if(state_inc_tasks == true) {
-			success = performIncTaskDelete(userInput, fileLink, dataUI, undoHandler);	
-		} else if(state_inc_event == true) {
-			success = performIncEventDelete(userInput, fileLink, dataUI, undoHandler);
-		} else if(state_comp_tasks == true) {
-			success = performCompTaskDelete(userInput, fileLink, dataUI, undoHandler);
+		if(cmdTable.containsKey(cmd) != true) {
+			notRecognisableCmd(fileLink, dataUI);
 		} else {
-			success = performCompEventDelete(userInput, fileLink, dataUI, undoHandler);
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
 		}
 		
 		if(success) {
-			resetStates();
 			undoHandler.flushRedo();
 		}
-		return success;
 	}
 	
 	private boolean identifyCmdAndPerform(String[] tokenizedInput,
@@ -103,71 +81,38 @@ public class Delete {
 			case DELETE_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
-					state_inc_tasks = true;
-					
 					return success = false;
 				} else {
 					success = performIncTaskDelete(userIndex, fileLink, dataUI, undoHandler);
-						
-					if(success == false) {
-						state_inc_tasks = true;
-					} else {
-						state_inc_tasks = false;
-					}
 				}
 				break;
 			case DELETE_INCOMPLETE_EVENTS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
-					state_inc_event = true;
-					
 					return success = false;
 				} else {
 					success = performIncEventDelete(userIndex, fileLink, dataUI, undoHandler);
-					
-					if(success == false) {
-						state_inc_event = true;
-					} else {
-						state_inc_event = false;
-					}
 				}
 				break;
 			case DELETE_COMPLETE_TASK:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
-					state_comp_tasks = true;
-					
 					return success = false;
 				} else {
 					success = performCompTaskDelete(userIndex, fileLink, dataUI, undoHandler);
-						
-					if(success == false) {
-						state_comp_tasks = true;
-					} else {
-						state_comp_tasks = false;
-					}
 				}
 				break;
 			case DELETE_COMPLETE_EVENTS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
-					state_comp_event = true;
-					
 					return success = false;
 				} else {
 					success = performCompEventDelete(userIndex, fileLink, dataUI, undoHandler);
-					
-					if(success == false) {
-						state_comp_event = true;
-					} else {
-						state_comp_event = false;
-					}
 				}
 				break;
 			default:
 				break;
 		}
-		
 		return success;
 	}
 
@@ -178,7 +123,7 @@ public class Delete {
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
 			
-			if(deletedIndex < 0 || deletedIndex > incTasks.size()) {
+			if(deletedIndex <= 0 || deletedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incTasks.size()));
 				return success = false;
 			} else {
@@ -212,6 +157,8 @@ public class Delete {
 				TaskCard event = incEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				
+				undoHandler.storeUndo("delete", DELETE_INCOMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -237,6 +184,8 @@ public class Delete {
 				TaskCard task = compTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
+				
+				undoHandler.storeUndo("delete", DELETE_COMPLETE_TASK, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -262,6 +211,8 @@ public class Delete {
 				TaskCard event = compEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				
+				undoHandler.storeUndo("delete", DELETE_COMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -276,26 +227,11 @@ public class Delete {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
 	}
-
-	private boolean newDeleteCmd() {
-		if(state_inc_tasks == false && state_inc_event == false
-				&& state_comp_tasks == false && state_comp_event == false) {
-			return true;
-		}
-		return false;
-	}
-
-	private void resetStates() {
-		state_inc_tasks = false;
-		state_inc_event = false;
-		state_comp_tasks = false;
-		state_comp_event = false;
-	}
 	
 	private void initialiseCmdTable() {
-		cmdTable.put("/dt", DELETE_INCOMPLETE_TASKS);
-		cmdTable.put("/de", DELETE_INCOMPLETE_EVENTS);
-		cmdTable.put("/dtc", DELETE_COMPLETE_TASK);
-		cmdTable.put("/dec", DELETE_COMPLETE_EVENTS);
+		cmdTable.put("delt", DELETE_INCOMPLETE_TASKS);
+		cmdTable.put("dele", DELETE_INCOMPLETE_EVENTS);
+		cmdTable.put("deltc", DELETE_COMPLETE_TASK);
+		cmdTable.put("delec", DELETE_COMPLETE_EVENTS);
 	}
 }

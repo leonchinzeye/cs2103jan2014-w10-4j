@@ -34,9 +34,7 @@ public class Undo {
 	 * @param taskIndex
 	 * @return
 	 */
-	public boolean storeUndo(String command, int fileModified, TaskCard oldTask, TaskCard newTask) {
-		boolean success = false;
-		
+	public void storeUndo(String command, int fileModified, TaskCard oldTask, TaskCard newTask) {
 		COMMAND_TYPE cmdType = determineCmdType(command);
 		
 		switch(cmdType) {
@@ -52,69 +50,78 @@ public class Undo {
 			case MARK:
 				markUndoStorage(oldTask, fileModified);
 				break;
-				
 			default:
 				break;
 		}
-		
-		return success;
 	}
 	
-	public void executeUndo(FileLinker fileLink) {
+	public String executeUndo(FileLinker fileLink) {
+		String response = "";
 		if(indexOfLastCmdUndo < 0) {
-			return;
+			response = "Nothing to undo!";
 		} else {
-			identifyUndoAndPerform(fileLink);
+			response = identifyUndoAndPerform(fileLink);
 		}
+		return response;
 	}
 	
-	public void executeRedo(FileLinker fileLink) {
+	public String executeRedo(FileLinker fileLink) {
+		String response = "";
 		if(indexOfLastCmdRedo < 0) {
-			return;
+			response = "Nothing to redo!";
 		} else {
-			identifyRedoAndPerform(fileLink);
+			response = identifyRedoAndPerform(fileLink);
 		}
+		return response;
 	}
 
-	private void identifyUndoAndPerform(FileLinker fileLink) {
+	private String identifyUndoAndPerform(FileLinker fileLink) {
 	  String actionToBeDone = undoCmdType.get(indexOfLastCmdUndo);
+	  String response = "";
 	  
 	  switch(actionToBeDone) {
 	  	case "add":
-	  		undoAdd(fileLink);
+	  		response = undoAdd(fileLink);
 	  		break;
 	  	case "delete":
-	  		undoDelete(fileLink);
+	  		response = undoDelete(fileLink);
 	  		break;
 	  	case "edit":
-	  		undoEdit(fileLink);
+	  		response = undoEdit(fileLink);
 	  		break;
 	  	case "mark":
-	  		undoMark(fileLink);
+	  		response = undoMark(fileLink);
+	  		break;
 	  	default:
 	  		break;
 	  }
+	  return response;
   }
 
-	private void identifyRedoAndPerform(FileLinker fileLink) {
+	private String identifyRedoAndPerform(FileLinker fileLink) {
 		String actionToBeDone = redoCmdType.get(indexOfLastCmdRedo);
+		String response = "";
 		
 		switch(actionToBeDone) {
 			case "add":
-				redoAdd(fileLink);
+				response = redoAdd(fileLink);
 				break;
 			case "delete":
-				redoDelete(fileLink);
+				response = redoDelete(fileLink);
 				break;
 			case "edit":
-				redoEdit(fileLink);
+				response = redoEdit(fileLink);
 				break;
 			case "mark":
-				redoMark(fileLink);
+				response = redoMark(fileLink);
+				break;
+			default:
+				break;
 		}
+		return response;
 	}
 
-	private void undoAdd(FileLinker fileLink) {
+	private String undoAdd(FileLinker fileLink) {		
 		TaskCard taskToBeUndone = undoTasksOld.get(indexOfLastCmdUndo);
 		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
 		ArrayList<TaskCard> arrayToBeModified;
@@ -128,18 +135,22 @@ public class Undo {
 	  fileLink.deleteHandling(indexOfTaskToBeDeleted, modifiedFile);
 	  
 	  pushUndoToRedo();
+	  
+	  return "Undo for adding \"" + taskToBeUndone.getName() + "\" successful!";
   }
 	
-	private void redoAdd(FileLinker fileLink) {
+	private String redoAdd(FileLinker fileLink) {
 		TaskCard taskToBeRedone = redoTasksOld.get(indexOfLastCmdRedo); 
 		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
 		
 		fileLink.addHandling(taskToBeRedone, modifiedFile);
 		
 		pushRedoToUndo();
+		
+		return "Redo for adding \"" + taskToBeRedone.getName() + "\" successful!";
 	}
 
-	private void undoDelete(FileLinker fileLink) {
+	private String undoDelete(FileLinker fileLink) {
 	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
 		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
 	  
@@ -147,9 +158,11 @@ public class Undo {
 	  fileLink.addHandling(taskToBeAddedBack, modifiedFile);
 	  
 	  pushUndoToRedo();
+	  
+	  return "Undo for deleting \"" + taskToBeAddedBack.getName() + "\" successful!";
   }
 
-	private void redoDelete(FileLinker fileLink) {
+	private String redoDelete(FileLinker fileLink) {
 		TaskCard taskToBeDeletedBack = redoTasksOld.get(indexOfLastCmdRedo);
 		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
 		ArrayList<TaskCard> arrayToBeModified;
@@ -164,26 +177,28 @@ public class Undo {
 		fileLink.deleteHandling(indexOfTaskToBeDeleted, modifiedFile);
 		
 		pushRedoToUndo();
+		
+		return "Undo for deleting \"" + taskToBeDeletedBack.getName() + "\" successful!";
 	}
 
-	private void undoEdit(FileLinker fileLink) {
+	private String undoEdit(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
-	  
+		return "Undo for editing \"" + null + "\" successful!";
   }
 
-	private void redoEdit(FileLinker fileLink) {
+	private String redoEdit(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
-	  
+		return "Redo for editing \"" + null + "\" successful!";
 	}
 
-	private void undoMark(FileLinker fileLink) {
+	private String undoMark(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
-	  
+		return "Undo for archiving \"" + null + "\" successful!";
   }
 
-	private void redoMark(FileLinker fileLink) {
+	private String redoMark(FileLinker fileLink) {
 	  // TODO Auto-generated method stub
-	  
+		return "Redo for unarchiving \"" + null + "\" successful!";
 	}
 
 	private void pushUndoToRedo() {
