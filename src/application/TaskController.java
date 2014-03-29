@@ -466,24 +466,24 @@ public class TaskController {
 			notification.setText("add <Name> due by <DD/MM> OR add <Name>; <DD/MM/YYYY> <HH:mm>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("del")) {
-			notification.setText("del <t/e><Integer>");
+			notification.setText("del<t/e/tc/ec> <Integer>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("edit")) {
-			notification.setText("edit <t/e><Integer>; <Attribute>: <Edited entry>");
+			notification.setText("edit<t/e/tc/ec> <Integer>; <Attribute>: <Edited entry>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("help")) {
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("mark")) {
-			notification.setText("mark <t/e><Integer>");
+			notification.setText("mark<t/e> <Integer>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("unmark")) {
-			notification.setText("unmark <t/e><Integer>");
+			notification.setText("unmark<t/e> <Integer>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("search")) {
 			notification.setText("search <Query OR Priority OR Date>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("view")) {
-			notification.setText("view <Incomplete OR Completed>");
+			notification.setText("view <Tab Name/Panel Name>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("")) {
 			validPane.setStyle("-fx-background-color: green;");
