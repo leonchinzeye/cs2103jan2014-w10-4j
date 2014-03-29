@@ -144,9 +144,6 @@ public class CommandHandler {
 					state_add = true;
 				}
 				break;
-			case RESET:
-				//success = Reset.executeReset(tokenizedInput, fileLink, dataUI);
-				break;
 			case DELETE:
 				success = deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
 				if(success == false) {
