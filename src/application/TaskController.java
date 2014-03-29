@@ -315,9 +315,13 @@ public class TaskController {
 		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {	//4
 			helpAnchor.setVisible(false);
 			helpAnchor2.setVisible(true);
+			notification.setText("Listed above are the accepted commands and their proper formats.");
+			command.setPromptText("Use the UP and DOWN arrow keys to scroll through your command history.");
 		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.LEFT)) {	//4
 			helpAnchor.setVisible(true);
 			helpAnchor2.setVisible(false);
+			notification.setText("This will return responses to you based on your commands.");
+			command.setPromptText("This is where you enter your commands.");
 		}
 	}
 
