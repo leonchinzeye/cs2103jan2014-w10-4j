@@ -98,7 +98,6 @@ public class DataUI {
 				eventData.setStartTime("-"); //no start time
 				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
 				eventData.setEndTime("-"); //no end time
-				eventData.setFrequency("-"); //no frequency
 			} else {
 				Calendar startDay = event.getStartDay();
 				Calendar endDay = event.getEndDay();
@@ -106,11 +105,6 @@ public class DataUI {
 				eventData.setStartTime(timeFormat.format(startDay.getTime()));
 				eventData.setEndDate(dateFormat.format(endDay.getTime()));
 				eventData.setEndTime(timeFormat.format(endDay.getTime()));
-				if(event.getType().equals("E")) {
-					eventData.setFrequency("-");
-				} else {
-					eventData.setFrequency(event.getFrequency());
-				}
 			}
 			
 			incompleteEvents.add(eventData);
@@ -171,7 +165,6 @@ public class DataUI {
 				eventData.setStartTime("-"); //no start time
 				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
 				eventData.setEndTime("-"); //no end time
-				eventData.setFrequency("-"); //no frequency
 			} else {
 				Calendar startDay = event.getStartDay();
 				Calendar endDay = event.getEndDay();
@@ -179,11 +172,6 @@ public class DataUI {
 				eventData.setStartTime(timeFormat.format(startDay.getTime()));
 				eventData.setEndDate(dateFormat.format(endDay.getTime()));
 				eventData.setEndTime(timeFormat.format(endDay.getTime()));
-				if(event.getType().equals("E")) {
-					eventData.setFrequency("-");
-				} else {
-					eventData.setFrequency(event.getFrequency());
-				}
 			}
 			
 			completeEvents.add(eventData);

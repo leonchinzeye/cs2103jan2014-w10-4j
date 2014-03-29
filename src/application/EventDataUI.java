@@ -11,7 +11,6 @@ public class EventDataUI {
 	private SimpleStringProperty startTime;
 	private SimpleStringProperty endDate;
 	private SimpleStringProperty endTime;
-	private SimpleStringProperty Frequency;
 	
 	public EventDataUI() {
 		this.ID = new SimpleStringProperty();
@@ -21,7 +20,6 @@ public class EventDataUI {
 		this.startTime = new SimpleStringProperty();
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
-		this.Frequency = new SimpleStringProperty();
 	}
 	
 	private EventDataUI(String id, String p, String n, String startD, String startT, String endD, String endT, String freq) {
@@ -32,7 +30,6 @@ public class EventDataUI {
 		this.startTime = new SimpleStringProperty(startT);
 		this.endDate = new SimpleStringProperty(endD);
 		this.endTime = new SimpleStringProperty(endT);
-		this.Frequency = new SimpleStringProperty(freq);
 	}
 	
 	public String getID() {
@@ -91,14 +88,6 @@ public class EventDataUI {
 		endTime.set(endT);
 	}
 	
-	public String getFrequency() {
-		return Frequency.get();
-	}
-	
-	public void setFrequency(String f) {
-		Frequency.set(f);
-	}
-	
 	public SimpleStringProperty idProperty() {
 		return ID;
 	}
@@ -125,9 +114,5 @@ public class EventDataUI {
 	
 	public SimpleStringProperty endTimeProperty() {
 		return endTime;
-	}
-	
-	public SimpleStringProperty frequencyProperty() {
-		return Frequency;
 	}
 }

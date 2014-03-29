@@ -30,20 +30,16 @@ public class Search {
 		dateString.setLenient(false);
 	}
 	
-	public boolean executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
-		boolean success = false;
+	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 			
 		if(!checkForArg(tokenizedInput)) {
 			noArgument(dataUI);
-			return false;
 		} else {
 			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
 			RefreshUI.executeRefresh(fileLink, dataUI);
-			success = true;
 		}
 		dataUI.setFeedback("Displaying results for \"" + tokenizedInput[1] + "\"");
-		return success;
 	}
 
 	private void noArgument(DataUI dataUI) {
@@ -123,137 +119,12 @@ public class Search {
 				compTaskIndex = searchCompTaskPriority(searchInput, fileLink, dataUI);
 				compEventIndex = searchCompEventPriority(searchInput, fileLink, dataUI);
 				break;
-			case SEARCH_FREQUENCY:
-				incTaskIndex = searchIncTaskFreq(searchInput, fileLink, dataUI);
-				incEventIndex = searchIncEventFreq(searchInput, fileLink, dataUI);
-				compTaskIndex = searchCompTaskFreq(searchInput, fileLink, dataUI);
-				compEventIndex = searchCompEventFreq(searchInput, fileLink, dataUI);
 			default:
 				break;
 		}
 	  
 		fileLink.searchHandling(incTaskIndex, incEventIndex, compTaskIndex, compEventIndex);
 	}
-
-	/**
-	 * this method searches based on frequency for repeated events for incomplete tasks
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<Integer> searchIncTaskFreq(String searchInput,
-      FileLinker fileLink, DataUI dataUI) {
-	  ArrayList<Integer> index = new ArrayList<Integer>();
-	  ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
-	  
-	  String freq;
-	  if(searchInput.equals("daily")) {
-	  	freq = "D";
-	  } else if(searchInput.equals("monthly")) {
-	  	freq = "M";
-	  } else {
-	  	freq = "Y";
-	  }
-	  
-	  for(int i = 0; i < incTask.size(); i++) {
-	  	TaskCard task = incTask.get(i);
-	  	if(task.getFrequency() == freq) {
-	  		index.add(i);
-	  	}
-	  }
-	  
-		return index;
-  }
-
-	/**
-	 * this method searches based on freq for repeated events for incomplete events
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<Integer> searchIncEventFreq(String searchInput,
-      FileLinker fileLink, DataUI dataUI) {
-		ArrayList<Integer> index = new ArrayList<Integer>();
-	  ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
-	  
-	  String freq;
-	  if(searchInput.equals("daily")) {
-	  	freq = "D";
-	  } else if(searchInput.equals("monthly")) {
-	  	freq = "M";
-	  } else {
-	  	freq = "Y";
-	  }
-	  
-	  for(int i = 0; i < incEvent.size(); i++) {
-	  	TaskCard event = incEvent.get(i);
-	  	if(event.getFrequency() == freq) {
-	  		index.add(i);
-	  	}
-	  }
-	  
-		return index;
-  }
-
-	/**
-	 * this method searches based on freq for repeated events for completed tasks
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<Integer> searchCompTaskFreq(String searchInput,
-      FileLinker fileLink, DataUI dataUI) {
-		ArrayList<Integer> index = new ArrayList<Integer>();
-	  ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
-	  
-	  String freq;
-	  if(searchInput.equals("daily")) {
-	  	freq = "D";
-	  } else if(searchInput.equals("monthly")) {
-	  	freq = "M";
-	  } else {
-	  	freq = "Y";
-	  }
-	  
-	  for(int i = 0; i < compTask.size(); i++) {
-	  	TaskCard task = compTask.get(i);
-	  	if(task.getFrequency() == freq) {
-	  		index.add(i);
-	  	}
-	  }
-	  
-		return index;
-  }
-
-	private ArrayList<Integer> searchCompEventFreq(String searchInput,
-      FileLinker fileLink, DataUI dataUI) {
-		ArrayList<Integer> index = new ArrayList<Integer>();
-	  ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
-	  
-	  String freq;
-	  if(searchInput.equals("daily")) {
-	  	freq = "D";
-	  } else if(searchInput.equals("monthly")) {
-	  	freq = "M";
-	  } else {
-	  	freq = "Y";
-	  }
-	  
-	  for(int i = 0; i < compEvent.size(); i++) {
-	  	TaskCard event = compEvent.get(i);
-	  	if(event.getFrequency() == freq) {
-	  		index.add(i);
-	  	}
-	  }
-	  
-		return index;
-  }
 
 	/**
 	 * searches based on priority for incompleted tasks

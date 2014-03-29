@@ -440,7 +440,6 @@ public class Add {
 		boolean success = false;
 		taskToBeAdded.setName(argArray[FIRST_ARGUMENT]);
 		taskToBeAdded.setType("T");
-		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
 			try {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
@@ -475,7 +474,6 @@ public class Add {
 	private void setFloatingTaskDetails(String[] argArray, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("FT");
-		taskToBeAdded.setFrequency("N");
 		taskToBeAdded.setPriority(DEFAULT_PRIORITY_FLOATING_TASK);
 	
 	}
@@ -494,7 +492,6 @@ public class Add {
 		boolean success = false;
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("AE");
-		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
 			try {
 				taskToBeAdded.setPriority(Integer.parseInt(argArray[2]));
@@ -527,7 +524,6 @@ public class Add {
 		boolean success = false;
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("E");
-		taskToBeAdded.setFrequency("N");
 		if (argArray.length == 3) {
 			
 			try {
@@ -548,25 +544,10 @@ public class Add {
 	private static void setRepeatedEventDetails(String[] argArray, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(argArray[0]);
 		taskToBeAdded.setType("RE");
-		setEventFrequency(argArray[2], taskToBeAdded);
 		if (argArray.length == 4) {
 			taskToBeAdded.setPriority(Integer.parseInt(argArray[3]));
 		} else {
 			taskToBeAdded.setPriority(2);
-		}
-	}
-
-	private static void setEventFrequency(String freq, TaskCard taskToBeAdded) {
-		if (freq.equals("daily")) {
-			taskToBeAdded.setFrequency("Daily");
-		} else if (freq.equals("weekly")) {
-			taskToBeAdded.setFrequency("Weekly");
-		} else if (freq.equals("monthly")) {
-			taskToBeAdded.setFrequency("Monthly");
-		} else if (freq.equals("yearly")) {
-			taskToBeAdded.setFrequency("Yearly");
-		} else {
-			//output invalid frequency input, wait for correct input
 		}
 	}
 	

@@ -63,8 +63,7 @@ public class Delete {
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput,
-			FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;

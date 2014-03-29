@@ -46,7 +46,6 @@ public class CommandHandler {
 	}
 
 	private void checkCmdAndPerform(String userInput) {
-		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -55,17 +54,17 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				fileLink.resetState();
-				success = addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
+				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case DELETE:
 				deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case EDIT:
-				success = editHandler.checkBeforeExecuteEdit(userInput, fileLink, dataUI, undoHandler);
+				editHandler.executeEdit(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case SEARCH:
 				fileLink.resetState();
-				success = searchHandler.executeSearch(userInput, fileLink, dataUI);
+				searchHandler.executeSearch(userInput, fileLink, dataUI);
 				break;
 			case ENTER:
 				fileLink.resetState();
