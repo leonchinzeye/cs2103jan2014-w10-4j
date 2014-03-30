@@ -3,6 +3,7 @@ package application;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 public class Add2 {
 	
@@ -26,7 +27,10 @@ public class Add2 {
 	private final String FEEDBACK_EXTRA_DETAILS_ARG = "You've entered something extra :(  Please re-enter!";
 	private final String FEEDBACK_SUCCESSFUL_ADD_TASK = "Task added!";
 	private final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "Event added!";
+	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :( Please re-enter!";
 	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :( Please re-enter!";
+	
+	private HashMap cmdTable;
 	
 	private boolean urgent_flag;
 	
@@ -39,6 +43,11 @@ public class Add2 {
 		
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
+		if(!tokenizedInput[ARRAY_FIRST_ARG].equals("addu") || !tokenizedInput[ARRAY_FIRST_ARG].equals("add")) {
+			dataUI.setFeedback(FEEDBACK_INVALID_ADD_COMMAND);
+			return false;
+		}
+		
 		if(tokenizedInput[ARRAY_FIRST_ARG].equals("addu")) {
 			urgent_flag = true;
 		}
@@ -49,6 +58,10 @@ public class Add2 {
 		} else {
 			String userDetails = tokenizedInput[ARRAY_SECOND_ARG];
 			success = identifyTypeAndPerform(userDetails, fileLink, dataUI, undoHandler, dateFormats);
+		}
+		
+		if(success) {
+			undoHandler.flushRedo();
 		}
 		
 		initVar();
