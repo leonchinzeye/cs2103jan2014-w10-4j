@@ -12,6 +12,8 @@ public class CommandHandler {
 	private static Mark markHandler;
 	private static Edit editHandler;
 	private static Undo undoHandler;
+	private static Add2 addHandler2;
+	private static DateAndTimeFormats dateFormats;
 	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
 			+ "something wrongly! Please try another command.";
@@ -22,11 +24,13 @@ public class CommandHandler {
 	
 	public CommandHandler() {
 		addHandler = new Add();
+		addHandler2 = new Add2();
 		deleteHandler = new Delete();
 		searchHandler = new Search();
 		markHandler = new Mark();
 		editHandler = new Edit();
 		undoHandler = new Undo();
+		dateFormats = new DateAndTimeFormats();
 		
 		fileLink = new FileLinker();
 		dataUI = new DataUI();
@@ -54,7 +58,8 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				fileLink.resetState();
-				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
+				addHandler2.executeAdd(userInput, fileLink, dataUI, undoHandler, dateFormats);
+//				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case DELETE:
 				deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
