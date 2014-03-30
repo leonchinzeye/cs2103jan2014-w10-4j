@@ -6,8 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class Add2 {
-	
-	
 
 	private int ARRAY_FIRST_ARG = 0;
 	private int ARRAY_SECOND_ARG = 1;
@@ -92,8 +90,8 @@ public class Add2 {
 	}
 	
 	private boolean addTask(String[] details, FileLinker fileLink, DataUI dataUI,
-	    Undo undoHandler, DateAndTimeFormats dateFormats) {
-	  boolean success;
+			Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success;
 		
 		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by ");
 		
@@ -106,35 +104,146 @@ public class Add2 {
 			return false;
 		}
 		
-	  return success;
+		return success;
 	}
-
+	
 	private boolean addEvent(String[] details, FileLinker fileLink,
-	    DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
-	  boolean success;
-	  
-	  String eventName = details[ARRAY_FIRST_ARG].trim();
-	  String[] timeComponents = details[ARRAY_SECOND_ARG].trim().split("-| to ");
-	  
-	  if(timeComponents.length == 1) {
-	  	success = addOneTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
-	  } else if(timeComponents.length == 2) {
-	  	success = addTwoTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
-	  } else {
-	  	dataUI.setFeedback(FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT);
-	  	return false;
-	  }
-	  
-	  return success;
+			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success;
+		
+		String eventName = details[ARRAY_FIRST_ARG].trim();
+		String[] timeComponents = details[ARRAY_SECOND_ARG].trim().split("-| to ");
+		
+		if(timeComponents.length == 1) {
+			success = addOneTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+		} else if(timeComponents.length == 2) {
+			success = addTwoTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+		} else {
+			dataUI.setFeedback(FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT);
+			return false;
+		}
+		
+		return success;
 	}
-
+	
 	private boolean addTwoTimingEvent(String eventName, String[] timeComponents,
-      FileLinker fileLink, DataUI dataUI, Undo undoHandler,
-      DateAndTimeFormats dateFormats) {
-	  // TODO Auto-generated method stub
-	  return false;
-  }
-
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+			DateAndTimeFormats dateFormats) {
+		boolean success = true;
+		TaskCard eventToBeAdded = new TaskCard();
+		Date startDate;
+		Date endDate;
+		
+		String[] dateAndTimeStart = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
+		String[] dateAndTimeEnd = timeComponents[ARRAY_SECOND_ARG].trim().split(",");
+		
+		if(dateAndTimeStart.length > 2 || dateAndTimeEnd.length > 2 || dateAndTimeStart.length <= 0 || dateAndTimeEnd.length <= 0) {
+			dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+			return false;
+		} else {
+			startDate = checkAndGetDate(dateAndTimeStart, dateFormats);
+			endDate = checkAndGetDate(dateAndTimeEnd, dateFormats);
+			
+			if(startDate == null || endDate == null) {
+				dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+				return false;
+			}
+			
+			/**
+			 * 1st if: could be a time and a time(event falls within a specific timing on current date) or a date and a date(event stretches over multiple days)
+			 * 2nd if: a full date with a time at the end. ending on the same day
+			 * 3rd if: event stretches over multiple days with specific timings
+			 */
+			if(dateAndTimeStart.length == 1 && dateAndTimeEnd.length == 1) {						
+				setCurrentDateTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 1) {
+				setDateEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 2) {
+				setMultDaysEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			}
+			
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
+		}
+		
+		
+		return success;
+	}
+	
+	private void setCurrentDateTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+		
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		if(startDay.get(Calendar.HOUR_OF_DAY) == 0 && startDay.get(Calendar.MINUTE) == 0
+				&& endDay.get(Calendar.HOUR_OF_DAY) == 0 && endDay.get(Calendar.MINUTE) == 0) {
+			eventToBeAdded.setType(TYPE_ALL_DAY);
+		} else {
+			eventToBeAdded.setType(TYPE_EVENT);
+		}
+	}
+	private void setDateEnteredTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}	
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+		
+		endDay.set(Calendar.DATE, startDay.get(Calendar.DATE));
+		endDay.set(Calendar.MONTH, startDay.get(Calendar.MONTH));
+		endDay.set(Calendar.YEAR, startDay.get(Calendar.YEAR));
+		
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		eventToBeAdded.setType(TYPE_EVENT);
+	}
+	
+	private void setMultDaysEnteredTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}	
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+		
+		endDay.set(Calendar.DATE, startDay.get(Calendar.DATE));
+		endDay.set(Calendar.MONTH, startDay.get(Calendar.MONTH));
+		endDay.set(Calendar.YEAR, startDay.get(Calendar.YEAR));
+		
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		eventToBeAdded.setType(TYPE_EVENT);
+	}
+	
 	/**
 	 * this method is for when the user only enters one timing. the entered event will be given a default 1 hr period
 	 * @param eventName
@@ -146,41 +255,41 @@ public class Add2 {
 	 * @return
 	 */
 	private boolean addOneTimingEvent(String eventName, String[] timeComponents,
-	    FileLinker fileLink, DataUI dataUI, Undo undoHandler,
-	    DateAndTimeFormats dateFormats) {
-	  boolean success = true;
-	  TaskCard eventToBeAdded = new TaskCard();
-	  Date startDate;
-	  
-	  String[] dateAndTime = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
-	  
-	  if(dateAndTime.length == 1 || dateAndTime.length == 2) {
-	  	startDate = checkAndGetDate(dateAndTime, dateFormats);
-	  	
-	  	if(startDate == null) {
-	  		dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
-	  		return false;
-	  	}
-	  	
-	  	setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
-	  	dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
-	  	fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
-	  	RefreshUI.executeRefresh(fileLink, dataUI);
-	  	undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
-	  	
-	  } else {
-	  	dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
-	  	return false;
-	  }
-	  return success;
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+			DateAndTimeFormats dateFormats) {
+		boolean success = true;
+		TaskCard eventToBeAdded = new TaskCard();
+		Date startDate;
+		
+		String[] dateAndTime = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
+		
+		if(dateAndTime.length == 1 || dateAndTime.length == 2) {
+			startDate = checkAndGetDate(dateAndTime, dateFormats);
+			
+			if(startDate == null) {
+				dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+				return false;
+			}
+			
+			setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
+			
+		} else {
+			dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+			return false;
+		}
+		return success;
 	}
-
+	
 	private boolean addDueDateTask(String[] detailsAndTime, FileLinker fileLink,
-      DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
-	  boolean success = true;
+			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success = true;
 		TaskCard taskToBeAdded = new TaskCard();
-	  Date date;
-	  
+		Date date;
+		
 		String details = detailsAndTime[ARRAY_FIRST_ARG];
 		String[] dateAndTime = detailsAndTime[ARRAY_SECOND_ARG].trim().split(",");
 		
@@ -197,30 +306,30 @@ public class Add2 {
 			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
-		
+			
 		} else {
 			dataUI.setFeedback(FEEDBACK_EXTRA_DETAILS_ARG);
 			return false;
 		}
-
-	  return success;
-  }
-
-	private boolean addFloatingTask(String taskDetails, FileLinker fileLink,
-	    DataUI dataUI, Undo undoHandler) {
-	  TaskCard taskToBeAdded = new TaskCard();
-	  
-	  setFloatingTaskDetails(taskDetails, taskToBeAdded);
-	  dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
-	  fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
-	  RefreshUI.executeRefresh(fileLink, dataUI);
-	  undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
-	  
-	  return true;
+		
+		return success;
 	}
-
+	
+	private boolean addFloatingTask(String taskDetails, FileLinker fileLink,
+			DataUI dataUI, Undo undoHandler) {
+		TaskCard taskToBeAdded = new TaskCard();
+		
+		setFloatingTaskDetails(taskDetails, taskToBeAdded);
+		dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
+		fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
+		
+		return true;
+	}
+	
 	private void setOneTimingEventDetails(TaskCard eventToBeAdded,
-	    Date startDate, String eventName) {
+			Date startDate, String eventName) {
 		eventToBeAdded.setName(eventName);
 		
 		if(urgent_flag) {
@@ -250,101 +359,101 @@ public class Add2 {
 			eventToBeAdded.setEndDay(end);
 		}
 	}
-
+	
 	private void setDueDateTaskDetails(TaskCard taskToBeAdded, Date date,
-      String details) {
-	  Calendar startDay = GregorianCalendar.getInstance();
-	  Calendar endDay = GregorianCalendar.getInstance();
-	  
-	  endDay.setTime(date);
-	  
-	  if(urgent_flag) {
-	  	taskToBeAdded.setPriority(URGENT_PRIORITY);
-	  } else {
-	  	taskToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
-	  }
-	  taskToBeAdded.setName(details);
-	  taskToBeAdded.setType(TYPE_DUE_DATE_TASK);
-	  taskToBeAdded.setStartDay(startDay);
-	  taskToBeAdded.setEndDay(endDay);
-  }
-
-	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
-	  taskToBeAdded.setName(taskDetails);
-	  taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
-	  taskToBeAdded.setType(TYPE_FLOATING_TASK);
-	  taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
-	  taskToBeAdded.setEndDay(floatingDefaultEndDay);
-  }
-
-	private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
-	  if(dateAndTime.length == 1) {
-	  	String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG];
-	  	Date time = null;
-	  	Date date = null;
-	  	
-	  	if(dateFormats.isHourOnly(toBeIdentified) != null) {
-	  		time = dateFormats.isHourOnly(toBeIdentified);
-	  	} else if(dateFormats.isComplete12Hr(toBeIdentified) != null) {
-	  		time = dateFormats.isComplete12Hr(toBeIdentified);
-	  	} else if(dateFormats.isComplete24Hr(toBeIdentified) != null) {
-	  		time = dateFormats.isComplete24Hr(toBeIdentified);
-	  	}
-	  	
-	  	if(dateFormats.isLazyYearDate(toBeIdentified) != null) {
-	  		date = dateFormats.isLazyYearDate(toBeIdentified);
-	  	} else if(dateFormats.isProperDate(toBeIdentified) != null) {
-	  		date = dateFormats.isProperDate(toBeIdentified); 
-	  	} else if(dateFormats.isLazyDate(toBeIdentified) != null) {
-	  		date = dateFormats.isLazyDate(toBeIdentified);
-	  	}
-	  	
-	  	if(time != null && date != null) {
-	  		return null;
-	  	} else if(time == null && date == null) {
-	  		return null;
-	  	} else if(time != null) {
-	  		return time;
-	  	} else {
-	  		return date;
-	  	}
-	  } else {
-	  	String dateComponent = dateAndTime[ARRAY_FIRST_ARG];
-	  	String timeComponent = dateAndTime[ARRAY_SECOND_ARG];
-	  	Date time = null;
-	  	Date date = null;
-	  	
-	  	if(dateFormats.isHourOnly(timeComponent) != null) {
-	  		time = dateFormats.isHourOnly(timeComponent);
-	  	} else if(dateFormats.isComplete12Hr(timeComponent) != null) {
-	  		time = dateFormats.isComplete12Hr(timeComponent);
-	  	} else if(dateFormats.isComplete24Hr(timeComponent) != null) {
-	  		time = dateFormats.isComplete24Hr(timeComponent);
-	  	}
-	  	
-	  	if(dateFormats.isLazyYearDate(dateComponent) != null) {
-	  		date = dateFormats.isLazyYearDate(dateComponent);
-	  	} else if(dateFormats.isProperDate(dateComponent) != null) {
-	  		date = dateFormats.isProperDate(dateComponent); 
-	  	} else if(dateFormats.isLazyDate(dateComponent) != null) {
-	  		date = dateFormats.isLazyDate(dateComponent);
-	  	}
-	  	
-	  	if(time == null || date == null) {
-	  		return null;
-	  	}
-	  	
-	  	Calendar cal = GregorianCalendar.getInstance();
-	  	cal.setTime(date);
-	  	cal.set(Calendar.HOUR_OF_DAY, time.getHours());
-	  	cal.set(Calendar.MINUTE, time.getMinutes());
-	  	cal.set(Calendar.SECOND, 0);
-	  	cal.set(Calendar.MILLISECOND, 0);
-	  	
-	  	return cal.getTime();
-	  }
+			String details) {
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		
+		endDay.setTime(date);
+		
+		if(urgent_flag) {
+			taskToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		taskToBeAdded.setName(details);
+		taskToBeAdded.setType(TYPE_DUE_DATE_TASK);
+		taskToBeAdded.setStartDay(startDay);
+		taskToBeAdded.setEndDay(endDay);
 	}
-
+	
+	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(taskDetails);
+		taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
+		taskToBeAdded.setType(TYPE_FLOATING_TASK);
+		taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
+		taskToBeAdded.setEndDay(floatingDefaultEndDay);
+	}
+	
+	private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
+		if(dateAndTime.length == 1) {
+			String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG];
+			Date time = null;
+			Date date = null;
+			
+			if(dateFormats.isHourOnly(toBeIdentified) != null) {
+				time = dateFormats.isHourOnly(toBeIdentified);
+			} else if(dateFormats.isComplete12Hr(toBeIdentified) != null) {
+				time = dateFormats.isComplete12Hr(toBeIdentified);
+			} else if(dateFormats.isComplete24Hr(toBeIdentified) != null) {
+				time = dateFormats.isComplete24Hr(toBeIdentified);
+			}
+			
+			if(dateFormats.isLazyYearDate(toBeIdentified) != null) {
+				date = dateFormats.isLazyYearDate(toBeIdentified);
+			} else if(dateFormats.isProperDate(toBeIdentified) != null) {
+				date = dateFormats.isProperDate(toBeIdentified); 
+			} else if(dateFormats.isLazyDate(toBeIdentified) != null) {
+				date = dateFormats.isLazyDate(toBeIdentified);
+			}
+			
+			if(time != null && date != null) {
+				return null;
+			} else if(time == null && date == null) {
+				return null;
+			} else if(time != null) {
+				return time;
+			} else {
+				return date;
+			}
+		} else {
+			String dateComponent = dateAndTime[ARRAY_FIRST_ARG];
+			String timeComponent = dateAndTime[ARRAY_SECOND_ARG];
+			Date time = null;
+			Date date = null;
+			
+			if(dateFormats.isHourOnly(timeComponent) != null) {
+				time = dateFormats.isHourOnly(timeComponent);
+			} else if(dateFormats.isComplete12Hr(timeComponent) != null) {
+				time = dateFormats.isComplete12Hr(timeComponent);
+			} else if(dateFormats.isComplete24Hr(timeComponent) != null) {
+				time = dateFormats.isComplete24Hr(timeComponent);
+			}
+			
+			if(dateFormats.isLazyYearDate(dateComponent) != null) {
+				date = dateFormats.isLazyYearDate(dateComponent);
+			} else if(dateFormats.isProperDate(dateComponent) != null) {
+				date = dateFormats.isProperDate(dateComponent); 
+			} else if(dateFormats.isLazyDate(dateComponent) != null) {
+				date = dateFormats.isLazyDate(dateComponent);
+			}
+			
+			if(time == null || date == null) {
+				return null;
+			}
+			
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(date);
+			cal.set(Calendar.HOUR_OF_DAY, time.getHours());
+			cal.set(Calendar.MINUTE, time.getMinutes());
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			return cal.getTime();
+		}
+	}
+	
 	private void resetFlag() {
 		urgent_flag = false;
 	}
