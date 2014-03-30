@@ -8,6 +8,8 @@ import java.util.GregorianCalendar;
 
 public class DateAndTimeFormats {
 
+	private static SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+	
 	private static SimpleDateFormat[] properDateFormats = {
 		new SimpleDateFormat("dd/MM/yyyy"),
 		new SimpleDateFormat("dd-MM-yyyy"),
@@ -113,7 +115,8 @@ public class DateAndTimeFormats {
 	
 	public Date isLazyDate(String input) {
 		Date today = new Date();
-		int currentYear = today.getYear();
+		
+		String currentYear = yearFormat.format(today);
 		String userInput = input + " " + currentYear;
 		
 		for(int i = 0; i < lazyDateFormats.length; i++) {

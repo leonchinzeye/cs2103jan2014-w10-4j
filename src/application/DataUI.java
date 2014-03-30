@@ -69,7 +69,12 @@ public class DataUI {
 			} else {
 				Calendar endDay = task.getEndDay();
 				taskData.setEndDate(dateFormat.format(endDay.getTime()));
-				taskData.setEndTime(timeFormat.format(endDay.getTime()));
+				
+				if(endDay.get(Calendar.HOUR_OF_DAY) == 0 && endDay.get(Calendar.MINUTE) == 0) {
+					taskData.setEndTime("-");
+				} else {
+					taskData.setEndTime(timeFormat.format(endDay.getTime()));
+				}
 			}
 			incompleteTasks.add(taskData);
 		}
