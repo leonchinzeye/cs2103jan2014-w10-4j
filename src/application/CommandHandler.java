@@ -118,7 +118,7 @@ public class CommandHandler {
 			return COMMAND_TYPE.UNDO;
 		} else if(commandTypeString.equals("redo")) {
 			return COMMAND_TYPE.REDO;
-		} else if (commandTypeString.contains("exit")) {
+		} else if (commandTypeString.equals("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
