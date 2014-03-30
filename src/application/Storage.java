@@ -108,7 +108,7 @@ public class Storage {
 			buffWrite.newLine();
 			
 			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
-					" " + dateString.format(task.getEndDay().getTime()) + " " + " " + task.getPriority();
+					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getPriority();
 			
 			buffWrite.write(detailsToBeWritten);
 			buffWrite.newLine();
