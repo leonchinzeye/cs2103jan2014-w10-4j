@@ -30,12 +30,12 @@ public class Add2 {
 	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :( Please re-enter!";
 	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :( Please re-enter!";
 	
-	private HashMap cmdTable;
+	private HashMap<String, Integer> cmdTable;
 	
 	private boolean urgent_flag;
 	
 	public Add2() {
-		initVar();
+		resetFlag();
 	}
 	
 	public boolean executeAdd(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
@@ -43,12 +43,12 @@ public class Add2 {
 		
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
-		if(!tokenizedInput[ARRAY_FIRST_ARG].equals("addu") || !tokenizedInput[ARRAY_FIRST_ARG].equals("add")) {
+		if(!cmdTable.containsKey(tokenizedInput[ARRAY_FIRST_ARG])) {
 			dataUI.setFeedback(FEEDBACK_INVALID_ADD_COMMAND);
 			return false;
 		}
 		
-		if(tokenizedInput[ARRAY_FIRST_ARG].equals("addu")) {
+		if(cmdTable.get(tokenizedInput[ARRAY_FIRST_ARG]) == 2) {
 			urgent_flag = true;
 		}
 		
@@ -64,7 +64,7 @@ public class Add2 {
 			undoHandler.flushRedo();
 		}
 		
-		initVar();
+		resetFlag();
 		return success;
 	}
 	
@@ -247,7 +247,13 @@ public class Add2 {
 	  return false;
   }
 
-	private void initVar() {
+	private void resetFlag() {
 		urgent_flag = false;
+	}
+	
+	private void initCmdTable() {
+		cmdTable = new HashMap<String, Integer>();
+		cmdTable.put("add", 1);
+		cmdTable.put("addu", 2);
 	}
 }
