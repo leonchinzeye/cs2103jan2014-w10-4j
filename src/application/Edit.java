@@ -178,11 +178,11 @@ public class Edit {
 			} else {
 				TaskCard event = incEvent.get(editIndex - 1);
 				userEnteredID = editIndex;
-				performIncEventEdit(event, attributesToEdit, fileLink, dataUI);
+				success = performIncEventEdit(event, attributesToEdit, fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
-			success = false;
+			return success = false;
 		}		
 		return success;
 	}
@@ -359,9 +359,7 @@ public class Edit {
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeStartDate = false;
-		boolean changeStartTime = false;
 		boolean changeEndDate = false;
-		boolean changeEndTime = false;
 		
 		boolean isDateAndTime = false;
 		boolean isDate = false;
@@ -370,33 +368,24 @@ public class Edit {
 		/*
 		 * first step is to check if all the parameters make sense
 		 */
-		String[] tokenizedInput = attributes.split(";");
+		String[] tokenizedAttributes = attributes.split(";");
 		
-		for (int i = 0; i < tokenizedInput.length; i++) {
-			if (!(tokenizedInput[i].contains("Name: ") && tokenizedInput[i].equals("Priority: ") &&
-					tokenizedInput[i].equals("Start Date: ") &&	tokenizedInput[i].contains("Start Time: ") && 
-					tokenizedInput[i].contains("End Date: ") && tokenizedInput[i].contains("End Time: "))) {
-				return success = false;
-			} else {
-				if (tokenizedInput[i].contains("Name: ")) {
+		for (int i = 0; i < tokenizedAttributes.length; i++) {
+				if (tokenizedAttributes[i].contains("Name: ")) {
 					changeName = true;
 				}
-				if (tokenizedInput[i].contains("Priority: ")) {
+				if (tokenizedAttributes[i].contains("Priority: ")) {
 					changePriority = true;
 				}
-				if (tokenizedInput[i].contains("Start Date: ")) {
+				if (tokenizedAttributes[i].contains("Start Date: ")) {
 					changeStartDate = true;
 				}
-				if (tokenizedInput[i].contains("Start Time: ")) {
-					changeStartTime = true;
-				}
-				if (tokenizedInput[i].contains("End Date: ")) {
+				if (tokenizedAttributes[i].contains("End Date: ")) {
 					changeEndDate = true;
-				} 
-				if (tokenizedInput[i].contains("End Time: ")) {
-					changeEndTime = true;
 				}
-			}
+				if (!changeName && !changePriority && !changeStartDate && !changeEndDate) {
+					return success = false;
+				}
 		}
 		
 		/*
@@ -405,12 +394,17 @@ public class Edit {
 		 */
 		if(changeName == false) {
 			replacementEvent.setName(origEvent.getName());
-		} else if (changePriority == false) {
+		}
+		if (changePriority == false) {
 			replacementEvent.setPriority(origEvent.getPriority());
-		} else if (changeEndDate == false) {
+		}
+		if (changeEndDate == false) {
 			replacementEvent.setEndDay(origEvent.getEndDay());
-		} else if (changeStartDate == false) {
+			replacementEvent.setType(origEvent.getType());
+			}
+		if (changeStartDate == false) {
 			replacementEvent.setStartDay(origEvent.getStartDay());
+			replacementEvent.setType(origEvent.getType());
 		}
 		
 		/*
@@ -425,10 +419,9 @@ public class Edit {
 		 * 4) if success, perform edit
 		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
 		 */
-		String[] tokensForAttributes = tokenizedInput;
-		
-		for (int i = 0; i < tokensForAttributes.length; i++) {
-			parameterToEdit = tokensForAttributes[i].split(":", 2);
+	
+		for (int i = 0; i < tokenizedAttributes.length; i++) {
+			parameterToEdit = tokenizedAttributes[i].split(":", 2);
 			
 			if (parameterToEdit.length != 2) {
 				dataUI.setFeedback(String.format("You seem to have left %s blank!", parameterToEdit[0]));
@@ -442,50 +435,14 @@ public class Edit {
 					replacementEvent.setPriority(2);
 				} else if (parameterToEdit[1].trim().equalsIgnoreCase("high")) {
 					replacementEvent.setPriority(3);
+				} else {
+					dataUI.setFeedback("You've entered an invalid priority level :(");
+					return false;
 				}
 				/*
 				 * Need to settle edit for Start Date, Start Time, End Date, and End Time below.
 				 */
 			} else if (parameterToEdit[0].equalsIgnoreCase("Start Date")) {
-				String endDateEntry = parameterToEdit[1].trim();
-				
-				try {
-					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isDateAndTime = true;
-					continue;
-				} catch (ParseException e) {
-					//may be date or time format only
-				}
-				
-				try {
-					Date changeDate = dateFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isDate = true;
-					continue;
-				} catch (ParseException e) {
-					
-				}
-				
-				try {
-					Date changeDate = timeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
-					replacementEvent.setEndDay(cal);
-					isTime = true;
-					continue;
-				} catch (ParseException e) {
-					
-				}
-				
-				if ((isDateAndTime && isTime && isDate) == false) {
-					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				}		
-			} else if (parameterToEdit[0].contains("End Date")) {
 				String startDateEntry = parameterToEdit[1].trim();
 				
 				try {
@@ -523,12 +480,52 @@ public class Edit {
 				
 				if ((isDateAndTime && isTime && isDate) == false) {
 					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
+				}		
+			} else if (parameterToEdit[0].contains("End Date")) {
+				String endDateEntry = parameterToEdit[1].trim();
+				
+				try {
+					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(changeDate);
+					replacementEvent.setEndDay(cal);
+					isDateAndTime = true;
+					continue;
+				} catch (ParseException e) {
+					//may be date or time format only
+				}
+				
+				try {
+					Date changeDate = dateFormat.parse(endDateEntry);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(changeDate);
+					replacementEvent.setEndDay(cal);
+					isDate = true;
+					continue;
+				} catch (ParseException e) {
+					
+				}
+				
+				try {
+					Date changeDate = timeFormat.parse(endDateEntry);
+					Calendar cal = Calendar.getInstance();
+					cal.setTime(changeDate);
+					replacementEvent.setEndDay(cal);
+					isTime = true;
+					continue;
+				} catch (ParseException e) {
+					
+				}
+				
+				if ((isDateAndTime && isTime && isDate) == false) {
+					dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				}
 			}
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);
-		fileLink.editHandling(origEvent, userEnteredID, 2);
+		fileLink.editHandling(replacementEvent, userEnteredID, 2);
+		RefreshUI.executeRefresh(fileLink, dataUI);
 		return success;
 	}
 	

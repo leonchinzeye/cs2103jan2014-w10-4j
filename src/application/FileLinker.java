@@ -130,11 +130,11 @@ public class FileLinker {
 				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
 				taskNumberToBeModified = incEventsIndex.get(taskNumberToBeModified);
 			}
-			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
+			incompleteEvents.set(taskNumberToBeModified - 1, modifiedTask);
 			callStorageWriteIncompleteEvents();
 		}
 		
-		else if (fileToBeDeletedFrom == 3) {
+		/*else if (fileToBeDeletedFrom == 3) {
 			if(state_search) {
 				searchCompTasks.set(taskNumberToBeModified, modifiedTask);
 				taskNumberToBeModified = compTasksIndex.get(taskNumberToBeModified);
@@ -150,7 +150,7 @@ public class FileLinker {
 			}
 			completedEvents.set(taskNumberToBeModified, modifiedTask);
 			callStorageWriteCompletedEvents();
-		}
+		}*/
 	
 		return true;
 	}
