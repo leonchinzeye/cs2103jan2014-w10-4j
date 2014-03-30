@@ -8,11 +8,14 @@ import java.util.HashMap;
 public class Add2 {
 	
 	
+
 	private int ARRAY_FIRST_ARG = 0;
 	private int ARRAY_SECOND_ARG = 1;
 	
 	private final String TYPE_DUE_DATE_TASK = "T";
 	private final String TYPE_FLOATING_TASK = "FT";
+	private final String TYPE_ALL_DAY = "AE";
+	private final String TYPE_EVENT = "E";
 	
 	private final int DEFAULT_FLOATING_TASKS_PRIORITY = 1;
 	private final int DEFAULT_TASKS_AND_EVENTS_PRIORITY = 2;
@@ -29,6 +32,7 @@ public class Add2 {
 	private final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "Event added!";
 	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :( Please re-enter!";
 	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :( Please re-enter!";
+	private final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please re-enter";
 	
 	private HashMap<String, Integer> cmdTable;
 	
@@ -73,7 +77,7 @@ public class Add2 {
 			FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success;
 		
-		String[] details = userDetails.trim().split(";| at ");
+		String[] details = userDetails.trim().split(";");
 		
 		if(details.length == 1) {
 			success = addTask(details, fileLink, dataUI, undoHandler, dateFormats);
@@ -92,6 +96,7 @@ public class Add2 {
 	  boolean success;
 		
 		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by ");
+		
 		if(detailsAndTime.length == 1) {
 			success = addFloatingTask(detailsAndTime[ARRAY_FIRST_ARG], fileLink, dataUI, undoHandler);
 		} else if(detailsAndTime.length == 2) {
@@ -101,6 +106,72 @@ public class Add2 {
 			return false;
 		}
 		
+	  return success;
+	}
+
+	private boolean addEvent(String[] details, FileLinker fileLink,
+	    DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+	  boolean success;
+	  
+	  String eventName = details[ARRAY_FIRST_ARG].trim();
+	  String[] timeComponents = details[ARRAY_SECOND_ARG].trim().split("-| to ");
+	  
+	  if(timeComponents.length == 1) {
+	  	success = addOneTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+	  } else if(timeComponents.length == 2) {
+	  	success = addTwoTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+	  } else {
+	  	dataUI.setFeedback(FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT);
+	  	return false;
+	  }
+	  
+	  return success;
+	}
+
+	private boolean addTwoTimingEvent(String eventName, String[] timeComponents,
+      FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+      DateAndTimeFormats dateFormats) {
+	  // TODO Auto-generated method stub
+	  return false;
+  }
+
+	/**
+	 * this method is for when the user only enters one timing. the entered event will be given a default 1 hr period
+	 * @param eventName
+	 * @param timeComponents
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @return
+	 */
+	private boolean addOneTimingEvent(String eventName, String[] timeComponents,
+	    FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+	    DateAndTimeFormats dateFormats) {
+	  boolean success = true;
+	  TaskCard eventToBeAdded = new TaskCard();
+	  Date startDate;
+	  
+	  String[] dateAndTime = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
+	  
+	  if(dateAndTime.length == 1 || dateAndTime.length == 2) {
+	  	startDate = checkAndGetDate(dateAndTime, dateFormats);
+	  	
+	  	if(startDate == null) {
+	  		dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+	  		return false;
+	  	}
+	  	
+	  	setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
+	  	dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+	  	fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+	  	RefreshUI.executeRefresh(fileLink, dataUI);
+	  	undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
+	  	
+	  } else {
+	  	dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+	  	return false;
+	  }
 	  return success;
 	}
 
@@ -126,8 +197,7 @@ public class Add2 {
 			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
-			
-			
+		
 		} else {
 			dataUI.setFeedback(FEEDBACK_EXTRA_DETAILS_ARG);
 			return false;
@@ -149,6 +219,38 @@ public class Add2 {
 	  return true;
 	}
 
+	private void setOneTimingEventDetails(TaskCard eventToBeAdded,
+	    Date startDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		
+		Calendar start = GregorianCalendar.getInstance();
+		Calendar end = GregorianCalendar.getInstance();
+		
+		start.setTime(startDate);
+		eventToBeAdded.setStartDay(start);
+		
+		if(start.get(Calendar.HOUR_OF_DAY) == 0 && start.get(Calendar.MINUTE) == 0) {
+			eventToBeAdded.setType(TYPE_ALL_DAY);
+			end.setTime(startDate);
+			end.add(Calendar.DATE, 1);
+			end.add(Calendar.MILLISECOND, -1);
+			
+			eventToBeAdded.setEndDay(end);
+		} else {
+			eventToBeAdded.setType(TYPE_EVENT);
+			end.setTime(startDate);
+			end.add(Calendar.HOUR_OF_DAY, 1);
+			
+			eventToBeAdded.setEndDay(end);
+		}
+	}
+
 	private void setDueDateTaskDetails(TaskCard taskToBeAdded, Date date,
       String details) {
 	  Calendar startDay = GregorianCalendar.getInstance();
@@ -167,6 +269,14 @@ public class Add2 {
 	  taskToBeAdded.setEndDay(endDay);
   }
 
+	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
+	  taskToBeAdded.setName(taskDetails);
+	  taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
+	  taskToBeAdded.setType(TYPE_FLOATING_TASK);
+	  taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
+	  taskToBeAdded.setEndDay(floatingDefaultEndDay);
+  }
+
 	private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
 	  if(dateAndTime.length == 1) {
 	  	String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG];
@@ -181,10 +291,10 @@ public class Add2 {
 	  		time = dateFormats.isComplete24Hr(toBeIdentified);
 	  	}
 	  	
-	  	if(dateFormats.isProperDate(toBeIdentified) != null) {
-	  		date = dateFormats.isProperDate(toBeIdentified);
-	  	} else if(dateFormats.isLazyYearDate(toBeIdentified) != null) {
+	  	if(dateFormats.isLazyYearDate(toBeIdentified) != null) {
 	  		date = dateFormats.isLazyYearDate(toBeIdentified);
+	  	} else if(dateFormats.isProperDate(toBeIdentified) != null) {
+	  		date = dateFormats.isProperDate(toBeIdentified); 
 	  	} else if(dateFormats.isLazyDate(toBeIdentified) != null) {
 	  		date = dateFormats.isLazyDate(toBeIdentified);
 	  	}
@@ -212,10 +322,10 @@ public class Add2 {
 	  		time = dateFormats.isComplete24Hr(timeComponent);
 	  	}
 	  	
-	  	if(dateFormats.isProperDate(dateComponent) != null) {
-	  		date = dateFormats.isProperDate(dateComponent);
-	  	} else if(dateFormats.isLazyYearDate(dateComponent) != null) {
+	  	if(dateFormats.isLazyYearDate(dateComponent) != null) {
 	  		date = dateFormats.isLazyYearDate(dateComponent);
+	  	} else if(dateFormats.isProperDate(dateComponent) != null) {
+	  		date = dateFormats.isProperDate(dateComponent); 
 	  	} else if(dateFormats.isLazyDate(dateComponent) != null) {
 	  		date = dateFormats.isLazyDate(dateComponent);
 	  	}
@@ -233,21 +343,7 @@ public class Add2 {
 	  	
 	  	return cal.getTime();
 	  }
-  }
-
-	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
-	  taskToBeAdded.setName(taskDetails);
-	  taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
-	  taskToBeAdded.setType(TYPE_FLOATING_TASK);
-	  taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
-	  taskToBeAdded.setEndDay(floatingDefaultEndDay);
-  }
-
-	private boolean addEvent(String[] details, FileLinker fileLink,
-      DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
-	  // TODO Auto-generated method stub
-	  return false;
-  }
+	}
 
 	private void resetFlag() {
 		urgent_flag = false;
