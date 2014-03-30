@@ -35,6 +35,7 @@ public class Add2 {
 	private boolean urgent_flag;
 	
 	public Add2() {
+		initCmdTable();
 		resetFlag();
 	}
 	
@@ -90,7 +91,7 @@ public class Add2 {
 	    Undo undoHandler, DateAndTimeFormats dateFormats) {
 	  boolean success;
 		
-		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by ");
+		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by ");
 		if(detailsAndTime.length == 1) {
 			success = addFloatingTask(detailsAndTime[ARRAY_FIRST_ARG], fileLink, dataUI, undoHandler);
 		} else if(detailsAndTime.length == 2) {
@@ -152,6 +153,7 @@ public class Add2 {
       String details) {
 	  Calendar startDay = GregorianCalendar.getInstance();
 	  Calendar endDay = GregorianCalendar.getInstance();
+	  
 	  endDay.setTime(date);
 	  
 	  if(urgent_flag) {
