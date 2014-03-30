@@ -37,10 +37,14 @@ public class DateAndTimeFormats {
 		new SimpleDateFormat("hh.mmaa"),
 	};
 	
-	private static SimpleDateFormat[] hourOnly12HrFormat = {
+	private SimpleDateFormat[] hourOnly12HrFormat = {
 		new SimpleDateFormat("hhaa"),
 	};
 
+	public DateAndTimeFormats() {
+		
+	}
+	
 	public Date isHourOnly(String input) {
 		for(int i = 0; i < hourOnly12HrFormat.length; i++) {
 			SimpleDateFormat formatter = hourOnly12HrFormat[i];
