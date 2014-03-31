@@ -94,7 +94,7 @@ public class Add2 {
 			Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success;
 		
-		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by ");
+		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by | due at ");
 		
 		if(detailsAndTime.length == 1) {
 			success = addFloatingTask(detailsAndTime[ARRAY_FIRST_ARG], fileLink, dataUI, undoHandler);
@@ -251,12 +251,13 @@ public class Add2 {
 					return false;
 				}
 				
-				
 				setCurrentDateTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
 			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 1) {
 				setDateEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
 			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 2) {
 				setMultDaysEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 1 && dateAndTimeEnd.length == 2) {
+				setTodayToUserEndDate(eventToBeAdded, startDate, endDate, eventName);
 			}
 			
 			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
@@ -343,6 +344,26 @@ public class Add2 {
 		eventToBeAdded.setType(TYPE_EVENT);
 	}
 
+	private void setTodayToUserEndDate(TaskCard eventToBeAdded, Date startDate,
+	    Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}	
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+	
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		eventToBeAdded.setType(TYPE_EVENT);
+	}
+
 	private void setOneTimingEventDetails(TaskCard eventToBeAdded,
 			Date startDate, String eventName) {
 		eventToBeAdded.setName(eventName);
@@ -403,7 +424,7 @@ public class Add2 {
 	
 	private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
 		if(dateAndTime.length == 1) {
-			String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG];
+			String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG].trim();
 			Date time = null;
 			Date date = null;
 			
@@ -433,8 +454,8 @@ public class Add2 {
 				return date;
 			}
 		} else {
-			String dateComponent = dateAndTime[ARRAY_FIRST_ARG];
-			String timeComponent = dateAndTime[ARRAY_SECOND_ARG];
+			String dateComponent = dateAndTime[ARRAY_FIRST_ARG].trim();
+			String timeComponent = dateAndTime[ARRAY_SECOND_ARG].trim();
 			Date time = null;
 			Date date = null;
 			
