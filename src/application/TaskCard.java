@@ -71,11 +71,12 @@ public class TaskCard {
 				taskString += " ";
 			}
 		}
-		if(type.equals("FT")){
+		if(type.equals("FT") && type.equals("T")){
 			taskString += name + ", " + dateString.format(startDay.getTime()); 
 		} else {
 			taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
 		}
+		
 		
 		return taskString;
 	}
