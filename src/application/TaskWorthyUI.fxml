@@ -10,7 +10,7 @@
 <?import javafx.scene.text.*?>
 <?import np.com.ngopal.control.AutoFillTextBox.*?>
 
-<AnchorPane fx:id="anchor" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+<AnchorPane fx:id="anchor" disable="false" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
   <!-- TODO Add Nodes -->
   <children>
     <Text fx:id="title" disable="false" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
@@ -32,7 +32,7 @@
       </font>
     </Text>
     <Text fx:id="eventCounter" disable="false" font="$x2" layoutX="558.0" layoutY="71.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Events: 0" textAlignment="LEFT" />
-    <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="58.0" onKeyPressed="#changeTab" prefHeight="276.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="58.0" mouseTransparent="true" onKeyPressed="#changeTab" prefHeight="276.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="incompleteTab" closable="false" onSelectionChanged="#openIncompleteTab" text="Incomplete">
           <content>
@@ -190,7 +190,7 @@
         </Tab>
       </tabs>
     </TabPane>
-    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="269.0" layoutY="6.0" prefHeight="48.3984375" prefWidth="365.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab OR &quot;view &lt;Tab name&gt;&quot; to switch between the tabs." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="70.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">

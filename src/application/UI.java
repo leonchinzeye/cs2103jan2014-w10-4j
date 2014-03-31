@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.fxml.FXMLLoader;
 
 public class UI extends Application {
@@ -15,6 +16,9 @@ public class UI extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("TaskWorthy");
+		primaryStage.setResizable(false);
+		primaryStage.centerOnScreen();
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		
 		try {
 			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));

@@ -19,7 +19,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW
 	}
 	
 	public CommandHandler() {
@@ -54,7 +54,8 @@ public class CommandHandler {
 		
 		String commandTypeString = tokenizedInput[0];
 		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
-				
+		
+		String response = "";
 		switch(commandType) {
 			case ADD:
 				fileLink.resetState();
@@ -74,19 +75,26 @@ public class CommandHandler {
 			case ENTER:
 				fileLink.resetState();
 				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback("Read me!");
 				break;
 			case MARK:
 				markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
 				break;
 			case UNDO:
-				String response = undoHandler.executeUndo(fileLink);
+				response = undoHandler.executeUndo(fileLink);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 				dataUI.setFeedback(response);
 				break;
 			case REDO:
-				undoHandler.executeRedo(fileLink);
+				response = undoHandler.executeRedo(fileLink);
 				RefreshUI.executeRefresh(fileLink, dataUI);
-				dataUI.setFeedback(null);
+				dataUI.setFeedback(response);
+				break;
+			case HELP:
+				dataUI.setFeedback("This will return responses to you based on your commands.");
+				break;
+			case VIEW:
+				dataUI.setFeedback("Read me!");
 				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
@@ -118,6 +126,10 @@ public class CommandHandler {
 			return COMMAND_TYPE.UNDO;
 		} else if(commandTypeString.equals("redo")) {
 			return COMMAND_TYPE.REDO;
+		} else if(commandTypeString.equals("help")) {
+			return COMMAND_TYPE.HELP;
+		} else if(commandTypeString.equals("view")) {
+			return COMMAND_TYPE.VIEW;
 		} else if (commandTypeString.equals("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {

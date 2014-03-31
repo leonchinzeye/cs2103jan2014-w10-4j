@@ -134,6 +134,7 @@ public class TaskController {
 	private Stack<String> forward = new Stack<String>();
 	private CommandHandler commandHandle;
 	private DataUI dataUI;
+	private String lastInput = "";
 	
 	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
@@ -219,6 +220,18 @@ public class TaskController {
 			tab.getSelectionModel().select(incompleteTab);
 		} else if (lastInput.equalsIgnoreCase("view completed")) {
 			tab.getSelectionModel().select(completeTab);
+		} else if (lastInput.equalsIgnoreCase("view events")) {
+			if (incompleteTab.isSelected()) {
+				eventPaneIncomplete.setExpanded(true);
+			} else if (completeTab.isSelected()) {
+				eventPaneComplete.setExpanded(true);
+			}
+		} else if (lastInput.equalsIgnoreCase("view tasks")) {
+			if (incompleteTab.isSelected()) {
+				taskPaneIncomplete.setExpanded(true);
+			} else if (completeTab.isSelected()) {
+				taskPaneComplete.setExpanded(true);
+			}
 		}
 		anchor.requestFocus();
 			
@@ -289,7 +302,9 @@ public class TaskController {
 			commandHandle.executeCmd("");
 			backToMain();
 		}
-		focusTextInput(key);//check if the user wants to type something
+		if (!helpTab.isSelected()) {
+			focusTextInput(key);//check if the user wants to type something
+		}
 		scrollTable(key);
 		changePanel(key);//shortcuts to change between panels
 		changeTab(key);//shortcuts to change between tabs
@@ -445,7 +460,6 @@ public class TaskController {
 	
 	@FXML
 	public void openHelpTab() {
-		anchor.requestFocus();
 		eventCounter.setText("Events: 0");
 		taskCounter.setText("Tasks: 0");
 		notification.setText("This will return responses to you based on your commands.");
@@ -488,31 +502,31 @@ public class TaskController {
 		} else if (command.getText().equals("")) {
 			validPane.setStyle("-fx-background-color: green;");
 		} else {
-			notification.setText("Read me!");
 			validPane.setStyle("-fx-background-color: red;");
 		}
 	}
 	
-	public void returnLastInput(KeyEvent key) {
-		String lastInput = "";
-		String nextInput = "";
-		
+	public void returnLastInput(KeyEvent key) {		
 		if(key.getCode().equals(KeyCode.UP)) {
 			if (!history.isEmpty()) {
 				lastInput = history.pop();
 				command.setText(lastInput);
 				command.end();
-				forward.push(lastInput);
 			} else {
+				if (!lastInput.isEmpty()) {
+					forward.push(lastInput);
+				}
 				command.clear();
 			}
 		} else if(key.getCode().equals(KeyCode.DOWN)) {
 			if (forward.isEmpty()) {
+				if (!lastInput.isEmpty()) {
+					history.push(lastInput);
+				}
 				command.clear();
 			} else {
-				nextInput = forward.pop();
-				history.push(nextInput);
-				command.setText(nextInput);
+				lastInput = forward.pop();
+				command.setText(lastInput);
 				command.end();
 			}
 		}
