@@ -4,6 +4,7 @@
 <?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.*?>
@@ -18,7 +19,7 @@
         <Font name="Moire" size="40.0" />
       </font>
     </Text>
-    <Text layoutX="428.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+H to access the Help guide">
+    <Text layoutX="428.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+H to access the Help guide">
       <font>
         <Font name="Moire" size="12.0" />
       </font>
@@ -341,6 +342,16 @@
         <Text font="$x3" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>
     </AnchorPane>
+    <ImageView fx:id="closeButton" fitHeight="14.0" fitWidth="14.0" layoutX="619.0" layoutY="5.0" onMouseClicked="#closeWindow" onMouseEntered="#closeEnter" onMouseExited="#closeExit" pickOnBounds="true" preserveRatio="true">
+      <image>
+        <Image url="@../closeButton.png" />
+      </image>
+    </ImageView>
+    <ImageView fx:id="minimizeButton" fitHeight="14.0" fitWidth="14.0" layoutX="600.0" layoutY="5.0" onMouseClicked="#minimizeWindow" onMouseEntered="#minimizeEnter" onMouseExited="#minimizeExit" pickOnBounds="true" preserveRatio="true" visible="true">
+      <image>
+        <Image url="@../minimizeButton.png" />
+      </image>
+    </ImageView>
   </children>
   <stylesheets>
     <URL value="@emerald.css" />

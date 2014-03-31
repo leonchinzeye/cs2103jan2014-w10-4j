@@ -39,6 +39,10 @@ public class UI extends Application {
 		}
 	}
 	
+	public Stage sendPrimary() {
+		return primaryStage;
+	}
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
