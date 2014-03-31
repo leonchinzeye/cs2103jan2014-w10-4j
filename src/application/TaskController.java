@@ -1,14 +1,8 @@
-/*
- * Things to include:
- * autocomplete
- * autofocus to edited table
- * 
- */
-
 package application;
 
 import java.util.Stack;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -21,11 +15,15 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 public class TaskController {
 	@FXML
@@ -34,6 +32,10 @@ public class TaskController {
 	private AnchorPane helpAnchor;
 	@FXML
 	private AnchorPane helpAnchor2;
+	@FXML
+	private ImageView closeButton;
+	@FXML
+	private ImageView minimizeButton;
 	@FXML
 	private TabPane tab;
 	@FXML
@@ -135,11 +137,17 @@ public class TaskController {
 	private CommandHandler commandHandle;
 	private DataUI dataUI;
 	private String lastInput = "";
+	Image closeButtonDefault = new Image("/closeButton.png");
+	Image closeButtonHover = new Image("/closeButtonHover.png");
+	Image minimizeButtonDefault = new Image("/minimizeButton.png");
+	Image minimizeButtonHover = new Image("/minimizeButtonHover.png");
 	
 	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
 	private final ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
+	
+	private Stage primary = ui.sendPrimary();
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
@@ -475,15 +483,45 @@ public class TaskController {
 		returnLastInput(key);
 	}
 	
+	@FXML
+	public void closeEnter (MouseEvent mouse) {
+		closeButton.setImage(closeButtonHover);
+	}
+	
+	@FXML
+	public void closeExit (MouseEvent mouse) {
+		closeButton.setImage(closeButtonDefault);
+	}
+	
+	@FXML
+	public void closeWindow (MouseEvent mouse) {
+		Platform.exit();
+	}
+	
+	@FXML
+	public void minimizeEnter (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonHover);
+	}
+	
+	@FXML
+	public void minimizeExit (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonDefault);
+	}
+	
+	@FXML
+	public void minimizeWindow (MouseEvent mouse) {
+		primary.setIconified(true);
+	}
+	
 	public void setResponseBasedOnCommand(KeyEvent key) {
 		if (command.getText().equals("add")) {
-			notification.setText("add <Name> due by <DD/MM> OR add <Name>; <DD/MM/YYYY> <HH:mm>");
+			notification.setText("add <Name> due by <End> OR add <Name>; <Start to End>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("del")) {
 			notification.setText("del<t/e/tc/ec> <Integer>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("edit")) {
-			notification.setText("edit<t/e/tc/ec> <Integer>; <Attribute>: <Edited entry>");
+			notification.setText("edit<t/e> <Integer>; <Attribute>: <Edited entry>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("help")) {
 			validPane.setStyle("-fx-background-color: green;");
