@@ -76,6 +76,7 @@ public class DataUI {
 					taskData.setEndTime(timeFormat.format(endDay.getTime()));
 				}
 			}
+			
 			incompleteTasks.add(taskData);
 		}
 	}

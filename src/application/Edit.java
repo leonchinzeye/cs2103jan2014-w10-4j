@@ -205,7 +205,6 @@ public class Edit {
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeEndDate = false;
-		boolean changeEndTime = false;
 		
 		boolean isDateAndTime = false;
 		boolean isDate = false;
@@ -227,10 +226,7 @@ public class Edit {
 			if (tokenizedAttributes[i].contains("End Date: ")) {
 				changeEndDate = true;
 			}
-			if (tokenizedAttributes[i].contains("End Time: ")) {
-				changeEndTime = true;
-			}
-			if (!changeName && !changePriority && !changeEndDate && !changeEndTime) {
+			if (!changeName && !changePriority && !changeEndDate) {
 				return success = false;
 			}
 		}
@@ -248,14 +244,6 @@ public class Edit {
 		 * Need to correct this one.
 		 */
 		if(changeEndDate == false) {
-			replacementTask.setEndDay(origTask.getEndDay());
-			replacementTask.setType(origTask.getType());
-		}
-		
-		/*
-		 * Need to correct this one too.
-		 */
-		if(changeEndTime == false) {
 			replacementTask.setEndDay(origTask.getEndDay());
 			replacementTask.setType(origTask.getType());
 		}
@@ -298,6 +286,7 @@ public class Edit {
 				 */
 				String endDateEntry = parameterToEdit[1].trim();				
 				//check if time changes (reserved keywords: nth, empty, nothing) 
+				
 				try {
 					Date changeDate = dateAndTimeFormat.parse(endDateEntry);
 					Calendar cal = Calendar.getInstance();
@@ -308,6 +297,11 @@ public class Edit {
 				} catch(ParseException e) {
 					//may be date or time format only
 				}
+				
+				if((origTask.getType().equals("FT")) && (isDateAndTime == true)) {
+					replacementTask.setType("T");
+				}
+				
 				
 				try {
 					Date changeDate = dateFormat.parse(endDateEntry);
@@ -320,6 +314,10 @@ public class Edit {
 					
 				}
 				
+				if((origTask.getType().equals("FT")) && (isDate == true)) {
+					replacementTask.setType("T");
+				}
+				
 				try {
 					Date changeDate = timeFormat.parse(endDateEntry);
 					Calendar cal = Calendar.getInstance();
@@ -329,6 +327,10 @@ public class Edit {
 					continue;
 				} catch(ParseException e) {
 					
+				}
+				
+				if((origTask.getType().equals("FT")) && (isTime == true)) {
+					replacementTask.setType("T");
 				}
 				
 				if((isDateAndTime && isTime && isDate) == false) {
@@ -497,6 +499,7 @@ public class Edit {
 				
 				try {
 					Date changeDate = dateFormat.parse(endDateEntry);
+					
 					Calendar cal = Calendar.getInstance();
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
