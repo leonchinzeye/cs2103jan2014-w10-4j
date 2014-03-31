@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import np.com.ngopal.control.AutoFillTextBox.*?>
+
+<AnchorPane fx:id="anchor" disable="false" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+  <!-- TODO Add Nodes -->
+  <children>
+    <Text fx:id="title" disable="false" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
+      <font>
+        <Font name="Moire" size="40.0" />
+      </font>
+    </Text>
+    <Text layoutX="428.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+H to access the Help guide">
+      <font>
+        <Font name="Moire" size="12.0" />
+      </font>
+    </Text>
+    <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="591.0" layoutY="385.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
+    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="385.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
+    <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="342.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
+    <Text fx:id="taskCounter" layoutX="565.0" layoutY="88.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks: 0" textAlignment="RIGHT">
+      <font>
+        <Font name="Moire" size="15.0" fx:id="x2" />
+      </font>
+    </Text>
+    <Text fx:id="eventCounter" disable="false" font="$x2" layoutX="558.0" layoutY="71.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Events: 0" textAlignment="LEFT" />
+    <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="58.0" mouseTransparent="true" onKeyPressed="#changeTab" prefHeight="276.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
+      <tabs>
+        <Tab fx:id="incompleteTab" closable="false" onSelectionChanged="#openIncompleteTab" text="Incomplete">
+          <content>
+            <AnchorPane id="Content" fx:id="incompleteAnchor" minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="612.0">
+              <children>
+                <Accordion fx:id="incompleteAccordion" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
+                  <expandedPane>
+                    <TitledPane fx:id="eventPaneIncomplete" animated="false" focusTraversable="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Events">
+                      <content>
+                        <AnchorPane id="Content" fx:id="incompleteEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" fx:id="eventTableIncomplete" disable="false" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="1.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colEventIDIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colEventPriorityIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="225.0" resizable="false" text="Name" fx:id="colEventNameIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Date" fx:id="colEventStartDateIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Time" fx:id="colEventStartTimeIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Date" fx:id="colEventEndDateIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Time" fx:id="colEventEndTimeIncomplete" />
+                              </columns>
+                            </TableView>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </expandedPane>
+                  <panes>
+                    <fx:reference source="eventPaneIncomplete" />
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneIncomplete" animated="false" graphicTextGap="4.0" mouseTransparent="false" onKeyPressed="#changePanel" text="Tasks">
+                      <content>
+                        <AnchorPane id="Content" fx:id="incompleteTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" fx:id="taskTableIncomplete" disable="false" editable="false" minWidth="-1.0" prefHeight="188.0" prefWidth="611.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colTaskIDIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colTaskPriorityIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="318.0" resizable="false" text="Name" fx:id="colTaskNameIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="103.0" resizable="false" text="End Date" fx:id="colTaskEndDateIncomplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="103.0" resizable="false" text="End Time" fx:id="colTaskEndTimeIncomplete" />
+                              </columns>
+                            </TableView>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </panes>
+                </Accordion>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="completeTab" closable="false" onSelectionChanged="#openCompleteTab" text="Completed">
+          <content>
+            <AnchorPane id="Content" fx:id="completeAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Accordion id="event" fx:id="completeAccordion" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
+                  <expandedPane>
+                    <TitledPane id="eventPaneIncomplete" fx:id="eventPaneComplete" animated="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Events">
+                      <content>
+                        <AnchorPane id="Content" fx:id="completeEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" fx:id="eventTableComplete" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colEventIDComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colEventPriorityComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="225.0" resizable="false" text="Name" fx:id="colEventNameComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Date" fx:id="colEventStartDateComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Time" fx:id="colEventStartTimeComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Date" fx:id="colEventEndDateComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Time" fx:id="colEventEndTimeComplete" />
+                              </columns>
+                            </TableView>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </expandedPane>
+                  <panes>
+                    <fx:reference source="eventPaneComplete" />
+                    <TitledPane id="taskPanelIncomplete" fx:id="taskPaneComplete" animated="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Tasks">
+                      <content>
+                        <AnchorPane id="Content" fx:id="completeTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" fx:id="taskTableComplete" prefHeight="188.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colTaskIDComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colTaskPriorityComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="318.0" resizable="false" text="Name" fx:id="colTaskNameComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="103.0" resizable="false" text="End Date" fx:id="colTaskEndDateComplete" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="104.0" resizable="false" text="End Time" fx:id="colTaskEndTimeComplete" />
+                              </columns>
+                            </TableView>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </panes>
+                </Accordion>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+        <Tab fx:id="helpTab" closable="true" disable="false" onSelectionChanged="#openHelpTab" text="Help">
+          <content>
+            <AnchorPane id="AnchorPane" mouseTransparent="true">
+              <children>
+                <Accordion id="event" disable="false" layoutX="0.0" layoutY="0.0" mouseTransparent="true" prefHeight="240.0" prefWidth="612.0">
+                  <expandedPane>
+                    <TitledPane id="eventPaneIncomplete" fx:id="x1" animated="false" disable="false" focusTraversable="false" mouseTransparent="true" onKeyPressed="#changePanel" text="Events">
+                      <content>
+                        <AnchorPane id="Content" disable="false" minHeight="0.0" minWidth="0.0" mouseTransparent="true" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" disable="false" editable="false" focusTraversable="false" mouseTransparent="true" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="225.0" resizable="false" text="Name" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Date" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="Start Time" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Date" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="75.0" resizable="false" text="End Time" />
+                              </columns>
+                            </TableView>
+                            <ScrollBar layoutX="597.0" layoutY="29.0" orientation="VERTICAL" prefHeight="157.19921875" />
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </expandedPane>
+                  <panes>
+                    <fx:reference source="x1" />
+                    <TitledPane id="taskPanelIncomplete" animated="false" disable="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Tasks">
+                      <content>
+                        <AnchorPane id="Content" disable="false" minHeight="0.0" minWidth="0.0" mouseTransparent="true" prefHeight="180.0" prefWidth="200.0">
+                          <children>
+                            <TableView id="table" disable="false" mouseTransparent="true" prefHeight="188.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                              <columns>
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="318.0" resizable="false" text="Name" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="103.0" resizable="false" text="End Date" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="104.0" resizable="false" text="End Time" />
+                              </columns>
+                            </TableView>
+                          </children>
+                        </AnchorPane>
+                      </content>
+                    </TitledPane>
+                  </panes>
+                </Accordion>
+              </children>
+            </AnchorPane>
+          </content>
+        </Tab>
+      </tabs>
+    </TabPane>
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
+      <children>
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="269.0" layoutY="6.0" prefHeight="48.3984375" prefWidth="365.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab OR &quot;view &lt;Tab name&gt;&quot; to switch between the tabs." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="70.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="26.0" layoutY="167.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="60.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="194.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="348.0" layoutY="167.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="422.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="495.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="573.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Line id="idLine" endX="17.0" endY="36.0" layoutX="109.0" layoutY="186.0" startX="-84.0" startY="-23.0" visible="true" />
+        <Line id="priorityLine" endX="27.0" endY="24.0" layoutX="149.0" layoutY="192.0" startX="-89.0" startY="-30.0" visible="true" />
+        <Line id="nameLine" endX="-17.0" endY="25.0" layoutX="281.0" layoutY="191.0" startX="-86.0" startY="-29.0" visible="true" />
+        <Line id="startDateLine" endX="-85.0" endY="26.0" layoutX="433.0" layoutY="190.0" startX="-85.0" startY="-27.0" visible="true" />
+        <Line id="startTimeLine" endX="-122.0" endY="27.0" layoutX="507.0" layoutY="189.0" startX="-84.0" startY="-27.0" visible="true" />
+        <Line id="endDateLine" endX="-155.0" endY="28.0" layoutX="580.0" layoutY="188.0" startX="-85.0" startY="-26.0" visible="true" />
+        <Line id="endTimeLine" endX="-156.0" endY="28.0" layoutX="658.0" layoutY="187.0" startX="-86.0" startY="-25.0" visible="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="126.0" layoutY="201.0" prefHeight="34.999908447265625" prefWidth="378.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="91.0" layoutY="289.0" prefHeight="54.0" prefWidth="265.263916015625" styleClass="TextArea" text="This contains the list of tasks.&#10;Use Ctrl+Up or Ctrl+Down OR &#10;the command &quot;view &lt;Panel name&gt;&quot; to show it." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="86.0" layoutY="332.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Line id="endTimeLine" endX="-62.0" endY="50.0" layoutX="667.0" layoutY="323.0" startX="-85.0" startY="-24.0" visible="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="481.0" layoutY="287.0" prefHeight="43.0" prefWidth="140.99990000000253" styleClass="TextArea" text="Green: Valid command&#10;Red: Invalid command" visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="605.0" layoutY="389.0" rotate="180.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Text layoutX="235.0" layoutY="260.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return">
+          <font>
+            <Font name="Moire" size="20.0" fx:id="x3" />
+          </font>
+        </Text>
+        <Text font="$x3" layoutX="175.0" layoutY="283.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+      </children>
+    </AnchorPane>
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
+      <children>
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="207.0" layoutY="205.0" mouseTransparent="true" prefHeight="134.0" prefWidth="250.0" styleClass="TextArea" text="&quot;add &lt;Name&gt; due by &lt;DD/MM&gt;&quot;&#10;&quot;add &lt;Name&gt;; &lt;DD/MM/YYYY&gt; &lt;HH:mm&gt;&quot;&#10;&quot;del&lt;t/e/tc/ec&gt; &lt;Digit&gt;&quot;&#10;&quot;edit&lt;t/e/tc/ec&gt; &lt;Digit&gt;&quot;&#10;&quot;mark&lt;t/e&gt; &lt;Digit&gt;&quot;&#10;&quot;unmark&lt;t/e&gt; &lt;Digit&gt;&quot;&#10;&quot;search &lt;Query OR Priority OR Date&gt;&quot;&#10;&quot;undo/redo&quot;&#10;&quot;view &lt;Tab/Panel&gt;&quot;" visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="193.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="241.0" rotate="90.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="426.0" layoutY="3.0" prefHeight="43.0001220703125" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="595.0" layoutY="62.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Text font="$x3" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text font="$x3" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
+      </children>
+    </AnchorPane>
+  </children>
+  <stylesheets>
+    <URL value="@emerald.css" />
+  </stylesheets>
+</AnchorPane>
