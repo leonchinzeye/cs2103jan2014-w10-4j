@@ -136,7 +136,7 @@ public class TaskController {
 	private Stack<String> forward = new Stack<String>();
 	private CommandHandler commandHandle;
 	private DataUI dataUI;
-	private String lastInput = "";
+	private String lastInput = null;
 	Image closeButtonDefault = new Image("/closeButton.png");
 	Image closeButtonHover = new Image("/closeButtonHover.png");
 	Image minimizeButtonDefault = new Image("/minimizeButton.png");
@@ -546,26 +546,30 @@ public class TaskController {
 	
 	public void returnLastInput(KeyEvent key) {		
 		if(key.getCode().equals(KeyCode.UP)) {
+			if(this.lastInput != null) {
+				forward.push(this.lastInput);
+			}
+			
 			if (!history.isEmpty()) {
-				lastInput = history.pop();
-				command.setText(lastInput);
+				this.lastInput = history.pop();
+				command.setText(this.lastInput);
 				command.end();
 			} else {
-				if (!lastInput.isEmpty()) {
-					forward.push(lastInput);
-				}
+				this.lastInput = null;
 				command.clear();
 			}
 		} else if(key.getCode().equals(KeyCode.DOWN)) {
-			if (forward.isEmpty()) {
-				if (!lastInput.isEmpty()) {
-					history.push(lastInput);
-				}
-				command.clear();
-			} else {
-				lastInput = forward.pop();
-				command.setText(lastInput);
+			if(this.lastInput != null) {
+				history.push(this.lastInput);
+			}
+			
+			if (!forward.isEmpty()) {
+				this.lastInput = forward.pop();
+				command.setText(this.lastInput);
 				command.end();
+			} else {
+				this.lastInput = null;
+				command.clear();
 			}
 		}
 	}
