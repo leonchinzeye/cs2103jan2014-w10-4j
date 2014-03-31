@@ -171,7 +171,7 @@ public class Delete {
 	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
-		ArrayList<TaskCard> compTasks = fileLink.getIncompleteTasks();
+		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
 		
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
@@ -182,7 +182,7 @@ public class Delete {
 			} else {
 				TaskCard task = compTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
-				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
+				fileLink.deleteHandling(deletedIndex - 1, DELETE_COMPLETE_TASK);
 				
 				undoHandler.storeUndo("delete", DELETE_COMPLETE_TASK, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
@@ -198,7 +198,7 @@ public class Delete {
 	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
-		ArrayList<TaskCard> compEvent = fileLink.getIncompleteEvents();
+		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
 		
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
@@ -209,7 +209,7 @@ public class Delete {
 			} else {
 				TaskCard event = compEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
-				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
+				fileLink.deleteHandling(deletedIndex - 1, DELETE_COMPLETE_EVENTS);
 				
 				undoHandler.storeUndo("delete", DELETE_COMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);

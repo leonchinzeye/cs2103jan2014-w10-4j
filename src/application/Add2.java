@@ -416,7 +416,12 @@ public class Add2 {
 	
 	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
 		taskToBeAdded.setName(taskDetails);
-		taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
+		
+		if(urgent_flag) {
+			taskToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
+		}
 		taskToBeAdded.setType(TYPE_FLOATING_TASK);
 		taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
 		taskToBeAdded.setEndDay(floatingDefaultEndDay);
