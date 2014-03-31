@@ -25,7 +25,9 @@ public class DateAndTimeFormats {
 	private static SimpleDateFormat[] lazyDateFormats = {
 		new SimpleDateFormat("dd/MM yyyy"),
 		new SimpleDateFormat("dd-MM yyyy"),
-		new SimpleDateFormat("dd MMM yyyy")
+		new SimpleDateFormat("dd MMM yyyy"),
+		new SimpleDateFormat("ddMMM yyyy"),
+		new SimpleDateFormat("dd/MMM yyyy")
 	};
 	
 	private static SimpleDateFormat[] complete24HrFormat = {
