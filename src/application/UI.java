@@ -11,7 +11,8 @@ import javafx.fxml.FXMLLoader;
 
 public class UI extends Application {
 	private Stage primaryStage;
-	
+	public static Stage primaryS;
+	 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
@@ -36,10 +37,7 @@ public class UI extends Application {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public Stage sendPrimary() {
-		return primaryStage;
+		primaryS = primaryStage;
 	}
 	
 	public static void main(String[] args) {
