@@ -154,13 +154,19 @@ public class TaskController {
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		dataUI = new DataUI();
+		notification = new TextField();
+		command = new TextField();
+		anchor = new AnchorPane();
+		eventTableIncomplete = new TableView<EventDataUI>();
+		taskTableIncomplete = new TableView<TaskDataUI>();
+		eventTableComplete = new TableView<EventDataUI>();
+		taskTableComplete = new TableView<TaskDataUI>();
+		tab = new TabPane();
 		eventCounter = new Text("Events: 0");
 		taskCounter = new Text("Tasks: 0");
 		validPane = new Pane();
 		helpAnchor = new AnchorPane();
 		testingResponse = "";
-		notification = new TextField();
-		command = new TextField();
 	}
 	
 	@FXML
@@ -277,7 +283,7 @@ public class TaskController {
 			tab.getSelectionModel().select(completeTab);
 			taskPaneComplete.setExpanded(true);
 		}
-//		anchor.requestFocus();
+		anchor.requestFocus();
 			
 		dataUI = commandHandle.executeCmd(lastInput);
 		testingResponse = dataUI.getFeedback();

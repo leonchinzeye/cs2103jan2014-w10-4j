@@ -1,4 +1,4 @@
-15
+10
 Complete sales report
 T 31/03/2014 13:36 04/04/2014 12:00 2
 Complete product demo 
@@ -19,13 +19,3 @@ Watch all the Star Wars episodes
 FT 01/04/2014 20:07 31/12/9999 23:59 1
 Start working out
 FT 01/04/2014 20:08 31/12/9999 23:59 1
-Read the Book Thief
-FT 02/04/2014 02:02 31/12/9999 23:59 1
-Read the Book Thief
-FT 02/04/2014 02:04 31/12/9999 23:59 1
-Read the Book Thief
-FT 02/04/2014 02:06 31/12/9999 23:59 1
-Read the Book Thief
-FT 02/04/2014 02:06 31/12/9999 23:59 1
-Read the Book Thief
-FT 02/04/2014 02:07 31/12/9999 23:59 1
