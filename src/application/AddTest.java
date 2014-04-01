@@ -18,7 +18,7 @@ public class AddTest {
 		FileLinker adddFileLinker = new FileLinker();
 		DataUI addUI = new DataUI();
 		addUI.configIncompleteTasks(adddFileLinker);
-		Add newAddWithWrongCommand = new Add();
+		AddOld newAddWithWrongCommand = new AddOld();
 		
 		newAddWithWrongCommand.executeAdd(wrongAdd, adddFileLinker, addUI, undoHandler);
 		
@@ -29,7 +29,7 @@ public class AddTest {
 		FileLinker addFileLinker = new FileLinker();
 		DataUI addWithoutEntry = new DataUI();
 		addWithoutEntry.configIncompleteTasks(addFileLinker);
-		Add newAddWithoutEntry = new Add();
+		AddOld newAddWithoutEntry = new AddOld();
 		newAddWithoutEntry.executeAdd(addWithOutAnyEntry, addFileLinker, addWithoutEntry, undoHandler);
 		
 		assertEquals("You didn't enter a task! Please enter a task!", addWithoutEntry.getFeedback());
@@ -42,7 +42,7 @@ public class AddTest {
 		FileLinker addTokenLinker = new FileLinker();
 		DataUI addTokenUI = new DataUI();
 		addTokenUI.configIncompleteTasks(addTokenLinker);
-		Add newAddWithTooManyTokens = new Add();
+		AddOld newAddWithTooManyTokens = new AddOld();
 		newAddWithTooManyTokens.executeAdd(addWithTooManyTokenizers, addTokenLinker, addTokenUI, undoHandler);
 		
 		assertEquals("That was an invalid format for adding a task :(", addTokenUI.getFeedback());
@@ -55,7 +55,7 @@ public class AddTest {
 		FileLinker addFLinker = new FileLinker();
 		DataUI addfUI = new DataUI();
 		addfUI.configIncompleteTasks(addFLinker);
-		Add newAddFProper = new Add();
+		AddOld newAddFProper = new AddOld();
 		newAddFProper.executeAdd(addFloatingTask, addFLinker, addfUI, undoHandler);
 		
 		assertEquals ("Task added!", addfUI.getFeedback());
