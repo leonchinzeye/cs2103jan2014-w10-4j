@@ -11,7 +11,7 @@
 <?import javafx.scene.text.*?>
 <?import np.com.ngopal.control.AutoFillTextBox.*?>
 
-<AnchorPane fx:id="anchor" disable="false" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
+<AnchorPane fx:id="anchor" disable="false" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="640.0" mouseTransparent="false" onKeyPressed="#scrollTable" onKeyReleased="#keystrokes" prefHeight="430.0" prefWidth="640.0" style="" styleClass="anchor" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="application.TaskController">
   <!-- TODO Add Nodes -->
   <children>
     <Text fx:id="title" disable="false" layoutX="14.0" layoutY="47.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="TaskWorthy">
