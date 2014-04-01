@@ -263,10 +263,10 @@ public class TaskController {
 			tab.getSelectionModel().select(incompleteTab);
 			taskPaneIncomplete.setExpanded(true);
 		} else if (lastInput.equalsIgnoreCase("view completed events")) {
-			tab.getSelectionModel().select(incompleteTab);
+			tab.getSelectionModel().select(completeTab);
 			eventPaneComplete.setExpanded(true);
 		} else if (lastInput.equalsIgnoreCase("view completed events")) {
-			tab.getSelectionModel().select(incompleteTab);
+			tab.getSelectionModel().select(completeTab);
 			taskPaneComplete.setExpanded(true);
 		}
 		anchor.requestFocus();
@@ -389,6 +389,7 @@ public class TaskController {
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
 					bar.setValue(bar.getValue() + 0.5);
+					System.out.println(bar.getValue());
 				}
 			} else if (tab.getSelectionModel().isSelected(1)) {
 				if (eventPaneComplete.isExpanded()) {
@@ -407,6 +408,7 @@ public class TaskController {
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
 					bar.setValue(bar.getValue() - 0.5);
+					System.out.println(bar.getValue());
 				}
 			} else if (tab.getSelectionModel().isSelected(1)) {
 				if (eventPaneComplete.isExpanded()) {
