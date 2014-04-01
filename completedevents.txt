@@ -1,11 +1,11 @@
 5
 Meeting with the boss
 E 15/03/2014 10:00 15/03/2014 14:00 0
-Meeting with new clients
-E 18/03/2014 12:00 18/03/2014 14:00 2
 Meeting with the group
 E 21/03/2014 14:00 21/03/2014 16:00 2
 Presentation for the Product X
 E 24/03/2014 09:00 24/03/2014 12:00 2
 Project discussion 
 E 29/03/2014 12:00 29/03/2014 14:00 2
+Site visit for new project
+E 18/04/2014 09:00 18/04/2014 13:00 2

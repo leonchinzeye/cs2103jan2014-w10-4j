@@ -541,7 +541,7 @@ public class TaskController {
 			taskTableIncomplete.getSelectionModel().clearSelection();
 			eventTableComplete.getSelectionModel().clearSelection();
 			taskTableComplete.getSelectionModel().clearSelection();
-			notification.setText("Read me!");
+			validPane.setStyle("-fx-background-color: green;");
 		}
 		
 		if (input.matches("\\b.+|/x")) {
