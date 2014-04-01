@@ -265,7 +265,7 @@ public class TaskController {
 		} else if (lastInput.equalsIgnoreCase("view completed events")) {
 			tab.getSelectionModel().select(completeTab);
 			eventPaneComplete.setExpanded(true);
-		} else if (lastInput.equalsIgnoreCase("view completed events")) {
+		} else if (lastInput.equalsIgnoreCase("view completed tasks")) {
 			tab.getSelectionModel().select(completeTab);
 			taskPaneComplete.setExpanded(true);
 		}
