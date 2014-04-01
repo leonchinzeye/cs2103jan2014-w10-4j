@@ -1,5 +1,6 @@
 package application;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -61,10 +62,10 @@ public class Edit {
 	 */
 	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = false;
-
+		
 		String[] tokenizedInput = userInput.trim().split("\\s+", 3);
 		String cmd = tokenizedInput[FIRST_ARGUMENT];
-			
+		
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
@@ -217,13 +218,15 @@ public class Edit {
 		 */
 		
 		for(int i = 0; i < tokenizedAttributes.length; i++) {
-			if (tokenizedAttributes[i].contains("Name: ")) {
+			String testingInput = tokenizedAttributes[i].toLowerCase();
+			
+			if (testingInput.contains("name:")) {
 				changeName = true;
 			}
-			if (tokenizedAttributes[i].contains("Priority: ")) {
+			if (testingInput.contains("priority:")) {
 				changePriority = true;
 			}
-			if (tokenizedAttributes[i].contains("End Date: ")) {
+			if(testingInput.contains("end:")) {
 				changeEndDate = true;
 			}
 			if (!changeName && !changePriority && !changeEndDate) {
@@ -280,11 +283,11 @@ public class Edit {
 					dataUI.setFeedback("You've entered an invalid priority level :(");
 					return false;
 				}
-			} else if(parameterToEdit[0].equalsIgnoreCase("End Date")) {
+			} else if(parameterToEdit[0].equalsIgnoreCase("End")) {
 				/*
 				 * Need to fix this whole section, and need to add End Time editing below
 				 */
-				String endDateEntry = parameterToEdit[1].trim();				
+				String endDateEntry = parameterToEdit[1].trim();
 				//check if time changes (reserved keywords: nth, empty, nothing) 
 				
 				try {
@@ -293,43 +296,68 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementTask.setEndDay(cal);
 					isDateAndTime = true;
-					continue;
+					//continue;
 				} catch(ParseException e) {
 					//may be date or time format only
 				}
 				
-				if((origTask.getType().equals("FT")) && (isDateAndTime == true)) {
+				if(isDateAndTime == true) {
 					replacementTask.setType("T");
 				}
 				
 				
 				try {
 					Date changeDate = dateFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
+					//here we need to check if the task already has an end time 
+					//if it does and it is not being modified, it need to be saved and 
+					//set for replacement task
+					
+					Calendar cal = GregorianCalendar.getInstance();
 					cal.setTime(changeDate);
+					if(!(origTask.getType().equals("FT"))) {
+						cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));
+						cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));
+					} else {
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 00);
+					}
 					replacementTask.setEndDay(cal);
 					isDate = true;
-					continue;
+					//continue;
 				} catch(ParseException e) {
 					
 				}
 				
-				if((origTask.getType().equals("FT")) && (isDate == true)) {
+				if(isDate == true) {
 					replacementTask.setType("T");
 				}
 				
 				try {
 					Date changeDate = timeFormat.parse(endDateEntry);
-					Calendar cal = Calendar.getInstance();
-					cal.setTime(changeDate);
+					//here we need to check if the task already has 
+					//an end date and if it is not to be modified, need to 
+					//set it for replacement task 
+					Calendar cal = GregorianCalendar.getInstance();
+					
+					if(!(origTask.getType().equals("FT"))) {
+						cal.setTime(changeDate);
+						cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));
+						cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));
+						cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));
+					} else {
+						//work on this part
+						cal.set(Calendar.HOUR_OF_DAY, changeDate.getHours());
+						cal.set(Calendar.MINUTE, changeDate.getMinutes());
+					}
 					replacementTask.setEndDay(cal);
 					isTime = true;
-					continue;
+					
+					//continue;
 				} catch(ParseException e) {
 					
 				}
 				
-				if((origTask.getType().equals("FT")) && (isTime == true)) {
+				if(isTime == true) {
 					replacementTask.setType("T");
 				}
 				
@@ -373,21 +401,21 @@ public class Edit {
 		String[] tokenizedAttributes = attributes.split(";");
 		
 		for (int i = 0; i < tokenizedAttributes.length; i++) {
-				if (tokenizedAttributes[i].contains("Name: ")) {
-					changeName = true;
-				}
-				if (tokenizedAttributes[i].contains("Priority: ")) {
-					changePriority = true;
-				}
-				if (tokenizedAttributes[i].contains("Start Date: ")) {
-					changeStartDate = true;
-				}
-				if (tokenizedAttributes[i].contains("End Date: ")) {
-					changeEndDate = true;
-				}
-				if (!changeName && !changePriority && !changeStartDate && !changeEndDate) {
-					return success = false;
-				}
+			if (tokenizedAttributes[i].contains("Name: ")) {
+				changeName = true;
+			}
+			if (tokenizedAttributes[i].contains("Priority: ")) {
+				changePriority = true;
+			}
+			if (tokenizedAttributes[i].contains("Start Date: ")) {
+				changeStartDate = true;
+			}
+			if (tokenizedAttributes[i].contains("End Date: ")) {
+				changeEndDate = true;
+			}
+			if (!changeName && !changePriority && !changeStartDate && !changeEndDate) {
+				return success = false;
+			}
 		}
 		
 		/*
@@ -403,7 +431,7 @@ public class Edit {
 		if (changeEndDate == false) {
 			replacementEvent.setEndDay(origEvent.getEndDay());
 			replacementEvent.setType(origEvent.getType());
-			}
+		}
 		if (changeStartDate == false) {
 			replacementEvent.setStartDay(origEvent.getStartDay());
 			replacementEvent.setType(origEvent.getType());
@@ -421,7 +449,7 @@ public class Edit {
 		 * 4) if success, perform edit
 		 * 		if error, return the feedback message with false, but must still be in state_input_inc_task
 		 */
-	
+		
 		for (int i = 0; i < tokenizedAttributes.length; i++) {
 			parameterToEdit = tokenizedAttributes[i].split(":", 2);
 			
@@ -453,7 +481,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isDateAndTime = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					//may be date or time format only
 				}
@@ -464,7 +492,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isDate = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					
 				}
@@ -475,7 +503,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isTime = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					
 				}
@@ -492,7 +520,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isDateAndTime = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					//may be date or time format only
 				}
@@ -504,7 +532,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isDate = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					
 				}
@@ -515,7 +543,7 @@ public class Edit {
 					cal.setTime(changeDate);
 					replacementEvent.setEndDay(cal);
 					isTime = true;
-					continue;
+					//continue;
 				} catch (ParseException e) {
 					
 				}
