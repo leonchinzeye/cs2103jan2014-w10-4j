@@ -6,7 +6,7 @@ E 07/04/2014 09:00 07/04/2014 11:00 2
 Product development meeting
 E 09/04/2014 16:30 09/04/2014 17:30 2
 Dinner party by the Boss
-E 11/04/2014 20:00 11/04/2014 22:30 2
+E 11/04/2014 20:00 11/04/2014 22:30 1
 Lunch meeting with Jap clients
 E 14/04/2014 12:00 09/04/2014 13:30 3
 Meeting on product dev. for Jap clients
@@ -17,5 +17,5 @@ Video conferencing with LA
 E 16/04/2014 22:00 16/04/2014 23:30 2
 Meeting with boss about conferencing
 E 17/04/2014 10:00 17/04/2014 12:00 2
-Site visit for new project
-E 18/04/2014 09:00 18/04/2014 13:00 2
+Meeting with new clients
+E 18/03/2014 12:00 18/03/2014 14:00 2
