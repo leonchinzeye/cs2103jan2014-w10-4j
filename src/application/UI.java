@@ -17,7 +17,6 @@ public class UI extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("TaskWorthy");
 		primaryStage.setResizable(false);
-		primaryStage.centerOnScreen();
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		
 		try {

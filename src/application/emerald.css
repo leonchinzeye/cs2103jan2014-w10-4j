@@ -170,6 +170,21 @@
 	-fx-border-color: #c0cdd1;
 }
 
+/* Selected cell */
+.table-cell:filled:selected {
+    -fx-background-color: #ff9a00;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+/* Cell hovered */
+.table-cell:filled:hover {
+    -fx-background-color: #4eb00d;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
 /* Selected row */
 .table-view:focused .table-row-cell:filled:focused:selected {
     -fx-background-color: #ff9a00;
@@ -196,14 +211,7 @@
 /* Selected row hovered */
 .table-view:focused .table-row-cell:filled:focused:selected:hover {
     -fx-background: -fx-accent;
-    -fx-background-color: #ff9a00;
+    -fx-background-color: #4eb00d;
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: -fx-selection-bar-text;
-}
-
-/* Selected row hovered when table not focused */
-.table-view:row-selection .table-row-cell:filled:focused:hover {
-    -fx-background-color: #4eb00d;
-    -fx-background-insets: 0, 0 0 1 0, 1 1 2 1, 2 2 3 2, 3 3 4 3;
-    -fx-text-fill: -fx-text-inner-color;
 }

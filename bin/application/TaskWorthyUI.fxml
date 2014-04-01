@@ -33,19 +33,19 @@
       </font>
     </Text>
     <Text fx:id="eventCounter" disable="false" font="$x2" layoutX="558.0" layoutY="71.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Events: 0" textAlignment="LEFT" />
-    <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="58.0" mouseTransparent="true" onKeyPressed="#changeTab" prefHeight="276.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
+    <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="58.0" mouseTransparent="false" onKeyPressed="#changeTab" prefHeight="276.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="incompleteTab" closable="false" onSelectionChanged="#openIncompleteTab" text="Incomplete">
           <content>
-            <AnchorPane id="Content" fx:id="incompleteAnchor" minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="612.0">
+            <AnchorPane id="Content" fx:id="incompleteAnchor" focusTraversable="false" minHeight="0.0" minWidth="0.0" prefHeight="433.0" prefWidth="612.0">
               <children>
-                <Accordion fx:id="incompleteAccordion" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
+                <Accordion fx:id="incompleteAccordion" focusTraversable="false" layoutX="0.0" layoutY="0.0" prefHeight="240.0" prefWidth="612.0">
                   <expandedPane>
                     <TitledPane fx:id="eventPaneIncomplete" animated="false" focusTraversable="false" mouseTransparent="false" onKeyPressed="#changePanel" text="Events">
                       <content>
-                        <AnchorPane id="Content" fx:id="incompleteEventsAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane id="Content" fx:id="incompleteEventsAnchor" focusTraversable="false" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
-                            <TableView id="table" fx:id="eventTableIncomplete" disable="false" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="1.0">
+                            <TableView id="table" fx:id="eventTableIncomplete" disable="false" focusTraversable="false" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="1.0">
                               <columns>
                                 <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colEventIDIncomplete" />
                                 <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colEventPriorityIncomplete" />
@@ -67,7 +67,7 @@
                       <content>
                         <AnchorPane id="Content" fx:id="incompleteTasksAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                           <children>
-                            <TableView id="table" fx:id="taskTableIncomplete" disable="false" editable="false" minWidth="-1.0" prefHeight="188.0" prefWidth="611.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                            <TableView id="table" fx:id="taskTableIncomplete" disable="false" editable="false" focusTraversable="false" minWidth="-1.0" prefHeight="188.0" prefWidth="611.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-1.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
                               <columns>
                                 <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colTaskIDIncomplete" />
                                 <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="50.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colTaskPriorityIncomplete" />
