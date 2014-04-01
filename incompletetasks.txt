@@ -1,9 +1,21 @@
-4
-swimming
-T 31/03/2014 13:36 03/12/2014 00:00 2
-play PS3
-FT 31/03/2014 13:38 31/12/9999 23:59 1
-CS2103 V0.2
-T 20/03/2014 05:08 27/03/2014 10:00 2
-sdfuhsudfsdf
-T 02/03/2014 11:30 13/04/2014 23:59 3
+10
+Complete sales report
+T 31/03/2014 13:36 04/04/2014 12:00 2
+Complete product demo 
+T 31/03/2014 13:38 05/04/2014 14:30 3
+Present project details to the boss 
+T 31/03/2014 22:09 06/04/2014 16:00 1
+Remind group of project meeting
+T 31/03/2014 23:31 07/04/2014 10:00 1
+Assign tasks to the group
+T 01/04/2014 13:11 09/04/2014 09:00 1
+Send out invitations to the clients
+T 01/04/2014 13:11 10/04/2014 13:00 1
+Complete the final product
+T 01/04/2014 13:11 14/04/2014 15:00 1
+Read the Game of Thrones books
+FT 01/04/2014 20:07 31/12/9999 23:59 1
+Watch all the Star Wars episodes
+FT 01/04/2014 20:07 31/12/9999 23:59 1
+Start working out
+FT 01/04/2014 20:08 31/12/9999 23:59 1
