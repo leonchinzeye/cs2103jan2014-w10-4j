@@ -2,7 +2,6 @@ package application;
 
 import java.util.Stack;
 
-import application.CommandHandler.COMMAND_TYPE;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -252,6 +251,23 @@ public class TaskController {
 
 	public void executeCmd(String lastInput) {
 	  String response;
+	  viewCmd(lastInput);			
+		dataUI = commandHandle.executeCmd(lastInput);
+		response = dataUI.getFeedback();
+		testingResponse = response;
+		notification.setText(response);
+		command.clear(); //clears the input text field
+		command.requestFocus();
+		
+		/*
+		 * Retrieves the new information to be shown in the tables.
+		 * Also updates the task counter accordingly.
+		 */
+		setUI(ui);
+		updateCounter();
+  }
+
+	private void viewCmd(String lastInput) {
 	  if (lastInput.equals("help")) {
 			tab.getSelectionModel().select(helpTab);
 		} else if (lastInput.equalsIgnoreCase("view incomplete")) {
@@ -283,21 +299,6 @@ public class TaskController {
 			tab.getSelectionModel().select(completeTab);
 			taskPaneComplete.setExpanded(true);
 		}
-		anchor.requestFocus();
-			
-		dataUI = commandHandle.executeCmd(lastInput);
-		testingResponse = dataUI.getFeedback();
-		response = dataUI.getFeedback();
-		notification.setText(response);
-		command.clear(); //clears the input text field
-		command.requestFocus();
-		
-		/*
-		 * Retrieves the new information to be shown in the tables.
-		 * Also updates the task counter accordingly.
-		 */
-		setUI(ui);
-		updateCounter();
   }
 
 	/**

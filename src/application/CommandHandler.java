@@ -6,13 +6,12 @@ public class CommandHandler {
 	private DataUI dataUI;
 	
 	//handlers
-	private static Add addHandler;
 	private static Delete deleteHandler;
 	private static Search searchHandler;
 	private static Mark markHandler;
 	private static Edit editHandler;
 	private static Undo undoHandler;
-	private static Add2 addHandler2;
+	private static Add addHandler;
 	private static DateAndTimeFormats dateFormats;
 	
 	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
@@ -24,7 +23,6 @@ public class CommandHandler {
 	
 	public CommandHandler() {
 		addHandler = new Add();
-		addHandler2 = new Add2();
 		deleteHandler = new Delete();
 		searchHandler = new Search();
 		markHandler = new Mark();
@@ -59,8 +57,7 @@ public class CommandHandler {
 		switch(commandType) {
 			case ADD:
 				fileLink.resetState();
-				addHandler2.executeAdd(userInput, fileLink, dataUI, undoHandler, dateFormats);
-//				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler);
+				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler, dateFormats);
 				break;
 			case DELETE:
 				deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
