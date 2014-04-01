@@ -341,9 +341,7 @@ public class TaskController {
 		if (!helpTab.isSelected()) {
 			focusTextInput(key);//check if the user wants to type something
 		}
-		scrollTable(key);
 		changeTab(key);//shortcuts to change between tabs
-		//changePanel(key);//shortcuts to change between panels
 	}
 	
 	/**
@@ -380,43 +378,58 @@ public class TaskController {
 	 * @param key
 	 * @author Omar Khalid
 	 */
+	@FXML
 	public void scrollTable(KeyEvent key) {
 		if (key.isControlDown() && key.getCode().equals(KeyCode.PERIOD)) {
 			if (tab.getSelectionModel().isSelected(0)) {
 				if (eventPaneIncomplete.isExpanded()) {
 					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() + 0.5);
+					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+						bar.setValue(bar.getValue() + 0.1);
+					}
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() + 0.5);
-					System.out.println(bar.getValue());
+					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+						bar.setValue(bar.getValue() + 0.1);
+					}
 				}
 			} else if (tab.getSelectionModel().isSelected(1)) {
 				if (eventPaneComplete.isExpanded()) {
 					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() + 0.5);
+					if (bar.getValue() <= 0.0 && bar.getValue() < 1.0) {
+						bar.setValue(bar.getValue() + 0.1);
+					}
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() + 0.5);
+					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+						bar.setValue(bar.getValue() + 0.1);
+					}
 				}
 			}
 		} else if (key.isControlDown() && key.getCode().equals(KeyCode.COMMA)) {
 			if (tab.getSelectionModel().isSelected(0)) {
 				if (eventPaneIncomplete.isExpanded()) {
 					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() - 0.5);
+					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+						bar.setValue(bar.getValue() - 0.1);
+					}
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() - 0.5);
-					System.out.println(bar.getValue());
+					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+						bar.setValue(bar.getValue() - 0.1);
+					}
 				}
 			} else if (tab.getSelectionModel().isSelected(1)) {
 				if (eventPaneComplete.isExpanded()) {
 					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() - 0.5);
+					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+						bar.setValue(bar.getValue() - 0.1);
+					}
 				} else {
 					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
-					bar.setValue(bar.getValue() - 0.5);
+					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+						bar.setValue(bar.getValue() - 0.1);
+					}
 				}
 			}
 		}
@@ -569,7 +582,7 @@ public class TaskController {
 			}
 		}
 		
-		if (input.matches("\\w.+ \\d")) {
+		if (input.matches("\\w.+ \\d+")) {
 			eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(false);
 			taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(false);
 			
@@ -651,7 +664,7 @@ public class TaskController {
 					validPane.setStyle("-fx-background-color: red;");
 					break;
 			}
-		} else if (input.matches("edite \\d \\w.+")) {
+		} else if (input.matches("edite \\d+ \\w.+")) {
 			inputArray = input.split(" ");
 			rowID = Integer.parseInt(inputArray[1]) - 1;
 			eventTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -682,7 +695,7 @@ public class TaskController {
 				default:
 					break;
 			}
-		} else if (input.matches("editt \\d \\w.+")) {
+		} else if (input.matches("editt \\d+ \\w.+")) {
 			inputArray = input.split(" ");
 			rowID = Integer.parseInt(inputArray[1]) - 1;			
 			taskTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -709,8 +722,8 @@ public class TaskController {
 			}
 		} 
 		
-		if (input.matches("edite \\d .+\\w: .+\\w|editt \\d .+\\w: .+\\w|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
-				input.matches("view Incomplete|view Complete|view Events|view Tasks")) {
+		if (input.matches("edite \\d+ .+\\w: .+\\w|editt \\d+ .+\\w: .+\\w|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
+				input.matches("view Incomplete|view Completed|view Events|view Tasks|view Incomplete Events|view Incomplete Tasks|view Completed Events|view Completed Tasks")) {
 			validPane.setStyle("-fx-background-color: green;");
 		}
 	}
