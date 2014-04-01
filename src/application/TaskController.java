@@ -132,6 +132,7 @@ public class TaskController {
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
 	
+	private String testingResponse;
 	private UI ui = new UI();
 	private Stack<String> history = new Stack<String>();
 	private Stack<String> forward = new Stack<String>();
@@ -157,6 +158,9 @@ public class TaskController {
 		taskCounter = new Text("Tasks: 0");
 		validPane = new Pane();
 		helpAnchor = new AnchorPane();
+		testingResponse = "";
+		notification = new TextField();
+		command = new TextField();
 	}
 	
 	@FXML
@@ -231,14 +235,18 @@ public class TaskController {
 	 */
 	@FXML
 	public void parseInput() {
-		String response = "";
 		String lastInput = "";
 		
 		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
 		history.add(lastInput); //stores the last entered line to command history to be accessed by the up/down buttons.
 		
-		if (lastInput.equals("help")) {
+		executeCmd(lastInput);
+	}
+
+	public void executeCmd(String lastInput) {
+	  String response;
+	  if (lastInput.equals("help")) {
 			tab.getSelectionModel().select(helpTab);
 		} else if (lastInput.equalsIgnoreCase("view incomplete")) {
 			tab.getSelectionModel().select(incompleteTab);
@@ -269,9 +277,10 @@ public class TaskController {
 			tab.getSelectionModel().select(completeTab);
 			taskPaneComplete.setExpanded(true);
 		}
-		anchor.requestFocus();
+//		anchor.requestFocus();
 			
 		dataUI = commandHandle.executeCmd(lastInput);
+		testingResponse = dataUI.getFeedback();
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		command.clear(); //clears the input text field
@@ -283,7 +292,7 @@ public class TaskController {
 		 */
 		setUI(ui);
 		updateCounter();
-	}
+  }
 
 	/**
 	 * Updates the counter based on the tab currently shown.
@@ -756,6 +765,14 @@ public class TaskController {
 				command.clear();
 			}
 		}
+	}
+	
+	public String getTestingResponse() {
+		return testingResponse;
+	}
+	
+	public DataUI getDataUI() {
+		return dataUI;
 	}
 	
 	@FXML
