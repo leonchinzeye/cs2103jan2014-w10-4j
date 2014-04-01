@@ -5,9 +5,12 @@ import java.util.Stack;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -323,6 +326,10 @@ public class TaskController {
 	 * @author Omar Khalid
 	 */
 	private void backToMain() {
+		eventTableIncomplete.getSelectionModel().clearSelection();
+		taskTableIncomplete.getSelectionModel().clearSelection();
+		eventTableComplete.getSelectionModel().clearSelection();
+		taskTableComplete.getSelectionModel().clearSelection();
 	  tab.getSelectionModel().select(0);
 	  eventPaneIncomplete.setExpanded(true);
 	  setUI(ui);
@@ -330,6 +337,7 @@ public class TaskController {
 	  helpAnchor.setVisible(false);
 	  helpAnchor2.setVisible(false);
 	  notification.setText("Read me!");
+	  command.clear();
 	  command.setPromptText("Feed me!");
 	  command.setMouseTransparent(false);
 	  command.setFocusTraversable(true);
@@ -480,37 +488,140 @@ public class TaskController {
 	@FXML
 	public void commandTextFieldKeystrokes (KeyEvent key) {
 		setResponseBasedOnCommand(key);
+		setTableColumnStyle(key);
 		returnLastInput(key);
 	}
 	
-	@FXML
-	public void closeEnter (MouseEvent mouse) {
-		closeButton.setImage(closeButtonHover);
-	}
-	
-	@FXML
-	public void closeExit (MouseEvent mouse) {
-		closeButton.setImage(closeButtonDefault);
-	}
-	
-	@FXML
-	public void closeWindow (MouseEvent mouse) {
-		Platform.exit();
-	}
-	
-	@FXML
-	public void minimizeEnter (MouseEvent mouse) {
-		minimizeButton.setImage(minimizeButtonHover);
-	}
-	
-	@FXML
-	public void minimizeExit (MouseEvent mouse) {
-		minimizeButton.setImage(minimizeButtonDefault);
-	}
-	
-	@FXML
-	public void minimizeWindow (MouseEvent mouse) {
-		primary.setIconified(true);
+	public void setTableColumnStyle(KeyEvent key) {
+		String[] inputArray = null;
+		int rowID = 0;		
+		if (command.getText().matches("\\w.+ \\d")) {
+			eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(false);
+			taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(false);
+			
+			inputArray = command.getText().split(" ");
+			rowID = Integer.parseInt(inputArray[1]) - 1;
+			
+			switch(inputArray[0]) {
+				case "dele":
+					tab.getSelectionModel().select(incompleteTab);
+					eventPaneIncomplete.setExpanded(true);
+					eventTableIncomplete.scrollTo(rowID);
+					eventTableIncomplete.getSelectionModel().select(rowID);
+					break;
+				case "delt":
+					tab.getSelectionModel().select(incompleteTab);
+					taskPaneIncomplete.setExpanded(true);
+					taskTableIncomplete.scrollTo(rowID);
+					taskTableIncomplete.getSelectionModel().select(rowID);
+					break;
+				case "delec":
+					tab.getSelectionModel().select(completeTab);
+					eventPaneComplete.setExpanded(true);
+					eventTableComplete.scrollTo(rowID);
+					eventTableComplete.getSelectionModel().select(rowID);
+					break;
+				case "deltc":
+					tab.getSelectionModel().select(completeTab);
+					taskPaneComplete.setExpanded(true);
+					taskTableComplete.scrollTo(rowID);
+					taskTableComplete.getSelectionModel().select(rowID);
+					break;
+				case "marke":
+					tab.getSelectionModel().select(incompleteTab);
+					eventPaneIncomplete.setExpanded(true);
+					eventTableIncomplete.scrollTo(rowID);
+					eventTableIncomplete.getSelectionModel().select(rowID);
+					break;
+				case "markt":
+					tab.getSelectionModel().select(incompleteTab);
+					taskPaneIncomplete.setExpanded(true);
+					taskTableIncomplete.scrollTo(rowID);
+					taskTableIncomplete.getSelectionModel().select(rowID);
+					break;
+				case "unmarke":
+					tab.getSelectionModel().select(completeTab);
+					eventPaneComplete.setExpanded(true);
+					eventTableComplete.scrollTo(rowID);
+					eventTableComplete.getSelectionModel().select(rowID);
+					break;
+				case "unmarkt":
+					tab.getSelectionModel().select(completeTab);
+					taskPaneComplete.setExpanded(true);
+					taskTableComplete.scrollTo(rowID);
+					taskTableComplete.getSelectionModel().select(rowID);
+					break;
+				case "edite":
+					tab.getSelectionModel().select(incompleteTab);
+					eventPaneIncomplete.setExpanded(true);
+					eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+					eventTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+					eventTableIncomplete.scrollTo(rowID);
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+					break;
+				case "editt":
+					tab.getSelectionModel().select(incompleteTab);
+					taskPaneIncomplete.setExpanded(true);
+					taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+					taskTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+					taskTableIncomplete.scrollTo(rowID);
+					taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+					break;
+				default:
+					break;
+			}
+		} else if (command.getText().matches("edite \\d \\w.+")) {
+			inputArray = command.getText().split(" ");
+			rowID = Integer.parseInt(inputArray[1]) - 1;
+			
+			tab.getSelectionModel().select(incompleteTab);
+			eventPaneIncomplete.setExpanded(true);
+			eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+			eventTableIncomplete.scrollTo(rowID);
+			
+			switch (inputArray[2]) {
+				case "Name":
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventNameIncomplete);
+					break;
+				case "Priority":					
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventPriorityIncomplete);
+					break;
+				case "Start":
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventStartDateIncomplete);
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventStartTimeIncomplete);
+					break;
+				case "End":
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventEndDateIncomplete);
+					eventTableIncomplete.getSelectionModel().select(rowID, colEventEndTimeIncomplete);
+					break;
+				default:
+					break;
+			}
+		} else if (command.getText().matches("editt \\d \\w.+")) {
+			inputArray = command.getText().split(" ");
+			rowID = Integer.parseInt(inputArray[1]) - 1;
+			
+			tab.getSelectionModel().select(incompleteTab);
+			taskPaneIncomplete.setExpanded(true);
+			taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+			taskTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+			taskTableIncomplete.scrollTo(rowID);
+			
+			switch (inputArray[2]) {
+				case "Name":
+					taskTableIncomplete.getSelectionModel().select(rowID, colTaskNameIncomplete);
+					break;
+				case "Priority":					
+					taskTableIncomplete.getSelectionModel().select(rowID, colTaskPriorityIncomplete);
+					break;
+				case "End":
+					taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndDateIncomplete);
+					taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndTimeIncomplete);
+					break;
+				default:
+					break;
+			}
+		}
 	}
 	
 	public void setResponseBasedOnCommand(KeyEvent key) {
@@ -521,7 +632,7 @@ public class TaskController {
 			notification.setText("del<t/e/tc/ec> <Integer>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("edit")) {
-			notification.setText("edit<t/e> <Integer>; <Attribute>: <Edited entry>");
+			notification.setText("edit<t/e> <Integer> <Attribute>: <Edited entry>");
 			validPane.setStyle("-fx-background-color: green;");
 		} else if (command.getText().equals("help")) {
 			validPane.setStyle("-fx-background-color: green;");
@@ -572,5 +683,35 @@ public class TaskController {
 				command.clear();
 			}
 		}
+	}
+	
+	@FXML
+	public void closeEnter (MouseEvent mouse) {
+		closeButton.setImage(closeButtonHover);
+	}
+	
+	@FXML
+	public void closeExit (MouseEvent mouse) {
+		closeButton.setImage(closeButtonDefault);
+	}
+	
+	@FXML
+	public void closeWindow (MouseEvent mouse) {
+		Platform.exit();
+	}
+	
+	@FXML
+	public void minimizeEnter (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonHover);
+	}
+	
+	@FXML
+	public void minimizeExit (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonDefault);
+	}
+	
+	@FXML
+	public void minimizeWindow (MouseEvent mouse) {
+		primary.setIconified(true);
 	}
 }
