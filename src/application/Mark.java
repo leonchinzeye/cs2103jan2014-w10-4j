@@ -13,8 +13,8 @@ public class Mark {
 
 	private static final int MARK_INCOMPLETE_TASKS = 1;
 	private static final int MARK_INCOMPLETE_EVENTS = 2;
-	private static final int MARK_COMPLETE_TASKS = 3;
-	private static final int MARK_COMPLETE_EVENTS = 4;
+	private static final int UNMARK_COMPLETE_TASKS = 3;
+	private static final int UNMARK_COMPLETE_EVENTS = 4;
 	
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
@@ -35,7 +35,7 @@ public class Mark {
 		initialiseCmdTable();
 	}
 	
-	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
@@ -44,7 +44,7 @@ public class Mark {
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
-			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI);
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		}
 		
 		if(success) {
@@ -52,7 +52,7 @@ public class Mark {
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -63,15 +63,13 @@ public class Mark {
 			userIndex = tokenizedInput[SECOND_ARGUMENT];
 		}
 		
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
-		
-		switch(cmdTable.get(cmd)) {
+		switch(tableNo) {
 			case MARK_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);		
 					return success = false;
 				} else {
-					success = performIncTaskMark(userIndex, fileLink, dataUI);
+					success = performIncTaskMark(userIndex, fileLink, dataUI, undoHandler);
 				}
 				break;
 			case MARK_INCOMPLETE_EVENTS:
@@ -79,23 +77,23 @@ public class Mark {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
 					return success = false;
 				} else {
-					success = performIncEventMark(userIndex, fileLink, dataUI);
+					success = performIncEventMark(userIndex, fileLink, dataUI, undoHandler);
 				}
 				break;
-			case MARK_COMPLETE_TASKS:
+			case UNMARK_COMPLETE_TASKS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
 					return success = false;
 				} else {
-					success = performComTaskMark(userIndex, fileLink, dataUI);
+					success = performComTaskMark(userIndex, fileLink, dataUI, undoHandler);
 				}
 				break;
-			case MARK_COMPLETE_EVENTS:
+			case UNMARK_COMPLETE_EVENTS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
 					return success = false;
 				} else {
-					success = performComEventMark(userIndex, fileLink, dataUI);
+					success = performComEventMark(userIndex, fileLink, dataUI, undoHandler);
 				}
 				break;
 			default:
@@ -104,7 +102,7 @@ public class Mark {
 		return success;
 	}
 
-	private boolean performIncTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI) {
+	private boolean performIncTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
 		
@@ -118,6 +116,8 @@ public class Mark {
 				TaskCard taskToBeMarked = incTasks.get(markedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, taskToBeMarked.getName()));
 				fileLink.markHandling(taskToBeMarked, markedIndex - 1, 1);
+				
+				undoHandler.storeUndo("mark", MARK_INCOMPLETE_TASKS, taskToBeMarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -127,8 +127,7 @@ public class Mark {
 		return success;
 	}
 
-	private boolean performIncEventMark(String userIndex, FileLinker fileLink,
-			DataUI dataUI) {
+	private boolean performIncEventMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
 		
@@ -142,6 +141,8 @@ public class Mark {
 				TaskCard eventToBeMarked = incEvent.get(markIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, eventToBeMarked.getName()));
 				fileLink.markHandling(eventToBeMarked, markIndex - 1, 2);
+				
+				undoHandler.storeUndo("mark", MARK_INCOMPLETE_EVENTS, eventToBeMarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -151,7 +152,7 @@ public class Mark {
 		return success;
 	}
 	
-	private boolean performComTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI) {
+	private boolean performComTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> comTasks = fileLink.getCompletedTasks();
 		
@@ -162,9 +163,11 @@ public class Mark {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comTasks.size()));
 				return success = false;
 			} else {
-				TaskCard taskToBeMarked = comTasks.get(markedIndex - 1);
-				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, taskToBeMarked.getName()));
-				fileLink.markHandling(taskToBeMarked, markedIndex - 1, 3);
+				TaskCard taskToBeUnmarked = comTasks.get(markedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, taskToBeUnmarked.getName()));
+				fileLink.markHandling(taskToBeUnmarked, markedIndex - 1, 3);
+				
+				undoHandler.storeUndo("unmark", UNMARK_COMPLETE_TASKS, taskToBeUnmarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -174,7 +177,7 @@ public class Mark {
 		return success;
 	}
 
-	private boolean performComEventMark(String userIndex, FileLinker fileLink, DataUI dataUI) {
+	private boolean performComEventMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> comEvent = fileLink.getCompletedEvents();
 		
@@ -185,9 +188,11 @@ public class Mark {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comEvent.size()));
 				return success = false;
 			} else {
-				TaskCard eventToBeMarked = comEvent.get(markIndex - 1);
-				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, eventToBeMarked.getName()));
-				fileLink.markHandling(eventToBeMarked, markIndex - 1, 4);
+				TaskCard eventToBeUnmarked = comEvent.get(markIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, eventToBeUnmarked.getName()));
+				fileLink.markHandling(eventToBeUnmarked, markIndex - 1, 4);
+				
+				undoHandler.storeUndo("unmark", UNMARK_COMPLETE_EVENTS, eventToBeUnmarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -203,9 +208,11 @@ public class Mark {
 	}
 	
 	private void initialiseCmdTable() {
+		cmdTable.put("mark", 0);
 		cmdTable.put("markt", MARK_INCOMPLETE_TASKS);
 		cmdTable.put("marke", MARK_INCOMPLETE_EVENTS);
-		cmdTable.put("unmarkt", MARK_COMPLETE_TASKS);
-		cmdTable.put("unmarke", MARK_COMPLETE_EVENTS);
+		cmdTable.put("unmark", 0);
+		cmdTable.put("unmarkt", UNMARK_COMPLETE_TASKS);
+		cmdTable.put("unmarke", UNMARK_COMPLETE_EVENTS);
 	}
 }
