@@ -20,7 +20,7 @@ public class Undo {
 	private int indexOfLastCmdRedo;
 
 	public enum COMMAND_TYPE {
-		ADD, DELETE, EDIT, MARK
+		ADD, DELETE, EDIT, MARK, UNMARK
 	}
 	
 	public Undo() {
@@ -50,11 +50,14 @@ public class Undo {
 			case MARK:
 				markUndoStorage(oldTask, fileModified);
 				break;
+			case UNMARK:
+				unmarkUndoStorage(oldTask, fileModified);
+				break;
 			default:
 				break;
 		}
 	}
-	
+
 	public String executeUndo(FileLinker fileLink) {
 		String response = "";
 		if(indexOfLastCmdUndo < 0) {
@@ -92,6 +95,9 @@ public class Undo {
 	  	case "mark":
 	  		response = undoMark(fileLink);
 	  		break;
+	  	case "unmark":
+	  		response = undoUnmark(fileLink);
+	  		break;
 	  	default:
 	  		break;
 	  }
@@ -114,6 +120,9 @@ public class Undo {
 				break;
 			case "mark":
 				response = redoMark(fileLink);
+				break;
+			case "unmark":
+				response = redoUnmark(fileLink);
 				break;
 			default:
 				break;
@@ -200,6 +209,16 @@ public class Undo {
 	  // TODO Auto-generated method stub
 		return "Redo for unarchiving \"" + null + "\" successful!";
 	}
+	
+	private String undoUnmark(FileLinker fileLink) {
+	  // TODO Auto-generated method stub
+		return "Undo for unarchiving \"" + null + "\" successful!";
+  }
+	
+	private String redoUnmark(FileLinker fileLink) {
+	  // TODO Auto-generated method stub
+		return "Redo for archiving \"" + null + "\" successful!";
+  }
 
 	private void pushUndoToRedo() {
 	  redoTasksOld.add(undoTasksOld.get(indexOfLastCmdUndo));
@@ -262,6 +281,14 @@ public class Undo {
 		undoFileToBeModified.add(fileModified);
 		indexOfLastCmdUndo++;
 	}
+	
+	private void unmarkUndoStorage(TaskCard task, int fileModified) {
+		undoCmdType.add("unmark");
+		undoTasksOld.add(task);
+		undoTasksNew.add(null);
+		undoFileToBeModified.add(fileModified);
+		indexOfLastCmdUndo++;
+  }
 
 	public void flushRedo() {
 		redoCmdType = new ArrayList<String>();
@@ -295,8 +322,10 @@ public class Undo {
 			return COMMAND_TYPE.DELETE;
 		} else if(cmd.equals("edit")) {
 			return COMMAND_TYPE.EDIT;
-		} else {
+		} else if (cmd.equals("mark")) {
 			return COMMAND_TYPE.MARK;
+		} else {
+			return COMMAND_TYPE.UNMARK;
 		}
 	}
 }

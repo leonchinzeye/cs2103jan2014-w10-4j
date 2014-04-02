@@ -46,7 +46,7 @@ public class Delete {
 	 * the return type will signal to commandhandler whether the delete was successful
 	 * or that there was an error involved
 	 */
-	public void executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
@@ -55,15 +55,14 @@ public class Delete {
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
-			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		}
-		
 		if(success) {
 			undoHandler.flushRedo();
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -74,9 +73,7 @@ public class Delete {
 			userIndex = tokenizedInput[SECOND_ARGUMENT];
 		}
 		
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
-		
-		switch(cmdTable.get(cmd)) {
+		switch(tableNo) {
 			case DELETE_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
@@ -168,8 +165,7 @@ public class Delete {
 		return success;
 	}
 
-	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink,
-			DataUI dataUI, Undo undoHandler) {
+	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
 		
@@ -195,8 +191,7 @@ public class Delete {
 		return success;
 	}
 
-	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,
-			DataUI dataUI, Undo undoHandler) {
+	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,	DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
 		
@@ -228,6 +223,7 @@ public class Delete {
 	}
 	
 	private void initialiseCmdTable() {
+		cmdTable.put("del", 0);
 		cmdTable.put("delt", DELETE_INCOMPLETE_TASKS);
 		cmdTable.put("dele", DELETE_INCOMPLETE_EVENTS);
 		cmdTable.put("deltc", DELETE_COMPLETE_TASK);
