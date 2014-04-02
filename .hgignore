@@ -8,3 +8,4 @@ completedtasks\.txt
 \.settings
 bugs and errors
 \.classpath
+*.txt
