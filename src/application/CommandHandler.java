@@ -42,12 +42,12 @@ public class CommandHandler {
 	 * @param userInput
 	 * @return
 	 */
-	public DataUI executeCmd(String userInput) {
-		checkCmdAndPerform(userInput);	
+	public DataUI executeCmd(String userInput, Integer tableNo) {
+		checkCmdAndPerform(userInput, tableNo);	
 		return dataUI;
 	}
 
-	private void checkCmdAndPerform(String userInput) {
+	private void checkCmdAndPerform(String userInput, Integer tableNo) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];
@@ -60,10 +60,10 @@ public class CommandHandler {
 				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler, dateFormats);
 				break;
 			case DELETE:
-				deleteHandler.executeDelete(userInput, fileLink, dataUI, undoHandler);
+				deleteHandler.executeDelete(userInput, fileLink, dataUI, tableNo, undoHandler);
 				break;
 			case EDIT:
-				editHandler.executeEdit(userInput, fileLink, dataUI, undoHandler);
+				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler);
 				break;
 			case SEARCH:
 				fileLink.resetState();
@@ -75,7 +75,7 @@ public class CommandHandler {
 				dataUI.setFeedback("Read me!");
 				break;
 			case MARK:
-				markHandler.executeMark(userInput, fileLink, dataUI, undoHandler);
+				markHandler.executeMark(userInput, fileLink, dataUI, tableNo, undoHandler);
 				break;
 			case UNDO:
 				response = undoHandler.executeUndo(fileLink);

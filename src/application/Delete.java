@@ -1,6 +1,6 @@
 package application;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * 
@@ -14,7 +14,6 @@ public class Delete {
 	private static final int DELETE_COMPLETE_TASK = 3;
 	private static final int DELETE_COMPLETE_EVENTS = 4;
 	
-	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 		
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an incomplete task to delete! Please enter an ID to delete!";
@@ -23,13 +22,10 @@ public class Delete {
 	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You didn't specify an complete event to delete! Please enter an ID to delete!";
 	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
 	private static final String FEEDBACK_DELETION_RANGE = "Please enter a valid number between 1 to %d!";
-	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
-	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
-	
 	public Delete() {
-		initialiseCmdTable();
+		
 	}
 
 	/**
@@ -46,24 +42,19 @@ public class Delete {
 	 * the return type will signal to commandhandler whether the delete was successful
 	 * or that there was an error involved
 	 */
-	public void executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeDelete(String userInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
 		boolean success = false;
 
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-		if(cmdTable.containsKey(cmd) != true) {
-			notRecognisableCmd(fileLink, dataUI);
-		} else {
-			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, undoHandler);
-		}
+		success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		
 		if(success) {
 			undoHandler.flushRedo();
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -74,9 +65,7 @@ public class Delete {
 			userIndex = tokenizedInput[SECOND_ARGUMENT];
 		}
 		
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
-		
-		switch(cmdTable.get(cmd)) {
+		switch(tableNo) {
 			case DELETE_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
 					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);
@@ -220,17 +209,5 @@ public class Delete {
 		}
 		
 		return success;
-	}
-
-	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
-		RefreshUI.executeRefresh(fileLink, dataUI);
-		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
-	}
-	
-	private void initialiseCmdTable() {
-		cmdTable.put("delt", DELETE_INCOMPLETE_TASKS);
-		cmdTable.put("dele", DELETE_INCOMPLETE_EVENTS);
-		cmdTable.put("deltc", DELETE_COMPLETE_TASK);
-		cmdTable.put("delec", DELETE_COMPLETE_EVENTS);
 	}
 }

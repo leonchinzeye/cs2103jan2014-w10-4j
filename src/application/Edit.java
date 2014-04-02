@@ -17,7 +17,7 @@ public class Edit {
 	
 	private static final int EDIT_INCOMPLETE_TASKS = 1;
 	private static final int EDIT_INCOMPLETE_EVENTS = 2;
-	private static final int FIRST_ARGUMENT = 0;
+	
 	private static final int SECOND_ARGUMENT = 1;
 	private static final int THIRD_ARGUMENT = 2;
 	
@@ -28,10 +28,7 @@ public class Edit {
 	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been edited!";
 	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been edited!";
 	private static final String FEEDBACK_EDITION_RANGE = "Please enter a valid number between 1 to %d!";
-	private static final String FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND = "That was an unrecognisable edit command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
-	
-	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	
 	private Integer userEnteredID;
 	private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm");
@@ -40,7 +37,6 @@ public class Edit {
 	private String[] attArray;
 	
 	public Edit() {
-		initialiseCmdTable();
 		userEnteredID = null;
 		dateAndTimeFormat.setLenient(false);
 		dateFormat.setLenient(false);
@@ -61,24 +57,18 @@ public class Edit {
 	 * or that there was an error involved
 	 */
 	
-	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 3);
 		
-		String cmd = tokenizedInput[FIRST_ARGUMENT];
-		
-		if(cmdTable.containsKey(cmd) != true) {	
-			notRecognisableCmd(fileLink, dataUI);
-		} else {
-			success = identifyCmdAndPerform(cmd, tokenizedInput, fileLink, dataUI);
-		}
+		success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		
 		if(success) {
 			undoHandler.flushRedo();
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String cmd, String[] tokenizedInput, FileLinker fileLink, DataUI dataUI) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
 		boolean success = false;	
 		boolean noIndexArgument = false;
 		boolean noAttributesArgument = false;
@@ -87,20 +77,12 @@ public class Edit {
 		String attributesToEdit = null;
 		int size = 0;
 		
-		if (cmd.equals("editt")) {
-			ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
-			size = incTasks.size();
-		} else if (cmd.equals("edite")) {
-			ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
-			size = incEvents.size();
-		}
-		
 		if (tokenizedInput.length < 2) {	
 			noIndexOrAttributesArgument = true; //if there's no index in the argument
 		} else if (tokenizedInput.length < 3) {
-			userIndex = tokenizedInput[1];
+			userIndex = tokenizedInput[SECOND_ARGUMENT];
 			try {
-				Integer.parseInt(tokenizedInput[1]);
+				Integer.parseInt(tokenizedInput[SECOND_ARGUMENT]);
 			} catch(NumberFormatException ex) {
 				noIndexArgument = true;
 			}
@@ -110,8 +92,10 @@ public class Edit {
 			attributesToEdit = tokenizedInput[THIRD_ARGUMENT];
 		}
 		
-		switch(cmdTable.get(cmd)) {
+		switch(tableNo) {
 			case EDIT_INCOMPLETE_TASKS:
+				ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
+				size = incTasks.size();
 				if (noIndexArgument == true) {
 					dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));					
 					return success = false;					
@@ -122,10 +106,12 @@ public class Edit {
 					dataUI.setFeedback(String.format(FEEDBACK_PENDING_TASK_ATTRIBUTES, userIndex));
 					return success = false;
 				} else {
-					success = checkAndGetIncTaskID(userIndex, attributesToEdit, fileLink, dataUI);
+					success = checkAndGetIncTaskID(userIndex, attributesToEdit, size, fileLink, dataUI);
 				}				
 				break;				
-			case EDIT_INCOMPLETE_EVENTS:				
+			case EDIT_INCOMPLETE_EVENTS:
+				ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
+				size = incEvents.size();
 				if (noIndexArgument == true) {		
 					dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));
 					return success = false;
@@ -136,7 +122,7 @@ public class Edit {
 					dataUI.setFeedback(String.format(FEEDBACK_PENDING_EVENT_ATTRIBUTES, userIndex));					
 					return success = false;				
 				} else {				
-					success = checkAndGetIncEventID(userIndex, attributesToEdit, fileLink, dataUI);					
+					success = checkAndGetIncEventID(userIndex, attributesToEdit, size, fileLink, dataUI);					
 				}			
 				break;		
 			default:	
@@ -145,14 +131,14 @@ public class Edit {
 		return success;		
 	}
 	
-	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI) {	
+	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, Integer size, FileLinker fileLink, DataUI dataUI) {	
 		boolean success = true;	
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();		
 		
 		try {		
 			int editIndex = Integer.parseInt(userIndex);					
-			if(editIndex <= 0 || editIndex > incTasks.size()) {				
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incTasks.size()));				
+			if(editIndex <= 0 || editIndex > size) {				
+				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, size));				
 				return success = false;				
 			} else {			
 				TaskCard task = incTasks.get(editIndex - 1);				
@@ -160,20 +146,20 @@ public class Edit {
 				success = performIncTaskEdit(task, attributesToEdit, fileLink, dataUI);				
 			}
 		} catch(NumberFormatException ex) {		
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));			
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));			
 			return success = false;		
 		}		
 		return success;		
 	}
 		
-	private boolean checkAndGetIncEventID(String userIndex, String attributeToEdit, FileLinker fileLink, DataUI dataUI) {		
+	private boolean checkAndGetIncEventID(String userIndex, String attributeToEdit, Integer size, FileLinker fileLink, DataUI dataUI) {		
 		boolean success = true;		
 		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();		
 		
 		try {
 			int editIndex = Integer.parseInt(userIndex);
-			if(editIndex <= 0 || editIndex > incEvent.size()) {				
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incEvent.size()));				
+			if(editIndex <= 0 || editIndex > size) {				
+				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, size));				
 				return success = false;				
 			} else {				
 				TaskCard event = incEvent.get(editIndex - 1);				
@@ -181,7 +167,7 @@ public class Edit {
 				success = performIncEventEdit(event, attributeToEdit, fileLink, dataUI);				
 			}
 		} catch(NumberFormatException ex) {			
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));			
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, size));			
 			return success = false;			
 		}	
 		return success;		
@@ -433,15 +419,5 @@ public class Edit {
 		fileLink.editHandling(replacementEvent, userEnteredID, 2);		
 		RefreshUI.executeRefresh(fileLink, dataUI);		
 		return success;	
-	}
-	
-	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {		
-		RefreshUI.executeRefresh(fileLink, dataUI);		
-		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND);		
-	}
-	
-	private void initialiseCmdTable() {		
-		cmdTable.put("editt", EDIT_INCOMPLETE_TASKS);		
-		cmdTable.put("edite", EDIT_INCOMPLETE_EVENTS);		
 	}
 }

@@ -131,6 +131,11 @@ public class TaskController {
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
 	
+	private final int EVENT_INC_TABLE = 1;
+	private final int TASK_INC_TABLE = 2;
+	private final int EVENT_COM_TABLE = 3;
+	private final int TASK_COM_TABLE = 4;
+	
 	private String testingResponse;
 	private UI ui = new UI();
 	private Stack<String> history = new Stack<String>();
@@ -144,6 +149,7 @@ public class TaskController {
 	Image closeButtonHover = new Image("/closeButtonHover.png");
 	Image minimizeButtonDefault = new Image("/minimizeButton.png");
 	Image minimizeButtonHover = new Image("/minimizeButtonHover.png");
+	private int tableNo = 0;
 	
 	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
@@ -232,6 +238,16 @@ public class TaskController {
 		incompleteTasks.removeAll(incompleteTasks);
 		completedEvents.removeAll(completedEvents);
 		completedTasks.removeAll(completedTasks);
+		
+		if (eventPaneIncomplete.isExpanded()) {
+	  	tableNo = EVENT_INC_TABLE;
+	  } else if (taskPaneIncomplete.isExpanded()) {
+	  	tableNo = TASK_INC_TABLE;
+	  } else if (eventPaneComplete.isExpanded()) {
+	  	tableNo = EVENT_COM_TABLE;
+	  } else if (taskPaneComplete.isExpanded()) {
+	  	tableNo = TASK_COM_TABLE;
+	  }
 	}
 	
 	/**
@@ -251,8 +267,9 @@ public class TaskController {
 
 	public void executeCmd(String lastInput) {
 	  String response;
-	  viewCmd(lastInput);			
-		dataUI = commandHandle.executeCmd(lastInput);
+	  System.out.println(tableNo);
+	  viewCmd(lastInput);
+		dataUI = commandHandle.executeCmd(lastInput, tableNo);
 		response = dataUI.getFeedback();
 		testingResponse = response;
 		notification.setText(response);
@@ -349,9 +366,18 @@ public class TaskController {
 	 * @author Omar Khalid
 	 */
 	@FXML
-	public void keystrokes(KeyEvent key) {		
+	public void keystrokes(KeyEvent key) {
+		if (eventPaneIncomplete.isExpanded()) {
+	  	tableNo = EVENT_INC_TABLE;
+	  } else if (taskPaneIncomplete.isExpanded()) {
+	  	tableNo = TASK_INC_TABLE;
+	  } else if (eventPaneComplete.isExpanded()) {
+	  	tableNo = EVENT_COM_TABLE;
+	  } else if (taskPaneComplete.isExpanded()) {
+	  	tableNo = TASK_COM_TABLE;
+	  }
 		if (key.getCode().equals(KeyCode.ESCAPE)) {
-			commandHandle.executeCmd("");
+			commandHandle.executeCmd("", 0);
 			backToMain();
 		}
 		if (!helpTab.isSelected()) {
@@ -380,6 +406,7 @@ public class TaskController {
 	  command.setPromptText("Feed me!");
 	  command.setMouseTransparent(false);
 	  command.setFocusTraversable(true);
+	  tableNo = EVENT_INC_TABLE;
   }
 	
 	public void focusTextInput(KeyEvent key) {
@@ -397,76 +424,51 @@ public class TaskController {
 	@FXML
 	public void scrollTable(KeyEvent key) {
 		if (key.isControlDown() && key.getCode().equals(KeyCode.PERIOD)) {
-			if (tab.getSelectionModel().isSelected(0)) {
-				if (eventPaneIncomplete.isExpanded()) {
-					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
-						bar.setValue(bar.getValue() + 0.1);
-					}
-				} else {
-					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
-						bar.setValue(bar.getValue() + 0.1);
-					}
+			if (tableNo == EVENT_INC_TABLE) {
+				ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+					bar.setValue(bar.getValue() + 0.1);
 				}
-			} else if (tab.getSelectionModel().isSelected(1)) {
-				if (eventPaneComplete.isExpanded()) {
-					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() <= 0.0 && bar.getValue() < 1.0) {
-						bar.setValue(bar.getValue() + 0.1);
-					}
-				} else {
-					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
-						bar.setValue(bar.getValue() + 0.1);
-					}
+			} else if (tableNo == TASK_INC_TABLE) {
+				ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+					bar.setValue(bar.getValue() + 0.1);
+				}
+			} else if (tableNo == EVENT_COM_TABLE) {
+				ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+					bar.setValue(bar.getValue() + 0.1);
+				}
+			} else if (tableNo == TASK_COM_TABLE) {
+				ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() >= 0.0 && bar.getValue() < 1.0) {
+					bar.setValue(bar.getValue() + 0.1);
 				}
 			}
 		} else if (key.isControlDown() && key.getCode().equals(KeyCode.COMMA)) {
-			if (tab.getSelectionModel().isSelected(0)) {
-				if (eventPaneIncomplete.isExpanded()) {
-					ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
-						bar.setValue(bar.getValue() - 0.1);
-					}
-				} else {
-					ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
-						bar.setValue(bar.getValue() - 0.1);
-					}
+			if (tableNo == EVENT_INC_TABLE) {
+				ScrollBar bar = (ScrollBar) eventTableIncomplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+					bar.setValue(bar.getValue() - 0.1);
 				}
-			} else if (tab.getSelectionModel().isSelected(1)) {
-				if (eventPaneComplete.isExpanded()) {
-					ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
-						bar.setValue(bar.getValue() - 0.1);
-					}
-				} else {
-					ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
-					if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
-						bar.setValue(bar.getValue() - 0.1);
-					}
+			} else if (tableNo == TASK_INC_TABLE) {
+				ScrollBar bar = (ScrollBar) taskTableIncomplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+					bar.setValue(bar.getValue() - 0.1);
+				}
+			} else if (tableNo == EVENT_COM_TABLE) {
+				ScrollBar bar = (ScrollBar) eventTableComplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+					bar.setValue(bar.getValue() - 0.1);
+				}
+			} else if (tableNo == TASK_COM_TABLE) {
+				ScrollBar bar = (ScrollBar) taskTableComplete.lookup(".scroll-bar:vertical");
+				if (bar.getValue() > 0.0 && bar.getValue() <= 1.0) {
+					bar.setValue(bar.getValue() - 0.1);
 				}
 			}
 		}
 	}
-	
-	/**
-	 * Change the panel to be expanded with Ctrl+UP or Ctrl+DOWN.
-	 * @param key
-	 */
-	/*@FXML
-	public void changePanel(KeyEvent key) {
-		if (key.isControlDown() && (key.getCode().equals(KeyCode.UP) || key.getCode().equals(KeyCode.DOWN))) {
-			if (eventPaneIncomplete.isExpanded()) {
-				taskPaneIncomplete.setExpanded(true);
-				taskPaneComplete.setExpanded(true);
-			} else if (taskPaneIncomplete.isExpanded()) {
-				eventPaneIncomplete.setExpanded(true);
-				eventPaneComplete.setExpanded(true);			
-			}
-		}
-	}*/
 	
 	/**
 	 * 1. Change the tab between only the Incomplete and Complete tabs with Ctrl+Tab.
@@ -510,6 +512,11 @@ public class TaskController {
 	
 	@FXML
 	public void openIncompleteTab() {
+		if (eventPaneIncomplete.isExpanded()) {
+	  	tableNo = EVENT_INC_TABLE;
+	  } else if (taskPaneIncomplete.isExpanded()) {
+	  	tableNo = TASK_INC_TABLE;
+	  }
 		notification.setText("Read me!");
 	  command.setPromptText("Feed me!");
 		eventCounter.setText("Events: " + incompleteEvents.size());
@@ -521,6 +528,11 @@ public class TaskController {
 	
 	@FXML
 	public void openCompleteTab() {
+		if (eventPaneComplete.isExpanded()) {
+	  	tableNo = EVENT_COM_TABLE;
+	  } else if (taskPaneComplete.isExpanded()) {
+	  	tableNo = TASK_COM_TABLE;
+	  }
 		notification.setText("Read me!");
 	  command.setPromptText("Feed me!");
 		eventCounter.setText("Events: " + completedEvents.size());
@@ -561,40 +573,39 @@ public class TaskController {
 		}
 		
 		if (input.matches("\\b.+|/x")) {
-			switch(input) {
-				case "add":
-					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
-					break;
-				case "del":
-					notification.setText("del<t/e/tc/ec> <Integer>");
-					break;
-				case "edit":
-					notification.setText("edit<t/e> <Integer> <Field>: <Edited entry>");
-					break;
-				case "mark":
-					notification.setText("mark<t/e> <Integer>");
-					break;
-				case "unmark":
-					notification.setText("unmark<t/e> <Integer>");
-					break;
-				case "search":
-					notification.setText("search <Query OR Priority OR Date>");
-					break;
-				case "view":
-					notification.setText("view <Tab Name/Panel Name>");
-					break;
-				case "undo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "redo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "/x":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				default:
-					validPane.setStyle("-fx-background-color: red;");
-					break;
+			validPane.setStyle("-fx-background-color: red;");
+			if (input.startsWith("a")) {
+				notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
+			} else if (input.startsWith("d")) {
+				notification.setText("del <ID>");
+			} else if (input.startsWith("e")) {
+				if (tableNo == EVENT_COM_TABLE || tableNo == TASK_COM_TABLE) {
+					notification.setText("You forgot to switch your view to the Incomplete tab!");
+				} else {
+					notification.setText("edit <ID> <Field>: <Edited entry>");
+				}
+			} else if (input.startsWith("m")) {
+				notification.setText("mark <ID>");
+			} else if (input.startsWith("unm")) {
+				notification.setText("unmark <ID>");
+			} else if (input.startsWith("s")) {
+				notification.setText("search <Query OR Priority OR Date>");
+			} else if (input.startsWith("v")) {
+				if (tableNo == EVENT_INC_TABLE) {
+					notification.setText("view Completed/Tasks");
+				} else if (tableNo == EVENT_COM_TABLE) {
+					notification.setText("view Incomplete/Tasks");
+				} else if (tableNo == TASK_INC_TABLE) {
+					notification.setText("view Completed/Events");
+				} else if (tableNo == TASK_COM_TABLE) {
+					notification.setText("view Incomplete/Events");
+				}
+			} else if (input.startsWith("und")) {
+				validPane.setStyle("-fx-background-color: green;");
+			} else if (input.startsWith("r")) {
+				validPane.setStyle("-fx-background-color: green;");
+			} else if (input.equals("/x")) {
+				validPane.setStyle("-fx-background-color: green;");
 			}
 		}
 		
@@ -606,139 +617,121 @@ public class TaskController {
 			rowID = Integer.parseInt(inputArray[1]) - 1;
 			
 			switch(inputArray[0]) {
-				case "dele":
+				case "del":
 					validPane.setStyle("-fx-background-color: green;");
 					tab.getSelectionModel().select(incompleteTab);
-					eventPaneIncomplete.setExpanded(true);
-					eventTableIncomplete.scrollTo(rowID);
-					eventTableIncomplete.getSelectionModel().select(rowID);
+					if (tableNo == EVENT_INC_TABLE) {
+						eventTableIncomplete.scrollTo(rowID);
+						eventTableIncomplete.getSelectionModel().select(rowID);
+					} else if (tableNo == TASK_INC_TABLE) {
+						taskTableIncomplete.scrollTo(rowID);
+						taskTableIncomplete.getSelectionModel().select(rowID);
+					} else if (tableNo == EVENT_COM_TABLE) {
+						eventTableComplete.scrollTo(rowID);
+						eventTableComplete.getSelectionModel().select(rowID);
+					} else if (tableNo == TASK_COM_TABLE) {
+						taskTableComplete.scrollTo(rowID);
+						taskTableComplete.getSelectionModel().select(rowID);
+					}
 					break;
-				case "delt":
+				case "mark":
 					validPane.setStyle("-fx-background-color: green;");
 					tab.getSelectionModel().select(incompleteTab);
-					taskPaneIncomplete.setExpanded(true);
-					taskTableIncomplete.scrollTo(rowID);
-					taskTableIncomplete.getSelectionModel().select(rowID);
+					if (tableNo == EVENT_INC_TABLE) {
+						eventTableIncomplete.scrollTo(rowID);
+						eventTableIncomplete.getSelectionModel().select(rowID);
+					} else if (tableNo == TASK_INC_TABLE) {
+						taskTableIncomplete.scrollTo(rowID);
+						taskTableIncomplete.getSelectionModel().select(rowID);
+					}
 					break;
-				case "delec":
+				case "unmark":
 					validPane.setStyle("-fx-background-color: green;");
 					tab.getSelectionModel().select(completeTab);
 					eventPaneComplete.setExpanded(true);
-					eventTableComplete.scrollTo(rowID);
-					eventTableComplete.getSelectionModel().select(rowID);
+					if (tableNo == EVENT_COM_TABLE) {
+						eventTableComplete.scrollTo(rowID);
+						eventTableComplete.getSelectionModel().select(rowID);
+					} else if (tableNo == TASK_COM_TABLE) {
+						taskTableComplete.scrollTo(rowID);
+						taskTableComplete.getSelectionModel().select(rowID);
+					}
 					break;
-				case "deltc":
-					validPane.setStyle("-fx-background-color: green;");
-					tab.getSelectionModel().select(completeTab);
-					taskPaneComplete.setExpanded(true);
-					taskTableComplete.scrollTo(rowID);
-					taskTableComplete.getSelectionModel().select(rowID);
-					break;
-				case "marke":
-					validPane.setStyle("-fx-background-color: green;");
-					tab.getSelectionModel().select(incompleteTab);
-					eventPaneIncomplete.setExpanded(true);
-					eventTableIncomplete.scrollTo(rowID);
-					eventTableIncomplete.getSelectionModel().select(rowID);
-					break;
-				case "markt":
-					validPane.setStyle("-fx-background-color: green;");
-					tab.getSelectionModel().select(incompleteTab);
-					taskPaneIncomplete.setExpanded(true);
-					taskTableIncomplete.scrollTo(rowID);
-					taskTableIncomplete.getSelectionModel().select(rowID);
-					break;
-				case "unmarke":
-					validPane.setStyle("-fx-background-color: green;");
-					tab.getSelectionModel().select(completeTab);
-					eventPaneComplete.setExpanded(true);
-					eventTableComplete.scrollTo(rowID);
-					eventTableComplete.getSelectionModel().select(rowID);
-					break;
-				case "unmarkt":
-					validPane.setStyle("-fx-background-color: green;");
-					tab.getSelectionModel().select(completeTab);
-					taskPaneComplete.setExpanded(true);
-					taskTableComplete.scrollTo(rowID);
-					taskTableComplete.getSelectionModel().select(rowID);
-					break;
-				case "edite":
-					tab.getSelectionModel().select(incompleteTab);
-					eventPaneIncomplete.setExpanded(true);
-					eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
-					eventTableIncomplete.scrollTo(rowID);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
-					break;
-				case "editt":
-					tab.getSelectionModel().select(incompleteTab);
-					taskPaneIncomplete.setExpanded(true);
-					taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
-					taskTableIncomplete.scrollTo(rowID);
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+				case "edit":
+					if (tableNo == EVENT_INC_TABLE) {
+						eventTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+						eventTableIncomplete.scrollTo(rowID);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+					} else if (tableNo == TASK_INC_TABLE) {
+						taskTableIncomplete.getSelectionModel().setCellSelectionEnabled(true);
+						taskTableIncomplete.scrollTo(rowID);
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+					} else {
+						notification.setText("You forgot to switch your view to the Incomplete tab!");
+					}
 					break;
 				default:
 					validPane.setStyle("-fx-background-color: red;");
 					break;
 			}
-		} else if (input.matches("edite \\d+ \\w.+")) {
+		} else if (input.matches("edit \\d+ \\w.+")) {
 			inputArray = input.split(" ");
 			rowID = Integer.parseInt(inputArray[1]) - 1;
-			eventTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 			
-			switch (inputArray[2]) {
-				case "Name":
-					eventTableIncomplete.getSelectionModel().clearSelection();
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventNameIncomplete);
-					break;
-				case "Priority":
-					eventTableIncomplete.getSelectionModel().clearSelection();
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventPriorityIncomplete);
-					break;
-				case "Start":
-					eventTableIncomplete.getSelectionModel().clearSelection();
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventStartDateIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventStartTimeIncomplete);
-					break;
-				case "End":
-					eventTableIncomplete.getSelectionModel().clearSelection();
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventEndDateIncomplete);
-					eventTableIncomplete.getSelectionModel().select(rowID, colEventEndTimeIncomplete);
-					break;
-				default:
-					break;
+			if (tableNo == EVENT_INC_TABLE) {
+				eventTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+				switch (inputArray[2]) {
+					case "Name":
+						eventTableIncomplete.getSelectionModel().clearSelection();
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventNameIncomplete);
+						break;
+					case "Priority":
+						eventTableIncomplete.getSelectionModel().clearSelection();
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventPriorityIncomplete);
+						break;
+					case "Start":
+						eventTableIncomplete.getSelectionModel().clearSelection();
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventStartDateIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventStartTimeIncomplete);
+						break;
+					case "End":
+						eventTableIncomplete.getSelectionModel().clearSelection();
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventIDIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventEndDateIncomplete);
+						eventTableIncomplete.getSelectionModel().select(rowID, colEventEndTimeIncomplete);
+						break;
+					default:
+						break;
+				}
+			} else if (tableNo == TASK_INC_TABLE) {
+				taskTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+				switch (inputArray[2]) {
+					case "Name":
+						taskTableIncomplete.getSelectionModel().clearSelection();
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskNameIncomplete);
+						break;
+					case "Priority":
+						taskTableIncomplete.getSelectionModel().clearSelection();
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskPriorityIncomplete);
+						break;
+					case "End":
+						taskTableIncomplete.getSelectionModel().clearSelection();
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndDateIncomplete);
+						taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndTimeIncomplete);
+						break;
+					default:
+						break;
+				}
 			}
-		} else if (input.matches("editt \\d+ \\w.+")) {
-			inputArray = input.split(" ");
-			rowID = Integer.parseInt(inputArray[1]) - 1;			
-			taskTableIncomplete.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-			
-			switch (inputArray[2]) {
-				case "Name":
-					taskTableIncomplete.getSelectionModel().clearSelection();
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskNameIncomplete);
-					break;
-				case "Priority":
-					taskTableIncomplete.getSelectionModel().clearSelection();
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskPriorityIncomplete);
-					break;
-				case "End":
-					taskTableIncomplete.getSelectionModel().clearSelection();
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndDateIncomplete);
-					taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndTimeIncomplete);
-					break;
-				default:
-					break;
-			}
-		} 
+		}
 		
-		if (input.matches("edite \\d+ .+\\w: .+\\w|editt \\d+ .+\\w: .+\\w|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
+		if (input.matches("edit \\d+ .+\\w: .+\\w|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
 				input.matches("view Incomplete|view Completed|view Events|view Tasks|view Incomplete Events|view Incomplete Tasks|view Completed Events|view Completed Tasks")) {
 			validPane.setStyle("-fx-background-color: green;");
 		}
