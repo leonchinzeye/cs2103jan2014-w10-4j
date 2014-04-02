@@ -42,12 +42,12 @@ public class CommandHandler {
 	 * @param userInput
 	 * @return
 	 */
-	public DataUI executeCmd(String userInput, Integer tableNo) {
+	public DataUI executeCmd(String userInput, int tableNo) {
 		checkCmdAndPerform(userInput, tableNo);	
 		return dataUI;
 	}
 
-	private void checkCmdAndPerform(String userInput, Integer tableNo) {
+	private void checkCmdAndPerform(String userInput, int tableNo) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		String commandTypeString = tokenizedInput[0];

@@ -1,6 +1,7 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class allows the user to mark tasks as complete or
@@ -15,6 +16,7 @@ public class Mark {
 	private static final int UNMARK_COMPLETE_TASKS = 3;
 	private static final int UNMARK_COMPLETE_EVENTS = 4;
 	
+	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 		
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify a task to mark as complete! Please enter an ID!";
@@ -24,25 +26,33 @@ public class Mark {
 	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been archived!";
 	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been unarchived!";
 	private static final String FEEDBACK_MARK_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
+	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
+	
 	public Mark() {
-		
+		initialiseCmdTable();
 	}
 	
-	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
+	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
-		success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
+		if(cmdTable.containsKey(cmd) != true) {
+			notRecognisableCmd(fileLink, dataUI);
+		} else {
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
+		}
 		
 		if(success) {
 			undoHandler.flushRedo();
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, Integer tableNo, Undo undoHandler) {
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
@@ -190,5 +200,19 @@ public class Mark {
 			success = false;
 		}
 		return success;
+	}
+	
+	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_MARK_COMMAND);
+	}
+	
+	private void initialiseCmdTable() {
+		cmdTable.put("mark", 0);
+		cmdTable.put("markt", MARK_INCOMPLETE_TASKS);
+		cmdTable.put("marke", MARK_INCOMPLETE_EVENTS);
+		cmdTable.put("unmark", 0);
+		cmdTable.put("unmarkt", UNMARK_COMPLETE_TASKS);
+		cmdTable.put("unmarke", UNMARK_COMPLETE_EVENTS);
 	}
 }
