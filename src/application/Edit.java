@@ -207,9 +207,9 @@ public class Edit {
 		boolean isTime = false;
 		TaskCard replacementTask = new TaskCard();
 		replacementTask.setStartDay(origTask.getStartDay());
-		attArray = attribute.split(":");
+		attArray = attribute.split(":", 2);
 		
-		if (attArray.length != 2) {
+		if (attArray.length < 2) {
 			dataUI.setFeedback(String.format("You seem to have left %s blank!", attArray[0]));				
 		} else if (attArray[0].equalsIgnoreCase("Name")){
 			changeName = true;
@@ -232,74 +232,55 @@ public class Edit {
 			 */
 			changeEndDate = true;
 			String endDateEntry = attArray[1].trim();
-			//check if time changes (reserved keywords: nth, empty, nothing)
-			String[] endDateAndOrTime = endDateEntry.split(",", 2);								
-			if(endDateAndOrTime.length > 1) {					
-				try {					
-					Date changeDate = dateAndTimeFormat.parse(endDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					replacementTask.setEndDay(cal);						
-					isDateAndTime = true;
-				} catch(ParseException e) {						
-					//may be date or time format only					
-				}
-					
-				if(isDateAndTime == true) {					
-					replacementTask.setType("T");						
-				}				
-			}	else {					
-				try {					
-					Date changeDate = dateFormat.parse(endDateEntry);						
-					//here we need to check if the task already has an end time 						
-					//if it does and it is not being modified, it need to be saved and 						
-					//set for replacement task												
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					if(!(origTask.getType().equals("FT"))) {							
-						cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));							
-						cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));							
-					} else {						
-						cal.set(Calendar.HOUR_OF_DAY, 0);							
-						cal.set(Calendar.MINUTE, 00);							
-					}						
-					replacementTask.setEndDay(cal);						
-					isDate = true;
-				} catch(ParseException e) {
-											
-				}					
-				
-				if(isDate == true) {
-					replacementTask.setType("T");
-				}
-					try {
-					Date changeDate = timeFormat.parse(endDateEntry);						
-					//here we need to check if the task already has
-					//an end date and if it is not to be modified, need to
-					//set it for replacement task
-					Calendar cal = GregorianCalendar.getInstance();												
-					if(!(origTask.getType().equals("FT"))) {							
-						cal.setTime(changeDate);							
-						cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));							
-							cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));							
-							cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));							
-						} else {
-							cal.set(Calendar.HOUR_OF_DAY, changeDate.getHours());							
-							cal.set(Calendar.MINUTE, changeDate.getMinutes());							
-						}						
-						replacementTask.setEndDay(cal);						
-						isTime = true;
-					} catch(ParseException e) {
-											
-					}
-					
-					if(isTime == true) {					
-						replacementTask.setType("T");						
-					}				
-				}
+			try {					
+				Date changeDate = dateFormat.parse(endDateEntry);						
+				//here we need to check if the task already has an end time 						
+				//if it does and it is not being modified, it need to be saved and 						
+				//set for replacement task												
+				Calendar cal = GregorianCalendar.getInstance();						
+				cal.setTime(changeDate);						
+				if(!(origTask.getType().equals("FT"))) {							
+					cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));							
+					cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));							
+				} else {						
+					cal.set(Calendar.HOUR_OF_DAY, 0);							
+					cal.set(Calendar.MINUTE, 00);							
+				}						
+				replacementTask.setEndDay(cal);						
+				isDate = true;
+			} catch(ParseException e) {
+
+			}					
+
+			if(isDate == true) {
+				replacementTask.setType("T");
+			}
+			try {
+				Date changeDate = timeFormat.parse(endDateEntry);						
+				//here we need to check if the task already has
+				//an end date and if it is not to be modified, need to
+				//set it for replacement task
+				Calendar cal = GregorianCalendar.getInstance();												
+				if(!(origTask.getType().equals("FT"))) {							
+					cal.setTime(changeDate);							
+					cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));							
+					cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));							
+					cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));							
+				} else {
+					cal.set(Calendar.HOUR_OF_DAY, changeDate.getHours());							
+					cal.set(Calendar.MINUTE, changeDate.getMinutes());							
+				}						
+				replacementTask.setEndDay(cal);						
+				isTime = true;
+			} catch(ParseException e) {
+
+			}
+			if(isTime == true) {
+				replacementTask.setType("T");
+			}
 			
-			if((isDateAndTime && isTime && isDate) == false) {					
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");					
+			if((isDateAndTime && isTime && isDate) == false) {
+				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 			}
 		}
 		
@@ -345,9 +326,9 @@ public class Edit {
 		boolean isDate = false;
 		boolean isTime = false;
 		TaskCard replacementEvent = new TaskCard();
-		attArray = attribute.split(":");
+		attArray = attribute.split(":", 2);
 
-		if (attArray.length != 2) {				
+		if (attArray.length < 2) {				
 			dataUI.setFeedback(String.format("You seem to have left %s blank!", attArray[0]));				
 		} else if (attArray[0].equalsIgnoreCase("Name")){
 			changeName = true;
@@ -366,90 +347,61 @@ public class Edit {
 			}
 		} else if (attArray[0].equalsIgnoreCase("Start")) {
 			changeStartDate = true;
-			String startDateEntry = attArray[1].trim();				
-			String[] startDateAndOrTime = startDateEntry.split(",", 2);								
-			if(startDateAndOrTime.length>1) {					
-				try {						
-					Date changeDate = dateAndTimeFormat.parse(startDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					replacementEvent.setStartDay(cal);						
-					isDateAndTime = true;
-				} catch (ParseException e) {					
-					//may be date or time format only						
-				}										
+			String startDateEntry = attArray[1].trim();
+			try {						
+				Date changeDate = dateFormat.parse(startDateEntry);						
+				Calendar cal = GregorianCalendar.getInstance();						
+				cal.setTime(changeDate);						
+				cal.set(Calendar.HOUR_OF_DAY, origEvent.getStartDay().get(Calendar.HOUR_OF_DAY));						
+				cal.set(Calendar.MINUTE, origEvent.getStartDay().get(Calendar.MINUTE));						
+				replacementEvent.setStartDay(cal);						
+				isDate = true;
+			} catch (ParseException e) {												
+
 			}
 
-			else {				
-				try {						
-					Date changeDate = dateFormat.parse(startDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					cal.set(Calendar.HOUR_OF_DAY, origEvent.getStartDay().get(Calendar.HOUR_OF_DAY));						
-					cal.set(Calendar.MINUTE, origEvent.getStartDay().get(Calendar.MINUTE));						
-					replacementEvent.setStartDay(cal);						
-					isDate = true;
-				} catch (ParseException e) {												
+			try {					
+				Date changeDate = timeFormat.parse(startDateEntry);						
+				Calendar cal = GregorianCalendar.getInstance();						
+				cal.setTime(changeDate);						
+				cal.set(Calendar.DATE, origEvent.getStartDay().get(Calendar.DATE));						
+				cal.set(Calendar.MONTH, origEvent.getStartDay().get(Calendar.MONTH));						
+				cal.set(Calendar.YEAR, origEvent.getStartDay().get(Calendar.YEAR));						
+				replacementEvent.setStartDay(cal);						
+				isTime = true;
+			} catch (ParseException e) {
 
-				}
-
-				try {					
-					Date changeDate = timeFormat.parse(startDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					cal.set(Calendar.DATE, origEvent.getStartDay().get(Calendar.DATE));						
-					cal.set(Calendar.MONTH, origEvent.getStartDay().get(Calendar.MONTH));						
-					cal.set(Calendar.YEAR, origEvent.getStartDay().get(Calendar.YEAR));						
-					replacementEvent.setStartDay(cal);						
-					isTime = true;
-				} catch (ParseException e) {
-
-				}					
 			}
 			if ((isDateAndTime && isTime && isDate) == false) {				
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");					
 			}				
 		} else if (attArray[0].equalsIgnoreCase("End")) {
 			changeEndDate = true;
-			String endDateEntry = attArray[1].trim();				
-			String[] endDateAndOrTime = endDateEntry.split(",", 2);								
-			if(endDateAndOrTime.length>1) {					
-				try {						
-					Date changeDate = dateAndTimeFormat.parse(endDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					replacementEvent.setEndDay(cal);						
-					isDateAndTime = true;
-				} catch (ParseException e) {						
-					//may be date or time format only						
-				}					
-			}	else {			
-				try {						
-					Date changeDate = dateFormat.parse(endDateEntry);												
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					cal.set(Calendar.HOUR_OF_DAY, origEvent.getEndDay().get(Calendar.HOUR_OF_DAY));						
-					cal.set(Calendar.MINUTE, origEvent.getEndDay().get(Calendar.MINUTE));						
-					replacementEvent.setEndDay(cal);						
-					isDate = true;
-				} catch (ParseException e) {						
+			String endDateEntry = attArray[1].trim();			
+			try {						
+				Date changeDate = dateFormat.parse(endDateEntry);												
+				Calendar cal = GregorianCalendar.getInstance();						
+				cal.setTime(changeDate);						
+				cal.set(Calendar.HOUR_OF_DAY, origEvent.getEndDay().get(Calendar.HOUR_OF_DAY));						
+				cal.set(Calendar.MINUTE, origEvent.getEndDay().get(Calendar.MINUTE));						
+				replacementEvent.setEndDay(cal);						
+				isDate = true;
+			} catch (ParseException e) {						
 
-				}
-
-				try {						
-					Date changeDate = timeFormat.parse(endDateEntry);						
-					Calendar cal = GregorianCalendar.getInstance();						
-					cal.setTime(changeDate);						
-					cal.set(Calendar.DATE, origEvent.getEndDay().get(Calendar.DATE));					
-					cal.set(Calendar.MONTH, origEvent.getEndDay().get(Calendar.MONTH));						
-					cal.set(Calendar.YEAR, origEvent.getEndDay().get(Calendar.YEAR));						
-					replacementEvent.setEndDay(cal);						
-					isTime = true;
-				} catch (ParseException e) {						
-
-				}					
 			}
-			
+
+			try {						
+				Date changeDate = timeFormat.parse(endDateEntry);						
+				Calendar cal = GregorianCalendar.getInstance();						
+				cal.setTime(changeDate);						
+				cal.set(Calendar.DATE, origEvent.getEndDay().get(Calendar.DATE));					
+				cal.set(Calendar.MONTH, origEvent.getEndDay().get(Calendar.MONTH));						
+				cal.set(Calendar.YEAR, origEvent.getEndDay().get(Calendar.YEAR));						
+				replacementEvent.setEndDay(cal);						
+				isTime = true;
+			} catch (ParseException e) {						
+
+			}
 			if ((isDateAndTime && isTime && isDate) == false) {					
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");					
 			}				
