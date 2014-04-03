@@ -17,14 +17,6 @@ public class TaskDataUI {
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
 	}
-	
-	private TaskDataUI(String id, String p, String n, String endD, String endT) {
-		this.ID = new SimpleStringProperty(id);
-		this.Priority = new SimpleStringProperty(p);
-		this.Name = new SimpleStringProperty(n);
-		this.endDate = new SimpleStringProperty(endD);
-		this.endTime = new SimpleStringProperty(endT);
-	}
 
 	public String getID() {
 		return ID.get();
