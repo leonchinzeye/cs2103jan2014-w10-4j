@@ -118,8 +118,8 @@ public class FileLinker {
 
 		if(fileToBeEditedFrom == 1) {
 			if(state_search) {
-				TaskCard origTask = searchIncTasks.get(taskNumberToBeModified - 1);
-				searchIncTasks.set(taskNumberToBeModified - 1, modifiedTask);
+				TaskCard origTask = searchIncTasks.get(taskNumberToBeModified);
+				searchIncTasks.set(taskNumberToBeModified, modifiedTask);
 				taskNumberToBeModified = incompleteTasks.indexOf(origTask);
 			}
 			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
@@ -128,8 +128,8 @@ public class FileLinker {
 		
 		else if (fileToBeEditedFrom == 2) {
 			if(state_search) {
-				TaskCard origEvent = searchIncEvents.get(taskNumberToBeModified - 1);
-				searchIncEvents.set(taskNumberToBeModified - 1, modifiedTask);
+				TaskCard origEvent = searchIncEvents.get(taskNumberToBeModified);
+				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
 				taskNumberToBeModified = incompleteEvents.indexOf(origEvent);
 			}
 			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
