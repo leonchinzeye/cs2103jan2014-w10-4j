@@ -11,6 +11,8 @@ public class EventDataUI {
 	private SimpleStringProperty startTime;
 	private SimpleStringProperty endDate;
 	private SimpleStringProperty endTime;
+	private boolean isExpired;
+	private boolean isOngoing;
 	
 	public EventDataUI() {
 		this.ID = new SimpleStringProperty();
@@ -20,6 +22,8 @@ public class EventDataUI {
 		this.startTime = new SimpleStringProperty();
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
+		this.isExpired = true;
+		this.isOngoing = false;
 	}
 	
 	public String getID() {
@@ -76,6 +80,22 @@ public class EventDataUI {
 	
 	public void setEndTime(String endT) {
 		endTime.set(endT);
+	}
+	
+	public boolean getIsExpired() {
+		return isExpired;
+	}
+	
+	public void setIsExpired(boolean isEx) {
+		isExpired = isEx;
+	}
+	
+	public boolean getIsOngoing() {
+		return isOngoing;
+	}
+	
+	public void setIsOngoing(boolean isOn) {
+		isOngoing = isOn;
 	}
 	
 	public SimpleStringProperty idProperty() {
