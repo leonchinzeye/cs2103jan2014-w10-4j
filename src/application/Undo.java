@@ -315,6 +315,8 @@ public class Undo {
 	  int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
 	  fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, modifiedFile);
 	  
+	  pushRedoToUndo();
+	  
 		return "Redo for archiving \"" + null + "\" successful!";
   }
 
@@ -427,4 +429,3 @@ public class Undo {
 		}
 	}
 }
-
