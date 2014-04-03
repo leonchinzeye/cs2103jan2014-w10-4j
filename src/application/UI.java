@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.fxml.FXMLLoader;
@@ -26,6 +27,7 @@ public class UI extends Application {
 			Parent root = (Parent) loader.load();
 			Scene scene = new Scene(root,640,430);
 			
+			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream("/projectX.png")));
 			//CSS file
 			scene.getStylesheets().add("application/emerald.css");
 			
@@ -37,6 +39,7 @@ public class UI extends Application {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+		
 		primaryS = primaryStage;
 	}
 	
