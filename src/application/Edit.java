@@ -302,9 +302,9 @@ public class Edit {
 		}
 		
 		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);		
-		fileLink.editHandling(replacementTask, userEnteredID, 1);
+		fileLink.editHandling(replacementTask, userEnteredID - 1, 1);
 		
-		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_TASKS, replacementTask, null);
+		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_TASKS, origTask, replacementTask);
 		RefreshUI.executeRefresh(fileLink, dataUI);		
 		return success;		
 	}
@@ -433,9 +433,9 @@ public class Edit {
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);		
-		fileLink.editHandling(replacementEvent, userEnteredID, 2);
+		fileLink.editHandling(replacementEvent, userEnteredID - 1, 2);
 		
-		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_EVENTS, replacementEvent, null);
+		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_EVENTS, origEvent, replacementEvent);
 		RefreshUI.executeRefresh(fileLink, dataUI);		
 		return success;	
 	}

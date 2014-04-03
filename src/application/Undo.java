@@ -178,8 +178,12 @@ public class Undo {
 		
 		if(modifiedFile == 1) {
 			arrayToBeModified = fileLink.getIncompleteTasks();
-		} else {
+		} else if(modifiedFile == 2) {
 			arrayToBeModified = fileLink.getIncompleteEvents();
+		} else if(modifiedFile == 3) {
+			arrayToBeModified = fileLink.getCompletedTasks();
+		} else {
+			arrayToBeModified = fileLink.getCompletedEvents();
 		}
 	  
 		int indexOfTaskToBeDeleted = arrayToBeModified.indexOf(taskToBeDeletedBack);
@@ -191,12 +195,46 @@ public class Undo {
 	}
 
 	private String undoEdit(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+		ArrayList<TaskCard> arrayToBeModified;
+	  int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+		TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+	  TaskCard taskToBeReplaced = undoTasksNew.get(indexOfLastCmdUndo);
+	  
+	  if(modifiedFile == 1) {
+			arrayToBeModified = fileLink.getIncompleteTasks();
+		} else if(modifiedFile == 2) {
+			arrayToBeModified = fileLink.getIncompleteEvents();
+		} else if(modifiedFile == 3) {
+			arrayToBeModified = fileLink.getCompletedTasks();
+		} else {
+			arrayToBeModified = fileLink.getCompletedEvents();
+		}
+	  
+	  int indexOfTaskToBeEdited = arrayToBeModified.indexOf(taskToBeReplaced);
+	  fileLink.editHandling(taskToBeAddedBack, indexOfTaskToBeEdited, modifiedFile);
+	  
+	  pushUndoToRedo();
+	  
 		return "Undo for editing \"" + null + "\" successful!";
   }
 
 	private String redoEdit(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+	  ArrayList<TaskCard> arrayToBeModified;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeAddedBack = redoTasksNew.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeReplaced = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 1) {
+	  	arrayToBeModified = fileLink.getIncompleteTasks();
+	  } else {
+	  	arrayToBeModified = fileLink.getIncompleteEvents();
+	  }
+	  
+	  int indexOfTaskToBeEdited = arrayToBeModified.indexOf(taskToBeReplaced);
+	  fileLink.editHandling(taskToBeAddedBack, indexOfTaskToBeEdited, modifiedFile);
+	  
+	  pushRedoToUndo();
+	  
 		return "Redo for editing \"" + null + "\" successful!";
 	}
 
