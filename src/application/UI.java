@@ -29,7 +29,7 @@ public class UI extends Application {
 			
 			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream("/projectX.png")));
 			//CSS file
-			scene.getStylesheets().add("application/emerald.css");
+			scene.getStylesheets().add("application/jedigreen.css");
 			
 			TaskController tc = loader.getController();
 			tc.setUI(this);
