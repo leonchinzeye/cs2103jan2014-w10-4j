@@ -5,6 +5,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
+/**
+ * this class contains the add functionalities
+ * @author leon
+ *
+ */
 public class Add {
 
 	private int ARRAY_FIRST_ARG = 0;
@@ -276,17 +281,6 @@ public class Add {
 		return success;
 	}
 
-	private boolean checkValidityOfEvent(TaskCard eventToBeAdded) {
-		Calendar start = eventToBeAdded.getStartDay();
-		Calendar end = eventToBeAdded.getEndDay();
-		
-		if(end.before(start)) {
-			return false;
-		}
-		
-	  return true;
-  }
-
 	private boolean checkToday(Calendar today, Calendar endDay) {
 	  return endDay.get(Calendar.DATE) == today.get(Calendar.DATE) && endDay.get(Calendar.MONTH) == today.get(Calendar.MONTH) 
 	  		&& endDay.get(Calendar.YEAR) == today.get(Calendar.YEAR);
@@ -444,7 +438,8 @@ public class Add {
 		taskToBeAdded.setEndDay(floatingDefaultEndDay);
 	}
 	
-	private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
+	@SuppressWarnings("deprecation")
+  private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
 		if(dateAndTime.length == 1) {
 			String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG].trim();
 			Date time = null;
@@ -512,6 +507,17 @@ public class Add {
 		}
 	}
 	
+	private boolean checkValidityOfEvent(TaskCard eventToBeAdded) {
+		Calendar start = eventToBeAdded.getStartDay();
+		Calendar end = eventToBeAdded.getEndDay();
+		
+		if(end.before(start)) {
+			return false;
+		}
+		
+	  return true;
+	}
+
 	private void resetFlag() {
 		urgent_flag = false;
 	}

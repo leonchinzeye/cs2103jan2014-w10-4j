@@ -11,7 +11,6 @@ public class Search {
 	
 	private static final int SEARCH_TODAY = 1;
 	private static final int SEARCH_PRIORITY = 2;
-	private static final int SEARCH_FREQUENCY = 3;
 
 	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you want to search for?";
 
@@ -48,7 +47,7 @@ public class Search {
 	
 	/**
 	 * checks to see what the search is
-	 * it can be either 3 possiblities
+	 * it can be either 3 possibilities
 	 * 1) search by a date
 	 * 2)	search using reserved keywords
 	 * 3) a normal search using user defined keywords
