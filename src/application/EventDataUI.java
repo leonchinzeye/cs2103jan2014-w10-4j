@@ -22,16 +22,6 @@ public class EventDataUI {
 		this.endTime = new SimpleStringProperty();
 	}
 	
-	private EventDataUI(String id, String p, String n, String startD, String startT, String endD, String endT, String freq) {
-		this.ID = new SimpleStringProperty(id);
-		this.Priority = new SimpleStringProperty(p);
-		this.Name = new SimpleStringProperty(n);
-		this.startDate = new SimpleStringProperty(startD);
-		this.startTime = new SimpleStringProperty(startT);
-		this.endDate = new SimpleStringProperty(endD);
-		this.endTime = new SimpleStringProperty(endT);
-	}
-	
 	public String getID() {
 		return ID.get();
 	}
