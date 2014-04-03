@@ -7,6 +7,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import np.com.ngopal.control.AutoFillTextBox.*?>
@@ -306,16 +307,19 @@
           </points>
         </Polygon>
         <Text layoutX="235.0" layoutY="260.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return">
+          <fill>
+            <Color blue="0.000" green="0.604" red="1.000" fx:id="x4" />
+          </fill>
           <font>
             <Font name="Moire" size="20.0" fx:id="x3" />
           </font>
         </Text>
-        <Text font="$x3" layoutX="175.0" layoutY="283.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+        <Text fill="$x4" font="$x3" layoutX="175.0" layoutY="283.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
       </children>
     </AnchorPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="207.0" layoutY="209.0" mouseTransparent="true" prefHeight="124.0" prefWidth="250.0" styleClass="TextArea" text="add &lt;Name&gt; due by &lt;DD/MM&gt;&#10;del&lt;t/e/tc/ec&gt; &lt;ID&gt;&#10;edit&lt;t/e&gt; &lt;ID&gt; &lt;Field&gt;: &lt;Edited entry&gt;&#10;mark&lt;t/e&gt; &lt;ID&gt;&#10;unmark&lt;t/e&gt; &lt;ID&gt;&#10;search &lt;Query OR Priority OR Date&gt;&#10;undo/redo&#10;view &lt;Tab/Panel&gt;" visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="207.0" layoutY="209.0" mouseTransparent="true" prefHeight="124.0" prefWidth="250.0" styleClass="TextArea" text="add &lt;Name&gt; due by &lt;DD/MM&gt;&#10;del/t/e/tc/ec &lt;ID&gt;&#10;edit/t/e &lt;ID&gt; &lt;Field&gt;: &lt;Edited entry&gt;&#10;mark/t/e &lt;ID&gt;&#10;unmark/t/e &lt;ID&gt;&#10;search &lt;Query OR Priority OR Date&gt;&#10;undo/redo&#10;view &lt;Tab/Panel&gt;" visible="true" wrapText="true" />
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="193.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="241.0" rotate="90.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
@@ -338,8 +342,8 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text font="$x3" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text font="$x3" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
+        <Text fill="$x4" font="$x3" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text fill="$x4" font="$x3" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>
     </AnchorPane>
     <ImageView fx:id="closeButton" fitHeight="14.0" fitWidth="14.0" layoutX="619.0" layoutY="5.0" onMouseClicked="#closeWindow" onMouseEntered="#closeEnter" onMouseExited="#closeExit" pickOnBounds="true" preserveRatio="true">

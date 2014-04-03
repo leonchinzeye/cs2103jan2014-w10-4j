@@ -144,6 +144,7 @@ public class TaskController {
 	private DataUI dataUI;
 	private String lastInput = null;
 	private int tableNo = 0;
+	private boolean isEnterKey = false;
 	private static double mouseDragOffsetX;
 	private static double mouseDragOffsetY;
 	Image closeButtonDefault = new Image("/closeButton.png");
@@ -252,9 +253,22 @@ public class TaskController {
 		
 		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
-		history.add(lastInput); //stores the last entered line to command history to be accessed by the up/down buttons.
+		
+		if (!forward.empty()) {
+			Stack<String> temp = new Stack<String>();
+			while (!forward.empty()) {
+				temp.add(forward.pop());
+			}
+			forward.add(lastInput);
+			while (!temp.empty()) {
+				forward.add(temp.pop());
+			}
+		} else {
+			history.add(lastInput);
+		}
 		
 		executeCmd(lastInput);
+		
 	}
 
 	public void executeCmd(String lastInput) {
@@ -531,7 +545,9 @@ public class TaskController {
 	
 	@FXML
 	public void commandTextFieldKeystrokes (KeyEvent key) {
-		setTableColumnStyle(key);
+		if (!isEnterKey) {
+			setTableColumnStyle(key);
+		}
 		returnLastInput(key);
 	}
 	
@@ -540,6 +556,7 @@ public class TaskController {
 		
 		commandBlank(input);
 		commandSetNotification(input);
+		
 		if (input.matches("\\w.+ \\d+")) {
 			commandGeneralSelectionStyle(input);
 		} else if (input.matches("edit \\d+ \\w.+|editt \\d+ \\w.+|edite \\d+ \\w.+")) {
@@ -556,6 +573,7 @@ public class TaskController {
 	
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
+	  	notification.setText("Read me!");
 			eventTableIncomplete.getSelectionModel().clearSelection();
 			taskTableIncomplete.getSelectionModel().clearSelection();
 			eventTableComplete.getSelectionModel().clearSelection();

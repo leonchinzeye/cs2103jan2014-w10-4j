@@ -14,10 +14,13 @@ public class TaskCard {
 	 */
 	private String type;
 	private int priority = 0;
+	private Calendar current = new GregorianCalendar();
 	private Calendar startDay = new GregorianCalendar();
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
+	private boolean isExpired;
+	private boolean isOngoing;
 	
 	public TaskCard(){
 	}
@@ -62,6 +65,20 @@ public class TaskCard {
 		this.endDay = end;
 	}
 	
+	public boolean getIsExpired() {
+		if (current.after(endDay)) {
+			isExpired = true;
+		}
+		return isExpired;
+	}
+	
+	public boolean getIsOngoing() {
+		if (!type.contains("T") && current.after(startDay) && current.before(endDay)) {
+			isOngoing = true;
+		}
+		return isOngoing;
+	}
+	
 	public String getTaskString() {
 		taskString = "";
 		for (int i = 0; i < MAX_PRIORITY; i++) {
@@ -75,9 +92,7 @@ public class TaskCard {
 			taskString += name + ", " + dateString.format(startDay.getTime()); 
 		} else {
 			taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
-		}
-		
-		
+		}		
 		return taskString;
 	}
 }
