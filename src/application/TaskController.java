@@ -253,8 +253,12 @@ public class TaskController {
 		
 		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
-		
-		if (!forward.empty()) {
+		commandHistoryRecall(lastInput);
+		executeCmd(lastInput);
+	}
+
+	private void commandHistoryRecall(String lastInput) {
+	  if (!forward.empty()) {
 			Stack<String> temp = new Stack<String>();
 			while (!forward.empty()) {
 				temp.add(forward.pop());
@@ -266,10 +270,7 @@ public class TaskController {
 		} else {
 			history.add(lastInput);
 		}
-		
-		executeCmd(lastInput);
-		
-	}
+  }
 
 	public void executeCmd(String lastInput) {
 	  String response;
@@ -545,6 +546,11 @@ public class TaskController {
 	
 	@FXML
 	public void commandTextFieldKeystrokes (KeyEvent key) {
+		if (key.getCode().equals(KeyCode.ENTER)) {
+			isEnterKey = true;
+		} else {
+			isEnterKey = false;
+		}
 		if (!isEnterKey) {
 			setTableColumnStyle(key);
 		}
@@ -791,19 +797,27 @@ public class TaskController {
 	  	switch (inputArray[2]) {
 	  		case "Name":
 	  		case "name":
+	  		case "Name:":
+	  		case "name:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventNameIncomplete);
 	  			break;
 	  		case "Priority":
 	  		case "priority":
+	  		case "Priority:":
+	  		case "priority:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventPriorityIncomplete);
 	  			break;
 	  		case "Start":
 	  		case "start":
+	  		case "Start:":
+	  		case "start:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventStartDateIncomplete);
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventStartTimeIncomplete);
 	  			break;
 	  		case "End":
 	  		case "end":
+	  		case "End:":
+	  		case "end:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventEndDateIncomplete);
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventEndTimeIncomplete);
 	  			break;
@@ -817,14 +831,20 @@ public class TaskController {
 	  	switch (inputArray[2]) {
 	  		case "Name":
 	  		case "name":
+	  		case "Name:":
+	  		case "name:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskNameIncomplete);
 	  			break;
 	  		case "Priority":
 	  		case "priority":
+	  		case "Priority:":
+	  		case "priority:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskPriorityIncomplete);
 	  			break;
 	  		case "End":
 	  		case "end":
+	  		case "End:":
+	  		case "end:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndDateIncomplete);
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndTimeIncomplete);
 	  			break;
