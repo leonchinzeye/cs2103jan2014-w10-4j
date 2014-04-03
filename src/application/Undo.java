@@ -239,22 +239,82 @@ public class Undo {
 	}
 
 	private String undoMark(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+	  ArrayList<TaskCard> arrayToBeMarked;
+	  int fileToBeDeletedFrom;
+	  int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+	  
+	  if(modifiedFile == 1) {
+	  	fileToBeDeletedFrom = 3;
+	  	arrayToBeMarked = fileLink.getCompletedTasks();
+	  } else {
+	  	fileToBeDeletedFrom = 4;
+	  	arrayToBeMarked = fileLink.getCompletedEvents();
+	  }
+	  
+	  int indexOfTaskToBeDeleted = arrayToBeMarked.indexOf(taskToBeAddedBack);
+	  fileLink.markHandling(taskToBeAddedBack, indexOfTaskToBeDeleted, fileToBeDeletedFrom);
+	  
+	  pushUndoToRedo();
+		
 		return "Undo for archiving \"" + null + "\" successful!";
   }
 
 	private String redoMark(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
-		return "Redo for unarchiving \"" + null + "\" successful!";
+		ArrayList<TaskCard> arrayToBeMarked;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeMarked = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 1) {
+	  	arrayToBeMarked = fileLink.getIncompleteTasks();
+	  } else {
+	  	arrayToBeMarked = fileLink.getIncompleteEvents();
+	  }
+	  
+	  int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+	  fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, modifiedFile);
+	  
+	  pushRedoToUndo();
+	  
+	  return "Redo for unarchiving \"" + null + "\" successful!";
 	}
 	
 	private String undoUnmark(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+		ArrayList<TaskCard> arrayToBeMarked;
+		int fileToBeDeletedFrom;
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+		TaskCard taskToBeMarked = undoTasksOld.get(indexOfLastCmdUndo);
+		
+		if(modifiedFile == 3) {
+			fileToBeDeletedFrom = 1;
+			arrayToBeMarked = fileLink.getIncompleteTasks();
+		} else {
+			fileToBeDeletedFrom = 2;
+			arrayToBeMarked = fileLink.getIncompleteEvents();
+		}
+		
+		int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+		fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, fileToBeDeletedFrom);
+		
+		pushUndoToRedo();
+		
 		return "Undo for unarchiving \"" + null + "\" successful!";
   }
 	
 	private String redoUnmark(FileLinker fileLink) {
-	  // TODO Auto-generated method stub
+	  ArrayList<TaskCard> arrayToBeMarked;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeMarked = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 3) {
+	  	arrayToBeMarked = fileLink.getCompletedTasks();
+	  } else {
+	  	arrayToBeMarked = fileLink.getCompletedEvents();
+	  }
+	  
+	  int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+	  fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, modifiedFile);
+	  
 		return "Redo for archiving \"" + null + "\" successful!";
   }
 
