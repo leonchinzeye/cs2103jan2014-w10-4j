@@ -10,24 +10,12 @@ public class TaskDataUI {
 	private SimpleStringProperty endDate;
 	private SimpleStringProperty endTime;
 	
-	private boolean isExpired;
-	
 	public TaskDataUI() {
 		this.ID = new SimpleStringProperty();
 		this.Priority = new SimpleStringProperty();
 		this.Name = new SimpleStringProperty();
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
-		this.isExpired = new Boolean(false);
-	}
-	
-	private TaskDataUI(String id, String p, String n, String endD, String endT, Boolean isEx) {
-		this.ID = new SimpleStringProperty(id);
-		this.Priority = new SimpleStringProperty(p);
-		this.Name = new SimpleStringProperty(n);
-		this.endDate = new SimpleStringProperty(endD);
-		this.endTime = new SimpleStringProperty(endT);
-		this.isExpired = new Boolean(isEx);
 	}
 
 	public String getID() {
@@ -68,14 +56,6 @@ public class TaskDataUI {
 	
 	public void setEndTime(String endT) {
 		endTime.set(endT);
-	}
-	
-	public boolean getIsExpired() {
-		return isExpired;
-	}
-	
-	public void setIsExpired(Boolean isExpired) {
-		this.isExpired = isExpired;
 	}
 	
 	public SimpleStringProperty idProperty() {
