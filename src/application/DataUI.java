@@ -21,7 +21,7 @@ import java.util.Calendar;
 public class DataUI {
 
 	private static final String DEFAULT_FEEDBACK = "Read me!";
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");	
 	
 	private ArrayList<TaskDataUI> incompleteTasks;

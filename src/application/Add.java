@@ -32,6 +32,7 @@ public class Add {
 	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :( Please re-enter!";
 	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :( Please re-enter!";
 	private final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please re-enter";
+	private final String FEEDBACK_GOING_BACK_INTO_TIME = "Are you attempting to time travel into the past?";
 	
 	private HashMap<String, Integer> cmdTable;
 	
@@ -260,6 +261,11 @@ public class Add {
 				setTodayToUserEndDate(eventToBeAdded, startDate, endDate, eventName);
 			}
 			
+			if(!checkValidityOfEvent(eventToBeAdded)) {
+				dataUI.setFeedback(FEEDBACK_GOING_BACK_INTO_TIME);
+				return false;
+			}
+			
 			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
@@ -269,6 +275,17 @@ public class Add {
 		
 		return success;
 	}
+
+	private boolean checkValidityOfEvent(TaskCard eventToBeAdded) {
+		Calendar start = eventToBeAdded.getStartDay();
+		Calendar end = eventToBeAdded.getEndDay();
+		
+		if(end.before(start)) {
+			return false;
+		}
+		
+	  return true;
+  }
 
 	private boolean checkToday(Calendar today, Calendar endDay) {
 	  return endDay.get(Calendar.DATE) == today.get(Calendar.DATE) && endDay.get(Calendar.MONTH) == today.get(Calendar.MONTH) 
