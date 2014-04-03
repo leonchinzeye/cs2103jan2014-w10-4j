@@ -1,5 +1,6 @@
 package application;
 
+import java.util.Collections;
 import java.util.Stack;
 
 import javafx.application.Platform;
@@ -13,6 +14,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
@@ -25,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 
 public class TaskController {
 	@FXML
@@ -33,6 +36,8 @@ public class TaskController {
 	private AnchorPane helpAnchor;
 	@FXML
 	private AnchorPane helpAnchor2;
+	@FXML
+	private Pane dragPane;
 	@FXML
 	private ImageView closeButton;
 	@FXML
@@ -177,14 +182,14 @@ public class TaskController {
 	
 	@FXML
 	private void initialize() {
-		anchor.setOnMousePressed(new EventHandler<MouseEvent>() {
+		dragPane.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				mouseDragOffsetX = event.getSceneX();
 				mouseDragOffsetY = event.getSceneY();
 			}
 		});
-		anchor.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		dragPane.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				ui.primaryS.setX(event.getScreenX() - mouseDragOffsetX);
@@ -235,6 +240,42 @@ public class TaskController {
 		eventCounter.setText("Events: " + incompleteEvents.size());
 		taskCounter.setText("Tasks: " + incompleteTasks.size());
 		
+		final ObservableList<Integer> highlightOngoingRows = FXCollections.observableArrayList();
+		final ObservableList<Integer> highlightExpiredRows = FXCollections.observableArrayList();
+		
+		for (int i = 0; i < incompleteEvents.size(); i++) {
+			if (incompleteEvents.get(i).getIsOngoing()) {
+				highlightOngoingRows.add(i);
+			} else if (incompleteEvents.get(i).getIsExpired()) {
+				highlightExpiredRows.add(i);
+			}
+		}
+		
+		eventTableIncomplete.setRowFactory(new Callback<TableView<EventDataUI>, TableRow<EventDataUI>>() {
+			@Override
+			public TableRow<EventDataUI> call(TableView<EventDataUI> tableView) {
+				final TableRow<EventDataUI> row = new TableRow<EventDataUI>() {
+					@Override
+					protected void updateItem(EventDataUI event, boolean empty){
+						super.updateItem(event, empty);
+						if (highlightOngoingRows.contains(getIndex())) {
+							if (!getStyleClass().contains("highlightOngoing")) {
+								getStyleClass().add("highlightOngoing");
+							}
+						} else if (highlightExpiredRows.contains(getIndex())){
+							if (!getStyleClass().contains("highlightExpired")) {
+								getStyleClass().add("highlightExpired");
+							}
+						} else {
+							getStyleClass().removeAll(Collections.singleton("highlightOngoing"));
+							getStyleClass().removeAll(Collections.singleton("highlightExpired"));
+						}
+					}
+				};
+				return row;
+			}
+		});
+		
 		incompleteEvents.removeAll(incompleteEvents);
 		incompleteTasks.removeAll(incompleteTasks);
 		completedEvents.removeAll(completedEvents);
@@ -253,8 +294,12 @@ public class TaskController {
 		
 		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
-		
-		if (!forward.empty()) {
+		commandHistoryRecall(lastInput);
+		executeCmd(lastInput);
+	}
+
+	private void commandHistoryRecall(String lastInput) {
+	  if (!forward.empty()) {
 			Stack<String> temp = new Stack<String>();
 			while (!forward.empty()) {
 				temp.add(forward.pop());
@@ -266,10 +311,7 @@ public class TaskController {
 		} else {
 			history.add(lastInput);
 		}
-		
-		executeCmd(lastInput);
-		
-	}
+  }
 
 	public void executeCmd(String lastInput) {
 	  String response;
@@ -541,10 +583,16 @@ public class TaskController {
 		command.setMouseTransparent(true);
 		command.setFocusTraversable(false);
 		helpAnchor.setVisible(true);
+		dragPane.requestFocus();
 	}
 	
 	@FXML
 	public void commandTextFieldKeystrokes (KeyEvent key) {
+		if (key.getCode().equals(KeyCode.ENTER)) {
+			isEnterKey = true;
+		} else {
+			isEnterKey = false;
+		}
 		if (!isEnterKey) {
 			setTableColumnStyle(key);
 		}
@@ -791,19 +839,27 @@ public class TaskController {
 	  	switch (inputArray[2]) {
 	  		case "Name":
 	  		case "name":
+	  		case "Name:":
+	  		case "name:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventNameIncomplete);
 	  			break;
 	  		case "Priority":
 	  		case "priority":
+	  		case "Priority:":
+	  		case "priority:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventPriorityIncomplete);
 	  			break;
 	  		case "Start":
 	  		case "start":
+	  		case "Start:":
+	  		case "start:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventStartDateIncomplete);
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventStartTimeIncomplete);
 	  			break;
 	  		case "End":
 	  		case "end":
+	  		case "End:":
+	  		case "end:":
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventEndDateIncomplete);
 	  			eventTableIncomplete.getSelectionModel().select(rowID, colEventEndTimeIncomplete);
 	  			break;
@@ -817,14 +873,20 @@ public class TaskController {
 	  	switch (inputArray[2]) {
 	  		case "Name":
 	  		case "name":
+	  		case "Name:":
+	  		case "name:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskNameIncomplete);
 	  			break;
 	  		case "Priority":
 	  		case "priority":
+	  		case "Priority:":
+	  		case "priority:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskPriorityIncomplete);
 	  			break;
 	  		case "End":
 	  		case "end":
+	  		case "End:":
+	  		case "end:":
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndDateIncomplete);
 	  			taskTableIncomplete.getSelectionModel().select(rowID, colTaskEndTimeIncomplete);
 	  			break;

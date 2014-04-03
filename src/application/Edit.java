@@ -202,7 +202,6 @@ public class Edit {
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeEndDate = false;
-		boolean isDateAndTime = false;
 		boolean isDate = false;
 		boolean isTime = false;
 		TaskCard replacementTask = new TaskCard();
@@ -249,7 +248,7 @@ public class Edit {
 				replacementTask.setEndDay(cal);						
 				isDate = true;
 			} catch(ParseException e) {
-
+					
 			}					
 
 			if(isDate == true) {
@@ -273,14 +272,15 @@ public class Edit {
 				replacementTask.setEndDay(cal);						
 				isTime = true;
 			} catch(ParseException e) {
-
+				
 			}
 			if(isTime == true) {
 				replacementTask.setType("T");
 			}
 			
-			if((isDateAndTime && isTime && isDate) == false) {
+			if((isTime && isDate) == false) {
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
+				return success = false;
 			}
 		}
 		
@@ -324,7 +324,6 @@ public class Edit {
 		boolean changePriority = false;
 		boolean changeStartDate = false;
 		boolean changeEndDate = false;
-		boolean isDateAndTime = false;
 		boolean isDate = false;
 		boolean isTime = false;
 		TaskCard replacementEvent = new TaskCard();
@@ -359,7 +358,7 @@ public class Edit {
 				replacementEvent.setStartDay(cal);						
 				isDate = true;
 			} catch (ParseException e) {												
-
+				isDate = false;
 			}
 
 			try {					
@@ -372,10 +371,11 @@ public class Edit {
 				replacementEvent.setStartDay(cal);						
 				isTime = true;
 			} catch (ParseException e) {
-
+				isTime = false;
 			}
-			if ((isDateAndTime && isTime && isDate) == false) {				
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");					
+			if (!isTime && !isDate) {				
+				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");	
+				return success = false;
 			}				
 		} else if (attArray[0].equalsIgnoreCase("End")) {
 			changeEndDate = true;
@@ -389,7 +389,7 @@ public class Edit {
 				replacementEvent.setEndDay(cal);						
 				isDate = true;
 			} catch (ParseException e) {						
-
+				isDate = false;
 			}
 
 			try {						
@@ -402,10 +402,11 @@ public class Edit {
 				replacementEvent.setEndDay(cal);						
 				isTime = true;
 			} catch (ParseException e) {						
-
+				isTime = false;
 			}
-			if ((isDateAndTime && isTime && isDate) == false) {					
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");					
+			if (!isTime && !isDate) {					
+				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
+				return success = false;
 			}				
 		}
 		
