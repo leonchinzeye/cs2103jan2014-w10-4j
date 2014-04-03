@@ -1,5 +1,6 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
@@ -162,6 +163,17 @@ public class TaskController {
 	private final ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
 	private final ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
 	
+	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
+	private String sithred = getClass().getResource("sithred.css").toExternalForm();
+	private String australia = getClass().getResource("australia.css").toExternalForm();
+	private String italy = getClass().getResource("italy.css").toExternalForm();
+	private ArrayList<String> themes = new ArrayList<String>();
+	
+	private static final int JEDI_GREEN = 0;
+	private static final int SITH_RED = 1;
+	private static final int AUSTRALIA = 2;
+	private static final int ITALY = 3;
+	
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		dataUI = new DataUI();
@@ -178,6 +190,10 @@ public class TaskController {
 		validPane = new Pane();
 		helpAnchor = new AnchorPane();
 		testingResponse = "";
+		themes.add(jedigreen);
+		themes.add(sithred);
+		themes.add(australia);
+		themes.add(italy);
 	}
 	
 	@FXML
@@ -294,11 +310,11 @@ public class TaskController {
 		
 		taskTableIncomplete.getSelectionModel().select(0);
 		lastInput = command.getText();
-		commandHistoryRecall(lastInput);
+		commandHistoryStorage(lastInput);
 		executeCmd(lastInput);
 	}
 
-	private void commandHistoryRecall(String lastInput) {
+	private void commandHistoryStorage(String lastInput) {
 	  if (!forward.empty()) {
 			Stack<String> temp = new Stack<String>();
 			while (!forward.empty()) {
@@ -315,7 +331,8 @@ public class TaskController {
 
 	public void executeCmd(String lastInput) {
 	  String response;
-	  viewCmd(lastInput);			
+	  viewCmd(lastInput);
+	  changeTheme(lastInput);
 		dataUI = commandHandle.executeCmd(lastInput, tableNo);
 		response = dataUI.getFeedback();
 		testingResponse = response;
@@ -329,6 +346,31 @@ public class TaskController {
 		 */
 		setUI(ui);
 		updateCounter();
+  }
+
+	private void changeTheme(String lastInput) {
+		String[] inputArray = null;
+		if (lastInput.contains("theme")) {
+			inputArray = lastInput.split(" ", 2);
+			
+			if (!inputArray[1].isEmpty()) {
+				String chosenTheme = inputArray[1];
+				int themeIndex = 0;
+				anchor.getStylesheets().removeAll(themes);
+				if (chosenTheme.equalsIgnoreCase("Jedi")) {
+					themeIndex = JEDI_GREEN;
+				} else if (chosenTheme.equalsIgnoreCase("Sith")) {
+					themeIndex = SITH_RED;
+				} else if (chosenTheme.equalsIgnoreCase("Australia")) {
+					themeIndex = AUSTRALIA;
+				} else if (chosenTheme.equalsIgnoreCase("Italy")) {
+					themeIndex = ITALY;
+				}
+				anchor.getStylesheets().add(themes.get(themeIndex));
+			} else {
+				notification.setText("You forgot to enter a theme to change to!");
+			}
+		}
   }
 
 	private void viewCmd(String lastInput) {
