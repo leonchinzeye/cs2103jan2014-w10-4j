@@ -37,6 +37,14 @@ public class Search {
 		dateString.setLenient(false);
 	}
 
+	private void getToday() {
+	  today = GregorianCalendar.getInstance();
+	  today.set(Calendar.HOUR_OF_DAY, 0);
+	  today.set(Calendar.MINUTE, 0);
+	  today.set(Calendar.SECOND, 0);
+	  today.set(Calendar.MILLISECOND, 0);
+  }
+	
 	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
@@ -142,48 +150,16 @@ public class Search {
 	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
       FileLinker fileLink, DataUI dataUI, int type) {
 	  ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-	  ArrayList<TaskCard> listOfTasks = new ArrayList<TaskCard>();
-	  if(type == TYPE_INC_TASKS) {
-	  	listOfTasks = fileLink.getIncompleteTasks();
-	  } else {
-	  	listOfTasks = fileLink.getCompletedTasks();
-	  }
 	  
-	  Calendar tmr = getTmr();
 	  
-	  for(int i = 0; i < listOfTasks.size(); i++) {
-	  	TaskCard task = listOfTasks.get(i);
-	  	if(tmr.before(task.getEndDay())) {
-	  		searchedTasks.add(task);
-	  	}
-	  }
 
-	  return searchedTasks;
+	  return null;
   }
 
 	private ArrayList<TaskCard> searchEventTmr(String searchInput,
       FileLinker fileLink, DataUI dataUI, int type) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
-		
-		if(type == TYPE_INC_EVENTS) {
-			listOfEvents = fileLink.getIncompleteEvents();
-		} else {
-			listOfEvents = fileLink.getCompletedEvents();
-		}
-		
-		Calendar tmr = getTmr();
-		
-		for(int i = 0; i < listOfEvents.size(); i++) {
-			TaskCard event = listOfEvents.get(i);
-			if(tmr.before(event.getEndDay()) && tmr.after(event.getStartDay())) {
-				listOfEvents.add(event);
-			} else if(event.getStartDay().after(tmr) && event.getEndDay().before(getTmrEnd())) {
-				listOfEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
+	  // TODO Auto-generated method stub
+	  return null;
 	}
 
 	/**
@@ -221,6 +197,8 @@ public class Search {
 	 */
 	private ArrayList<TaskCard> searchEventToday(FileLinker fileLink,
 			DataUI dataUI, int type) {
+		Date todayStartRange = setTodayStartRange();
+		Date todayEndRange = setTodayEndRange();
 		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
 		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
 		
@@ -235,9 +213,9 @@ public class Search {
 			Calendar eventStart = event.getStartDay();
 			Calendar eventEnd = event.getEndDay();
 			
-			if(eventStart.after(today) && eventEnd.before(getTmr())) {
+			if(eventStart.before(today) && eventEnd.after(today)) {
 				searchedEvents.add(event);
-			} else if(today.before(eventEnd) && today.after(eventStart)) {
+			} else if(eventStart.after(todayStartRange) && eventEnd.before(todayEndRange)) {
 				searchedEvents.add(event);
 			}
 		}
@@ -383,7 +361,7 @@ public class Search {
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
 		ArrayList<TaskCard> searchedIncTasks = searchIncompleteTasks(searchInput, fileLink);
-		ArrayList<TaskCard> searchedIncEvents = searchIncompleteEvents(searchInput, fileLink);
+		ArrayList<TaskCard> searchedIncEvents= searchIncompleteEvents(searchInput, fileLink);
 		ArrayList<TaskCard> searchedCompTasks = searchCompleteTasks(searchInput, fileLink);
 		ArrayList<TaskCard> searchedCompEvents = searchCompleteEvents(searchInput, fileLink);
 		
@@ -591,36 +569,26 @@ public class Search {
 		return searchedEvents;
 	}
 	
-	private void getToday() {
-	  today = GregorianCalendar.getInstance();
-	  today.set(Calendar.HOUR_OF_DAY, 0);
-	  today.set(Calendar.MINUTE, 0);
-	  today.set(Calendar.SECOND, 0);
-	  today.set(Calendar.MILLISECOND, 0);
-	}
-
-	private Calendar getTmr() {
-		Calendar tmr = GregorianCalendar.getInstance();
-		tmr.add(Calendar.DATE, 1);
-		tmr.set(Calendar.HOUR_OF_DAY, 0);
-		tmr.set(Calendar.MINUTE, 0);
-		tmr.set(Calendar.SECOND, 0);
-		tmr.set(Calendar.MILLISECOND, 0);
+	@SuppressWarnings("deprecation")
+	private Date setTodayStartRange() {
+		Date date = new Date();
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(0);
 		
-	  return tmr;
+		return date;
 	}
 	
-	private Calendar getTmrEnd() {
-		Calendar tmr = GregorianCalendar.getInstance();
-		tmr.add(Calendar.DATE, 1);
-		tmr.set(Calendar.HOUR_OF_DAY, 23);
-		tmr.set(Calendar.MINUTE, 59);
-		tmr.set(Calendar.SECOND, 59);
-		tmr.set(Calendar.MILLISECOND, 99);
+	@SuppressWarnings("deprecation")
+	private Date setTodayEndRange() {
+		Date date = new Date();
+		date.setHours(23);
+		date.setMinutes(59);
+		date.setSeconds(59);
 		
-	  return tmr;
+		return date;
 	}
-
+	
 	private boolean checkIsDate(String searchInput) {
 		try {
 			dateString.parse(searchInput);
