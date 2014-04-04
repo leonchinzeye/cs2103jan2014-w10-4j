@@ -29,15 +29,15 @@ public class UI extends Application {
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
-			//FXMLLoader loader2 = new FXMLLoader(UI.class.getResource("TaskWorthyMin.fxml"));
+			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyMin.fxml"));
+			FXMLLoader loader2 = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
 			
 			Parent root = (Parent) loader.load();
-			//Parent root2 = (Parent) loader2.load();
-			Scene scene = new Scene(root,640,480);
-			//Scene scene2 = new Scene(root2, 640, 480);
-			//final Scene scene1Sub = scene;
-			//final Scene scene2Sub = scene2;
+			Parent root2 = (Parent) loader2.load();
+			Scene scene = new Scene(root,640,150);
+			Scene scene2 = new Scene(root2, 640, 480);
+			final Scene scene1Sub = scene;
+			final Scene scene2Sub = scene2;
 			
 			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream("/projectX.png")));
 			//CSS file
@@ -46,41 +46,37 @@ public class UI extends Application {
 			scene.getStylesheets().add("application/italy.css");
 			scene.getStylesheets().add("application/jedigreen.css");
 			
-			final TaskController tc = loader.getController();
-			//final TaskController tc2 = loader2.getController();
-			tc.setUI(this);
+			final TaskControllerMin tcMin = loader.getController();
+			final TaskController tc2 = loader2.getController();
 			
 			primaryStage.setScene(scene);
 			primaryStageSub = primaryStage;
-			/*primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+			tcMin.setUI(this);
+			tc2.setUI(this);
+			
+			primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 				@Override
 				public void handle(KeyEvent t) {
 					final KeyCombination minimize = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
 					if (sceneMin == true && minimize.match(t)) {
 						primaryStageSub.setScene(scene2Sub);
-						primaryStageSub.centerOnScreen();
 						sceneMin = false;
-						tc2.setIncEvents(tc.getIncEvents());
-						tc2.setIncTasks(tc.getIncTasks());
-						tc2.setComEvents(tc.getComEvents());
-						tc2.setComTasks(tc.getComTasks());
+						tc2.setDataUI(tcMin.getDataUI());
 					} else if (sceneMin == false && minimize.match(t)) {
 						primaryStageSub.setScene(scene1Sub);
-						primaryStageSub.centerOnScreen();
 						sceneMin = true;
-						tc.setIncEvents(tc2.getIncEvents());
-						tc.setIncTasks(tc2.getIncTasks());
-						tc.setComEvents(tc2.getComEvents());
-						tc.setComTasks(tc2.getComTasks());
+						tcMin.setDataUI(tc2.getDataUI());
 					}
 				}
-			});*/
-			primaryStage.show();
-			/*if (sceneMin == true) {
+			});
+			
+			if (sceneMin == false) {
 				tc2.setUI(this);
 			} else {
-				tc.setUI(this);
-			}*/
+				tcMin.setUI(this);
+			}
+			
+			primaryStage.show();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
