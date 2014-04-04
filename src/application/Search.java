@@ -3,7 +3,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
@@ -122,10 +121,10 @@ public class Search {
 				searchedCompEvents = searchEventToday(fileLink, dataUI, TYPE_COMP_EVENTS);
 				break;
 			case SEARCH_PRIORITY:
-				searchedIncTasks = searchIncTaskPriority(searchInput, fileLink, dataUI);
-				searchedIncEvents = searchIncEventPriority(searchInput, fileLink, dataUI);
-				searchedCompTasks = searchCompTaskPriority(searchInput, fileLink, dataUI);
-				searchedCompEvents = searchCompEventPriority(searchInput, fileLink, dataUI);
+				searchedIncTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
 				break;
 			case SEARCH_TMR:
 				searchedIncTasks = searchTaskTmr(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
@@ -251,12 +250,23 @@ public class Search {
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param typeIncTasks 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncTaskPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
+	private ArrayList<TaskCard> searchPriority(String searchInput, FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedPriority = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
 		
 		int priority;
 		if(searchInput.equals("LOW")) {
@@ -267,112 +277,16 @@ public class Search {
 			priority = 3;
 		}
 		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard task = incTask.get(i);
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
 			if(task.getPriority() == priority) {
-				searchedTasks.add(task);
+				searchedPriority.add(task);
 			}
 		}
 		
-		return searchedTasks;
+		return searchedPriority;
 	}
-	
-	/**
-	 * searches based on priority for incomplete events
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncEventPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteEvents();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard event = incTask.get(i);
-			if(event.getPriority() == priority) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
-	/**
-	 * searches based on priority for completed tasks
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompTaskPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < compTask.size(); i++) {
-			TaskCard task = compTask.get(i);
-			if(task.getPriority() == priority) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches based on priority for completed events
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompEventPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < compEvent.size(); i++) {
-			TaskCard event = compEvent.get(i);
-			if(event.getPriority() == priority) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
+
 	/**
 	 * searches based on user keyword
 	 * @author leon
@@ -382,10 +296,10 @@ public class Search {
 	 */
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
-		ArrayList<TaskCard> searchedIncTasks = searchIncompleteTasks(searchInput, fileLink);
-		ArrayList<TaskCard> searchedIncEvents = searchIncompleteEvents(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompTasks = searchCompleteTasks(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompEvents = searchCompleteEvents(searchInput, fileLink);
+		ArrayList<TaskCard> searchedIncTasks = searchByUserWord(searchInput, fileLink, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = searchByUserWord(searchInput, fileLink, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = searchByUserWord(searchInput, fileLink, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = searchByUserWord(searchInput, fileLink, TYPE_COMP_EVENTS);
 		
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 		
@@ -504,91 +418,34 @@ public class Search {
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
+	 * @param type 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncompleteTasks(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
-		for(int i = 0; i < incTasks.size(); i++) {
-			TaskCard task = incTasks.get(i);
+	private ArrayList<TaskCard> searchByUserWord(String searchInput, FileLinker fileLink, int type) {
+		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
 			String taskDetails = task.getName().toLowerCase();
 			searchInput = searchInput.toLowerCase();
 			
 			if(taskDetails.contains(searchInput)) {
-				searchedTasks.add(task);
+				searchedList.add(task);
 			}
 		}
 		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches incomplete events for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncompleteEvents(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedEvents= new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
-		for(int i = 0; i < incEvents.size(); i++) {
-			TaskCard event = incEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(eventDetails.contains(searchInput)) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
-	/**
-	 * searches completed tasks for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteTasks(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
-		for(int i = 0; i < compTasks.size(); i++) {
-			TaskCard task = compTasks.get(i);
-			String taskDetails = task.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(taskDetails.contains(searchInput)) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches completed events for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteEvents(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedEvents= new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
-		for(int i = 0; i < compEvents.size(); i++) {
-			TaskCard event = compEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(eventDetails.contains(searchInput)) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
+		return searchedList;
 	}
 	
 	private void getToday() {

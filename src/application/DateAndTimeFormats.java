@@ -49,6 +49,7 @@ public class DateAndTimeFormats {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	public Date isHourOnly(String input) {
 		for(int i = 0; i < hourOnly12HrFormat.length; i++) {
 			SimpleDateFormat formatter = hourOnly12HrFormat[i];
@@ -71,6 +72,7 @@ public class DateAndTimeFormats {
 		return null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public Date isComplete12Hr(String input) {
 		for(int i = 0; i < complete12HrFormat.length; i++) {
 			SimpleDateFormat formatter = complete12HrFormat[i];
@@ -93,6 +95,7 @@ public class DateAndTimeFormats {
 		return null;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public Date isComplete24Hr(String input) {
 		for(int i = 0; i < complete24HrFormat.length; i++) {
 			SimpleDateFormat formatter = complete24HrFormat[i];
