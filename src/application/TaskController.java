@@ -158,10 +158,10 @@ public class TaskController {
 	Image minimizeButtonDefault = new Image("/minimizeButton.png");
 	Image minimizeButtonHover = new Image("/minimizeButtonHover.png");
 	
-	private final ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
-	private final ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
-	private final ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
-	private final ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
+	private ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
+	private ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
+	private ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
+	private ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
 	
 	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
 	private String sithred = getClass().getResource("sithred.css").toExternalForm();
@@ -341,7 +341,6 @@ public class TaskController {
 			if (!inputArray[1].isEmpty()) {
 				String chosenTheme = inputArray[1];
 				int themeIndex = 0;
-				System.out.println(anchor.getStylesheets().get(1));
 				anchor.getStylesheets().removeAll(themes);
 				if (chosenTheme.equalsIgnoreCase("Jedi")) {
 					themeIndex = JEDI_GREEN;
@@ -633,7 +632,7 @@ public class TaskController {
 		commandBlank(input);
 		commandSetNotification(input);
 		
-		if (input.matches("\\w.+ \\d+")) {
+		if (input.matches("\\w.+ \\d+") && !input.contains("add")) {
 			commandGeneralSelectionStyle(input);
 		} else if (input.matches("edit \\d+ \\w.+|editt \\d+ \\w.+|edite \\d+ \\w.+")) {
 			commandEditSelectionStyle(input);
@@ -968,7 +967,7 @@ public class TaskController {
 			}
 		}
 		
-		if (command.getText().matches("\\w.+ \\d+")) {
+		if (command.getText().matches("\\w.+ \\d+") && !command.getText().contains("add")) {
 			commandGeneralSelectionStyle(command.getText());
 		} else if (command.getText().matches("edit \\d+ \\w.+|editt \\d+ \\w.+|edite \\d+ \\w.+")) {
 			commandEditSelectionStyle(command.getText());
@@ -1023,5 +1022,37 @@ public class TaskController {
 	@FXML
 	public void minimizeWindow (MouseEvent mouse) {
 		ui.primaryS.setIconified(true);
+	}
+	
+	public ObservableList<EventDataUI> getIncEvents() {
+		return incompleteEvents;
+	}
+	
+	public ObservableList<EventDataUI> getComEvents() {
+		return completedEvents;
+	}
+	
+	public ObservableList<TaskDataUI> getIncTasks() {
+		return incompleteTasks;
+	}
+	
+	public ObservableList<TaskDataUI> getComTasks() {
+		return completedTasks;
+	}
+	
+	public void setIncEvents(ObservableList<EventDataUI> incEvents) {
+		this.incompleteEvents = incEvents;
+	}
+	
+	public void setComEvents(ObservableList<EventDataUI> comEvents) {
+		this.completedEvents = comEvents;
+	}
+	
+	public void setIncTasks(ObservableList<TaskDataUI> incTasks) {
+		this.incompleteTasks = incTasks;
+	}
+	
+	public void setComTasks(ObservableList<TaskDataUI> comTasks) {
+		this.completedTasks = comTasks;
 	}
 }
