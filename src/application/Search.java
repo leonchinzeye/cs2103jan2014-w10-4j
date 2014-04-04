@@ -2,7 +2,9 @@ package application;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class Search {
@@ -11,12 +13,18 @@ public class Search {
 	
 	private static final int SEARCH_TODAY = 1;
 	private static final int SEARCH_PRIORITY = 2;
+	private static final int SEARCH_TMR = 3;
+	
+	private static final int TYPE_INC_TASKS = 1;
+	private static final int TYPE_INC_EVENTS = 2;
+	private static final int TYPE_COMP_TASKS = 3;
+	private static final int TYPE_COMP_EVENTS = 4;
 	
 	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you are looking for?";
 	
 	private HashMap<String, Integer> reservedKeywords;
 	
-	private static Date today;
+	private static Calendar today;
 	private static SimpleDateFormat fullDateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -24,10 +32,18 @@ public class Search {
 		reservedKeywords = new HashMap<String, Integer>();
 		initKeywordTable();
 		
-		today = new Date();
+		getToday();
 		fullDateString.setLenient(false);
 		dateString.setLenient(false);
 	}
+
+	private void getToday() {
+	  today = GregorianCalendar.getInstance();
+	  today.set(Calendar.HOUR_OF_DAY, 0);
+	  today.set(Calendar.MINUTE, 0);
+	  today.set(Calendar.SECOND, 0);
+	  today.set(Calendar.MILLISECOND, 0);
+  }
 	
 	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
@@ -108,10 +124,10 @@ public class Search {
 		
 		switch(reservedKeywords.get(searchInput)) {
 			case SEARCH_TODAY:
-				searchedIncTasks = searchIncTaskToday(fileLink, dataUI);
-				searchedIncEvents = searchIncEventToday(fileLink, dataUI);
-				searchedCompTasks = searchCompTaskToday(fileLink, dataUI);
-				searchedCompEvents = searchCompEventToday(fileLink, dataUI);
+				searchedIncTasks = searchTaskToday(fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchEventToday(fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchTaskToday(fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchEventToday(fileLink, dataUI, TYPE_COMP_EVENTS);
 				break;
 			case SEARCH_PRIORITY:
 				searchedIncTasks = searchIncTaskPriority(searchInput, fileLink, dataUI);
@@ -119,6 +135,11 @@ public class Search {
 				searchedCompTasks = searchCompTaskPriority(searchInput, fileLink, dataUI);
 				searchedCompEvents = searchCompEventPriority(searchInput, fileLink, dataUI);
 				break;
+			case SEARCH_TMR:
+				searchedIncTasks = searchTaskTmr(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks= searchTaskTmr(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
 			default:
 				break;
 		}
@@ -126,6 +147,82 @@ public class Search {
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
+	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
+      FileLinker fileLink, DataUI dataUI, int type) {
+	  ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+	  
+	  
+
+	  return null;
+  }
+
+	private ArrayList<TaskCard> searchEventTmr(String searchInput,
+      FileLinker fileLink, DataUI dataUI, int type) {
+	  // TODO Auto-generated method stub
+	  return null;
+	}
+
+	/**
+	 * searches incomplete tasks that can be done today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
+	private ArrayList<TaskCard> searchTaskToday(FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfTasks = new ArrayList<TaskCard>();
+		if(type == TYPE_INC_TASKS) {
+			listOfTasks = fileLink.getIncompleteTasks();
+		} else {
+			listOfTasks = fileLink.getCompletedTasks();
+		}
+		for(int i = 0; i < listOfTasks.size(); i++) {
+			TaskCard task = listOfTasks.get(i);
+			if(task.getEndDay().after(today)) {
+				searchedTasks.add(task);
+			}
+		}
+		
+		return searchedTasks;
+	}
+
+	/**
+	 * searches incomplete events that happen today
+	 * @author leon
+	 * @param fileLink
+	 * @param dataUI
+	 * @return
+	 */
+	private ArrayList<TaskCard> searchEventToday(FileLinker fileLink,
+			DataUI dataUI, int type) {
+		Date todayStartRange = setTodayStartRange();
+		Date todayEndRange = setTodayEndRange();
+		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listOfEvents = fileLink.getIncompleteEvents();
+		} else {
+			listOfEvents = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listOfEvents.size(); i++) {
+			TaskCard event = listOfEvents.get(i);
+			Calendar eventStart = event.getStartDay();
+			Calendar eventEnd = event.getEndDay();
+			
+			if(eventStart.before(today) && eventEnd.after(today)) {
+				searchedEvents.add(event);
+			} else if(eventStart.after(todayStartRange) && eventEnd.before(todayEndRange)) {
+				searchedEvents.add(event);
+			}
+		}
+		
+		return searchedEvents;
+	}
+
 	/**
 	 * searches based on priority for incompleted tasks
 	 * @author leon
@@ -270,108 +367,6 @@ public class Search {
 		
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 		
-	}
-	
-	/**
-	 * searches incomplete tasks that can be done today
-	 * @author leon
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncTaskToday(FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
-		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard task = incTask.get(i);
-			if(task.getEndDay().after(today)) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches incomplete events that happen today
-	 * @author leon
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncEventToday(FileLinker fileLink,
-			DataUI dataUI) {
-		Date todayStartRange = setTodayStartRange();
-		Date todayEndRange = setTodayEndRange();
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 0; i < incEvents.size(); i++) {
-			TaskCard event = incEvents.get(i);
-			Date eventStart = event.getStartDay().getTime();
-			Date eventEnd = event.getEndDay().getTime();
-			
-			if(eventStart.before(today) && eventEnd.after(today)) {
-				searchedEvents.add(event);
-			} else if(eventStart.after(todayStartRange) && eventEnd.before(todayEndRange)) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
-	/**
-	 * searches completed tasks that were done today
-	 * @author leon
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompTaskToday(FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getCompletedTasks();
-		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard task = incTask.get(i);
-			if(task.getEndDay().after(today)) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches completed events that took place today
-	 * @author leon
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompEventToday(FileLinker fileLink,
-			DataUI dataUI) {
-		Date todayStartRange = setTodayStartRange();
-		Date todayEndRange = setTodayEndRange();
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
-		
-		for(int i = 0; i < compEvents.size(); i++) {
-			TaskCard event = compEvents.get(i);
-			Date eventStart = event.getStartDay().getTime();
-			Date eventEnd = event.getEndDay().getTime();
-			
-			if(eventStart.before(today) && eventEnd.after(today)) {
-				searchedEvents.add(event);
-			} else if(eventStart.after(todayStartRange) && eventEnd.before(todayEndRange)) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
 	}
 	
 	/**
@@ -613,11 +608,11 @@ public class Search {
 	
 	private void initKeywordTable() {
 		reservedKeywords.put("today", 1);
+		reservedKeywords.put("tdy", 1);
 		reservedKeywords.put("LOW", 2);
 		reservedKeywords.put("MED", 2);
 		reservedKeywords.put("HIGH", 2);
-		reservedKeywords.put("daily", 3);
-		reservedKeywords.put("weekly", 3);
-		reservedKeywords.put("yearly", 3);
+		reservedKeywords.put("tomorrow", 3);
+		reservedKeywords.put("tmr", 3);
 	}
 }
