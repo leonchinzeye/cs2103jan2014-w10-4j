@@ -18,7 +18,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW, THEME
 	}
 	
 	public CommandHandler() {
@@ -93,6 +93,19 @@ public class CommandHandler {
 			case VIEW:
 				dataUI.setFeedback("Read me!");
 				break;
+			case THEME:
+				if (tokenizedInput[1].equalsIgnoreCase("Jedi")) {
+					dataUI.setFeedback("May the Force be with you.");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Sith")) {
+					dataUI.setFeedback("Only a Sith deals with absolutes.");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Australia")) {
+					dataUI.setFeedback("G'day mate!");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Italy")) {
+					dataUI.setFeedback("Vaffanculo!");
+				} else {
+					dataUI.setFeedback("We don't have that theme!");
+				}
+				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -127,6 +140,8 @@ public class CommandHandler {
 			return COMMAND_TYPE.HELP;
 		} else if(commandTypeString.equals("view")) {
 			return COMMAND_TYPE.VIEW;
+		} else if(commandTypeString.equals("theme")) {
+			return COMMAND_TYPE.THEME;
 		} else if (commandTypeString.equals("/x")) {
 		 	return COMMAND_TYPE.EXIT;
 		}	else {

@@ -29,14 +29,14 @@ public class Add {
 	
 	private Calendar floatingDefaultEndDay = new GregorianCalendar(9999, 11, 31, 23, 59);
 	
-	private final String FEEDBACK_NO_ARG_ENTERED = "Please enter a task/event to be added!";
-	private final String FEEDBACK_EXTRA_DETAILS_ARG = "You've entered something extra :(  Please re-enter!";
-	private final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You've entered something extra for a task :(  Please re-enter!";
-	private final String FEEDBACK_SUCCESSFUL_ADD_TASK = "Task added!";
-	private final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "Event added!";
-	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :( Please re-enter!";
-	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :( Please re-enter!";
-	private final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please re-enter";
+	private final String FEEDBACK_NO_ARG_ENTERED = "You forgot to enter a task/event to be added!";
+	private final String FEEDBACK_EXTRA_DETAILS_ARG = "You seem to have entered more than you need to :(  Please try again!";
+	private final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You seem to have entered more than you need to :(  Please try again!";
+	private final String FEEDBACK_SUCCESSFUL_ADD_TASK = "\"%s\" has been successfully added!";
+	private final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "\"%s\" has been successfully added!";
+	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :(";
+	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :(";
+	private final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please try again!";
 	private final String FEEDBACK_GOING_BACK_INTO_TIME = "Are you attempting to time travel into the past?";
 	
 	private HashMap<String, Integer> cmdTable;
@@ -151,7 +151,7 @@ public class Add {
 			}
 			
 			setDueDateTaskDetails(taskToBeAdded, date, details);
-			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
+			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_TASK, taskToBeAdded.getName()));
 			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
@@ -169,7 +169,7 @@ public class Add {
 		TaskCard taskToBeAdded = new TaskCard();
 		
 		setFloatingTaskDetails(taskDetails, taskToBeAdded);
-		dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
+		dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_TASK, taskToBeAdded.getName()));
 		fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
@@ -205,7 +205,7 @@ public class Add {
 			}
 			
 			setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
-			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
@@ -271,7 +271,7 @@ public class Add {
 				return false;
 			}
 			
-			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);

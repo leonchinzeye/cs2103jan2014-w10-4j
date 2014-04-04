@@ -16,7 +16,7 @@ public class Reset {
 	private static final String MESSAGE_ERROR_VALID_SELECTION = "Please enter a valid selection (yes/no)";
 	private static final String MESSAGE_RESET_CMD_ERROR = "The clear command you've entered is not recognised. Please re-enter your command: ";
 
-	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear you archived files? (yes/no)";
+	private static final String MESSAGE_CONFIRMATION_HISTORY = "Are you sure you want to clear your archived files? (yes/no)";
 	private static final String MESSAGE_CONFIRMATION_UNCOMPLETED = "Are you sure you want to clear your uncompleted tasks? (yes/no)";
 	private static final String MESSAGE_CONFIRMATION_BOTH = "Are you sure you want to clear both current and history files? (yes/no)";
 	
