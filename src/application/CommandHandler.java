@@ -97,7 +97,7 @@ public class CommandHandler {
 				if (tokenizedInput[1].equalsIgnoreCase("Jedi")) {
 					dataUI.setFeedback("May the Force be with you.");
 				} else if (tokenizedInput[1].equalsIgnoreCase("Sith")) {
-					dataUI.setFeedback("Only a Sith deals with absolutes.");
+					dataUI.setFeedback("Only a Sith deals in absolutes.");
 				} else if (tokenizedInput[1].equalsIgnoreCase("Australia")) {
 					dataUI.setFeedback("G'day mate!");
 				} else if (tokenizedInput[1].equalsIgnoreCase("Italy")) {

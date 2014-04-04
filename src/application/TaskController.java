@@ -356,6 +356,7 @@ public class TaskController {
 			if (!inputArray[1].isEmpty()) {
 				String chosenTheme = inputArray[1];
 				int themeIndex = 0;
+				System.out.println(anchor.getStylesheets().get(1));
 				anchor.getStylesheets().removeAll(themes);
 				if (chosenTheme.equalsIgnoreCase("Jedi")) {
 					themeIndex = JEDI_GREEN;

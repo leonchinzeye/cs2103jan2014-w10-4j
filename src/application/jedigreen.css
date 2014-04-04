@@ -230,7 +230,7 @@
 
 /* Selected expired row */
 .highlightExpired {
-    -fx-background-color: red;
+    -fx-background-color: #ff4d4d;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
@@ -238,8 +238,8 @@
 
 /* Selected expired row */
 .highlightOngoing {
-    -fx-background-color: blue;
+    -fx-background-color: #4d4dff;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
-    -fx-text-fill: -fx-selection-bar-text;
+    -fx-text-fill: #ffffff;
 }
