@@ -314,21 +314,6 @@ public class TaskController {
 		executeCmd(lastInput);
 	}
 
-	private void commandHistoryStorage(String lastInput) {
-	  if (!forward.empty()) {
-			Stack<String> temp = new Stack<String>();
-			while (!forward.empty()) {
-				temp.add(forward.pop());
-			}
-			forward.add(lastInput);
-			while (!temp.empty()) {
-				forward.add(temp.pop());
-			}
-		} else {
-			history.add(lastInput);
-		}
-  }
-
 	public void executeCmd(String lastInput) {
 	  String response;
 	  viewCmd(lastInput);
@@ -939,6 +924,21 @@ public class TaskController {
 	  }
   }
 	
+	private void commandHistoryStorage(String lastInput) {
+	  if (!forward.empty()) {
+			Stack<String> temp = new Stack<String>();
+			while (!forward.empty()) {
+				temp.add(forward.pop());
+			}
+			forward.add(lastInput);
+			while (!temp.empty()) {
+				forward.add(temp.pop());
+			}
+		} else {
+			history.add(lastInput);
+		}
+	}
+
 	public void returnLastInput(KeyEvent key) {		
 		if(key.getCode().equals(KeyCode.UP)) {
 			if(this.lastInput != null) {
