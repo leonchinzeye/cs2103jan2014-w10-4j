@@ -924,18 +924,20 @@ public class TaskController {
   }
 	
 	private void commandHistoryStorage(String lastInput) {
-	  if (!forward.empty()) {
-			Stack<String> temp = new Stack<String>();
-			while (!forward.empty()) {
-				temp.add(forward.pop());
-			}
-			forward.add(lastInput);
-			while (!temp.empty()) {
-				forward.add(temp.pop());
-			}
-		} else {
-			history.add(lastInput);
-		}
+	  if(!(this.lastInput == null)) {
+	  	history.add(this.lastInput);
+	  	this.lastInput = null;
+	  }
+	  
+	  if(!forward.empty()) {
+	  	while(!forward.empty()) {
+	  		history.add(forward.pop());
+	  	}
+	  }
+	  
+	  if(!lastInput.equals("")) {
+	  	history.add(lastInput);
+	  }
 	}
 
 	public void returnLastInput(KeyEvent key) {		
@@ -966,6 +968,11 @@ public class TaskController {
 				command.clear();
 			}
 		}
+		
+		System.out.println("L: " + lastInput);
+		System.out.println("H: " + history.toString());
+		System.out.println("F: " + forward.toString());
+		
 		
 		if (command.getText().matches("\\w.+ \\d+") && !command.getText().contains("add")) {
 			commandGeneralSelectionStyle(command.getText());
