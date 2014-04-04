@@ -1,7 +1,6 @@
 package application;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Stack;
 
 import javafx.application.Platform;
@@ -9,17 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -27,8 +16,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 public class TaskControllerMin {
 	@FXML
@@ -47,11 +34,6 @@ public class TaskControllerMin {
 	@FXML
 	private TextField command;
 	
-	private final int TASK_INC = 1;
-	private final int EVENT_INC = 2;
-	private final int TASK_COM = 3;
-	private final int EVENT_COM = 4;
-	
 	private UI ui = new UI();
 	private Stack<String> history = new Stack<String>();
 	private Stack<String> forward = new Stack<String>();
@@ -69,8 +51,6 @@ public class TaskControllerMin {
 	
 	private ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
-	private ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
-	private ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
 	
 	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
 	private String sithred = getClass().getResource("sithred.css").toExternalForm();
@@ -119,11 +99,7 @@ public class TaskControllerMin {
 		 * The lines below will set the task counter upon starting the program.
 		 */
 		dataUI = commandHandle.getDataUI();
-		
-		incompleteEvents.addAll(dataUI.getIncompleteEvents());
-		incompleteTasks.addAll(dataUI.getIncompleteTasks());
-		completedEvents.addAll(dataUI.getCompleteEvents());
-		completedTasks.addAll(dataUI.getCompleteTasks());
+		System.out.println("Mini UI initialized.");
 	}
 	
 	/**
@@ -193,43 +169,10 @@ public class TaskControllerMin {
 		 */
 		incompleteEvents.removeAll(incompleteEvents);
 		incompleteTasks.removeAll(incompleteTasks);
-		completedEvents.removeAll(completedEvents);
-		completedTasks.removeAll(completedTasks);
 		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
-		
-		completedEvents.addAll(dataUI.getCompleteEvents());
-		completedTasks.addAll(dataUI.getCompleteTasks());
 	}
-	
-	/**
-	 * The default keyboard shortcuts that allow the user to switch between panels and tabs
-	 * as well as to change the focus to the text field without using the mouse.
-	 * @param key
-	 * @author Omar Khalid
-	 */
-	@FXML
-	public void keystrokes(KeyEvent key) {		
-		if (key.getCode().equals(KeyCode.ESCAPE)) {
-			commandHandle.executeCmd("", tableNo);
-			backToMain();
-		}
-	}
-	
-	/**
-	 * Sets the view to default.
-	 * @author Omar Khalid
-	 */
-	private void backToMain() {
-		setUI(ui);
-	  notification.setText("Read me!");
-	  command.clear();
-	  command.setPromptText("Feed me!");
-	  command.setMouseTransparent(false);
-	  command.setFocusTraversable(true);
-	  tableNo = EVENT_INC;
-  }
 	
 	public void focusTextInput(KeyEvent key) {
 		if (key.getCode().equals(KeyCode.ENTER)) {
@@ -257,16 +200,9 @@ public class TaskControllerMin {
 		commandBlank(input);
 		commandSetNotification(input);
 		
-		if (input.matches("\\w.+ \\d+") && !input.contains("add")) {
-			commandGeneralSelectionStyle(input);
-		}
-		
-		if (input.matches("edit \\d+ \\w.+: \\w.+|edite \\d+ \\w.+: \\w.+|editt \\d+ \\w.+: \\w.+|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
-				input.matches("view Incomplete|view Completed|view Events|view Tasks|view Incomplete Events|view Incomplete Tasks|view Completed Events|view Completed Tasks")) {
+		if (input.matches("|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+")) {
 			validPane.setStyle("-fx-background-color: green;");
 		}
-		
-		currentTableShown();
 	}
 	
 	private void commandBlank(String input) {
@@ -282,33 +218,6 @@ public class TaskControllerMin {
 			switch(input) {
 				case "a":
 					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
-					currentTableShown();
-					break;
-				case "d":
-					notification.setText("del/t/e/tc/ec <ID>");
-					break;
-				case "e":
-					notification.setText("edit/t/e <ID> <Field>: <Edited entry>");
-					break;
-				case "m":
-					notification.setText("mark/t/e <ID>");
-					break;
-				case "unm":
-					notification.setText("unmark/t/e <ID>");
-					break;
-				case "s":
-					notification.setText("search <Query OR Priority OR Date>");
-					break;
-				case "v":
-					if (tableNo == EVENT_INC) {
-						notification.setText("view Completed/Tasks");
-					} else if (tableNo == TASK_INC) {
-						notification.setText("view Completed/Events");
-					} else if (tableNo == EVENT_COM) {
-						notification.setText("view Incomplete/Tasks");
-					} else if (tableNo == TASK_COM) {
-						notification.setText("view Incomplete/Events");
-					}
 					break;
 				case "undo":
 					validPane.setStyle("-fx-background-color: green;");
@@ -323,60 +232,6 @@ public class TaskControllerMin {
 					break;
 			}
 		}
-  }
-	
-	private void commandGeneralSelectionStyle(String input) {
-	  String[] inputArray;
-	  
-	  inputArray = input.split(" ");
-	  
-	  switch(inputArray[0]) {
-	  	case "del":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "dele":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "delt":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "delec":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "deltc":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "mark":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		currentTableShown();
-	  		break;
-	  	case "marke":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "markt":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "unmark":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		currentTableShown();
-	  		break;
-	  	case "unmarke":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "unmarkt":
-	  		validPane.setStyle("-fx-background-color: green;");
-	  		break;
-	  	case "edit":
-	  		currentTableShown();
-	  		break;
-	  	case "edite":
-	  		break;
-	  	case "editt":
-	  		break;
-	  	default:
-	  		validPane.setStyle("-fx-background-color: red;");
-	  		break;
-	  }
   }
 	
 	private void commandHistoryStorage(String lastInput) {
@@ -422,27 +277,7 @@ public class TaskControllerMin {
 				command.clear();
 			}
 		}
-		
-		if (command.getText().matches("\\w.+ \\d+") && !command.getText().contains("add")) {
-			commandGeneralSelectionStyle(command.getText());
-		}
 	}
-	
-	private void currentTableShown() {
-	  if (incompleteTab.isSelected()) {
-			if (eventPaneIncomplete.isExpanded()) {
-				tableNo = EVENT_INC;
-			} else if (taskPaneIncomplete.isExpanded()) {
-				tableNo = TASK_INC;
-			}
-		} else if (completeTab.isSelected()) {
-			if (eventPaneComplete.isExpanded()) {
-				tableNo = EVENT_COM;
-			} else if (taskPaneComplete.isExpanded()) {
-				tableNo = TASK_COM;
-			}
-		}
-  }
 	
 	@FXML
 	public void closeEnter (MouseEvent mouse) {
@@ -478,31 +313,23 @@ public class TaskControllerMin {
 		return incompleteEvents;
 	}
 	
-	public ObservableList<EventDataUI> getComEvents() {
-		return completedEvents;
-	}
-	
 	public ObservableList<TaskDataUI> getIncTasks() {
 		return incompleteTasks;
-	}
-	
-	public ObservableList<TaskDataUI> getComTasks() {
-		return completedTasks;
 	}
 	
 	public void setIncEvents(ObservableList<EventDataUI> incEvents) {
 		this.incompleteEvents = incEvents;
 	}
 	
-	public void setComEvents(ObservableList<EventDataUI> comEvents) {
-		this.completedEvents = comEvents;
-	}
-	
 	public void setIncTasks(ObservableList<TaskDataUI> incTasks) {
 		this.incompleteTasks = incTasks;
 	}
 	
-	public void setComTasks(ObservableList<TaskDataUI> comTasks) {
-		this.completedTasks = comTasks;
+	public DataUI getDataUI() {
+		return dataUI;
+	}
+	
+	public void setDataUI(DataUI dataUI) {
+		this.dataUI = dataUI;
 	}
 }
