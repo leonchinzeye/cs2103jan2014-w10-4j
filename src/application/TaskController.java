@@ -298,6 +298,7 @@ public class TaskController {
 		completedTasks.removeAll(completedTasks);
 		
 		currentTableShown();
+		System.out.println("Main UI initialized.");
 	}
 	
 	/**
@@ -416,16 +417,20 @@ public class TaskController {
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
+		FileLinker fileLink = new FileLinker();
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		
 		/*
 		 * The four lines below clears the table so that new information can be shown.
 		 */
-		incompleteEvents.removeAll(incompleteEvents);
-		incompleteTasks.removeAll(incompleteTasks);
 		completedEvents.removeAll(completedEvents);
 		completedTasks.removeAll(completedTasks);
 		
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
+		
 		eventTableIncomplete.setItems(incompleteEvents);
 		taskTableIncomplete.setItems(incompleteTasks);
 		
@@ -433,6 +438,12 @@ public class TaskController {
 		completedTasks.addAll(dataUI.getCompleteTasks());
 		eventTableComplete.setItems(completedEvents);
 		taskTableComplete.setItems(completedTasks);
+		
+		System.out.println("Max Incomplete Tasks 2:");
+		for (int i = 0; i < incompleteTasks.size(); i++) {
+			System.out.println(incompleteTasks.get(i).getName());
+		}
+		System.out.println("\n");
 	}
 	
 	/**
@@ -1030,31 +1041,24 @@ public class TaskController {
 		return incompleteEvents;
 	}
 	
-	public ObservableList<EventDataUI> getComEvents() {
-		return completedEvents;
-	}
-	
 	public ObservableList<TaskDataUI> getIncTasks() {
 		return incompleteTasks;
-	}
-	
-	public ObservableList<TaskDataUI> getComTasks() {
-		return completedTasks;
 	}
 	
 	public void setIncEvents(ObservableList<EventDataUI> incEvents) {
 		this.incompleteEvents = incEvents;
 	}
 	
-	public void setComEvents(ObservableList<EventDataUI> comEvents) {
-		this.completedEvents = comEvents;
-	}
-	
 	public void setIncTasks(ObservableList<TaskDataUI> incTasks) {
 		this.incompleteTasks = incTasks;
 	}
 	
-	public void setComTasks(ObservableList<TaskDataUI> comTasks) {
-		this.completedTasks = comTasks;
+	public DataUI getDataUI() {
+		return dataUI;
+	}
+	
+	public void setDataUI(DataUI dataUI) {
+		this.dataUI = dataUI;
+		setUI(ui);
 	}
 }
