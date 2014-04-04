@@ -968,12 +968,7 @@ public class TaskController {
 				command.clear();
 			}
 		}
-		
-		System.out.println("L: " + lastInput);
-		System.out.println("H: " + history.toString());
-		System.out.println("F: " + forward.toString());
-		
-		
+
 		if (command.getText().matches("\\w.+ \\d+") && !command.getText().contains("add")) {
 			commandGeneralSelectionStyle(command.getText());
 		} else if (command.getText().matches("edit \\d+ \\w.+|editt \\d+ \\w.+|edite \\d+ \\w.+")) {
