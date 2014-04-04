@@ -22,7 +22,7 @@ public class EventDataUI {
 		this.startTime = new SimpleStringProperty();
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
-		this.isExpired = true;
+		this.isExpired = false;
 		this.isOngoing = false;
 	}
 	

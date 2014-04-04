@@ -18,7 +18,7 @@
  * lighter: #ffffff
  * 
  * yellow: #ffd700
- * blue: #009246
+ * green: #009246
  * 
  * font: Moire
  */
@@ -183,7 +183,7 @@
 
 /* Selected cell */
 .table-cell:filled:selected {
-    -fx-background-color: #ffd700;
+    -fx-background-color: #009246;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
@@ -191,14 +191,14 @@
 
 /* Cell hovered */
 .table-cell:filled:hover {
-    -fx-background-color: #ce2b37;
+    -fx-background-color: #ffd700;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: -fx-text-inner-color;
 }
 
 /* Selected row */
 .table-view:focused .table-row-cell:filled:focused:selected {
-    -fx-background-color: #ffd700;
+    -fx-background-color: #009246;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
@@ -206,7 +206,7 @@
 
 /* Selected row when table not focused */
 .table-row-cell:filled:focused:selected {
-    -fx-background-color: #ffd700;
+    -fx-background-color: #009246;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
@@ -214,7 +214,7 @@
 
 /* Row hovered */
 .table-view:row-selection .table-row-cell:filled:hover {
-    -fx-background-color: #ce2b37;
+    -fx-background-color: #ffd700;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: -fx-text-inner-color;
 }
@@ -222,14 +222,14 @@
 /* Selected row hovered */
 .table-view:focused .table-row-cell:filled:focused:selected:hover {
     -fx-background: -fx-accent;
-    -fx-background-color: #ce2b37;
+    -fx-background-color: #ffd700;
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: -fx-selection-bar-text;
 }
 
 /* Selected expired row */
 .highlightExpired {
-    -fx-background-color: red;
+    -fx-background-color: #ff4d4d;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
@@ -237,8 +237,8 @@
 
 /* Selected expired row */
 .highlightOngoing {
-    -fx-background-color: blue;
+    -fx-background-color: #4d4dff;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
-    -fx-text-fill: -fx-selection-bar-text;
+    -fx-text-fill: #ffffff;
 }
