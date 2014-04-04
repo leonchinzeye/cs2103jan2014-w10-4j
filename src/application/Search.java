@@ -12,7 +12,7 @@ public class Search {
 	private static final int SEARCH_TODAY = 1;
 	private static final int SEARCH_PRIORITY = 2;
 	
-	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you want to search for?";
+	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you are looking for?";
 	
 	private HashMap<String, Integer> reservedKeywords;
 	

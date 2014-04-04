@@ -25,7 +25,7 @@ public class UI extends Application {
 			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
 			
 			Parent root = (Parent) loader.load();
-			Scene scene = new Scene(root,640,430);
+			Scene scene = new Scene(root,640,480);
 			
 			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream("/projectX.png")));
 			//CSS file

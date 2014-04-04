@@ -49,7 +49,7 @@
 	-fx-border-width: 2px;
 	-fx-text-fill: #000000;
 	-fx-highlight-fill: #ce2b37;
-	-fx-font-size: 14;
+	-fx-font-size: 13;
 	-fx-prompt-text-fill: #000000;
 	-fx-font-family: Moire;
 }
@@ -59,9 +59,8 @@
 	-fx-border-color: #ffd700;
 	-fx-border-width: 2px;
 	-fx-text-fill: #ffd700;
-	-fx-font-size: 14;
+	-fx-font-size: 13;
 	-fx-font-family: Moire;
-	-fx-font-weight: bold;
 }
 
 .pane {

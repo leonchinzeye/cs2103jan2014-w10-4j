@@ -19,12 +19,12 @@ public class Mark {
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 		
-	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify a task to mark as complete! Please enter an ID!";
-	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an event to mark as complete! Please enter an ID!";
-	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You didn't specify a task to mark as incomplete! Please enter an ID!";
-	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You didn't specify an event to mark as incomplete! Please enter an ID!";
-	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been archived!";
-	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been unarchived!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been successfully archived!";
+	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been successfully unarchived!";
 	private static final String FEEDBACK_MARK_RANGE = "Please enter a number between 1 to %d!";
 	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";

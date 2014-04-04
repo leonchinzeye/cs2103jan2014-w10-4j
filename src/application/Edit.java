@@ -21,13 +21,13 @@ public class Edit {
 	private static final int SECOND_ARGUMENT = 1;
 	private static final int THIRD_ARGUMENT = 2;
 	
-	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You didn't specify an task to edit! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You didn't specify an event to edit! Please enter an ID to edit!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
 	private static final String FEEDBACK_PENDING_EVENT_ATTRIBUTES = "You didn't specify anything to edit for event %s!";
 	private static final String FEEDBACK_PENDING_TASK_ATTRIBUTES = "You didn't specify anything to edit for task %s!";
-	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been edited!";
-	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been edited!";
-	private static final String FEEDBACK_EDITION_RANGE = "Please enter a valid number between 1 to %d!";
+	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been successfully edited!";
+	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been successfully edited!";
+	private static final String FEEDBACK_EDITION_RANGE = "Please enter a number between 1 to %d!";
 	private static final String FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND = "That was an unrecognisable edit command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
