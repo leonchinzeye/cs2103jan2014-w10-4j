@@ -616,7 +616,7 @@ public class Search {
 		tmr.set(Calendar.HOUR_OF_DAY, 23);
 		tmr.set(Calendar.MINUTE, 59);
 		tmr.set(Calendar.SECOND, 59);
-		tmr.set(Calendar.MILLISECOND, 99);
+		tmr.set(Calendar.MILLISECOND, 999);
 		
 	  return tmr;
 	}
