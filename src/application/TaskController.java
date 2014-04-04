@@ -176,7 +176,8 @@ public class TaskController {
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
-		dataUI = new DataUI();
+		TaskControllerMin tempMiniController = new TaskControllerMin();
+		dataUI = tempMiniController.getDataUI();
 		notification = new TextField();
 		command = new TextField();
 		anchor = new AnchorPane();
@@ -417,8 +418,8 @@ public class TaskController {
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
-		FileLinker fileLink = new FileLinker();
-		RefreshUI.executeRefresh(fileLink, dataUI);
+		//FileLinker fileLink = new FileLinker();
+		//RefreshUI.executeRefresh(fileLink, dataUI);
 		
 		/*
 		 * The four lines below clears the table so that new information can be shown.
@@ -438,12 +439,6 @@ public class TaskController {
 		completedTasks.addAll(dataUI.getCompleteTasks());
 		eventTableComplete.setItems(completedEvents);
 		taskTableComplete.setItems(completedTasks);
-		
-		System.out.println("Max Incomplete Tasks 2:");
-		for (int i = 0; i < incompleteTasks.size(); i++) {
-			System.out.println(incompleteTasks.get(i).getName());
-		}
-		System.out.println("\n");
 	}
 	
 	/**
