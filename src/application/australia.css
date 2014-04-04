@@ -22,6 +22,9 @@
  * blue: #003f85
  * 
  * font: Moire
+ * 
+ * fix font size
+ * fix row highlight
  */
 
 #title {
@@ -198,7 +201,15 @@
 }
 
 /* Selected row */
-.table-row:filled:selected {
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: #fcd116;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: black;
+}
+
+/* Selected row when table not focused */
+.table-row-cell:filled:selected {
     -fx-background-color: #fcd116;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
