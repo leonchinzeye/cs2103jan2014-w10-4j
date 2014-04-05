@@ -101,7 +101,7 @@ public class CommandHandler {
 				} else if (tokenizedInput[1].equalsIgnoreCase("Australia")) {
 					dataUI.setFeedback("G'day mate!");
 				} else if (tokenizedInput[1].equalsIgnoreCase("Italy")) {
-					dataUI.setFeedback("Vaffanculo!");
+					dataUI.setFeedback("Mamma mia!");
 				} else {
 					dataUI.setFeedback("We don't have that theme!");
 				}
