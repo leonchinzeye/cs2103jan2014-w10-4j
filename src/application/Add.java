@@ -153,6 +153,11 @@ public class Add {
 			setDueDateTaskDetails(taskToBeAdded, date, details);
 			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_TASK, taskToBeAdded.getName()));
 			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
+			
+			int indexAdded = fileLink.getIncompleteTasks().indexOf(taskToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_TASKS);
+			
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
 			
@@ -171,6 +176,11 @@ public class Add {
 		setFloatingTaskDetails(taskDetails, taskToBeAdded);
 		dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_TASK, taskToBeAdded.getName()));
 		fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
+		
+		int indexAdded = fileLink.getIncompleteTasks().indexOf(taskToBeAdded);
+		dataUI.setRowAdded(indexAdded);
+		dataUI.setFileAdded(ADD_TO_TASKS);
+		
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
 		
@@ -207,6 +217,11 @@ public class Add {
 			setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
 			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			
+			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_EVENTS);
+			
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
 			
@@ -273,6 +288,11 @@ public class Add {
 			
 			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			
+			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_EVENTS);
+			
 			RefreshUI.executeRefresh(fileLink, dataUI);
 			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
 		}
