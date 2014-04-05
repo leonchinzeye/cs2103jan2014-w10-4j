@@ -32,12 +32,12 @@
     </Text>
     <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="590.0" layoutY="436.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
     <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="436.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
-    <Text fx:id="dayAndTime" layoutX="482.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mon 00:00AM" underline="false">
+    <Text fx:id="dayAndTime" layoutX="451.0" layoutY="51.0" scaleX="1.0" scaleY="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mon 00:00AM" textAlignment="RIGHT" underline="false" wrappingWidth="175.0">
       <font>
-        <Font name="Moire" size="20.0" fx:id="x1" />
+        <Font name="Moire" size="19.0" fx:id="x1" />
       </font>
     </Text>
-    <Text id="dayAndTime" fx:id="dateText" font="$x1" layoutX="508.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1 Jan 2014" underline="false" />
+    <Text id="date" fx:id="dateText" font="$x1" layoutX="501.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1 Jan 2014" textAlignment="RIGHT" underline="false" wrappingWidth="125.0" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="393.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="53.0" mouseTransparent="false" onKeyPressed="#changeTab" prefHeight="331.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
@@ -311,8 +311,12 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" font="$x1" layoutX="235.0" layoutY="303.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text fill="BLACK" font="$x1" layoutX="175.0" layoutY="326.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+        <Text fill="BLACK" layoutX="235.0" layoutY="303.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return">
+          <font>
+            <Font name="Moire" size="20.0" fx:id="x2" />
+          </font>
+        </Text>
+        <Text fill="BLACK" font="$x2" layoutX="175.0" layoutY="326.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
       </children>
     </AnchorPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
@@ -351,8 +355,8 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" font="$x1" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text fill="BLACK" font="$x1" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
+        <Text fill="BLACK" font="$x2" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text fill="BLACK" font="$x2" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>
     </AnchorPane>
     <Pane fx:id="dragPane" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="57.0" prefWidth="640.0" />

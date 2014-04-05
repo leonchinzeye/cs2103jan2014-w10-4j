@@ -31,12 +31,12 @@
 	-fx-fill: #ff3434
 }
 
-#taskCounter {
-	-fx-fill: #ffffff
+#dayAndTime {
+	-fx-fill: #ffd700
 }
 
-#eventCounter {
-	-fx-fill: #ffffff
+#date {
+	-fx-fill: #ffd700
 }
 
 #anchortext {

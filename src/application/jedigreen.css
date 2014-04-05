@@ -27,11 +27,11 @@
 	-fx-fill: #4eb00d
 }
 
-#taskCounter {
+#dayAndTime {
 	-fx-fill: #000000
 }
 
-#eventCounter {
+#date {
 	-fx-fill: #000000
 }
 
