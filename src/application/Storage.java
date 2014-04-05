@@ -31,25 +31,7 @@ public class Storage {
 	public static int numberOfIncompleteTasks = 0;
 	public static int numberOfCompletedTasks = 0;
 	
-	private static Calendar startDay = new GregorianCalendar();
-	private static Calendar endDay = new GregorianCalendar();
 	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy,HH:mm:ss:SSSS");
-	
-	private static int startDate = 0;
-	private static int startMonth = 0;
-	private static int startYear = 0;
-	private static int startHour = 0;
-	private static int startMinute = 0;
-	private static int startSecond = 0;
-	private static int startMillisecond = 0;
-	
-	private static int endDate = 0;
-	private static int endMonth = 0;
-	private static int endYear = 0;
-	private static int endHour = 0;
-	private static int endMinute = 0;
-	private static int endSecond = 0;
-	private static int endMillisecond = 0;
 	
 	public Storage() {
 	
@@ -147,7 +129,7 @@ public class Storage {
 		
 		try {
 			start = dateString.parse(restOfDetails[1]);
-			Calendar startCal = Calendar.getInstance();
+			Calendar startCal = GregorianCalendar.getInstance();
 			startCal.setTime(start);
 			task.setStartDay(startCal);
 		} catch(ParseException e) {
@@ -156,7 +138,7 @@ public class Storage {
 		
 		try {
 			end = dateString.parse(restOfDetails[2]);
-			Calendar endCal = Calendar.getInstance();
+			Calendar endCal = GregorianCalendar.getInstance();
 			endCal.setTime(end);
 			task.setEndDay(endCal);
 		} catch(ParseException e) {
