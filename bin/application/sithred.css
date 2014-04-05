@@ -4,7 +4,7 @@
  * darkest: #b30000
  * darker: #cc0000
  * dark: #e60000
- * Xbox Green: #ff0000
+ * lighter Red: #ff3434
  * light: #ff1a1a
  * lighter: #ff3333
  * lightest: #ff4d4d
@@ -23,11 +23,12 @@
  * 
  * font: Moire
  * 
- * find lighter shade of red
+ * find lighter shade of red: #ff3434
+ * original red: #ff0000
  */
 
 #title {
-	-fx-fill: #ff0000
+	-fx-fill: #ff3434
 }
 
 #taskCounter {
@@ -51,7 +52,7 @@
 	-fx-border-color: #ff1a1a;
 	-fx-border-width: 2px;
 	-fx-text-fill: #ffffff;
-	-fx-highlight-fill: #ff0000;
+	-fx-highlight-fill: #ff3434;
 	-fx-font-size: 13;
 	-fx-prompt-text-fill: #ffffff;
 	-fx-font-family: Moire;
@@ -100,12 +101,12 @@
 	-fx-background-insets: 0 1 0 1, 0, 0;
 	-fx-background-color: #333333;
 	-fx-border-width: 0 0 2 0;
-	-fx-border-color: #ff0000;
+	-fx-border-color: #ff3434;
 }
 
 .tab .tab-label {
 	-fx-alignment: CENTER;
-	-fx-text-fill: #ff0000;
+	-fx-text-fill: #ff3434;
 	-fx-font-size: 14px;
 	-fx-font-family: Moire;
 }
@@ -113,7 +114,7 @@
 .tab-pane .tab:selected {
 	-fx-background-color: #262626;
 	-fx-border-width: 0 0 5 0;
-	-fx-border-color: #ff0000;
+	-fx-border-color: #ff3434;
 }
 
 .tab-pane:top *.tab-header-area {
@@ -128,19 +129,19 @@
 
 .titled-pane .title .text {
 	-fx-alignment: CENTER;
-	-fx-fill: #ff0000;
+	-fx-fill: #ff3434;
 	-fx-font-size: 14px;
 	-fx-font-family: Moire;
 }
 
 .titled-pane .title .arrow-button .arrow {
-	-fx-background-color: #ff0000
+	-fx-background-color: #ff3434
 }
 
 .titled-pane:expanded .title {
 	-fx-background-color: #262626;
 	-fx-border-width: 0 0 4 0;
-	-fx-border-color: #ff0000;
+	-fx-border-color: #ff3434;
 }
 
 /*Table*/
@@ -151,7 +152,7 @@
 
 .column-header .label {
 	-fx-alignment: CENTER;
-	-fx-text-fill: #ff0000;
+	-fx-text-fill: #ff3434;
 	-fx-font-size: 12px;
 	-fx-font-family: Moire;
 }
@@ -164,7 +165,7 @@
 .table-view .column-header, .table-view .filler {
 	-fx-size: 30;
 	-fx-border-width: 0 0 2 0;
-	-fx-border-color: #ff0000;
+	-fx-border-color: #ff3434;
 }
 
 .table-view .column-header-background .filler {
@@ -176,6 +177,7 @@
 	-fx-alignment: center;
 	-fx-border-width: 1px;
 	-fx-border-color: #262626;
+	-fx-font-size: 11px;
 	-fx-font-family: Moire;
 }
 
@@ -188,13 +190,12 @@
 .table-cell:filled:selected {
     -fx-background-color: #ff9a00;
     -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
 }
 
 /* Cell hovered */
 .table-cell:filled:hover {
-    -fx-background-color: #ff0000;
+    -fx-background-color: #ff3434;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: -fx-text-inner-color;
 }
@@ -203,7 +204,6 @@
 .table-view:focused .table-row-cell:filled:focused:selected {
     -fx-background-color: #ff9a00;
     -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
 }
 
@@ -211,21 +211,19 @@
 .table-row-cell:filled:focused:selected {
     -fx-background-color: #ff9a00;
     -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
 }
 
 /* Row hovered */
 .table-view:row-selection .table-row-cell:filled:hover {
-    -fx-background-color: #ff0000;
+    -fx-background-color: #ff3434;
     -fx-background-insets: 0, 0 0 1 0;
     -fx-text-fill: -fx-text-inner-color;
 }
 
 /* Selected row hovered */
 .table-view:focused .table-row-cell:filled:focused:selected:hover {
-    -fx-background: -fx-accent;
-    -fx-background-color: #ff0000;
+    -fx-background-color: #ff3434;
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: -fx-selection-bar-text;
 }
@@ -234,14 +232,12 @@
 .highlightExpired {
     -fx-background-color: #ff4d4d;
     -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;
 }
 
-/* Selected expired row */
+/* Selected ongoing row */
 .highlightOngoing {
     -fx-background-color: #4d4dff;
     -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
     -fx-text-fill: #ffffff;
 }

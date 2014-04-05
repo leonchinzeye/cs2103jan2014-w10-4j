@@ -45,4 +45,7 @@
       </image>
     </ImageView>
   </children>
+  <stylesheets>
+    <URL value="@jedigreen.css" />
+  </stylesheets>
 </AnchorPane>

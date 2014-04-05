@@ -1,6 +1,5 @@
 package application;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,33 +24,21 @@ public class Search {
 	private HashMap<String, Integer> reservedKeywords;
 	
 	private static Calendar today;
-	private static SimpleDateFormat fullDateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy");
-	
+
 	public Search() {
 		reservedKeywords = new HashMap<String, Integer>();
 		initKeywordTable();
 		
 		getToday();
-		fullDateString.setLenient(false);
-		dateString.setLenient(false);
 	}
 
-	private void getToday() {
-	  today = GregorianCalendar.getInstance();
-	  today.set(Calendar.HOUR_OF_DAY, 0);
-	  today.set(Calendar.MINUTE, 0);
-	  today.set(Calendar.SECOND, 0);
-	  today.set(Calendar.MILLISECOND, 0);
-  }
-	
-	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI) {
+	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI, DateAndTimeFormats dateFormats) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
 		if(!checkForArg(tokenizedInput)) {
 			noArgument(dataUI);
 		} else {
-			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI);
+			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI, dateFormats);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 		}
 		dataUI.setFeedback("Displaying results for \"" + tokenizedInput[1] + "\"");
@@ -71,13 +58,14 @@ public class Search {
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param dateFormats 
 	 */
 	private void checkKeywordAndIdentify(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
+			DataUI dataUI, DateAndTimeFormats dateFormats) {
 		
-		boolean isDate = checkIsDate(searchInput);
-		if(isDate) {
-			searchByDate(searchInput, fileLink, dataUI);
+		Date date = checkIsDate(searchInput, dateFormats);
+		if(date != null) {
+			searchByDate(searchInput, fileLink, dataUI, date);
 			return;
 		}
 		
@@ -96,13 +84,14 @@ public class Search {
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param date 
 	 */
 	private void searchByDate(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedIncTasks = searchIncompleteTasksByDate(searchInput, fileLink);
-		ArrayList<TaskCard> searchedIncEvents = searchIncompleteEventsByDate(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompTasks = searchCompleteTasksByDate(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompEvents = searchCompleteEventsByDate(searchInput, fileLink);
+			DataUI dataUI, Date date) {
+		ArrayList<TaskCard> searchedIncTasks = searchTasksByDate(searchInput, fileLink, date, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = searchEventsByDate(searchInput, fileLink, date, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = searchTasksByDate(searchInput, fileLink, date, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = searchEventsByDate(searchInput, fileLink, date, TYPE_COMP_EVENTS);
 		
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
@@ -130,10 +119,10 @@ public class Search {
 				searchedCompEvents = searchEventToday(fileLink, dataUI, TYPE_COMP_EVENTS);
 				break;
 			case SEARCH_PRIORITY:
-				searchedIncTasks = searchIncTaskPriority(searchInput, fileLink, dataUI);
-				searchedIncEvents = searchIncEventPriority(searchInput, fileLink, dataUI);
-				searchedCompTasks = searchCompTaskPriority(searchInput, fileLink, dataUI);
-				searchedCompEvents = searchCompEventPriority(searchInput, fileLink, dataUI);
+				searchedIncTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
 				break;
 			case SEARCH_TMR:
 				searchedIncTasks = searchTaskTmr(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
@@ -150,16 +139,48 @@ public class Search {
 	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
       FileLinker fileLink, DataUI dataUI, int type) {
 	  ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+	  ArrayList<TaskCard> listOfTasks = new ArrayList<TaskCard>();
+	  if(type == TYPE_INC_TASKS) {
+	  	listOfTasks = fileLink.getIncompleteTasks();
+	  } else {
+	  	listOfTasks = fileLink.getCompletedTasks();
+	  }
 	  
+	  Calendar tmr = getTmr();
 	  
+	  for(int i = 0; i < listOfTasks.size(); i++) {
+	  	TaskCard task = listOfTasks.get(i);
+	  	if(tmr.before(task.getEndDay())) {
+	  		searchedTasks.add(task);
+	  	}
+	  }
 
-	  return null;
+	  return searchedTasks;
   }
 
 	private ArrayList<TaskCard> searchEventTmr(String searchInput,
       FileLinker fileLink, DataUI dataUI, int type) {
-	  // TODO Auto-generated method stub
-	  return null;
+		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listOfEvents = fileLink.getIncompleteEvents();
+		} else {
+			listOfEvents = fileLink.getCompletedEvents();
+		}
+		
+		Calendar tmr = getTmr();
+		
+		for(int i = 0; i < listOfEvents.size(); i++) {
+			TaskCard event = listOfEvents.get(i);
+			if(tmr.before(event.getEndDay()) && tmr.after(event.getStartDay())) {
+				listOfEvents.add(event);
+			} else if(event.getStartDay().after(tmr) && event.getEndDay().before(getTmrEnd())) {
+				listOfEvents.add(event);
+			}
+		}
+		
+		return searchedEvents;
 	}
 
 	/**
@@ -197,8 +218,6 @@ public class Search {
 	 */
 	private ArrayList<TaskCard> searchEventToday(FileLinker fileLink,
 			DataUI dataUI, int type) {
-		Date todayStartRange = setTodayStartRange();
-		Date todayEndRange = setTodayEndRange();
 		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
 		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
 		
@@ -213,9 +232,9 @@ public class Search {
 			Calendar eventStart = event.getStartDay();
 			Calendar eventEnd = event.getEndDay();
 			
-			if(eventStart.before(today) && eventEnd.after(today)) {
+			if(eventStart.after(today) && eventEnd.before(getTmr())) {
 				searchedEvents.add(event);
-			} else if(eventStart.after(todayStartRange) && eventEnd.before(todayEndRange)) {
+			} else if(today.before(eventEnd) && today.after(eventStart)) {
 				searchedEvents.add(event);
 			}
 		}
@@ -229,12 +248,23 @@ public class Search {
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param typeIncTasks 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncTaskPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteTasks();
+	private ArrayList<TaskCard> searchPriority(String searchInput, FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedPriority = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
 		
 		int priority;
 		if(searchInput.equals("LOW")) {
@@ -245,112 +275,16 @@ public class Search {
 			priority = 3;
 		}
 		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard task = incTask.get(i);
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
 			if(task.getPriority() == priority) {
-				searchedTasks.add(task);
+				searchedPriority.add(task);
 			}
 		}
 		
-		return searchedTasks;
+		return searchedPriority;
 	}
-	
-	/**
-	 * searches based on priority for incomplete events
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncEventPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTask = fileLink.getIncompleteEvents();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < incTask.size(); i++) {
-			TaskCard event = incTask.get(i);
-			if(event.getPriority() == priority) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
-	/**
-	 * searches based on priority for completed tasks
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompTaskPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compTask = fileLink.getCompletedTasks();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < compTask.size(); i++) {
-			TaskCard task = compTask.get(i);
-			if(task.getPriority() == priority) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches based on priority for completed events
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompEventPriority(String searchInput, FileLinker fileLink,
-			DataUI dataUI) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
-		
-		int priority;
-		if(searchInput.equals("LOW")) {
-			priority = 1;
-		} else if(searchInput.equals("MED")) {
-			priority = 2;
-		} else {
-			priority = 3;
-		}
-		
-		for(int i = 0; i < compEvent.size(); i++) {
-			TaskCard event = compEvent.get(i);
-			if(event.getPriority() == priority) {
-				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
+
 	/**
 	 * searches based on user keyword
 	 * @author leon
@@ -360,10 +294,10 @@ public class Search {
 	 */
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
-		ArrayList<TaskCard> searchedIncTasks = searchIncompleteTasks(searchInput, fileLink);
-		ArrayList<TaskCard> searchedIncEvents= searchIncompleteEvents(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompTasks = searchCompleteTasks(searchInput, fileLink);
-		ArrayList<TaskCard> searchedCompEvents = searchCompleteEvents(searchInput, fileLink);
+		ArrayList<TaskCard> searchedIncTasks = searchByUserWord(searchInput, fileLink, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = searchByUserWord(searchInput, fileLink, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = searchByUserWord(searchInput, fileLink, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = searchByUserWord(searchInput, fileLink, TYPE_COMP_EVENTS);
 		
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 		
@@ -374,21 +308,27 @@ public class Search {
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
+	 * @param date 
+	 * @param type 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncompleteTasksByDate(String searchInput,
-			FileLinker fileLink) {
+	private ArrayList<TaskCard> searchTasksByDate(String searchInput,
+			FileLinker fileLink, Date date, int type) {
 		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
-
-		for(int i = 0; i < incTasks.size(); i++) {
-			TaskCard task = incTasks.get(i);
-			String taskDetails = task.getName().toLowerCase();
-			String taskTime = fullDateString.format(task.getEndDay().getTime());
-			String fullDetails = taskDetails + " " + taskTime;
-			searchInput = searchInput.toLowerCase();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedTasks();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
+			Calendar dueDate = task.getEndDay();
 			
-			if(fullDetails.contains(searchInput)) {
+			if(dueDate.get(Calendar.DATE) == date.getDate() && dueDate.get(Calendar.MONTH) == date.getMonth()
+					&& dueDate.get(Calendar.YEAR) == date.getYear()) {
 				searchedTasks.add(task);
 			}
 		}
@@ -401,75 +341,32 @@ public class Search {
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
+	 * @param date 
+	 * @param type 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncompleteEventsByDate(String searchInput,
-			FileLinker fileLink) {
+	private ArrayList<TaskCard> searchEventsByDate(String searchInput,
+			FileLinker fileLink, Date date, int type) {
 		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard event = listToBeSearched.get(i);
+			Calendar searchedDateStart = GregorianCalendar.getInstance();
+			Calendar searchedDateEnd = getEndRange(date);
+			searchedDateStart.setTime(date);
 
-		for(int i = 0; i < incEvents.size(); i++) {
-			TaskCard event = incEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			String eventStartTime = fullDateString.format(event.getStartDay().getTime());
-			String eventEndTime = fullDateString.format(event.getEndDay().getTime());
-			String fullDetails = eventDetails + " "+ eventStartTime + " " + eventEndTime;
-			searchInput = searchInput.toLowerCase();
-			
-			if(fullDetails.contains(searchInput)) {
+			if(event.getStartDay().after(searchedDateStart) && event.getEndDay().before(searchedDateEnd)) {
 				searchedEvents.add(event);
-			}
-		}
-		
-		return searchedEvents;
-	}
-	
-	/**
-	 * searches completed tasks that are due on that date
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteTasksByDate(String searchInput,
-			FileLinker fileLink) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
-		for(int i = 0; i < compTasks.size(); i++) {
-			TaskCard task = compTasks.get(i);
-			String taskDetails = task.getName().toLowerCase();
-			String taskTime = fullDateString.format(task.getEndDay().getTime());
-			String fullDetails = taskDetails + " " + taskTime;
-			searchInput = searchInput.toLowerCase();
-			
-			if(fullDetails.contains(searchInput)) {
-				searchedTasks.add(task);
-			}
-		}
-		
-		return searchedTasks;
-	}
-	
-	/**
-	 * searches completed events that passed on that day
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteEventsByDate(String searchInput,
-			FileLinker fileLink) {
-		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
-		for(int i = 0; i < compEvents.size(); i++) {
-			TaskCard event = compEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			String eventStartTime = fullDateString.format(event.getStartDay().getTime());
-			String eventEndTime = fullDateString.format(event.getEndDay().getTime());
-			String fullDetails = eventDetails + " "+ eventStartTime + " " + eventEndTime;
-			searchInput = searchInput.toLowerCase();
-			
-			if(fullDetails.contains(searchInput)) {
+			} else if(event.getStartDay().before(searchedDateStart) && event.getEndDay().after(searchedDateStart)) {
+				searchedEvents.add(event);
+			} else if(event.getStartDay().equals(searchedDateStart) || event.getEndDay().equals(searchedDateStart)) {
 				searchedEvents.add(event);
 			}
 		}
@@ -482,120 +379,89 @@ public class Search {
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
+	 * @param type 
 	 * @return
 	 */
-	private ArrayList<TaskCard> searchIncompleteTasks(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
-		for(int i = 0; i < incTasks.size(); i++) {
-			TaskCard task = incTasks.get(i);
+	private ArrayList<TaskCard> searchByUserWord(String searchInput, FileLinker fileLink, int type) {
+		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
 			String taskDetails = task.getName().toLowerCase();
 			searchInput = searchInput.toLowerCase();
 			
 			if(taskDetails.contains(searchInput)) {
-				searchedTasks.add(task);
+				searchedList.add(task);
 			}
 		}
 		
-		return searchedTasks;
+		return searchedList;
 	}
 	
-	/**
-	 * searches incomplete events for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchIncompleteEvents(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedEvents= new ArrayList<TaskCard>();
-		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();
-		for(int i = 0; i < incEvents.size(); i++) {
-			TaskCard event = incEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(eventDetails.contains(searchInput)) {
-				searchedEvents.add(event);
-			}
-		}
+	private Calendar getEndRange(Date date) {
+		Calendar endRange = GregorianCalendar.getInstance();
+		endRange.setTime(date);
+		endRange.set(GregorianCalendar.HOUR_OF_DAY, 23);
+		endRange.set(GregorianCalendar.MINUTE, 59);
+		endRange.set(GregorianCalendar.SECOND, 59);
+		endRange.set(GregorianCalendar.MILLISECOND, 999);
 		
-		return searchedEvents;
+		return endRange;
 	}
 	
-	/**
-	 * searches completed tasks for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteTasks(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
-		for(int i = 0; i < compTasks.size(); i++) {
-			TaskCard task = compTasks.get(i);
-			String taskDetails = task.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(taskDetails.contains(searchInput)) {
-				searchedTasks.add(task);
-			}
-		}
+	private void getToday() {
+	  today = GregorianCalendar.getInstance();
+	  today.set(Calendar.HOUR_OF_DAY, 0);
+	  today.set(Calendar.MINUTE, 0);
+	  today.set(Calendar.SECOND, 0);
+	  today.set(Calendar.MILLISECOND, 0);
+	}
+
+	private Calendar getTmr() {
+		Calendar tmr = GregorianCalendar.getInstance();
+		tmr.add(Calendar.DATE, 1);
+		tmr.set(Calendar.HOUR_OF_DAY, 0);
+		tmr.set(Calendar.MINUTE, 0);
+		tmr.set(Calendar.SECOND, 0);
+		tmr.set(Calendar.MILLISECOND, 0);
 		
-		return searchedTasks;
+	  return tmr;
 	}
 	
-	/**
-	 * searches completed events for a user defined keyword
-	 * @author leon
-	 * @param searchInput
-	 * @param fileLink
-	 * @return
-	 */
-	private ArrayList<TaskCard> searchCompleteEvents(String searchInput, FileLinker fileLink) {
-		ArrayList<TaskCard> searchedEvents= new ArrayList<TaskCard>();
-		ArrayList<TaskCard> compEvents = fileLink.getCompletedEvents();
-		for(int i = 0; i < compEvents.size(); i++) {
-			TaskCard event = compEvents.get(i);
-			String eventDetails = event.getName().toLowerCase();
-			searchInput = searchInput.toLowerCase();
-			
-			if(eventDetails.contains(searchInput)) {
-				searchedEvents.add(event);
-			}
-		}
+	private Calendar getTmrEnd() {
+		Calendar tmr = GregorianCalendar.getInstance();
+		tmr.add(Calendar.DATE, 1);
+		tmr.set(Calendar.HOUR_OF_DAY, 23);
+		tmr.set(Calendar.MINUTE, 59);
+		tmr.set(Calendar.SECOND, 59);
+		tmr.set(Calendar.MILLISECOND, 999);
 		
-		return searchedEvents;
+	  return tmr;
 	}
-	
-	@SuppressWarnings("deprecation")
-	private Date setTodayStartRange() {
-		Date date = new Date();
-		date.setHours(0);
-		date.setMinutes(0);
-		date.setSeconds(0);
+
+	private Date checkIsDate(String searchInput, DateAndTimeFormats dateFormats) {
+		Date date = null;
+		
+		if(dateFormats.isLazyDate(searchInput) != null) {
+			date = dateFormats.isLazyDate(searchInput);
+		} else if(dateFormats.isLazyYearDate(searchInput) != null) {
+			date = dateFormats.isLazyYearDate(searchInput);
+		} else if(dateFormats.isProperDate(searchInput) != null) {
+			date = dateFormats.isProperDate(searchInput);
+		}
 		
 		return date;
-	}
-	
-	@SuppressWarnings("deprecation")
-	private Date setTodayEndRange() {
-		Date date = new Date();
-		date.setHours(23);
-		date.setMinutes(59);
-		date.setSeconds(59);
-		
-		return date;
-	}
-	
-	private boolean checkIsDate(String searchInput) {
-		try {
-			dateString.parse(searchInput);
-			return true;
-		} catch(ParseException e) {
-			return false;
-		}
 	}
 	
 	private boolean checkForArg(String[] tokenizedInput) {

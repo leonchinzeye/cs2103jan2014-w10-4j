@@ -34,8 +34,8 @@ public class UI extends Application {
 			
 			Parent root = (Parent) loader.load();
 			Parent root2 = (Parent) loader2.load();
-			Scene scene = new Scene(root,640,150);
-			Scene scene2 = new Scene(root2, 640, 480);
+			Scene scene = new Scene(root2,640,480);
+			Scene scene2 = new Scene(root, 640, 480);
 			final Scene scene1Sub = scene;
 			final Scene scene2Sub = scene2;
 			
@@ -51,8 +51,8 @@ public class UI extends Application {
 			
 			primaryStage.setScene(scene);
 			primaryStageSub = primaryStage;
-			tcMin.setUI(this);
 			tc2.setUI(this);
+			tcMin.setUI(this);
 			
 			primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 				@Override
@@ -61,20 +61,16 @@ public class UI extends Application {
 					if (sceneMin == true && minimize.match(t)) {
 						primaryStageSub.setScene(scene2Sub);
 						sceneMin = false;
+						tc2.setTheme(tcMin.getTheme());
 						tc2.setDataUI(tcMin.getDataUI());
 					} else if (sceneMin == false && minimize.match(t)) {
 						primaryStageSub.setScene(scene1Sub);
 						sceneMin = true;
+						tcMin.setTheme(tc2.getTheme());
 						tcMin.setDataUI(tc2.getDataUI());
 					}
 				}
 			});
-			
-			if (sceneMin == false) {
-				tc2.setUI(this);
-			} else {
-				tcMin.setUI(this);
-			}
 			
 			primaryStage.show();
 		} catch(IOException e) {
