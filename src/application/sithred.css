@@ -74,18 +74,18 @@
 
 /*Help Tab*/
 .polygon {
-	-fx-fill: #008751;
+	-fx-fill: #ff9a00;
 	-fx-stroke-width: 15;
-	-fx-stroke: #ffd700;
+	-fx-stroke: #000000;
 }
 
 .TextArea {
-	-fx-background-color: #008751;
+	-fx-background-color: #ff9a00;
 	-fx-font-family: Moire;
 	-fx-font-size: 11;
 	-fx-border-width: 2px;
-	-fx-border-color: #ffd700;
-	-fx-text-fill: #ffd700;
+	-fx-border-color: #000000;
+	-fx-text-fill: #000000;
 }
 
 /*Tab Pane*/

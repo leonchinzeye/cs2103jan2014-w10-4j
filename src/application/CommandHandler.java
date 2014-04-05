@@ -18,7 +18,7 @@ public class CommandHandler {
 			+ "something wrongly! Please try another command.";
 	
 	public enum COMMAND_TYPE {
-		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW, THEME
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW, THEME, HIGHLIGHT
 	}
 	
 	public CommandHandler() {
@@ -43,7 +43,7 @@ public class CommandHandler {
 	 * @return
 	 */
 	public DataUI executeCmd(String userInput, int tableNo) {	
-		checkCmdAndPerform(userInput, tableNo);		
+		checkCmdAndPerform(userInput, tableNo);
 		return dataUI;
 	}
 
@@ -106,6 +106,10 @@ public class CommandHandler {
 					dataUI.setFeedback("We don't have that theme!");
 				}
 				break;
+			case HIGHLIGHT:
+				System.out.println("Refreshing...");
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				break;
 			case INVALID:
 				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
 				break;
@@ -144,6 +148,8 @@ public class CommandHandler {
 			return COMMAND_TYPE.THEME;
 		} else if (commandTypeString.equals("/x")) {
 		 	return COMMAND_TYPE.EXIT;
+		} else if (commandTypeString.equals("highlightExpiredAndOngoingRows")) {
+			return COMMAND_TYPE.HIGHLIGHT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
 		}
