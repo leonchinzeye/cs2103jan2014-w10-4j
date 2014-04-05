@@ -147,44 +147,42 @@ public class Edit {
 	
 	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {	
 		boolean success = true;	
-		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();		
-		
-		try {		
-			int editIndex = Integer.parseInt(userIndex);					
-			if(editIndex <= 0 || editIndex > incTasks.size()) {				
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incTasks.size()));				
-				return success = false;				
-			} else {			
-				TaskCard task = incTasks.get(editIndex - 1);				
-				userEnteredID = editIndex;				
-				success = performIncTaskEdit(task, attributesToEdit, fileLink, dataUI, undoHandler);				
-			}
-		} catch(NumberFormatException ex) {		
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));			
-			return success = false;		
-		}		
+		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();			
+		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incTasks, 1);
 		return success;		
 	}
+
 		
-	private boolean checkAndGetIncEventID(String userIndex, String attributeToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {		
+	private boolean checkAndGetIncEventID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {		
 		boolean success = true;		
-		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();		
+		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();		
+		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incEvents, 2);
+		return success;		
+	}
+	
+	private boolean checkAndGetID(String userIndex, String attributesToEdit,FileLinker fileLink, DataUI dataUI, Undo undoHandler, ArrayList<TaskCard> listOfEntries, int taskOrEvent) {
+		boolean success = true; 
 		
 		try {
 			int editIndex = Integer.parseInt(userIndex);
-			if(editIndex <= 0 || editIndex > incEvent.size()) {				
-				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, incEvent.size()));				
-				return success = false;				
-			} else {				
-				TaskCard event = incEvent.get(editIndex - 1);				
-				userEnteredID = editIndex;				
-				success = performIncEventEdit(event, attributeToEdit, fileLink, dataUI, undoHandler);				
+			if(editIndex <= 0 || editIndex > listOfEntries.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_EDITION_RANGE, listOfEntries.size()));
+				return success = false;
+			} else {
+				TaskCard eventOrTask = listOfEntries.get(editIndex - 1);
+				userEnteredID = editIndex;
+				if(taskOrEvent == 1) {
+					success = performIncTaskEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler);
+				}	else {
+					success = performIncEventEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler);
+				}
+			 }
+			} catch(NumberFormatException ex) {
+				dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, listOfEntries.size()));			
+				return success = false;
 			}
-		} catch(NumberFormatException ex) {			
-			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));			
-			return success = false;			
-		}	
-		return success;		
+		
+		return success;
 	}
 	
 	/**
@@ -364,7 +362,7 @@ public class Edit {
 			try {					
 				Date changeDate = timeFormat.parse(startDateEntry);						
 				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);						
+				cal.setTime(changeDate);
 				cal.set(Calendar.DATE, origEvent.getStartDay().get(Calendar.DATE));						
 				cal.set(Calendar.MONTH, origEvent.getStartDay().get(Calendar.MONTH));						
 				cal.set(Calendar.YEAR, origEvent.getStartDay().get(Calendar.YEAR));						
@@ -373,6 +371,8 @@ public class Edit {
 			} catch (ParseException e) {
 				isTime = false;
 			}
+			
+			
 			if (!isTime && !isDate) {				
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");	
 				return success = false;
@@ -395,7 +395,7 @@ public class Edit {
 			try {						
 				Date changeDate = timeFormat.parse(endDateEntry);						
 				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);						
+				cal.setTime(changeDate);
 				cal.set(Calendar.DATE, origEvent.getEndDay().get(Calendar.DATE));					
 				cal.set(Calendar.MONTH, origEvent.getEndDay().get(Calendar.MONTH));						
 				cal.set(Calendar.YEAR, origEvent.getEndDay().get(Calendar.YEAR));						
@@ -404,6 +404,8 @@ public class Edit {
 			} catch (ParseException e) {						
 				isTime = false;
 			}
+			
+			
 			if (!isTime && !isDate) {					
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				return success = false;
@@ -424,12 +426,22 @@ public class Edit {
 		
 		if (changeEndDate == false) {			
 			replacementEvent.setEndDay(origEvent.getEndDay());			
-			replacementEvent.setType(origEvent.getType());			
 		}
 		
 		if (changeStartDate == false) {			
 			replacementEvent.setStartDay(origEvent.getStartDay());			
-			replacementEvent.setType(origEvent.getType());			
+		}
+		
+		if (isTime) {
+			replacementEvent.setType("E");
+		}
+		else {
+			replacementEvent.setType(origEvent.getType());
+		}
+		
+		if(replacementEvent.getEndDay().before(replacementEvent.getStartDay())) {
+			dataUI.setFeedback("Greaaat scot! Are you a time traveler?");
+			return false;
 		}
 		
 		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);		
