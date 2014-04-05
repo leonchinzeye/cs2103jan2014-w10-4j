@@ -1,8 +1,11 @@
 package application;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -163,17 +166,18 @@ public class TaskController {
 	private ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
 	private ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
 	
+	private ArrayList<String> themes = new ArrayList<String>();
 	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
 	private String sithred = getClass().getResource("sithred.css").toExternalForm();
 	private String australia = getClass().getResource("australia.css").toExternalForm();
-	private String italy = getClass().getResource("italy.css").toExternalForm();
-	private ArrayList<String> themes = new ArrayList<String>();
-	
+	private String italy = getClass().getResource("italy.css").toExternalForm();	
 	private static final int JEDI_GREEN = 0;
 	private static final int SITH_RED = 1;
 	private static final int AUSTRALIA = 2;
 	private static final int ITALY = 3;
 	private static int themeIndex = 0;
+	
+	private static Timer timer;
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
@@ -256,14 +260,49 @@ public class TaskController {
 		eventCounter.setText("Events: " + incompleteEvents.size());
 		taskCounter.setText("Tasks: " + incompleteTasks.size());
 		
-		final ObservableList<Integer> highlightOngoingRows = FXCollections.observableArrayList();
-		final ObservableList<Integer> highlightExpiredRows = FXCollections.observableArrayList();
+		highlightExpiredAndOngoingRows();
+		Calendar tester = Calendar.getInstance();
+		tester.add(Calendar.MINUTE, 1);
+		tester.set(Calendar.SECOND, 0);
+		tester.set(Calendar.MILLISECOND, 0);
+		timer = new Timer();
+		timer.schedule(new TimerTask() {
+			public void run() {
+				Platform.runLater(new Runnable() {
+					public void run() {
+						commandHandle.executeCmd("highlightExpiredAndOngoingRows", tableNo);
+						highlightExpiredAndOngoingRows();
+						setUI(ui);
+					}
+				});
+			}
+		}, tester.getTime(), 60*1000);
+		
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		completedEvents.removeAll(completedEvents);
+		completedTasks.removeAll(completedTasks);
+		
+		currentTableShown();
+	}
+
+	private void highlightExpiredAndOngoingRows() {
+	  final ObservableList<Integer> highlightOngoingEvents = FXCollections.observableArrayList();
+		final ObservableList<Integer> highlightExpiredEvents = FXCollections.observableArrayList();
+		final ObservableList<Integer> highlightExpiredTasks = FXCollections.observableArrayList();
 		
 		for (int i = 0; i < incompleteEvents.size(); i++) {
+			System.out.println("Checking " + incompleteEvents.get(i).getName());
 			if (incompleteEvents.get(i).getIsOngoing()) {
-				highlightOngoingRows.add(i);
+				highlightOngoingEvents.add(i);
 			} else if (incompleteEvents.get(i).getIsExpired()) {
-				highlightExpiredRows.add(i);
+				highlightExpiredEvents.add(i);
+			}
+		}
+		
+		for (int i = 0; i < incompleteTasks.size(); i++) {
+			if (incompleteTasks.get(i).getIsExpired()) {
+				highlightExpiredTasks.add(i);
 			}
 		}
 		
@@ -274,11 +313,11 @@ public class TaskController {
 					@Override
 					protected void updateItem(EventDataUI event, boolean empty){
 						super.updateItem(event, empty);
-						if (highlightOngoingRows.contains(getIndex())) {
+						if (highlightOngoingEvents.contains(getIndex())) {
 							if (!getStyleClass().contains("highlightOngoing")) {
 								getStyleClass().add("highlightOngoing");
 							}
-						} else if (highlightExpiredRows.contains(getIndex())){
+						} else if (highlightExpiredEvents.contains(getIndex())){
 							if (!getStyleClass().contains("highlightExpired")) {
 								getStyleClass().add("highlightExpired");
 							}
@@ -292,13 +331,26 @@ public class TaskController {
 			}
 		});
 		
-		incompleteEvents.removeAll(incompleteEvents);
-		incompleteTasks.removeAll(incompleteTasks);
-		completedEvents.removeAll(completedEvents);
-		completedTasks.removeAll(completedTasks);
-		
-		currentTableShown();
-	}
+		taskTableIncomplete.setRowFactory(new Callback<TableView<TaskDataUI>, TableRow<TaskDataUI>>() {
+			@Override
+			public TableRow<TaskDataUI> call(TableView<TaskDataUI> tableView) {
+				final TableRow<TaskDataUI> row = new TableRow<TaskDataUI>() {
+					@Override
+					protected void updateItem(TaskDataUI event, boolean empty){
+						super.updateItem(event, empty);
+						if (highlightExpiredEvents.contains(getIndex())){
+							if (!getStyleClass().contains("highlightExpired")) {
+								getStyleClass().add("highlightExpired");
+							}
+						} else {
+							getStyleClass().removeAll(Collections.singleton("highlightExpired"));
+						}
+					}
+				};
+				return row;
+			}
+		});
+  }
 	
 	/**
 	 * The main method to take in input and send it to CommandHandler to execute
@@ -458,6 +510,8 @@ public class TaskController {
 		completedTasks.addAll(dataUI.getCompleteTasks());
 		eventTableComplete.setItems(completedEvents);
 		taskTableComplete.setItems(completedTasks);
+		
+		highlightExpiredAndOngoingRows();
 		
 		changeThemeByInt(themeIndex);
 	}

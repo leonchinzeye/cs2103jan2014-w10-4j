@@ -127,7 +127,7 @@ public class DataUI {
 			
 			Calendar now = GregorianCalendar.getInstance();
 			
-			if(event.getEndDay().before(now)) {
+			if(event.getEndDay().before(now) || event.getEndDay().equals(now)) {
 				eventData.setIsExpired(true);
 			} else {
 				eventData.setIsExpired(false);

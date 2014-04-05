@@ -117,9 +117,13 @@ public class TaskControllerMin {
 	public void executeCmd(String lastInput) {
 	  String response;
 	  changeTheme(lastInput);
-		dataUI = commandHandle.executeCmd(lastInput, tableNo);
-		response = dataUI.getFeedback();
-		notification.setText(response);
+	  if (lastInput.contains("add") || lastInput.contains("undo") || lastInput.contains("redo") || lastInput.contains("theme")) {
+	  	dataUI = commandHandle.executeCmd(lastInput, tableNo);
+	  	response = dataUI.getFeedback();
+	  	notification.setText(response);
+	  } else {
+	  	notification.setText("Please try something else!");
+	  }
 		command.clear(); //clears the input text field
 		command.requestFocus();
 		
@@ -205,8 +209,34 @@ public class TaskControllerMin {
 		if (!isEnterKey) {
 			setTableColumnStyle(key);
 		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Z)) {
+			undoShortcut();
+		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Y)) {
+			redoShortcut();
+		}
 		returnLastInput(key);
 	}
+	
+	private void undoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd("undo", tableNo);
+		response = dataUI.getFeedback();
+		notification.setText(response);
+		
+		setUI(ui);
+  }
+	
+	private void redoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd("redo", tableNo);
+		response = dataUI.getFeedback();
+		notification.setText(response);
+		
+		setUI(ui);
+  }
 	
 	public void setTableColumnStyle(KeyEvent key) {
 		String input = command.getText();
