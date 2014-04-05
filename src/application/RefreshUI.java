@@ -1,5 +1,8 @@
 package application;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * this class allows the user to refresh the GUI
  * things it should do:
@@ -17,10 +20,15 @@ public class RefreshUI {
 	
 	public static boolean executeRefresh(FileLinker fileLink, DataUI dataUI) {
 		//should check for events that have passed the designated time (not done yet)		
+		Calendar now = GregorianCalendar.getInstance();
+		
 		dataUI.configIncompleteTasks(fileLink);
 		dataUI.configIncompleteEvents(fileLink);
 		dataUI.configCompleteTasks(fileLink);
 		dataUI.configCompletedEvents(fileLink);
+		
+		dataUI.setUIclock(now);
+		dataUI.setUIdate(now);
 		
 		return true;
 	}

@@ -25,13 +25,14 @@ public class DataUI {
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");	
-	private SimpleDateFormat timeAndDateFormat = new SimpleDateFormat("EEE hh:mmaa, dd MMM yyyy");
+	private SimpleDateFormat timeUIFormat = new SimpleDateFormat("EEE hh:mmaa");
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
 	private ArrayList<EventDataUI> incompleteEvents;
 	private ArrayList<EventDataUI> completeEvents;
 	private String UIclock;
+	private String UIdate;
 	
 	private String feedback = DEFAULT_FEEDBACK;
 	private int row_added;
@@ -269,9 +270,17 @@ public class DataUI {
 		return UIclock;
 	}
 	
-	public void setUIclock() {
-		Calendar now = Calendar.getInstance();
+	public void setUIclock(Calendar now) {
 		Date clock = now.getTime();
-		UIclock = timeAndDateFormat.format(clock);
+		UIclock = timeUIFormat.format(clock);
+	}
+	
+	public String getUIdate() {
+		return UIdate;
+	}
+	
+	public void setUIdate(Calendar now) {
+		Date date = now.getTime();
+		UIdate = dateFormat.format(date);
 	}
 }
