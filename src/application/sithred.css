@@ -237,7 +237,7 @@
 
 /* Selected ongoing row */
 .highlightOngoing {
-    -fx-background-color: #4d4dff;
+    -fx-background-color: #8080ff;
     -fx-background-insets: 0, 1, 2;
     -fx-text-fill: #ffffff;
 }
