@@ -8,21 +8,21 @@ import java.util.GregorianCalendar;
 
 public class DateAndTimeFormats {
 
-	private static SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+	private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 	
-	private static SimpleDateFormat[] properDateFormats = {
+	private SimpleDateFormat[] properDateFormats = {
 		new SimpleDateFormat("dd/MM/yyyy"),
 		new SimpleDateFormat("dd-MM-yyyy"),
 		new SimpleDateFormat("dd MMM yyyy")
 	};
 	
-	private static SimpleDateFormat[] lazyYearFormats = {
+	private SimpleDateFormat[] lazyYearFormats = {
 		new SimpleDateFormat("dd/MM/yy"),
 		new SimpleDateFormat("dd-MM-yy"),
 		new SimpleDateFormat("dd MMM yy")
 	};
 	
-	private static SimpleDateFormat[] lazyDateFormats = {
+	private SimpleDateFormat[] lazyDateFormats = {
 		new SimpleDateFormat("dd/MM yyyy"),
 		new SimpleDateFormat("dd-MM yyyy"),
 		new SimpleDateFormat("dd MMM yyyy"),
@@ -30,13 +30,13 @@ public class DateAndTimeFormats {
 		new SimpleDateFormat("dd/MMM yyyy")
 	};
 	
-	private static SimpleDateFormat[] complete24HrFormat = {
+	private SimpleDateFormat[] complete24HrFormat = {
 		new SimpleDateFormat("HHmm"),
 		new SimpleDateFormat("HH:mm"),
 		new SimpleDateFormat("HH.mm")
 	};
 	
-	private static SimpleDateFormat[] complete12HrFormat = {
+	private SimpleDateFormat[] complete12HrFormat = {
 		new SimpleDateFormat("hh:mmaa"),
 		new SimpleDateFormat("hh.mmaa"),
 	};
