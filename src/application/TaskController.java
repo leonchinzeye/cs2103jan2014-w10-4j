@@ -680,7 +680,6 @@ public class TaskController {
 				case "a":
 					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
 					tab.getSelectionModel().select(incompleteTab);
-					eventPaneIncomplete.setExpanded(true);
 					currentTableShown();
 					break;
 				case "d":

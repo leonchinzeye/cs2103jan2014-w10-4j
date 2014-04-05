@@ -51,8 +51,8 @@ public class UI extends Application {
 			
 			primaryStage.setScene(scene);
 			primaryStageSub = primaryStage;
-			tcMin.setUI(this);
 			tc2.setUI(this);
+			tcMin.setUI(this);
 			
 			primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 				@Override
