@@ -25,20 +25,20 @@
         <Image url="@../projectX.png" />
       </image>
     </ImageView>
-    <Text id="anchortext" layoutX="428.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Type 'help' to access the Help guide">
+    <Text id="anchortext" layoutX="388.0" layoutY="16.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+H to access the Help guide">
       <font>
         <Font name="Moire" size="12.0" />
       </font>
     </Text>
     <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="590.0" layoutY="436.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
     <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="436.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
-    <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="393.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
-    <Text fx:id="taskCounter" layoutX="543.0" layoutY="84.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Tasks: 0" textAlignment="RIGHT">
+    <Text fx:id="dayAndTime" layoutX="482.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mon 00:00AM" underline="false">
       <font>
-        <Font name="Moire" size="20.0" fx:id="x2" />
+        <Font name="Moire" size="20.0" fx:id="x1" />
       </font>
     </Text>
-    <Text fx:id="eventCounter" disable="false" font="$x2" layoutX="534.0" layoutY="62.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Events: 0" textAlignment="LEFT" />
+    <Text id="dayAndTime" fx:id="dateText" font="$x1" layoutX="508.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1 Jan 2014" underline="false" />
+    <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="393.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="53.0" mouseTransparent="false" onKeyPressed="#changeTab" prefHeight="331.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab fx:id="incompleteTab" closable="false" onSelectionChanged="#openIncompleteTab" text="Incomplete">
@@ -149,7 +149,7 @@
               <children>
                 <Accordion id="event" disable="false" layoutX="0.0" layoutY="0.0" mouseTransparent="true" prefHeight="295.0" prefWidth="612.0">
                   <expandedPane>
-                    <TitledPane id="eventPaneIncomplete" fx:id="x1" animated="false" disable="false" focusTraversable="false" mouseTransparent="true" text="Events">
+                    <TitledPane id="eventPaneIncomplete" fx:id="eventsHelpPane" animated="false" disable="false" focusTraversable="false" mouseTransparent="true" text="Events [0]">
                       <content>
                         <AnchorPane id="Content" disable="false" minHeight="0.0" minWidth="0.0" mouseTransparent="false" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -171,8 +171,8 @@
                     </TitledPane>
                   </expandedPane>
                   <panes>
-                    <fx:reference source="x1" />
-                    <TitledPane id="taskPaneIncomplete" animated="false" disable="false" mouseTransparent="true" text="Tasks">
+                    <fx:reference source="eventsHelpPane" />
+                    <TitledPane id="taskPaneIncomplete" fx:id="tasksHelpPane" animated="false" disable="false" mouseTransparent="true" text="Tasks [0]">
                       <content>
                         <AnchorPane id="Content" disable="false" minHeight="0.0" minWidth="0.0" mouseTransparent="false" prefHeight="180.0" prefWidth="200.0">
                           <children>
@@ -197,7 +197,7 @@
         </Tab>
       </tabs>
     </TabPane>
-    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="true">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="194.0" layoutY="1.0" prefHeight="50.0" prefWidth="365.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab OR &quot;view &lt;Tab name&gt;&quot; to switch between the tabs." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="65.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
@@ -311,8 +311,8 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" font="$x2" layoutX="235.0" layoutY="303.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text fill="BLACK" font="$x2" layoutX="175.0" layoutY="326.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+        <Text fill="BLACK" font="$x1" layoutX="235.0" layoutY="303.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text fill="BLACK" font="$x1" layoutX="175.0" layoutY="326.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
       </children>
     </AnchorPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
@@ -329,8 +329,8 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="311.0" layoutY="37.0" prefHeight="43.0001220703125" prefWidth="212.0" styleClass="TextArea" text="This keeps track of the number of events and tasks in the current tab." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="527.0" layoutY="70.0" rotate="90.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="120.0" layoutY="77.0" prefHeight="57.0" prefWidth="225.0" styleClass="TextArea" text="These numbers allow you to keep track of the amount of tasks and events you have." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="115.0" layoutY="110.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -340,8 +340,19 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" font="$x2" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text fill="BLACK" font="$x2" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
+        <Line endX="-128.0" endY="140.0" layoutX="220.0" layoutY="215.0" startX="-80.0" startY="-82.0" strokeWidth="2.0" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="91.0" layoutY="369.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Text fill="BLACK" font="$x1" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text fill="BLACK" font="$x1" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>
     </AnchorPane>
     <Pane fx:id="dragPane" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="57.0" prefWidth="640.0" />

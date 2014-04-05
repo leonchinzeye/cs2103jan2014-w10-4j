@@ -62,9 +62,9 @@ public class TaskController {
 	@FXML
 	private TextField command;
 	@FXML
-	private Text eventCounter;
+	private Text dayAndTime;
 	@FXML
-	private Text taskCounter;
+	private Text dateText;
 	
 	@FXML
 	private Accordion incompleteAccordion;
@@ -189,8 +189,6 @@ public class TaskController {
 		eventTableComplete = new TableView<EventDataUI>();
 		taskTableComplete = new TableView<TaskDataUI>();
 		tab = new TabPane();
-		eventCounter = new Text("Events: 0");
-		taskCounter = new Text("Tasks: 0");
 		validPane = new Pane();
 		helpAnchor = new AnchorPane();
 		testingResponse = "";
@@ -257,9 +255,9 @@ public class TaskController {
 		completedEvents.addAll(dataUI.getCompleteEvents());
 		completedTasks.addAll(dataUI.getCompleteTasks());
 		
-		eventCounter.setText("Events: " + incompleteEvents.size());
-		taskCounter.setText("Tasks: " + incompleteTasks.size());
-		
+		eventPaneIncomplete.setText(String.format("Events [%d]", incompleteEvents.size()));
+		taskPaneIncomplete.setText(String.format("Tasks [%d]", incompleteTasks.size()));
+	
 		highlightExpiredAndOngoingRows();
 		Calendar tester = Calendar.getInstance();
 		tester.add(Calendar.MINUTE, 1);
@@ -293,16 +291,14 @@ public class TaskController {
 		for (int i = 0; i < incompleteEvents.size(); i++) {
 			if (incompleteEvents.get(i).getIsOngoing()) {
 				highlightOngoingEvents.add(i);
-				System.out.println("Ongoing event: " + incompleteEvents.get(i).getName());
 			} else if (incompleteEvents.get(i).getIsExpired()) {
 				highlightExpiredEvents.add(i);
-				System.out.println("Expired event: " + incompleteEvents.get(i).getName());
 			}
 		}
 		
 		for (int i = 0; i < incompleteTasks.size(); i++) {
 			if (incompleteTasks.get(i).getIsExpired()) {
-				System.out.println("Expired Task: " + incompleteTasks.get(i).getName());
+				System.out.println("Expired Task: " + incompleteTasks.get(i).getName() + " " + incompleteTasks.get(i).getIsExpired());
 				highlightExpiredTasks.add(i);
 			}
 		}
@@ -477,11 +473,11 @@ public class TaskController {
 	 */
 	private void updateCounter() {
 	  if (tab.getSelectionModel().isSelected(0)) {
-			eventCounter.setText("Events: " + incompleteEvents.size());
-			taskCounter.setText("Tasks: " + incompleteTasks.size());
+			eventPaneIncomplete.setText(String.format("Events [%d]", incompleteEvents.size()));
+			taskPaneIncomplete.setText(String.format("Tasks [%d]", incompleteTasks.size()));
 		} else if (tab.getSelectionModel().isSelected(1)) {
-			eventCounter.setText("Events: " + completedEvents.size());
-			taskCounter.setText("Tasks: " + completedTasks.size());
+			eventPaneComplete.setText(String.format("Events [%d]", completedEvents.size()));
+			taskPaneComplete.setText(String.format("Tasks [%d]", completedTasks.size()));
 		}
   }
 	
@@ -665,8 +661,7 @@ public class TaskController {
 	public void openIncompleteTab() {
 		notification.setText("Read me!");
 	  command.setPromptText("Feed me!");
-		eventCounter.setText("Events: " + incompleteEvents.size());
-		taskCounter.setText("Tasks: " + incompleteTasks.size());
+	  updateCounter();
 		notification.setDisable(false);
 		command.setDisable(false);
 		helpAnchor.setVisible(false);
@@ -676,8 +671,7 @@ public class TaskController {
 	public void openCompleteTab() {
 		notification.setText("Read me!");
 	  command.setPromptText("Feed me!");
-		eventCounter.setText("Events: " + completedEvents.size());
-		taskCounter.setText("Tasks: " + completedTasks.size());
+	  updateCounter();
 		notification.setDisable(false);
 		command.setDisable(false);
 		helpAnchor.setVisible(false);
@@ -685,8 +679,6 @@ public class TaskController {
 	
 	@FXML
 	public void openHelpTab() {
-		eventCounter.setText("Events: 0");
-		taskCounter.setText("Tasks: 0");
 		notification.setText("This will return responses to you based on your commands.");
 		command.setPromptText("This is where you enter your commands.");
 		command.setMouseTransparent(true);
