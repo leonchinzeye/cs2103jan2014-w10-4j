@@ -305,7 +305,7 @@ public class TaskController {
 	 * @author Omar Khalid
 	 */
 	@FXML
-	public void parseInput() {		
+	public void parseInput() {
 		String lastInput = "";
 		
 		taskTableIncomplete.getSelectionModel().select(0);
@@ -330,6 +330,17 @@ public class TaskController {
 		 * Also updates the task counter accordingly.
 		 */
 		setUI(ui);
+		
+		if (lastInput.contains("add")) {
+			if (dataUI.getFileAdded() == TASK_INC) {
+				taskPaneIncomplete.setExpanded(true);
+				taskTableIncomplete.getSelectionModel().select(dataUI.getRowAdded());
+			} else if (dataUI.getFileAdded() == EVENT_INC) {
+				eventPaneIncomplete.setExpanded(true);
+				eventTableIncomplete.getSelectionModel().select(dataUI.getRowAdded());
+			}
+		}
+		
 		updateCounter();
   }
 
@@ -639,9 +650,39 @@ public class TaskController {
 		if (!isEnterKey) {
 			setTableColumnStyle(key);
 		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Z)) {
+			undoShortcut();
+		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Y)) {
+			redoShortcut();
+		}
 		returnLastInput(key);
 	}
+
+	private void undoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd("undo", tableNo);
+		response = dataUI.getFeedback();
+		testingResponse = response;
+		notification.setText(response);
+		
+		setUI(ui);
+		updateCounter();
+  }
 	
+	private void redoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd("redo", tableNo);
+		response = dataUI.getFeedback();
+		testingResponse = response;
+		notification.setText(response);
+		
+		setUI(ui);
+		updateCounter();
+  }
+
 	public void setTableColumnStyle(KeyEvent key) {
 		String input = command.getText();
 		
