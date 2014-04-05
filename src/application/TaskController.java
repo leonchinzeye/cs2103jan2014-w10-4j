@@ -291,16 +291,18 @@ public class TaskController {
 		final ObservableList<Integer> highlightExpiredTasks = FXCollections.observableArrayList();
 		
 		for (int i = 0; i < incompleteEvents.size(); i++) {
-			System.out.println("Checking " + incompleteEvents.get(i).getName());
 			if (incompleteEvents.get(i).getIsOngoing()) {
 				highlightOngoingEvents.add(i);
+				System.out.println("Ongoing event: " + incompleteEvents.get(i).getName());
 			} else if (incompleteEvents.get(i).getIsExpired()) {
 				highlightExpiredEvents.add(i);
+				System.out.println("Expired event: " + incompleteEvents.get(i).getName());
 			}
 		}
 		
 		for (int i = 0; i < incompleteTasks.size(); i++) {
 			if (incompleteTasks.get(i).getIsExpired()) {
+				System.out.println("Expired Task: " + incompleteTasks.get(i).getName());
 				highlightExpiredTasks.add(i);
 			}
 		}
@@ -335,8 +337,8 @@ public class TaskController {
 			public TableRow<TaskDataUI> call(TableView<TaskDataUI> tableView) {
 				final TableRow<TaskDataUI> row = new TableRow<TaskDataUI>() {
 					@Override
-					protected void updateItem(TaskDataUI event, boolean empty){
-						super.updateItem(event, empty);
+					protected void updateItem(TaskDataUI task, boolean empty){
+						super.updateItem(task, empty);
 						if (highlightExpiredEvents.contains(getIndex())){
 							if (!getStyleClass().contains("highlightExpired")) {
 								getStyleClass().add("highlightExpired");
@@ -1118,6 +1120,7 @@ public class TaskController {
 	@FXML
 	public void closeWindow (MouseEvent mouse) {
 		Platform.exit();
+		System.exit(0);
 	}
 	
 	@FXML
