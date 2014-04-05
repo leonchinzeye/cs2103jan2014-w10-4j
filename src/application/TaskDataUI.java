@@ -5,17 +5,19 @@ import javafx.beans.property.SimpleStringProperty;
 public class TaskDataUI {
 
 	private SimpleStringProperty ID;    
-	private SimpleStringProperty Priority;
-	private SimpleStringProperty Name;
+	private SimpleStringProperty priority;
+	private SimpleStringProperty name;
 	private SimpleStringProperty endDate;
 	private SimpleStringProperty endTime;
+	private boolean isExpired;
 	
 	public TaskDataUI() {
 		this.ID = new SimpleStringProperty();
-		this.Priority = new SimpleStringProperty();
-		this.Name = new SimpleStringProperty();
+		this.priority = new SimpleStringProperty();
+		this.name = new SimpleStringProperty();
 		this.endDate = new SimpleStringProperty();
 		this.endTime = new SimpleStringProperty();
+		this.isExpired = false;
 	}
 
 	public String getID() {
@@ -27,19 +29,23 @@ public class TaskDataUI {
 	}
 	
 	public String getPriority() {
-		return Priority.get();
+		return priority.get();
 	}
 	
 	public void setPriority(String p) {
-		Priority.set(p);
+		priority.set(p);
 	}
 	
 	public String getName() {
-		return Name.get();
+		return name.get();
 	}
 	
 	public void setName(String n) {
-		Name.set(n);
+		name.set(n);
+	}
+	
+	public void setIsExpired(boolean expired) {
+		isExpired = expired;
 	}
 	
 	public String getEndDate() {
@@ -63,11 +69,11 @@ public class TaskDataUI {
 	}
 	
 	public SimpleStringProperty priorityProperty() {
-		return Priority;
+		return priority;
 	}
 	
 	public SimpleStringProperty nameProperty() {
-		return Name;
+		return name;
 	}
 	
 	public SimpleStringProperty endDateProperty() {
@@ -77,4 +83,9 @@ public class TaskDataUI {
 	public SimpleStringProperty endTimeProperty() {
 		return endTime;
 	}
+	
+	public boolean getIsExpired() {
+		return isExpired;
+	}
+
 }
