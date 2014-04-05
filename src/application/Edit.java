@@ -238,10 +238,14 @@ public class Edit {
 				cal.setTime(changeDate);						
 				if(!(origTask.getType().equals("FT"))) {							
 					cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));							
-					cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));							
+					cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));
+					cal.set(Calendar.SECOND, origTask.getEndDay().get(Calendar.SECOND));
+					cal.set(Calendar.MILLISECOND, origTask.getEndDay().get(Calendar.MILLISECOND));
 				} else {						
 					cal.set(Calendar.HOUR_OF_DAY, 0);							
-					cal.set(Calendar.MINUTE, 00);							
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
 				}						
 				replacementTask.setEndDay(cal);						
 				isDate = true;
@@ -257,15 +261,19 @@ public class Edit {
 				//here we need to check if the task already has
 				//an end date and if it is not to be modified, need to
 				//set it for replacement task
-				Calendar cal = GregorianCalendar.getInstance();												
+				Calendar cal = GregorianCalendar.getInstance();
+				Calendar calChangeDate = GregorianCalendar.getInstance();
+				calChangeDate.setTime(changeDate);
 				if(!(origTask.getType().equals("FT"))) {							
 					cal.setTime(changeDate);							
 					cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));							
 					cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));							
 					cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));							
 				} else {
-					cal.set(Calendar.HOUR_OF_DAY, changeDate.getHours());							
-					cal.set(Calendar.MINUTE, changeDate.getMinutes());							
+					cal.set(Calendar.HOUR_OF_DAY, calChangeDate.get(Calendar.HOUR_OF_DAY));							
+					cal.set(Calendar.MINUTE, calChangeDate.get(Calendar.MINUTE));
+					cal.set(Calendar.SECOND, calChangeDate.get(Calendar.SECOND));
+					cal.set(Calendar.MILLISECOND, calChangeDate.get(Calendar.MILLISECOND));
 				}						
 				replacementTask.setEndDay(cal);						
 				isTime = true;
@@ -406,6 +414,7 @@ public class Edit {
 			}
 			
 			
+			
 			if (!isTime && !isDate) {					
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				return success = false;
@@ -438,7 +447,7 @@ public class Edit {
 		else {
 			replacementEvent.setType(origEvent.getType());
 		}
-		
+
 		if(replacementEvent.getEndDay().before(replacementEvent.getStartDay())) {
 			dataUI.setFeedback("Greaaat scot! Are you a time traveler?");
 			return false;
