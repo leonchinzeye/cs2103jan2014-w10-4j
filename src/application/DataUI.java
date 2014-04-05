@@ -3,6 +3,7 @@ package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
@@ -24,7 +25,7 @@ public class DataUI {
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");	
-	private SimpleDateFormat timeAndDateFormat = new SimpleDateFormat("dd MMM yyyy");
+	private SimpleDateFormat timeAndDateFormat = new SimpleDateFormat("EEE hh:mmaa, dd MMM yyyy");
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
@@ -134,7 +135,7 @@ public class DataUI {
 			}
 			
 			if(event.getStartDay().before(now) && event.getEndDay().after(now)) {
-				eventData.setIsExpired(true);
+				eventData.setIsOngoing(true);
 			}
 			
 			incompleteEvents.add(eventData);
@@ -270,6 +271,7 @@ public class DataUI {
 	
 	public void setUIclock() {
 		Calendar now = Calendar.getInstance();
-		
+		Date clock = now.getTime();
+		UIclock = timeAndDateFormat.format(clock);
 	}
 }
