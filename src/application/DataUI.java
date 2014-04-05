@@ -24,11 +24,13 @@ public class DataUI {
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");	
+	private SimpleDateFormat timeAndDateFormat = new SimpleDateFormat("dd MMM yyyy");
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
 	private ArrayList<EventDataUI> incompleteEvents;
 	private ArrayList<EventDataUI> completeEvents;
+	private String UIclock;
 	
 	private String feedback = DEFAULT_FEEDBACK;
 	private int row_added;
@@ -73,7 +75,7 @@ public class DataUI {
 				Calendar endDay = task.getEndDay();
 				Calendar now = GregorianCalendar.getInstance();
 				
-				if(endDay.before(now)) {
+				if(endDay.before(now) || endDay.equals(now)) {
 					taskData.setIsExpired(true);
 				} else {
 					taskData.setIsExpired(false);
@@ -129,8 +131,10 @@ public class DataUI {
 			
 			if(event.getEndDay().before(now) || event.getEndDay().equals(now)) {
 				eventData.setIsExpired(true);
-			} else {
-				eventData.setIsExpired(false);
+			}
+			
+			if(event.getStartDay().before(now) && event.getEndDay().after(now)) {
+				eventData.setIsExpired(true);
 			}
 			
 			incompleteEvents.add(eventData);
@@ -258,5 +262,14 @@ public class DataUI {
 	
 	public void setFileAdded(int added) {
 		file_added = added;
+	}
+	
+	public String getUIClock() {
+		return UIclock;
+	}
+	
+	public void setUIclock() {
+		Calendar now = Calendar.getInstance();
+		
 	}
 }
