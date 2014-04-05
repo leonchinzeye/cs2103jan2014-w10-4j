@@ -197,7 +197,7 @@
         </Tab>
       </tabs>
     </TabPane>
-    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="true">
+    <AnchorPane id="AnchorPane" fx:id="helpAnchor" blendMode="SRC_OVER" focusTraversable="false" layoutX="0.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
         <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="194.0" layoutY="1.0" prefHeight="50.0" prefWidth="365.0" styleClass="TextArea" text="This is the currently selected tab.&#10;Use Ctrl+Tab OR &quot;view &lt;Tab name&gt;&quot; to switch between the tabs." visible="true" wrapText="true" />
         <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="374.0" layoutY="65.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
