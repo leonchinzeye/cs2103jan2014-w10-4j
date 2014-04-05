@@ -97,7 +97,7 @@ public class FileLinker {
 			completedEvents.add(taskToBeAdded);
 		}
 		
-		sortTasks();
+		sortFiles();
 		writeToFiles();
 	}
 	
@@ -125,6 +125,7 @@ public class FileLinker {
 			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
 		}
 	
+		sortFiles();
 		writeToFiles();
 		return true;
 	}
@@ -260,7 +261,7 @@ public class FileLinker {
 		state_search = false;
 	}
 	
-	private void sortTasks() {
+	private void sortFiles() {
 		Collections.sort(incompleteTasks, new SortTasksByPriorityThenDeadline());
 		Collections.sort(incompleteEvents, new SortEventsByPriorityThenDeadline());
 	}
@@ -302,32 +303,39 @@ public class FileLinker {
 	}
 	
 	private class SortEventsByPriorityThenDeadline implements Comparator<TaskCard> {
-		public int compare(TaskCard task1, TaskCard task2) {
-			int prior1 = task1.getPriority();
-			int prior2 = task2.getPriority();
+		public int compare(TaskCard event1, TaskCard event2) {
+			int prior1 = event1.getPriority();
+			int prior2 = event2.getPriority();
 			
-			Calendar end1 = task1.getEndDay();
-			Calendar end2 = task2.getEndDay();
+			Calendar start1 = event1.getStartDay();
+			Calendar start2 = event2.getStartDay();
 			
-			String name1 = task1.getName().toLowerCase();
-			String name2 = task2.getName().toLowerCase();
+			Calendar end1 = event1.getEndDay();
+			Calendar end2 = event2.getEndDay();
 			
-			String type1 = task1.getType();
-			String type2 = task2.getType();
+			String name1 = event1.getName().toLowerCase();
+			String name2 = event2.getName().toLowerCase();
 			
-			if(prior1 < prior2) {
-				return 1;
-			} else if(prior1 > prior2) {
+			String type1 = event1.getType();
+			String type2 = event2.getType();
+			
+			if(start1.before(start2)) {
 				return -1;
+			} else if(start1.after(start2)) {
+				return 1;
 			} else if(end1.before(end2)) {
 				return -1;
 			} else if(end1.after(end2)) {
 				return 1;
+			} else if(prior1 < prior2) {
+				return 1;
+			} else if(prior1 > prior2) {
+				return -1;
 			} else if(name1.compareTo(name2) < 0) {
 				return -1;
 			} else if(name1.compareTo(name2) > 0) {
 				return 1;
-			} else if(type1.equals("FT") && type2.equals("T")) {
+			} else if(type1.equals("AE") && type2.equals("E")) {
 				return 1;
 			} else if(type1.equals("T") && type2.equals("FT")) {
 				return -1;
