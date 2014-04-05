@@ -34,8 +34,8 @@ public class UI extends Application {
 			
 			Parent root = (Parent) loader.load();
 			Parent root2 = (Parent) loader2.load();
-			Scene scene = new Scene(root2,640,480);
-			Scene scene2 = new Scene(root, 640, 480);
+			Scene scene = new Scene(root,640,150);
+			Scene scene2 = new Scene(root2, 640, 480);
 			final Scene scene1Sub = scene;
 			final Scene scene2Sub = scene2;
 			

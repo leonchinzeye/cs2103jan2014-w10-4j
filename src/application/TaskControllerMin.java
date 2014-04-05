@@ -117,12 +117,13 @@ public class TaskControllerMin {
 	public void executeCmd(String lastInput) {
 	  String response;
 	  changeTheme(lastInput);
-	  if (lastInput.contains("add") || lastInput.contains("undo") || lastInput.contains("redo") || lastInput.contains("theme")) {
+	  if (lastInput.contains("add") || lastInput.equals("/x") || 
+	  		lastInput.contains("undo") || lastInput.contains("redo") || lastInput.contains("theme")) {
 	  	dataUI = commandHandle.executeCmd(lastInput, tableNo);
 	  	response = dataUI.getFeedback();
 	  	notification.setText(response);
 	  } else {
-	  	notification.setText("Please try something else!");
+	  	notification.setText("That can't be done here! Expand the window with Ctrl+Enter.");
 	  }
 		command.clear(); //clears the input text field
 		command.requestFocus();

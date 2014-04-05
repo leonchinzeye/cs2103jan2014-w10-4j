@@ -303,7 +303,6 @@ public class TaskController {
 		
 		for (int i = 0; i < incompleteTasks.size(); i++) {
 			if (incompleteTasks.get(i).getIsExpired()) {
-				System.out.println("Expired Task: " + incompleteTasks.get(i).getName() + " " + incompleteTasks.get(i).getIsExpired());
 				highlightExpiredTasks.add(i);
 			}
 		}
@@ -340,7 +339,7 @@ public class TaskController {
 					@Override
 					protected void updateItem(TaskDataUI task, boolean empty){
 						super.updateItem(task, empty);
-						if (highlightExpiredEvents.contains(getIndex())){
+						if (highlightExpiredTasks.contains(getIndex())){
 							if (!getStyleClass().contains("highlightExpired")) {
 								getStyleClass().add("highlightExpired");
 							}
@@ -514,7 +513,7 @@ public class TaskController {
 		taskTableComplete.setItems(completedTasks);
 		
 		highlightExpiredAndOngoingRows();
-		
+		updateCounter();		
 		changeThemeByInt(themeIndex);
 	}
 	
