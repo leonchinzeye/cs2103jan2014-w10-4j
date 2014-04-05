@@ -62,10 +62,10 @@ public class TaskControllerMin {
 	private static final int SITH_RED = 1;
 	private static final int AUSTRALIA = 2;
 	private static final int ITALY = 3;
+	private static int themeIndex = 0;
 	
 	public TaskControllerMin() {
 		commandHandle = new CommandHandler();
-		dataUI = new DataUI();
 		notification = new TextField();
 		command = new TextField();
 		anchor = new AnchorPane();
@@ -99,7 +99,6 @@ public class TaskControllerMin {
 		 * The lines below will set the task counter upon starting the program.
 		 */
 		dataUI = commandHandle.getDataUI();
-		System.out.println("Mini UI initialized.");
 	}
 	
 	/**
@@ -138,7 +137,6 @@ public class TaskControllerMin {
 			
 			if (!inputArray[1].isEmpty()) {
 				String chosenTheme = inputArray[1];
-				int themeIndex = 0;
 				anchor.getStylesheets().removeAll(themes);
 				if (chosenTheme.equalsIgnoreCase("Jedi")) {
 					themeIndex = JEDI_GREEN;
@@ -156,6 +154,20 @@ public class TaskControllerMin {
 		}
   }
 	
+	private void changeThemeByInt(int index) {
+		anchor.getStylesheets().removeAll(themes);
+		if (index == 0) {
+			themeIndex = JEDI_GREEN;
+		} else if (index == 1) {
+			themeIndex = SITH_RED;
+		} else if (index == 2) {
+			themeIndex = AUSTRALIA;
+		} else if (index == 3) {
+			themeIndex = ITALY;
+		}
+		anchor.getStylesheets().add(themes.get(themeIndex));
+	}
+	
 	/**
 	 * Retrieves the information to be shown in the tables.
 	 * @param ui
@@ -172,6 +184,8 @@ public class TaskControllerMin {
 		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
+		
+		changeThemeByInt(themeIndex);
 	}
 	
 	public void focusTextInput(KeyEvent key) {
@@ -331,5 +345,14 @@ public class TaskControllerMin {
 	
 	public void setDataUI(DataUI dataUI) {
 		this.dataUI = dataUI;
+		setUI(ui);
+	}
+	
+	public int getTheme() {
+		return themeIndex;
+	}
+	
+	public void setTheme(int theme) {
+		TaskControllerMin.themeIndex = theme;
 	}
 }

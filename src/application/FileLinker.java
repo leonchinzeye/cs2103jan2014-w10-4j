@@ -1,5 +1,8 @@
 package application;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Class that links the individual logic components to the FileHandler
@@ -19,11 +22,6 @@ public class FileLinker {
 	private ArrayList<TaskCard> searchCompTasks;
 	private ArrayList<TaskCard> searchCompEvents;
 	
-	private ArrayList<Integer> incTasksIndex;
-	private ArrayList<Integer> incEventsIndex;
-	private ArrayList<Integer> compTasksIndex;
-	private ArrayList<Integer> compEventsIndex;
-	
 	private boolean state_search;
 	
 	public FileLinker() {
@@ -37,13 +35,7 @@ public class FileLinker {
 		this.searchCompTasks = new ArrayList<TaskCard>();
 		this.searchCompEvents = new ArrayList<TaskCard>();
 		
-		this.incTasksIndex = new ArrayList<Integer>();
-		this.incEventsIndex = new ArrayList<Integer>();
-		this.compTasksIndex = new ArrayList<Integer>();
-		this.compEventsIndex = new ArrayList<Integer>();
-		
 		this.state_search = false;
-		
 	}
 	
 	public ArrayList<TaskCard> getIncompleteTasks() {
@@ -88,26 +80,25 @@ public class FileLinker {
 				searchIncTasks.add(taskToBeAdded);
 			}
 			incompleteTasks.add(taskToBeAdded);
-			callStorageWriteIncompleteTasks();
 		} else if(fileToBeAddedTo == 2) {
 			if(state_search) {
 				searchIncEvents.add(taskToBeAdded);
 			}
 			incompleteEvents.add(taskToBeAdded);
-			callStorageWriteIncompleteEvents();
 		} else if(fileToBeAddedTo == 3) {
 			if(state_search) {
 				searchCompTasks.add(taskToBeAdded);
 			}
 			completedTasks.add(taskToBeAdded);
-			callStorageWriteCompletedTasks();
 		} else {
 			if(state_search) {
 				searchCompEvents.add(taskToBeAdded);
 			}
 			completedEvents.add(taskToBeAdded);
-			callStorageWriteCompletedEvents();
 		}
+		
+		sortFiles();
+		writeToFiles();
 	}
 	
 	/**
@@ -123,7 +114,6 @@ public class FileLinker {
 				taskNumberToBeModified = incompleteTasks.indexOf(origTask);
 			}
 			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteIncompleteTasks();
 		}
 		
 		else if (fileToBeEditedFrom == 2) {
@@ -133,9 +123,10 @@ public class FileLinker {
 				taskNumberToBeModified = incompleteEvents.indexOf(origEvent);
 			}
 			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
-			callStorageWriteIncompleteEvents();
 		}
 	
+		sortFiles();
+		writeToFiles();
 		return true;
 	}
 
@@ -149,7 +140,6 @@ public class FileLinker {
 			} else {
 				incompleteTasks.remove(taskNumberToBeDeleted);
 			}
-			callStorageWriteIncompleteTasks();
 		} else if(fileToBeDeletedFrom == 2) {
 			if(state_search) {
 				TaskCard toBeDeleted = searchIncEvents.get(taskNumberToBeDeleted);
@@ -159,7 +149,6 @@ public class FileLinker {
 			} else {
 				incompleteEvents.remove(taskNumberToBeDeleted);
 			}
-			callStorageWriteIncompleteEvents();
 		} else if(fileToBeDeletedFrom == 3) {
 			if(state_search) {
 				TaskCard toBeDeleted = searchCompTasks.get(taskNumberToBeDeleted);
@@ -169,7 +158,6 @@ public class FileLinker {
 			} else {
 				completedTasks.remove(taskNumberToBeDeleted);	
 			}
-			callStorageWriteCompletedTasks();
 		} else {
 			if(state_search) {
 				TaskCard toBeDeleted = searchCompEvents.get(taskNumberToBeDeleted);
@@ -179,8 +167,9 @@ public class FileLinker {
 			} else {
 				completedEvents.remove(taskNumberToBeDeleted);
 			}
-			callStorageWriteCompletedEvents();
 		}
+		
+		writeToFiles();
 		return true;
 	}
 	
@@ -190,22 +179,14 @@ public class FileLinker {
 			if(state_search) {
 				searchCompTasks.add(taskToBeMarked);
 			} 
-			
 			completedTasks.add(taskToBeMarked);
 			deleteHandling(taskNumberToBeDeleted, 1);
-			
-			callStorageWriteCompletedTasks();
-			
 		} else if(fileToBeDeletedFrom == 2) {
 			if(state_search) {
 				searchCompEvents.add(taskToBeMarked);
 			}
-			
 			completedEvents.add(taskToBeMarked);
 			deleteHandling(taskNumberToBeDeleted, 2);
-			
-			callStorageWriteCompletedEvents();
-			
 		} else if(fileToBeDeletedFrom == 3) {
 			if(state_search) {
 				searchIncTasks.add(taskToBeMarked);
@@ -213,9 +194,6 @@ public class FileLinker {
 			
 			incompleteTasks.add(taskToBeMarked);
 			deleteHandling(taskNumberToBeDeleted, 3);
-			
-			callStorageWriteIncompleteTasks();
-		
 		} else {
 			if(state_search) {
 				searchIncEvents.add(taskToBeMarked);
@@ -223,9 +201,9 @@ public class FileLinker {
 			
 			incompleteEvents.add(taskToBeMarked);
 			deleteHandling(taskNumberToBeDeleted, 4);
-			
-			callStorageWriteIncompleteEvents();
 		}
+		
+		writeToFiles();
 	}
 
 	public boolean searchHandling(ArrayList<TaskCard> searchedIncTasks, ArrayList<TaskCard> searchedIncEvents,
@@ -239,49 +217,6 @@ public class FileLinker {
 		
 		return true;
 	}
-	
-	private void initSearchArrays() {
-	  searchIncTasks = new ArrayList<TaskCard>();
-	  searchIncEvents = new ArrayList<TaskCard>();
-	  searchCompTasks = new ArrayList<TaskCard>();
-	  searchCompEvents = new ArrayList<TaskCard>();
-  }
-
-	private void fillIncTaskSearch(ArrayList<Integer> incTasksList) {
-		for(int i = 0; i < incTasksList.size(); i++) {
-			int index = incTasksList.get(i);
-			incTasksIndex.add(index);
-			TaskCard searchedTask = incompleteTasks.get(index);
-			searchIncTasks.add(searchedTask);
-		}
-  }
-
-	private void fillIncEventsSearch(ArrayList<Integer> incEventsList) {
-		for(int i = 0; i < incEventsList.size(); i++) {
-			int index = incEventsList.get(i);
-			incEventsIndex.add(index);
-			TaskCard searchedTask = incompleteEvents.get(index);
-			searchIncEvents.add(searchedTask);
-		}	  
-  }
-
-	private void fillCompTasksSearch(ArrayList<Integer> compTasksList) {
-		for(int i = 0; i < compTasksList.size(); i++) {
-			int index = compTasksList.get(i);
-			compTasksIndex.add(index);
-			TaskCard searchedTask = completedTasks.get(index);
-			searchCompTasks.add(searchedTask);
-		}
-  }
-
-	private void fillCompEventsSearch(ArrayList<Integer> compEventsList) {
-		for(int i = 0; i < compEventsList.size(); i++) {
-			int index = compEventsList.get(i);
-			compEventsIndex.add(index);
-			TaskCard searchedTask = completedEvents.get(index);
-			searchCompEvents.add(searchedTask);
-		}
-  }
 
 	public void resetIncompleteHandling() {
 		incompleteTasks = new ArrayList<TaskCard>();
@@ -293,6 +228,13 @@ public class FileLinker {
 		completedTasks = new ArrayList<TaskCard>(); 
 		int numberOfCompletedTasks = completedTasks.size();
 		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);;
+	}
+	
+	private void writeToFiles() {
+		callStorageWriteIncompleteTasks();
+		callStorageWriteIncompleteEvents();
+		callStorageWriteCompletedTasks();
+		callStorageWriteCompletedEvents();
 	}
 	
 	private void callStorageWriteIncompleteTasks() {
@@ -317,5 +259,89 @@ public class FileLinker {
 	
 	public void resetState() {
 		state_search = false;
+	}
+	
+	private void sortFiles() {
+		Collections.sort(incompleteTasks, new SortTasksByPriorityThenDeadline());
+		Collections.sort(incompleteEvents, new SortEventsByPriorityThenDeadline());
+	}
+	
+	private class SortTasksByPriorityThenDeadline implements Comparator<TaskCard> {
+		public int compare(TaskCard task1, TaskCard task2) {
+			int prior1 = task1.getPriority();
+			int prior2 = task2.getPriority();
+			
+			Calendar end1 = task1.getEndDay();
+			Calendar end2 = task2.getEndDay();
+			
+			String name1 = task1.getName().toLowerCase();
+			String name2 = task2.getName().toLowerCase();
+			
+			String type1 = task1.getType();
+			String type2 = task2.getType();
+			
+			if(prior1 < prior2) {
+				return 1;
+			} else if(prior1 > prior2) {
+				return -1;
+			} else if(end1.before(end2)) {
+				return -1;
+			} else if(end1.after(end2)) {
+				return 1;
+			} else if(name1.compareTo(name2) < 0) {
+				return -1;
+			} else if(name1.compareTo(name2) > 0) {
+				return 1;
+			} else if(type1.equals("FT") && type2.equals("T")) {
+				return 1;
+			} else if(type1.equals("T") && type2.equals("FT")) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	
+	private class SortEventsByPriorityThenDeadline implements Comparator<TaskCard> {
+		public int compare(TaskCard event1, TaskCard event2) {
+			int prior1 = event1.getPriority();
+			int prior2 = event2.getPriority();
+			
+			Calendar start1 = event1.getStartDay();
+			Calendar start2 = event2.getStartDay();
+			
+			Calendar end1 = event1.getEndDay();
+			Calendar end2 = event2.getEndDay();
+			
+			String name1 = event1.getName().toLowerCase();
+			String name2 = event2.getName().toLowerCase();
+			
+			String type1 = event1.getType();
+			String type2 = event2.getType();
+			
+			if(start1.before(start2)) {
+				return -1;
+			} else if(start1.after(start2)) {
+				return 1;
+			} else if(end1.before(end2)) {
+				return -1;
+			} else if(end1.after(end2)) {
+				return 1;
+			} else if(prior1 < prior2) {
+				return 1;
+			} else if(prior1 > prior2) {
+				return -1;
+			} else if(name1.compareTo(name2) < 0) {
+				return -1;
+			} else if(name1.compareTo(name2) > 0) {
+				return 1;
+			} else if(type1.equals("AE") && type2.equals("E")) {
+				return 1;
+			} else if(type1.equals("T") && type2.equals("FT")) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
 	}
 }
