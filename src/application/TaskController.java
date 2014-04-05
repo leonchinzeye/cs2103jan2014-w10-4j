@@ -147,7 +147,7 @@ public class TaskController {
 	private Stack<String> history = new Stack<String>();
 	private Stack<String> forward = new Stack<String>();
 	private CommandHandler commandHandle;
-	private DataUI dataUI;
+	private static DataUI dataUI;
 	private String lastInput = null;
 	private int tableNo = 0;
 	private boolean isEnterKey = false;
@@ -173,11 +173,10 @@ public class TaskController {
 	private static final int SITH_RED = 1;
 	private static final int AUSTRALIA = 2;
 	private static final int ITALY = 3;
+	private static int themeIndex = 0;
 	
 	public TaskController() {
 		commandHandle = new CommandHandler();
-		TaskControllerMin tempMiniController = new TaskControllerMin();
-		dataUI = tempMiniController.getDataUI();
 		notification = new TextField();
 		command = new TextField();
 		anchor = new AnchorPane();
@@ -299,7 +298,6 @@ public class TaskController {
 		completedTasks.removeAll(completedTasks);
 		
 		currentTableShown();
-		System.out.println("Main UI initialized.");
 	}
 	
 	/**
@@ -307,7 +305,7 @@ public class TaskController {
 	 * @author Omar Khalid
 	 */
 	@FXML
-	public void parseInput() {
+	public void parseInput() {		
 		String lastInput = "";
 		
 		taskTableIncomplete.getSelectionModel().select(0);
@@ -321,7 +319,7 @@ public class TaskController {
 	  viewCmd(lastInput);
 	  changeTheme(lastInput);
 		dataUI = commandHandle.executeCmd(lastInput, tableNo);
-		response = dataUI.getFeedback();
+		response = dataUI.getFeedback();		
 		testingResponse = response;
 		notification.setText(response);
 		command.clear(); //clears the input text field
@@ -342,7 +340,6 @@ public class TaskController {
 			
 			if (!inputArray[1].isEmpty()) {
 				String chosenTheme = inputArray[1];
-				int themeIndex = 0;
 				anchor.getStylesheets().removeAll(themes);
 				if (chosenTheme.equalsIgnoreCase("Jedi")) {
 					themeIndex = JEDI_GREEN;
@@ -359,6 +356,20 @@ public class TaskController {
 			}
 		}
   }
+	
+	private void changeThemeByInt(int index) {
+		anchor.getStylesheets().removeAll(themes);
+		if (index == 0) {
+			themeIndex = JEDI_GREEN;
+		} else if (index == 1) {
+			themeIndex = SITH_RED;
+		} else if (index == 2) {
+			themeIndex = AUSTRALIA;
+		} else if (index == 3) {
+			themeIndex = ITALY;
+		}
+		anchor.getStylesheets().add(themes.get(themeIndex));
+	}
 
 	private void viewCmd(String lastInput) {
 	  if (lastInput.equals("help")) {
@@ -418,9 +429,6 @@ public class TaskController {
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
-		//FileLinker fileLink = new FileLinker();
-		//RefreshUI.executeRefresh(fileLink, dataUI);
-		
 		/*
 		 * The four lines below clears the table so that new information can be shown.
 		 */
@@ -439,6 +447,8 @@ public class TaskController {
 		completedTasks.addAll(dataUI.getCompleteTasks());
 		eventTableComplete.setItems(completedEvents);
 		taskTableComplete.setItems(completedTasks);
+		
+		changeThemeByInt(themeIndex);
 	}
 	
 	/**
@@ -1053,7 +1063,15 @@ public class TaskController {
 	}
 	
 	public void setDataUI(DataUI dataUI) {
-		this.dataUI = dataUI;
+		TaskController.dataUI = dataUI;
 		setUI(ui);
+	}
+	
+	public int getTheme() {
+		return themeIndex;
+	}
+	
+	public void setTheme(int theme) {
+		TaskController.themeIndex = theme;
 	}
 }

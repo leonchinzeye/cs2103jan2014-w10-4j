@@ -2,8 +2,8 @@ package application;
 
 public class CommandHandler {
 	
-	private FileLinker fileLink;
-	private DataUI dataUI;
+	private static FileLinker fileLink;
+	private static DataUI dataUI;
 	
 	//handlers
 	private static Delete deleteHandler;
@@ -42,8 +42,8 @@ public class CommandHandler {
 	 * @param userInput
 	 * @return
 	 */
-	public DataUI executeCmd(String userInput, int tableNo) {
-		checkCmdAndPerform(userInput, tableNo);	
+	public DataUI executeCmd(String userInput, int tableNo) {	
+		checkCmdAndPerform(userInput, tableNo);		
 		return dataUI;
 	}
 

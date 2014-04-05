@@ -43,7 +43,6 @@ public class FileLinker {
 		this.compEventsIndex = new ArrayList<Integer>();
 		
 		this.state_search = false;
-		
 	}
 	
 	public ArrayList<TaskCard> getIncompleteTasks() {
