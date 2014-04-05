@@ -1,7 +1,9 @@
 package application;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,19 +33,23 @@ public class Storage {
 	
 	private static Calendar startDay = new GregorianCalendar();
 	private static Calendar endDay = new GregorianCalendar();
-	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy,HH:mm:ss:SSSS");
 	
 	private static int startDate = 0;
 	private static int startMonth = 0;
 	private static int startYear = 0;
 	private static int startHour = 0;
 	private static int startMinute = 0;
+	private static int startSecond = 0;
+	private static int startMillisecond = 0;
 	
 	private static int endDate = 0;
 	private static int endMonth = 0;
 	private static int endYear = 0;
 	private static int endHour = 0;
 	private static int endMinute = 0;
+	private static int endSecond = 0;
+	private static int endMillisecond = 0;
 	
 	public Storage() {
 	
@@ -132,38 +138,32 @@ public class Storage {
 	}
 
 	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,	TaskCard task) {
-		
+		Date start;
+		Date end;
 		task.setName(taskDetails.get(0));
 		
 		String[] restOfDetails = taskDetails.get(1).split(" ");
 		task.setType(restOfDetails[0]); //Type of task/event
 		
-		String[] startDateArray = restOfDetails[1].split("/");
-		String[] startTimeArray = restOfDetails[2].split(":");
+		try {
+			start = dateString.parse(restOfDetails[1]);
+			Calendar startCal = Calendar.getInstance();
+			startCal.setTime(start);
+			task.setStartDay(startCal);
+		} catch(ParseException e) {
+			//error reading from file
+		}
 		
-		String[] endDateArray = restOfDetails[3].split("/");
-		String[] endTimeArray = restOfDetails[4].split(":");
+		try {
+			end = dateString.parse(restOfDetails[2]);
+			Calendar endCal = Calendar.getInstance();
+			endCal.setTime(end);
+			task.setEndDay(endCal);
+		} catch(ParseException e) {
+			//error reading from file
+		}
 		
-		startDate = Integer.parseInt(startDateArray[0]);
-		startMonth = Integer.parseInt(startDateArray[1]) - 1;
-		startYear = Integer.parseInt(startDateArray[2]);
-		startHour = Integer.parseInt(startTimeArray[0]);
-		startMinute = Integer.parseInt(startTimeArray[1]);
-		
-		endDate = Integer.parseInt(endDateArray[0]);
-		endMonth = Integer.parseInt(endDateArray[1]) - 1;
-		endYear = Integer.parseInt(endDateArray[2]);
-		endHour = Integer.parseInt(endTimeArray[0]);
-		endMinute = Integer.parseInt(endTimeArray[1]);
-		
-		startDay = Calendar.getInstance(); //need to create a new Calendar instance
-		endDay = Calendar.getInstance();
-		startDay.set(startYear, startMonth, startDate, startHour, startMinute);
-		endDay.set(endYear, endMonth, endDate, endHour, endMinute);
-		
-		task.setStartDay(startDay);
-		task.setEndDay(endDay);
-		task.setPriority(Integer.parseInt(restOfDetails[5]));
+		task.setPriority(Integer.parseInt(restOfDetails[3]));
 	}
 
 	private static void createEmptyFile(String fileStorageName) {

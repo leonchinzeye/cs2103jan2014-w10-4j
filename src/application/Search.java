@@ -362,11 +362,17 @@ public class Search {
 			Calendar searchedDateEnd = getEndRange(date);
 			searchedDateStart.setTime(date);
 			
+//			System.out.println(searchedDateStart.getTime().toLocaleString());
+//			System.out.println(searchedDateEnd.getTime().toLocaleString());
+			
+			if(event.getName().contains("leon"))
+				System.out.println(event.getStartDay().getTime().toLocaleString());
+			
 			if(event.getStartDay().after(searchedDateStart) && event.getEndDay().before(searchedDateEnd)) {
 				searchedEvents.add(event);
 			} else if(event.getStartDay().before(searchedDateStart) && event.getEndDay().after(searchedDateStart)) {
 				searchedEvents.add(event);
-			} else if(event.getStartDay() == searchedDateStart) {
+			} else if(event.getStartDay().equals(searchedDateStart) || event.getEndDay().equals(searchedDateStart)) {
 				searchedEvents.add(event);
 			}
 		}
