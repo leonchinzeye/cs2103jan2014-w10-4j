@@ -284,7 +284,7 @@ public class Edit {
 				replacementTask.setType("T");
 			}
 			
-			if((isTime && isDate) == false) {
+			if(!isTime && !isDate) {
 				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
 				return success = false;
 			}
