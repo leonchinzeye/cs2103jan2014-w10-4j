@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 public class Search {
 	
 	private static final int SECOND_ARGUMENT = 1;
@@ -386,12 +386,12 @@ public class Search {
 		for(int i = 0; i < listToBeSearched.size(); i++) {
 			TaskCard task = listToBeSearched.get(i);
 			Calendar dueDate = task.getEndDay();
-			System.out.println(date.getDate());
-			System.out.println(date.getMonth());
-			System.out.println(date.getYear());
+			Calendar referenceDate = Calendar.getInstance();
+			referenceDate.setTime(date);
 			
-			if(dueDate.get(Calendar.DATE) == date.getDate() && dueDate.get(Calendar.MONTH) == date.getMonth()
-					&& dueDate.get(Calendar.YEAR) == date.getYear()) {
+			if(dueDate.get(Calendar.DATE) == referenceDate.get(Calendar.DATE) 
+					&& dueDate.get(Calendar.MONTH) == referenceDate.get(Calendar.MONTH)
+					&& dueDate.get(Calendar.YEAR) == referenceDate.get(Calendar.YEAR)) {
 				searchedTasks.add(task);
 			}
 		}
