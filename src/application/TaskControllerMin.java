@@ -336,6 +336,7 @@ public class TaskControllerMin {
 	@FXML
 	public void closeWindow (MouseEvent mouse) {
 		Platform.exit();
+		System.exit(0);
 	}
 	
 	@FXML
