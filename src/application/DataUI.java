@@ -30,6 +30,8 @@ public class DataUI {
 	private ArrayList<EventDataUI> completeEvents;
 	
 	private String feedback = DEFAULT_FEEDBACK;
+	private int row_added;
+	private int file_added;
 	
 	/**
 	 * Constructor for DataUI
@@ -218,104 +220,11 @@ public class DataUI {
 		feedback = message;
 	}
 	
-	/*public void configureIncompleteTasks(FileLinker fileLink) {
-		incTasks = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> incompleteTasks = fileLink.getIncompleteTasks();
-				
-		for(int i = 0; i < incompleteTasks.size(); i++) {
-			ArrayList<String> taskDetails = new ArrayList<String>();
-			TaskCard task = incompleteTasks.get(i);
-			
-			taskDetails = getInfoForTasks(task);
-			incTasks.add(taskDetails);
-		}
+	public void setRowAdded(int added) {
+		row_added = added;
 	}
 	
-	public void configureCompletedEvents(FileLinker fileLink) {
-		compEvent = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> completedEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 0; i < completedEvents.size(); i++) {
-			ArrayList<String> eventDetails = new ArrayList<String>();
-			TaskCard task = completedEvents.get(i);
-			
-			eventDetails = getInfoForEvents(task);
-			compEvent.add(eventDetails);
-		}		
+	public void setFileAdded(int added) {
+		file_added = added;
 	}
-
-	public void configureIncompleteEvents(FileLinker fileLink) {
-		incEvent = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> incompleteEvents = fileLink.getIncompleteEvents();
-		
-		for(int i = 0; i < incompleteEvents.size(); i++) {
-			ArrayList<String> eventDetails = new ArrayList<String>();
-			TaskCard task = incompleteEvents.get(i);
-			
-			eventDetails = getInfoForEvents(task);
-			incEvent.add(eventDetails);
-		}
-	}
-	
-	public void configureCompletedTasks(FileLinker fileLink) {
-		compTasks = new ArrayList<ArrayList<String>>();
-		ArrayList<TaskCard> completedTasks = fileLink.getCompletedTasks();
-		
-		for(int i = 0; i < completedTasks.size(); i++) {
-			ArrayList<String> taskDetails = new ArrayList<String>();
-			TaskCard task = completedTasks.get(i);
-			
-			taskDetails = getInfoForTasks(task);
-			compTasks.add(taskDetails);
-		}
-	}
-	
-	private ArrayList<String> getInfoForTasks(TaskCard task) {
-		ArrayList<String> taskDetails = new ArrayList<String>();
-		
-		String priority = determinePriority(task.getPriority());
-		taskDetails.add(priority);
-		taskDetails.add(task.getName());
-		
-		if(task.getType().equals("FT")) {
-			taskDetails.add("-");
-			taskDetails.add("-");
-		} else {
-			Calendar endDay = task.getEndDay();
-			taskDetails.add(dateFormat.format(endDay.getTime()));
-			taskDetails.add(timeFormat.format(endDay.getTime()));
-		}
-		return taskDetails;
-	}
-	
-	private ArrayList<String> getInfoForEvents(TaskCard event) {
-		ArrayList<String> eventDetails = new ArrayList<String>();
-		
-		String priority = determinePriority(event.getPriority());
-		eventDetails.add(priority);
-		eventDetails.add(event.getName());
-		
-		if(event.getType().equals("AE")) {
-			Calendar startDay = event.getStartDay();
-			eventDetails.add(dateFormat.format(startDay.getTime()));	//start date
-			eventDetails.add("-");																		//no start time
-			eventDetails.add(dateFormat.format(startDay.getTime()));	//end date	
-			eventDetails.add("-");																		//no end time
-			eventDetails.add("-");																		//no frequency
-		} else {
-			Calendar startDay = event.getStartDay();
-			Calendar endDay = event.getEndDay();
-			eventDetails.add(dateFormat.format(startDay.getTime()));
-			eventDetails.add(timeFormat.format(startDay.getTime()));
-			eventDetails.add(dateFormat.format(endDay.getTime()));
-			eventDetails.add(timeFormat.format(endDay.getTime()));
-			if(event.getType().equals("E")) {
-				eventDetails.add("-");
-			} else {
-				eventDetails.add(event.getFrequency());
-			}
-		} 
-		
-		return eventDetails;
-	}*/
 }
