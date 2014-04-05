@@ -220,6 +220,14 @@ public class DataUI {
 		feedback = message;
 	}
 	
+	public int getRowAdded() {
+		return row_added;
+	}
+	
+	public int getFileAdded() {
+		return file_added;
+	}
+	
 	public void setRowAdded(int added) {
 		row_added = added;
 	}
