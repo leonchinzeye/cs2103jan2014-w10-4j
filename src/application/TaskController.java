@@ -270,8 +270,7 @@ public class TaskController {
 			public void run() {
 				Platform.runLater(new Runnable() {
 					public void run() {
-						commandHandle.executeCmd("highlightExpiredAndOngoingRows", tableNo);
-						highlightExpiredAndOngoingRows();
+						commandHandle.executeCmd("highlightexpiredandongoingrows", tableNo);
 						setUI(ui);
 					}
 				});
