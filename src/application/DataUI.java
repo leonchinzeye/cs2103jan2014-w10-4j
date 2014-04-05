@@ -3,6 +3,7 @@ package application;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * this class processes the information that has been handled by the logic
@@ -70,6 +71,14 @@ public class DataUI {
 				taskData.setEndDate("-");
 			} else {
 				Calendar endDay = task.getEndDay();
+				Calendar now = GregorianCalendar.getInstance();
+				
+				if(endDay.before(now)) {
+					taskData.setIsExpired(true);
+				} else {
+					taskData.setIsExpired(false);
+				}
+				
 				taskData.setEndDate(dateFormat.format(endDay.getTime()));
 				
 				if(endDay.get(Calendar.HOUR_OF_DAY) == 0 && endDay.get(Calendar.MINUTE) == 0) {
@@ -116,6 +125,14 @@ public class DataUI {
 				eventData.setEndTime(timeFormat.format(endDay.getTime()));
 			}
 			
+			Calendar now = GregorianCalendar.getInstance();
+			
+			if(event.getEndDay().before(now)) {
+				eventData.setIsExpired(true);
+			} else {
+				eventData.setIsExpired(false);
+			}
+			
 			incompleteEvents.add(eventData);
 		}
 	}
@@ -143,9 +160,16 @@ public class DataUI {
 				taskData.setEndDate("-");
 			} else {
 				Calendar endDay = task.getEndDay();
+				
 				taskData.setEndDate(dateFormat.format(endDay.getTime()));
-				taskData.setEndTime(timeFormat.format(endDay.getTime()));
+				
+				if(endDay.get(Calendar.HOUR_OF_DAY) == 0 && endDay.get(Calendar.MINUTE) == 0) {
+					taskData.setEndTime("-");
+				} else {
+					taskData.setEndTime(timeFormat.format(endDay.getTime()));
+				}
 			}
+			
 			completeTasks.add(taskData);
 		}
 	}
