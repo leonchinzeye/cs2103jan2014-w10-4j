@@ -107,7 +107,6 @@ public class CommandHandler {
 				}
 				break;
 			case HIGHLIGHT:
-				System.out.println("Refreshing...");
 				RefreshUI.executeRefresh(fileLink, dataUI);
 				break;
 			case INVALID:
@@ -148,7 +147,7 @@ public class CommandHandler {
 			return COMMAND_TYPE.THEME;
 		} else if (commandTypeString.equals("/x")) {
 		 	return COMMAND_TYPE.EXIT;
-		} else if (commandTypeString.equals("highlightExpiredAndOngoingRows")) {
+		} else if (commandTypeString.equals("highlightexpiredandongoingrows")) {
 			return COMMAND_TYPE.HIGHLIGHT;
 		}	else {
 			return COMMAND_TYPE.INVALID;
