@@ -67,7 +67,7 @@ public class CommandHandler {
 				break;
 			case SEARCH:
 				fileLink.resetState();
-				searchHandler.executeSearch(userInput, fileLink, dataUI);
+				searchHandler.executeSearch(userInput, fileLink, dataUI, dateFormats);
 				break;
 			case ENTER:
 				fileLink.resetState();
