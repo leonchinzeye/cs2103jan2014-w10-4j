@@ -630,6 +630,8 @@ public class TaskController {
 	public void changeTab(KeyEvent key) {
 		if (key.isControlDown() && key.getCode().equals(KeyCode.TAB)) {						//1
 			switchTabs();
+		} else if (key.isControlDown() && key.getCode().equals(KeyCode.A)) {
+			switchPanes();
 		} else if (key.isControlDown() && key.getCode().equals(KeyCode.H)) {			//2
 			tab.getSelectionModel().select(helpTab);
 		} else if (helpTab.isSelected() && key.getCode().equals(KeyCode.RIGHT)) {	//3
@@ -644,6 +646,22 @@ public class TaskController {
 			command.setPromptText("This is where you enter your commands.");
 		}
 	}
+
+	private void switchPanes() {
+	  if (incompleteTab.isSelected()) {
+	  	if (eventPaneIncomplete.isExpanded()) {
+	  		taskPaneIncomplete.setExpanded(true);
+	  	} else {
+	  		eventPaneIncomplete.setExpanded(true);
+	  	}
+	  } else if (completeTab.isSelected()) {
+	  	if (eventPaneComplete.isExpanded()) {
+	  		taskPaneComplete.setExpanded(true);
+	  	} else {
+	  		eventPaneComplete.setExpanded(true);
+	  	}
+	  }
+  }
 
 	private void switchTabs() {
 	  command.setMouseTransparent(false);
