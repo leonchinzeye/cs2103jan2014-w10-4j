@@ -169,6 +169,7 @@ public class FileLinker {
 			}
 		}
 		
+		sortFiles();
 		writeToFiles();
 		return true;
 	}
@@ -203,6 +204,7 @@ public class FileLinker {
 			deleteHandling(taskNumberToBeDeleted, 4);
 		}
 		
+		sortFiles();
 		writeToFiles();
 	}
 
