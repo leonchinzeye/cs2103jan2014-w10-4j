@@ -522,19 +522,19 @@ public class Search {
 				daysToBeAdded = Calendar.TUESDAY - dayToday;
 				break;
 			case DAY_WEDNESDAY:
-				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				daysToBeAdded = Calendar.WEDNESDAY - dayToday;
 				break;
 			case DAY_THURSDAY:
-				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				daysToBeAdded = Calendar.THURSDAY - dayToday;
 				break;
 			case DAY_FRIDAY:
-				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				daysToBeAdded = Calendar.FRIDAY - dayToday;
 				break;
 			case DAY_SATURDAY:
-				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				daysToBeAdded = Calendar.SATURDAY - dayToday;
 				break;
 			case DAY_SUNDAY:
-				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				daysToBeAdded = Calendar.SUNDAY - dayToday;
 				break;
 			default:
 				break;
