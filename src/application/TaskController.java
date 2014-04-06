@@ -258,8 +258,7 @@ public class TaskController {
 		eventPaneIncomplete.setText(String.format("Events [%d]", incompleteEvents.size()));
 		taskPaneIncomplete.setText(String.format("Tasks [%d]", incompleteTasks.size()));
 	
-		dayAndTime.setText(dataUI.getUIClock());
-		dateText.setText(dataUI.getUIdate());
+		updateClock();
 		highlightExpiredAndOngoingRows();
 		
 		Calendar tester = Calendar.getInstance();
@@ -272,8 +271,7 @@ public class TaskController {
 				Platform.runLater(new Runnable() {
 					public void run() {
 						commandHandle.executeCmd("highlightexpiredandongoingrows", tableNo);
-						dayAndTime.setText(dataUI.getUIClock());
-						dateText.setText(dataUI.getUIdate());
+						updateClock();
 						setUI(ui);
 					}
 				});
@@ -287,6 +285,11 @@ public class TaskController {
 		
 		currentTableShown();
 	}
+
+	private void updateClock() {
+	  dayAndTime.setText(dataUI.getUIClock());
+		dateText.setText(dataUI.getUIdate());
+  }
 
 	private void highlightExpiredAndOngoingRows() {
 	  final ObservableList<Integer> highlightOngoingEvents = FXCollections.observableArrayList();
@@ -513,7 +516,8 @@ public class TaskController {
 		taskTableComplete.setItems(completedTasks);
 		
 		highlightExpiredAndOngoingRows();
-		updateCounter();		
+		updateCounter();
+		updateClock();
 		changeThemeByInt(themeIndex);
 	}
 	
