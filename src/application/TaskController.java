@@ -33,6 +33,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
+/**
+ * This class is the controller for the main UI. It sets the rules of how the user can interact with the program
+ * and is a gateway for the user to manipulate the data shown on screen.
+ */
+//@author A0094534B
 public class TaskController {
 	@FXML
 	private AnchorPane anchor;
@@ -199,6 +204,7 @@ public class TaskController {
 	
 	private static Timer timer;
 	
+	//@author A0094534B
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		notification = new TextField();
@@ -219,6 +225,11 @@ public class TaskController {
 		themes.add(italy);
 	}
 	
+	/**
+	 * This method sets up all the columns with all the information it will display,
+	 * starts the timer to update the clock as well as to refresh the UI to update it
+	 * when a task or event is detected to be expired or ongoing.
+	 */
 	@FXML
 	private void initialize() {
 		dragPane.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -318,7 +329,11 @@ public class TaskController {
 	  dayAndTime.setText(dataUI.getUIClock());
 		dateText.setText(dataUI.getUIdate());
   }
-
+	
+	/**
+	 * Uses a Callback to look through all the rows and sets its RowFactory to change the CSS
+	 * in the case where it is detected to be expired or ongoing.
+	 */
 	private void highlightExpiredAndOngoingRows() {
 	  final ObservableList<Integer> highlightOngoingEvents = FXCollections.observableArrayList();
 		final ObservableList<Integer> highlightExpiredEvents = FXCollections.observableArrayList();
@@ -420,8 +435,8 @@ public class TaskController {
   }
 	
 	/**
-	 * The main method to take in input and send it to CommandHandler to execute
-	 * @author Omar Khalid
+	 * The main method to take in input and send it to CommandHandler to execute. It also stores the
+	 * input in a command history list. 
 	 */
 	@FXML
 	public void parseInput() {
@@ -433,6 +448,10 @@ public class TaskController {
 		executeCmd(lastInput);
 	}
 
+	/**
+	 * Sets the notification text field to return the response from execution of user input
+	 * followed by refreshing the UI.
+	 */
 	public void executeCmd(String lastInput) {
 	  String response;
 	  viewCmd(lastInput);
@@ -449,8 +468,17 @@ public class TaskController {
 		 * Also updates the task counter accordingly.
 		 */
 		setUI(ui);
-		
-		if (lastInput.contains("add")) {
+		highlightNewAdd(lastInput);
+		updateCounter();
+  }
+
+	/**
+	 * In the situation where a user adds a new task or event, this will expand its panel, if not done so already,
+	 * and highlight the row in its table.
+	 * @param lastInput
+	 */
+	private void highlightNewAdd(String lastInput) {
+	  if (lastInput.contains("add")) {
 			if (dataUI.getFileAdded() == TASK_INC) {
 				taskPaneIncomplete.setExpanded(true);
 				taskTableIncomplete.getSelectionModel().select(dataUI.getRowAdded());
@@ -459,10 +487,11 @@ public class TaskController {
 				eventTableIncomplete.getSelectionModel().select(dataUI.getRowAdded());
 			}
 		}
-		
-		updateCounter();
   }
 
+	/**
+	 * The method used to change themes based on user preference.
+	 */
 	private void changeTheme(String lastInput) {
 		String[] inputArray = null;
 		if (lastInput.contains("theme")) {
@@ -487,6 +516,9 @@ public class TaskController {
 		}
   }
 	
+	/**
+	 * This is mainly used to retain themes when switching from and to the mini UI.
+	 */
 	private void changeThemeByInt(int index) {
 		anchor.getStylesheets().removeAll(themes);
 		if (index == 0) {
@@ -501,6 +533,12 @@ public class TaskController {
 		anchor.getStylesheets().add(themes.get(themeIndex));
 	}
 
+	/**
+	 * The instructions for the "view" command, used to display the "events" or "tasks" panels
+	 * as well as to switch between tabs. It is recommended for the user to use the shortcuts however
+	 * as it is much faster, and produces less bugs.
+	 * @param lastInput
+	 */
 	private void viewCmd(String lastInput) {
 	  if (lastInput.equals("help")) {
 			tab.getSelectionModel().select(helpTab);
@@ -539,7 +577,6 @@ public class TaskController {
 
 	/**
 	 * Updates the counter based on the tab currently shown.
-	 * @author Omar Khalid
 	 */
 	private void updateCounter() {
 	  if (tab.getSelectionModel().isSelected(0)) {
@@ -552,16 +589,16 @@ public class TaskController {
   }
 	
 	/**
-	 * Retrieves the information to be shown in the tables.
+	 * Retrieves the information from DataUI to be shown in the tables.
+	 * The highlightExpiredAndOngoingRows(), updateCounter(), updateClock(), and changeThemeByInt() methods
+	 * are called since this method (setUI()) is one of the first methods to be executed
+	 * when the program starts. Calling the aforementioned methods ensures that the information that is initially shown
+	 * is up to date.
 	 * @param ui
-	 * @author Omar Khalid
 	 */
 	public void setUI(UI ui) {
 		this.ui = ui;
 		
-		/*
-		 * The four lines below clears the table so that new information can be shown.
-		 */
 		completedEvents.removeAll(completedEvents);
 		completedTasks.removeAll(completedTasks);
 		
@@ -587,8 +624,6 @@ public class TaskController {
 	/**
 	 * The default keyboard shortcuts that allow the user to switch between panels and tabs
 	 * as well as to change the focus to the text field without using the mouse.
-	 * @param key
-	 * @author Omar Khalid
 	 */
 	@FXML
 	public void keystrokes(KeyEvent key) {		
@@ -603,8 +638,7 @@ public class TaskController {
 	}
 	
 	/**
-	 * Sets the view to default.
-	 * @author Omar Khalid
+	 * Sets the view to default, i.e. Incomplete Events
 	 */
 	private void backToMain() {
 		eventTableIncomplete.getSelectionModel().clearSelection();
@@ -625,6 +659,10 @@ public class TaskController {
 	  tableNo = EVENT_INC;
   }
 	
+	/**
+	 * If the focus is currently not on the text bar, the user can hit the Enter key
+	 * to start typing. This is similar to Ctrl+L in most web browsers.
+	 */
 	public void focusTextInput(KeyEvent key) {
 		if (key.getCode().equals(KeyCode.ENTER)) {
 			command.requestFocus();
@@ -634,8 +672,6 @@ public class TaskController {
 	
 	/**
 	 * Scrolls the currently shown table up or down.
-	 * @param key
-	 * @author Omar Khalid
 	 */
 	@FXML
 	public void scrollTable(KeyEvent key) {
@@ -690,8 +726,6 @@ public class TaskController {
 	 * 1. Change the tab between only the Incomplete and Complete tabs with Ctrl+Tab.
 	 * 2. Change to the Help page with Ctrl+H.
 	 * 3. Change between Help pages with Left and Right arrow keys.
-	 * @param key
-	 * @author Omar Khalid
 	 */
 	@FXML
 	public void changeTab(KeyEvent key) {
@@ -714,6 +748,9 @@ public class TaskController {
 		}
 	}
 
+	/**
+	 * Switch between the current panel that is open (Events or Tasks) when Ctrl+A is input.
+	 */
 	private void switchPanes() {
 	  if (incompleteTab.isSelected()) {
 	  	if (eventPaneIncomplete.isExpanded()) {
@@ -730,6 +767,9 @@ public class TaskController {
 	  }
   }
 
+	/**
+	 * Switch between the tabs (Incomplete or Completed) when Ctrl+Tab is input.
+	 */
 	private void switchTabs() {
 	  command.setMouseTransparent(false);
 	  command.setFocusTraversable(true);
@@ -746,6 +786,9 @@ public class TaskController {
 	  currentTableShown();
   }
 	
+	/**
+	 * Basic rules for the UI to follow when the Incomplete tab is selected.
+	 */
 	@FXML
 	public void openIncompleteTab() {
 		notification.setText("Read me!");
@@ -756,6 +799,9 @@ public class TaskController {
 		helpAnchor.setVisible(false);
 	}
 	
+	/**
+	 * Basic rules for the UI to follow when the Completed tab is selected.
+	 */
 	@FXML
 	public void openCompleteTab() {
 		notification.setText("Read me!");
@@ -766,6 +812,9 @@ public class TaskController {
 		helpAnchor.setVisible(false);
 	}
 	
+	/**
+	 * Basic rules for the UI to follow when the Help tab is opened.
+	 */
 	@FXML
 	public void openHelpTab() {
 		notification.setText("This will return responses to you based on your commands.");
@@ -776,6 +825,10 @@ public class TaskController {
 		dragPane.requestFocus();
 	}
 	
+	/**
+	 * The command text field, which is the main form of user input, will act differently when specific keys are pressed.
+	 * These include "Undo", "Redo", and recalling previous commands.
+	 */
 	@FXML
 	public void commandTextFieldKeystrokes (KeyEvent key) {
 		if (key.getCode().equals(KeyCode.ENTER)) {
@@ -819,6 +872,10 @@ public class TaskController {
 		updateCounter();
   }
 
+	/**
+	 * This is the beginning to setting the highlighting style of a row or column, based on the user's command.
+	 * It also informs the user whether a command is valid or not based on the validPane color.
+	 */
 	public void setTableColumnStyle(KeyEvent key) {
 		String input = command.getText();
 		
@@ -839,6 +896,9 @@ public class TaskController {
 		currentTableShown();
 	}
 	
+	/**
+	 * If the command text field is blank, and the user hits Enter, it is akin to refreshing the screen.
+	 */
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
 	  	notification.setText("Read me!");
@@ -850,6 +910,10 @@ public class TaskController {
 		}
   }
 
+	/**
+	 * This sets the notification text whenever a specific command is entered, to aid the user
+	 * in typing in the command with the proper syntax in order to avoid errors.
+	 */
 	private void commandSetNotification(String input) {
 	  if (input.matches("\\w|\\w.+|/x")) {
 			validPane.setStyle("-fx-background-color: red;");
@@ -900,6 +964,10 @@ public class TaskController {
 		}
   }
 	
+	/**
+	 * Sets the row highlighting style for the "del" and "mark" and "unmark" commands.
+	 * Sets the column highlighting style for the "edit" command.
+	 */
 	private void commandGeneralSelectionStyle(String input) {
 	  String[] inputArray;
 	  int rowID;
@@ -1045,6 +1113,9 @@ public class TaskController {
 	  }
   }
 	
+	/**
+	 * Sets the column highlighting style for edit based on the field the user wishes to change.
+	 */
 	private void commandEditSelectionStyle(String input) {
 	  String[] inputArray;
 	  int rowID;
@@ -1115,6 +1186,9 @@ public class TaskController {
 	  }
   }
 	
+	/**
+	 * Stores the user's input in a list in order to be recalled later.
+	 */
 	private void commandHistoryStorage(String lastInput) {
 	  if(!(this.lastInput == null)) {
 	  	history.add(this.lastInput);
@@ -1132,6 +1206,9 @@ public class TaskController {
 	  }
 	}
 
+	/**
+	 * The method used to recall commands from the history list.
+	 */
 	public void returnLastInput(KeyEvent key) {		
 		if(key.getCode().equals(KeyCode.UP)) {
 			if(this.lastInput != null) {
@@ -1168,6 +1245,11 @@ public class TaskController {
 		}
 	}
 	
+	/**
+	 * This is used to tell the logic which table is currently being shown in the UI.
+	 * This is particularly important when executing commands that are not list specific.
+	 * For instance, using "mark" instead of "markt" (for tasks) or "marke" (for events).
+	 */
 	private void currentTableShown() {
 	  if (incompleteTab.isSelected()) {
 			if (eventPaneIncomplete.isExpanded()) {
@@ -1184,10 +1266,19 @@ public class TaskController {
 		}
   }
 	
+	/**
+	 * Used for integration testing.
+	 * @return
+	 */
 	public String getTestingResponse() {
 		return testingResponse;
 	}
 	
+	/**
+	 * The following six methods sets the rules for the minimize and close buttons of the UI.
+	 * An alternative to exiting the program is entering "/x".
+	 * @param mouse
+	 */
 	@FXML
 	public void closeEnter (MouseEvent mouse) {
 		closeButton.setImage(closeButtonHover);
@@ -1217,22 +1308,6 @@ public class TaskController {
 	@FXML
 	public void minimizeWindow (MouseEvent mouse) {
 		ui.primaryS.setIconified(true);
-	}
-	
-	public ObservableList<EventDataUI> getIncEvents() {
-		return incompleteEvents;
-	}
-	
-	public ObservableList<TaskDataUI> getIncTasks() {
-		return incompleteTasks;
-	}
-	
-	public void setIncEvents(ObservableList<EventDataUI> incEvents) {
-		this.incompleteEvents = incEvents;
-	}
-	
-	public void setIncTasks(ObservableList<TaskDataUI> incTasks) {
-		this.incompleteTasks = incTasks;
 	}
 	
 	public DataUI getDataUI() {

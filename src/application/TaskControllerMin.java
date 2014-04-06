@@ -17,6 +17,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
+/**
+ * This class is a shorter version of the main controller as this controller is for the minimized UI.
+ * It does not contain as much information and it restricts the user from entering most commands.
+ * The only accepted ones are "add", "addu", "undo", "redo", "theme", and "/x".
+ * Most, if not all, of the methods below are direct duplicates of the methods in TaskController.java.
+ */
+//@author A0094534B
 public class TaskControllerMin {
 	@FXML
 	private AnchorPane anchor;
@@ -353,22 +360,6 @@ public class TaskControllerMin {
 	@FXML
 	public void minimizeWindow (MouseEvent mouse) {
 		ui.primaryS.setIconified(true);
-	}
-	
-	public ObservableList<EventDataUI> getIncEvents() {
-		return incompleteEvents;
-	}
-	
-	public ObservableList<TaskDataUI> getIncTasks() {
-		return incompleteTasks;
-	}
-	
-	public void setIncEvents(ObservableList<EventDataUI> incEvents) {
-		this.incompleteEvents = incEvents;
-	}
-	
-	public void setIncTasks(ObservableList<TaskDataUI> incTasks) {
-		this.incompleteTasks = incTasks;
 	}
 	
 	public DataUI getDataUI() {

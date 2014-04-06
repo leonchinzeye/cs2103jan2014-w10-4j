@@ -22,6 +22,12 @@ public class UI extends Application {
 	private boolean sceneMin = false;
 	 
 	@Override
+	/**
+	 * This method sets up the scene to be shown and adds the stylesheets to be used.
+	 * An event handler is implemented to detect when the Ctrl+Enter is pressed 
+	 * during which the scene will change to scene2, which is the minimized UI.
+	 */
+	//@author A0094534B
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("TaskWorthy");
