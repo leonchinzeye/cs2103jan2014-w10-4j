@@ -19,7 +19,7 @@ public class UI extends Application {
 	private Stage primaryStage;
 	public static Stage primaryS;
 	private Stage primaryStageSub;
-	private boolean sceneMin = true;
+	private boolean sceneMin = false;
 	 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -29,13 +29,13 @@ public class UI extends Application {
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyMin.fxml"));
-			FXMLLoader loader2 = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
+			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
+			FXMLLoader loaderMin = new FXMLLoader(UI.class.getResource("TaskWorthyMin.fxml"));
 			
 			Parent root = (Parent) loader.load();
-			Parent root2 = (Parent) loader2.load();
-			Scene scene = new Scene(root,640,150);
-			Scene scene2 = new Scene(root2, 640, 480);
+			Parent rootMin = (Parent) loaderMin.load();
+			Scene scene = new Scene(root,640,480);
+			Scene scene2 = new Scene(rootMin, 640, 150);
 			final Scene scene1Sub = scene;
 			final Scene scene2Sub = scene2;
 			
@@ -46,28 +46,28 @@ public class UI extends Application {
 			scene.getStylesheets().add("application/italy.css");
 			scene.getStylesheets().add("application/jedigreen.css");
 			
-			final TaskControllerMin tcMin = loader.getController();
-			final TaskController tc2 = loader2.getController();
+			final TaskController tc = loader.getController();
+			final TaskControllerMin tcMin = loaderMin.getController();
 			
 			primaryStage.setScene(scene);
 			primaryStageSub = primaryStage;
-			tc2.setUI(this);
 			tcMin.setUI(this);
+			tc.setUI(this);
 			
 			primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
 				@Override
 				public void handle(KeyEvent t) {
 					final KeyCombination minimize = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
-					if (sceneMin == true && minimize.match(t)) {
+					if (sceneMin == false && minimize.match(t)) {
 						primaryStageSub.setScene(scene2Sub);
-						sceneMin = false;
-						tc2.setTheme(tcMin.getTheme());
-						tc2.setDataUI(tcMin.getDataUI());
-					} else if (sceneMin == false && minimize.match(t)) {
-						primaryStageSub.setScene(scene1Sub);
 						sceneMin = true;
-						tcMin.setTheme(tc2.getTheme());
-						tcMin.setDataUI(tc2.getDataUI());
+						tcMin.setTheme(tc.getTheme());
+						tcMin.setDataUI(tc.getDataUI());
+					} else if (sceneMin == true && minimize.match(t)) {
+						primaryStageSub.setScene(scene1Sub);
+						sceneMin = false;
+						tc.setTheme(tcMin.getTheme());
+						tc.setDataUI(tcMin.getDataUI());
 					}
 				}
 			});
