@@ -37,7 +37,7 @@ public class Add {
 	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :(";
 	private final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :(";
 	private final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please try again!";
-	private final String FEEDBACK_GOING_BACK_INTO_TIME = "Are you attempting to time travel into the past?";
+	private final String FEEDBACK_GOING_BACK_INTO_TIME = "Greaaat scot! Are you a time traveller?";
 	
 	private HashMap<String, Integer> cmdTable;
 	
