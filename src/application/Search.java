@@ -14,6 +14,7 @@ public class Search {
 	private static final int SEARCH_TODAY = 1;
 	private static final int SEARCH_PRIORITY = 2;
 	private static final int SEARCH_TMR = 3;
+	private static final int SEARCH_EXPIRED = 4;
 	
 	private static final int TYPE_INC_TASKS = 1;
 	private static final int TYPE_INC_EVENTS = 2;
@@ -191,6 +192,13 @@ public class Search {
 				searchedIncEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
 				searchedCompTasks= searchTaskTmr(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
 				searchedCompEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			case SEARCH_EXPIRED:
+				searchedIncTasks = searchForExpired(fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchForExpired(fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchForExpired(fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchForExpired(fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
 			default:
 				break;
 		}
@@ -198,6 +206,34 @@ public class Search {
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
+	private ArrayList<TaskCard> searchForExpired(FileLinker fileLink,
+      DataUI dataUI, int type) {
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		}	else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard toBeSearched = listToBeSearched.get(i);
+			Calendar taskDueDate = toBeSearched.getEndDay();
+			Calendar now = Calendar.getInstance();
+			
+			if(taskDueDate.before(now) || taskDueDate.equals(now)) {
+				searchedTasks.add(toBeSearched);
+			}
+		}
+		
+	  return searchedTasks;
+  }
+
 	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
 			FileLinker fileLink, DataUI dataUI, int type) {
 		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
