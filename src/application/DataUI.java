@@ -31,6 +31,7 @@ public class DataUI {
 	private ArrayList<TaskDataUI> completeTasks;
 	private ArrayList<EventDataUI> incompleteEvents;
 	private ArrayList<EventDataUI> completeEvents;
+	private ArrayList<EventDataUI> helpEvents;
 	private String UIclock;
 	private String UIdate;
 	
@@ -50,6 +51,7 @@ public class DataUI {
 		incompleteEvents = new ArrayList<EventDataUI>();
 		completeTasks = new ArrayList<TaskDataUI>();
 		completeEvents = new ArrayList<EventDataUI>();
+		helpEvents = new ArrayList<EventDataUI>();
 	}
 	
 	/**
@@ -217,6 +219,34 @@ public class DataUI {
 		}
 	}
 	
+	public void configHelpEvents() {
+		EventDataUI helpEvent1 = new EventDataUI();
+		EventDataUI helpEvent2 = new EventDataUI();
+		
+		helpEvent1.setID("1");
+		helpEvent1.setName("Expired events are highlighted in red.");
+		helpEvent1.setPriority("HIGH");
+		helpEvent1.setStartDate("-");
+		helpEvent1.setStartTime("-");
+		helpEvent1.setEndDate("-");
+		helpEvent1.setEndTime("-");
+		helpEvent1.setIsExpired(true);
+		helpEvent1.setIsOngoing(false);
+		
+		helpEvent2.setID("2");
+		helpEvent2.setName("Ongoing events are highlighted in blue.");
+		helpEvent2.setPriority("LOW");
+		helpEvent2.setStartDate("-");
+		helpEvent2.setStartTime("-");
+		helpEvent2.setEndDate("-");
+		helpEvent2.setEndTime("-");
+		helpEvent2.setIsExpired(false);
+		helpEvent2.setIsOngoing(true);
+		
+		helpEvents.add(helpEvent1);
+		helpEvents.add(helpEvent2);
+	}
+	
 	private String determinePriority(int priority) {
 		if(priority == 1) {
 			return "LOW";
@@ -240,6 +270,11 @@ public class DataUI {
 	
 	public ArrayList<EventDataUI> getCompleteEvents() {
 		return completeEvents;
+	}
+	
+	public ArrayList<EventDataUI> getHelpEvents() {
+		configHelpEvents();
+		return helpEvents;
 	}
 	
 	public String getFeedback() {

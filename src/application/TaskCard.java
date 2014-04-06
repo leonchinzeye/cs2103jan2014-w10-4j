@@ -24,6 +24,16 @@ public class TaskCard {
 	
 	public TaskCard(){
 	}
+	
+	public TaskCard(String name, String type, int priority, Calendar start, Calendar end, boolean expired, boolean ongoing){
+		this.name = name;
+		this.type = type;
+		this.priority = priority;
+		this.startDay = start;
+		this.endDay = end;
+		this.isExpired = expired;
+		this.isOngoing = ongoing;
+	}
 
 	public String getName() {
 		return name;
@@ -72,11 +82,19 @@ public class TaskCard {
 		return isExpired;
 	}
 	
+	public void setIsExpired(boolean expired) {
+		this.isExpired = expired;
+	}
+	
 	public boolean getIsOngoing() {
 		if (!type.contains("T") && current.after(startDay) && current.before(endDay)) {
 			isOngoing = true;
 		}
 		return isOngoing;
+	}
+	
+	public void setIsOngoing(boolean ongoing) {
+		this.isOngoing = ongoing;
 	}
 	
 	public String getTaskString() {

@@ -78,6 +78,8 @@ public class TaskController {
 	private TitledPane eventPaneComplete;
 	@FXML
 	private TitledPane taskPaneComplete;
+	@FXML
+	private TitledPane eventsHelpPane;
 	
 	@FXML
 	private TableView<TaskDataUI> taskTableIncomplete;
@@ -87,6 +89,8 @@ public class TaskController {
 	private TableView<TaskDataUI> taskTableComplete;
 	@FXML
 	private TableView<EventDataUI> eventTableComplete;
+	@FXML
+	private TableView<EventDataUI> helpTable;
 	
 	@FXML
 	private TableColumn<TaskDataUI, String> colTaskIDIncomplete;
@@ -140,6 +144,21 @@ public class TaskController {
 	@FXML
 	private TableColumn<EventDataUI, String> colEventEndTimeComplete;
 	
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpID;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpPriority;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpName;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpStartDate;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpStartTime;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpEndDate;
+	@FXML
+	private TableColumn<EventDataUI, String> colHelpEndTime;
+	
 	private final int TASK_INC = 1;
 	private final int EVENT_INC = 2;
 	private final int TASK_COM = 3;
@@ -165,6 +184,7 @@ public class TaskController {
 	private ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
 	private ObservableList<EventDataUI> completedEvents = FXCollections.observableArrayList();
 	private ObservableList<TaskDataUI> completedTasks = FXCollections.observableArrayList();
+	private ObservableList<EventDataUI> helpEvents = FXCollections.observableArrayList();
 	
 	private ArrayList<String> themes = new ArrayList<String>();
 	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
@@ -188,6 +208,7 @@ public class TaskController {
 		taskTableIncomplete = new TableView<TaskDataUI>();
 		eventTableComplete = new TableView<EventDataUI>();
 		taskTableComplete = new TableView<TaskDataUI>();
+		helpTable = new TableView<EventDataUI>();
 		tab = new TabPane();
 		validPane = new Pane();
 		helpAnchor = new AnchorPane();
@@ -243,21 +264,28 @@ public class TaskController {
 		colEventEndDateComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
 		colEventEndTimeComplete.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
 		
-		validPane.setStyle("-fx-background-color: green;");
+		colHelpID.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("ID"));
+		colHelpPriority.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("priority"));
+		colHelpName.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("name"));
+		colHelpStartDate.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startDate"));
+		colHelpStartTime.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("startTime"));
+		colHelpEndDate.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endDate"));
+		colHelpEndTime.setCellValueFactory(new PropertyValueFactory<EventDataUI, String>("endTime"));
 		
-		/*
-		 * The lines below will set the task counter upon starting the program.
-		 */
 		dataUI = commandHandle.getDataUI();
 		
 		incompleteEvents.addAll(dataUI.getIncompleteEvents());
 		incompleteTasks.addAll(dataUI.getIncompleteTasks());
 		completedEvents.addAll(dataUI.getCompleteEvents());
 		completedTasks.addAll(dataUI.getCompleteTasks());
+		helpEvents.addAll(dataUI.getHelpEvents());
+		eventsHelpPane.setText("Events [2]");
+		helpTable.setItems(helpEvents);
 		
 		eventPaneIncomplete.setText(String.format("Events [%d]", incompleteEvents.size()));
 		taskPaneIncomplete.setText(String.format("Tasks [%d]", incompleteTasks.size()));
 	
+		validPane.setStyle("-fx-background-color: green;");
 		updateClock();
 		highlightExpiredAndOngoingRows();
 		
@@ -276,7 +304,7 @@ public class TaskController {
 					}
 				});
 			}
-		}, tester.getTime(), 60*1000);
+		}, tester.getTime(), 60*1000);		
 		
 		incompleteEvents.removeAll(incompleteEvents);
 		incompleteTasks.removeAll(incompleteTasks);
@@ -295,6 +323,16 @@ public class TaskController {
 	  final ObservableList<Integer> highlightOngoingEvents = FXCollections.observableArrayList();
 		final ObservableList<Integer> highlightExpiredEvents = FXCollections.observableArrayList();
 		final ObservableList<Integer> highlightExpiredTasks = FXCollections.observableArrayList();
+		final ObservableList<Integer> highlightHelpExpired = FXCollections.observableArrayList();
+		final ObservableList<Integer> highlightHelpOngoing = FXCollections.observableArrayList();
+		
+		for (int i = 0; i < helpEvents.size(); i++) {
+			if (helpEvents.get(i).getIsOngoing()) {
+				highlightHelpOngoing.add(i);
+			} else if (helpEvents.get(i).getIsExpired()) {
+				highlightHelpExpired.add(i);
+			}
+		}
 		
 		for (int i = 0; i < incompleteEvents.size(); i++) {
 			if (incompleteEvents.get(i).getIsOngoing()) {
@@ -354,6 +392,31 @@ public class TaskController {
 				return row;
 			}
 		});
+		
+		helpTable.setRowFactory(new Callback<TableView<EventDataUI>, TableRow<EventDataUI>>() {
+			@Override
+			public TableRow<EventDataUI> call(TableView<EventDataUI> tableView) {
+				final TableRow<EventDataUI> row = new TableRow<EventDataUI>() {
+					@Override
+					protected void updateItem(EventDataUI event, boolean empty){
+						super.updateItem(event, empty);
+						if (highlightHelpOngoing.contains(getIndex())) {
+							if (!getStyleClass().contains("highlightOngoing")) {
+								getStyleClass().add("highlightOngoing");
+							}
+						} else if (highlightHelpExpired.contains(getIndex())){
+							if (!getStyleClass().contains("highlightExpired")) {
+								getStyleClass().add("highlightExpired");
+							}
+						} else {
+							getStyleClass().removeAll(Collections.singleton("highlightOngoing"));
+							getStyleClass().removeAll(Collections.singleton("highlightExpired"));
+						}
+					}
+				};
+				return row;
+			}
+		});		
   }
 	
 	/**
