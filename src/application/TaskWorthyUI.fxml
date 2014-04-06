@@ -153,15 +153,15 @@
                       <content>
                         <AnchorPane id="Content" disable="false" minHeight="0.0" minWidth="0.0" mouseTransparent="false" prefHeight="180.0" prefWidth="200.0">
                           <children>
-                            <TableView id="table" disable="false" editable="false" focusTraversable="false" mouseTransparent="true" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
+                            <TableView id="table" fx:id="helpTable" disable="false" editable="false" focusTraversable="false" mouseTransparent="true" prefHeight="195.0" prefWidth="612.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-2.0" AnchorPane.rightAnchor="-2.0" AnchorPane.topAnchor="0.0">
                               <columns>
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="47.0" resizable="false" sortType="DESCENDING" text="Priority" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="225.0" resizable="false" text="Name" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="85.0" resizable="false" text="Start Date" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="65.0" resizable="false" text="Start Time" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="85.0" resizable="false" text="End Date" />
-                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="65.0" resizable="false" text="End Time" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="25.0" resizable="false" text="ID" fx:id="colHelpID" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="47.0" resizable="false" sortType="DESCENDING" text="Priority" fx:id="colHelpPriority" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="225.0" resizable="false" text="Name" fx:id="colHelpName" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="85.0" resizable="false" text="Start Date" fx:id="colHelpStartDate" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="65.0" resizable="false" text="Start Time" fx:id="colHelpStartTime" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="85.0" resizable="false" text="End Date" fx:id="colHelpEndDate" />
+                                <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="65.0" resizable="false" text="End Time" fx:id="colHelpEndTime" />
                               </columns>
                             </TableView>
                             <ScrollBar layoutX="598.0" layoutY="29.0" mouseTransparent="true" orientation="VERTICAL" prefHeight="214.0" />
@@ -210,86 +210,8 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="27.0" layoutY="165.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="64.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="194.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="348.0" layoutY="167.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="422.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="495.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="573.0" layoutY="166.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
-          <points>
-            <Double fx:value="-50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="50.0" />
-            <Double fx:value="40.0" />
-            <Double fx:value="0.0" />
-            <Double fx:value="-60.0" />
-          </points>
-        </Polygon>
-        <Line id="idLine" endX="145.0" endY="68.0" layoutX="170.0" layoutY="166.0" startX="-143.0" startY="-5.0" strokeWidth="2.0" visible="true" />
-        <Line id="priorityLine" endX="160.0" endY="41.0" layoutX="149.0" layoutY="192.0" startX="-86.0" startY="-30.0" strokeWidth="2.0" visible="true" />
-        <Line id="nameLine" endX="28.0" endY="42.0" layoutX="281.0" layoutY="191.0" startX="-86.0" startY="-29.0" strokeWidth="2.0" visible="true" />
-        <Line id="startDateLine" endX="-126.0" endY="43.0" layoutX="433.0" layoutY="190.0" startX="-85.0" startY="-27.0" strokeWidth="2.0" visible="true" />
-        <Line id="startTimeLine" endX="-199.0" endY="44.0" layoutX="507.0" layoutY="189.0" startX="-84.0" startY="-27.0" strokeWidth="2.0" visible="true" />
-        <Line id="endDateLine" endX="-273.0" endY="46.0" layoutX="580.0" layoutY="188.0" startX="-85.0" startY="-26.0" strokeWidth="2.0" visible="true" />
-        <Line id="endTimeLine" endX="-349.0" endY="45.0" layoutX="658.0" layoutY="187.0" startX="-86.0" startY="-25.0" strokeWidth="2.0" visible="true" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="126.0" layoutY="232.0" prefHeight="40.4141845703125" prefWidth="378.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="false" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="94.0" layoutY="346.0" prefHeight="43.4141845703125" prefWidth="215.0" styleClass="TextArea" text="This contains the list of tasks.&#10;Use the &quot;view&quot; command to show it." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="89.0" layoutY="382.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="116.0" layoutY="347.0" prefHeight="44.0" prefWidth="205.447265625" styleClass="TextArea" text="This contains the list of tasks.&#10;Hit Ctrl+A to show or hide it." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="111.0" layoutY="382.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -311,19 +233,40 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" layoutX="235.0" layoutY="303.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return">
+        <Text fill="BLACK" layoutX="117.0" layoutY="292.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return">
           <font>
             <Font name="Moire" size="20.0" fx:id="x2" />
           </font>
         </Text>
-        <Text fill="BLACK" font="$x2" layoutX="175.0" layoutY="326.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+        <Text fill="BLACK" font="$x2" layoutX="193.0" layoutY="322.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit RIGHT to go the next page" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="15.0" layoutY="210.0" prefHeight="57.0" prefWidth="225.0" styleClass="TextArea" text="These numbers allow you to keep track of the amount of tasks and events you have." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="95.0" layoutY="124.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.11577129241788277" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Line endX="-129.0" endY="103.0" layoutX="219.0" layoutY="248.0" startX="-180.0" startY="19.0" strokeWidth="2.0" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="90.0" layoutY="368.0" rotate="180.0" scaleX="0.16527815228405288" scaleY="0.11448455266408998" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Line endX="-135.0" endY="-137.0" layoutX="229.0" layoutY="258.0" startX="-191.0" startY="-49.0" strokeWidth="2.0" />
       </children>
     </AnchorPane>
     <AnchorPane id="AnchorPane" fx:id="helpAnchor2" blendMode="SRC_OVER" layoutX="-1.0" layoutY="0.0" minHeight="310.0946350097656" minWidth="618.0" mouseTransparent="true" prefHeight="430.0" prefWidth="640.0" styleClass="helpanchor" visible="false">
       <children>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="147.0" layoutY="209.0" mouseTransparent="true" prefHeight="173.0" prefWidth="362.0" styleClass="TextArea" text="add &lt;Name&gt; due by &lt;DD/MM&gt;&#10;del/t/e/tc/ec &lt;ID&gt;&#10;edit/t/e &lt;ID&gt; &lt;Field&gt;: &lt;Edited entry&gt;&#10;mark/t/e &lt;ID&gt;&#10;unmark/t/e &lt;ID&gt;&#10;search &lt;Query OR Priority OR Date&gt;&#10;undo/redo&#10;view &lt;Tab/Panel&gt;" visible="true" wrapText="true" />
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="193.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="241.0" rotate="90.0" scaleX="0.16527815228405288" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="31.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -333,8 +276,7 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="120.0" layoutY="77.0" prefHeight="57.0" prefWidth="225.0" styleClass="TextArea" text="These numbers allow you to keep track of the amount of tasks and events you have." visible="true" wrapText="true" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="115.0" layoutY="110.0" rotate="270.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="68.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -344,8 +286,7 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Line endX="-128.0" endY="140.0" layoutX="220.0" layoutY="215.0" startX="-80.0" startY="-82.0" strokeWidth="2.0" />
-        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="91.0" layoutY="369.0" rotate="180.0" scaleX="0.16527831756236627" scaleY="0.11594008275136831" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="198.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
           <points>
             <Double fx:value="-50.0" />
             <Double fx:value="40.0" />
@@ -355,8 +296,61 @@
             <Double fx:value="-60.0" />
           </points>
         </Polygon>
-        <Text fill="BLACK" font="$x2" layoutX="235.0" layoutY="172.0" mouseTransparent="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
-        <Text fill="BLACK" font="$x2" layoutX="160.0" layoutY="198.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="352.0" layoutY="158.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="426.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="499.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="577.0" layoutY="157.0" rotate="0.0" scaleX="0.16527831756236627" scaleY="0.12189282258288646" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="17.0" layoutY="152.0" prefHeight="41.0" prefWidth="598.0" styleClass="TextArea" text="These are the columns that distinguish events from one another." visible="true" wrapText="false" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="193.0" layoutY="196.0" mouseTransparent="true" prefHeight="109.0" prefWidth="251.751953125" styleClass="TextArea" text="add &lt;Name&gt; due by &lt;DD/MM&gt;&#10;del/t/e/tc/ec &lt;ID&gt;&#10;edit/t/e &lt;ID&gt; &lt;Field&gt;: &lt;Edited entry&gt;&#10;mark/t/e &lt;ID&gt;&#10;unmark/t/e &lt;ID&gt;&#10;search &lt;Query OR Priority OR Date&gt;&#10;undo/redo" visible="true" wrapText="true" />
+        <TextArea id="counterDialog" editable="false" focusTraversable="false" layoutX="523.0" layoutY="233.0" mouseTransparent="true" prefHeight="81.0" prefWidth="79.0" styleClass="TextArea" text="Use Ctrl+&gt;&#10;and Ctrl+&lt;&#10;to scroll through the table." visible="true" wrapText="true" />
+        <Polygon id="counterArrow" fill="DODGERBLUE" layoutX="607.0" layoutY="281.0" rotate="90.0" scaleX="0.16527798700590476" scaleY="0.12189294447570598" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" styleClass="polygon" visible="true">
+          <points>
+            <Double fx:value="-50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="50.0" />
+            <Double fx:value="40.0" />
+            <Double fx:value="0.0" />
+            <Double fx:value="-60.0" />
+          </points>
+        </Polygon>
+        <Text fill="BLACK" font="$x2" layoutX="116.0" layoutY="324.0" mouseTransparent="true" scaleX="1.030478004600345" scaleY="1.0088882163034705" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit ESC to return" />
+        <Text fill="BLACK" font="$x2" layoutX="92.0" layoutY="351.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000004132364706" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit LEFT to go the previous page" />
       </children>
     </AnchorPane>
     <Pane fx:id="dragPane" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="57.0" prefWidth="640.0" />
