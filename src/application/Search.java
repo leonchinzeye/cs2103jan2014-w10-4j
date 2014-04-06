@@ -615,6 +615,7 @@ public class Search {
 		reservedKeywords.put("tomorrow", 3);
 		reservedKeywords.put("tmr", 3);
 		reservedKeywords.put("expired", 4);
+		reservedKeywords.put("Expired", 4);
 		
 	}
 	
