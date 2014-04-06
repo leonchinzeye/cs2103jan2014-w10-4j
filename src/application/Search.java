@@ -578,6 +578,7 @@ public class Search {
 		reservedKeywords.put("HIGH", 2);
 		reservedKeywords.put("tomorrow", 3);
 		reservedKeywords.put("tmr", 3);
+		reservedKeywords.put("expired", 4);
 		
 	}
 	
