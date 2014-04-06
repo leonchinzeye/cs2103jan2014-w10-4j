@@ -215,7 +215,7 @@ public class Undo {
 	  
 	  pushUndoToRedo();
 	  
-		return "Undo for editing \"" + null + "\" successful!";
+		return "Undo for editing \"" + taskToBeReplaced.getName() + "\" successful!";
   }
 
 	private String redoEdit(FileLinker fileLink) {
@@ -235,7 +235,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-		return "Redo for editing \"" + null + "\" successful!";
+		return "Redo for editing \"" + taskToBeReplaced.getName() + "\" successful!";
 	}
 
 	private String undoMark(FileLinker fileLink) {
@@ -257,7 +257,7 @@ public class Undo {
 	  
 	  pushUndoToRedo();
 		
-		return "Undo for archiving \"" + null + "\" successful!";
+		return "Undo for archiving \"" + taskToBeAddedBack.getName() + "\" successful!";
   }
 
 	private String redoMark(FileLinker fileLink) {
@@ -276,7 +276,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-	  return "Redo for unarchiving \"" + null + "\" successful!";
+	  return "Redo for unarchiving \"" + taskToBeMarked.getName() + "\" successful!";
 	}
 	
 	private String undoUnmark(FileLinker fileLink) {
@@ -298,7 +298,7 @@ public class Undo {
 		
 		pushUndoToRedo();
 		
-		return "Undo for unarchiving \"" + null + "\" successful!";
+		return "Undo for unarchiving \"" + taskToBeMarked.getName() + "\" successful!";
   }
 	
 	private String redoUnmark(FileLinker fileLink) {
@@ -317,7 +317,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-		return "Redo for archiving \"" + null + "\" successful!";
+		return "Redo for archiving \"" + taskToBeMarked.getName() + "\" successful!";
   }
 
 	private void pushUndoToRedo() {
