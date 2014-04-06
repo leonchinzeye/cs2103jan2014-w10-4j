@@ -449,7 +449,7 @@ public class Edit {
 		}
 
 		if(replacementEvent.getEndDay().before(replacementEvent.getStartDay())) {
-			dataUI.setFeedback("Greaaat scot! Are you a time traveler?");
+			dataUI.setFeedback("Greaaat Scott! Are you a time traveler?");
 			return false;
 		}
 		
