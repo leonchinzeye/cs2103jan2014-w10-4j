@@ -25,7 +25,7 @@ public class DataUI {
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");	
-	private SimpleDateFormat timeUIFormat = new SimpleDateFormat("EEE hh:mmaa");
+	private SimpleDateFormat timeUIFormat = new SimpleDateFormat("EEE h:mmaa");
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
