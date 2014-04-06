@@ -202,9 +202,10 @@ public class DataUI {
 			
 			if(event.getType().equals("AE")) {
 				Calendar startDay = event.getStartDay();
+				Calendar endDay = event.getEndDay();
 				eventData.setStartDate(dateFormat.format(startDay.getTime())); //start date
 				eventData.setStartTime("-"); //no start time
-				eventData.setEndDate(dateFormat.format(startDay.getTime())); //end date	
+				eventData.setEndDate(dateFormat.format(endDay.getTime())); //end date	
 				eventData.setEndTime("-"); //no end time
 			} else {
 				Calendar startDay = event.getStartDay();
