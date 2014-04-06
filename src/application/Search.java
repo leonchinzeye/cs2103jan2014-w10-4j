@@ -236,9 +236,11 @@ public class Search {
 		for(int i = 0; i < listOfEvents.size(); i++) {
 			TaskCard event = listOfEvents.get(i);
 			if(tmr.before(event.getEndDay()) && tmr.after(event.getStartDay())) {
-				listOfEvents.add(event);
+				searchedEvents.add(event);
 			} else if(event.getStartDay().after(tmr) && event.getEndDay().before(getTmrEnd())) {
-				listOfEvents.add(event);
+				searchedEvents.add(event);
+			} else if(event.getStartDay().equals(tmr)) {
+				searchedEvents.add(event);
 			}
 		}
 		
@@ -261,6 +263,7 @@ public class Search {
 		} else {
 			listOfTasks = fileLink.getCompletedTasks();
 		}
+
 		for(int i = 0; i < listOfTasks.size(); i++) {
 			TaskCard task = listOfTasks.get(i);
 			if(task.getEndDay().after(today)) {
@@ -297,6 +300,8 @@ public class Search {
 			if(eventStart.after(today) && eventEnd.before(getTmr())) {
 				searchedEvents.add(event);
 			} else if(today.before(eventEnd) && today.after(eventStart)) {
+				searchedEvents.add(event);
+			} else if(today.equals(eventStart)) {
 				searchedEvents.add(event);
 			}
 		}
@@ -366,7 +371,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete tasks for a specific due date
+	 * searches tasks for a specific due date
 	 * @author leon
 	 * @param fileLink
 	 * @param date 
@@ -400,7 +405,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete events that fall on that date
+	 * searches events that fall on that date
 	 * @author leon
 	 * @param fileLink
 	 * @param date 
@@ -436,7 +441,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete tasks for a user defined keyword
+	 * searches all the files for a user defined keyword
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
@@ -579,30 +584,37 @@ public class Search {
 	private void initDayTable() {
 		dayTable.put("MON", 1);
 		dayTable.put("Mon", 1);
+		dayTable.put("mon", 1);
 		dayTable.put("monday", 1);
 		dayTable.put("Monday", 1);
 		dayTable.put("TUE", 2);
 		dayTable.put("Tue", 2);
+		dayTable.put("tue", 2);
 		dayTable.put("tuesday", 2);
 		dayTable.put("Tuesday", 2);
 		dayTable.put("WED", 3);
 		dayTable.put("Wed", 3);
+		dayTable.put("wed", 3);
 		dayTable.put("wednesday", 3);
 		dayTable.put("Wednesday", 3);
 		dayTable.put("THUR", 4);
 		dayTable.put("Thur", 4);
+		dayTable.put("thur", 4);
 		dayTable.put("thursday", 4);
 		dayTable.put("Thursday", 4);
 		dayTable.put("FRI", 5);
 		dayTable.put("Fri", 5);
+		dayTable.put("fri", 5);
 		dayTable.put("friday", 5);
 		dayTable.put("Friday", 5);
 		dayTable.put("SAT", 6);
 		dayTable.put("Sat", 6);
+		dayTable.put("sat", 6);
 		dayTable.put("saturday", 6);
 		dayTable.put("Saturday", 6);
 		dayTable.put("SUN", 7);
 		dayTable.put("Sun", 7);
+		dayTable.put("sun", 7);
 		dayTable.put("sunday", 7);
 		dayTable.put("Sunday", 7);  
 	}
