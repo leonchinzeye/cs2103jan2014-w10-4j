@@ -14,6 +14,7 @@ public class Search {
 	private static final int SEARCH_TODAY = 1;
 	private static final int SEARCH_PRIORITY = 2;
 	private static final int SEARCH_TMR = 3;
+	private static final int SEARCH_EXPIRED = 4;
 	
 	private static final int TYPE_INC_TASKS = 1;
 	private static final int TYPE_INC_EVENTS = 2;
@@ -191,6 +192,13 @@ public class Search {
 				searchedIncEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
 				searchedCompTasks= searchTaskTmr(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
 				searchedCompEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			case SEARCH_EXPIRED:
+				searchedIncTasks = searchForExpired(fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchForExpired(fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchForExpired(fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchForExpired(fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
 			default:
 				break;
 		}
@@ -198,6 +206,34 @@ public class Search {
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
+	private ArrayList<TaskCard> searchForExpired(FileLinker fileLink,
+      DataUI dataUI, int type) {
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		}	else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard toBeSearched = listToBeSearched.get(i);
+			Calendar taskDueDate = toBeSearched.getEndDay();
+			Calendar now = Calendar.getInstance();
+			
+			if(taskDueDate.before(now) || taskDueDate.equals(now)) {
+				searchedTasks.add(toBeSearched);
+			}
+		}
+		
+	  return searchedTasks;
+  }
+
 	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
 			FileLinker fileLink, DataUI dataUI, int type) {
 		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
@@ -236,9 +272,11 @@ public class Search {
 		for(int i = 0; i < listOfEvents.size(); i++) {
 			TaskCard event = listOfEvents.get(i);
 			if(tmr.before(event.getEndDay()) && tmr.after(event.getStartDay())) {
-				listOfEvents.add(event);
+				searchedEvents.add(event);
 			} else if(event.getStartDay().after(tmr) && event.getEndDay().before(getTmrEnd())) {
-				listOfEvents.add(event);
+				searchedEvents.add(event);
+			} else if(event.getStartDay().equals(tmr)) {
+				searchedEvents.add(event);
 			}
 		}
 		
@@ -261,6 +299,7 @@ public class Search {
 		} else {
 			listOfTasks = fileLink.getCompletedTasks();
 		}
+
 		for(int i = 0; i < listOfTasks.size(); i++) {
 			TaskCard task = listOfTasks.get(i);
 			if(task.getEndDay().after(today)) {
@@ -297,6 +336,8 @@ public class Search {
 			if(eventStart.after(today) && eventEnd.before(getTmr())) {
 				searchedEvents.add(event);
 			} else if(today.before(eventEnd) && today.after(eventStart)) {
+				searchedEvents.add(event);
+			} else if(today.equals(eventStart)) {
 				searchedEvents.add(event);
 			}
 		}
@@ -366,7 +407,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete tasks for a specific due date
+	 * searches tasks for a specific due date
 	 * @author leon
 	 * @param fileLink
 	 * @param date 
@@ -400,7 +441,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete events that fall on that date
+	 * searches events that fall on that date
 	 * @author leon
 	 * @param fileLink
 	 * @param date 
@@ -436,7 +477,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches incomplete tasks for a user defined keyword
+	 * searches all the files for a user defined keyword
 	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
@@ -573,36 +614,44 @@ public class Search {
 		reservedKeywords.put("HIGH", 2);
 		reservedKeywords.put("tomorrow", 3);
 		reservedKeywords.put("tmr", 3);
+		reservedKeywords.put("expired", 4);
 		
 	}
 	
 	private void initDayTable() {
 		dayTable.put("MON", 1);
 		dayTable.put("Mon", 1);
+		dayTable.put("mon", 1);
 		dayTable.put("monday", 1);
 		dayTable.put("Monday", 1);
 		dayTable.put("TUE", 2);
 		dayTable.put("Tue", 2);
+		dayTable.put("tue", 2);
 		dayTable.put("tuesday", 2);
 		dayTable.put("Tuesday", 2);
 		dayTable.put("WED", 3);
 		dayTable.put("Wed", 3);
+		dayTable.put("wed", 3);
 		dayTable.put("wednesday", 3);
 		dayTable.put("Wednesday", 3);
 		dayTable.put("THUR", 4);
 		dayTable.put("Thur", 4);
+		dayTable.put("thur", 4);
 		dayTable.put("thursday", 4);
 		dayTable.put("Thursday", 4);
 		dayTable.put("FRI", 5);
 		dayTable.put("Fri", 5);
+		dayTable.put("fri", 5);
 		dayTable.put("friday", 5);
 		dayTable.put("Friday", 5);
 		dayTable.put("SAT", 6);
 		dayTable.put("Sat", 6);
+		dayTable.put("sat", 6);
 		dayTable.put("saturday", 6);
 		dayTable.put("Saturday", 6);
 		dayTable.put("SUN", 7);
 		dayTable.put("Sun", 7);
+		dayTable.put("sun", 7);
 		dayTable.put("sunday", 7);
 		dayTable.put("Sunday", 7);  
 	}
