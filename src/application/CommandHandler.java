@@ -70,7 +70,7 @@ public class CommandHandler {
 				deleteHandler.executeDelete(userInput, fileLink, dataUI, tableNo, undoHandler);
 				break;
 			case EDIT:
-				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler);
+				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 				break;
 			case SEARCH:
 				fileLink.resetState();
