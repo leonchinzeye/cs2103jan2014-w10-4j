@@ -25,6 +25,34 @@ import javafx.scene.layout.Pane;
  */
 //@author A0094534B
 public class TaskControllerMin {
+	private static final String MINIMIZE_BUTTON_HOVER = "/minimizeButtonHover.png";
+	private static final String MINIMIZE_BUTTON = "/minimizeButton.png";
+	private static final String CLOSE_BUTTON_HOVER = "/closeButtonHover.png";
+	private static final String CLOSE_BUTTON = "/closeButton.png";
+	private static final String NOTIFICATION_ADD = "add <Name> due by <End> OR add <Name>; <Start> to <End>";
+	private static final String REGEX_WITH_EXIT = "\\w|\\w.+|/x";
+	private static final String NOTIFICATION_DEFAULT_PROMPT = "Read me!";
+	private static final String THEME_MISSING_ARGUMENT_MESSAGE = "You forgot to enter a theme to change to!";
+	private static final String THEME_ITALY = "Italy";
+	private static final String THEME_AUSTRALIA = "Australia";
+	private static final String THEME_SITH = "Sith";
+	private static final String THEME_JEDI = "Jedi";
+	private static final String CMD_THEME = "theme";
+	private static final String CMD_UNDO = "undo";
+	private static final String CMD_REDO = "redo";
+	private static final String CMD_EXIT = "/x";
+	private static final String CMD_ADD = "add";
+	private static final String CSS_ITALY = "italy.css";
+	private static final String CSS_AUSTRALIA = "australia.css";
+	private static final String CSS_SITHRED = "sithred.css";
+	private static final String CSS_JEDIGREEN = "jedigreen.css";
+	private static final String MINI_UI_INVALID_CMD_MESSAGE = "That can't be done here! Expand the window with Ctrl+Enter.";
+	private static final int JEDI_GREEN = 0;
+	private static final int SITH_RED = 1;
+	private static final int AUSTRALIA = 2;
+	private static final int ITALY = 3;
+	private static int themeIndex = 0;
+	
 	@FXML
 	private AnchorPane anchor;
 	@FXML
@@ -49,25 +77,19 @@ public class TaskControllerMin {
 	private boolean isEnterKey = false;
 	private static double mouseDragOffsetX;
 	private static double mouseDragOffsetY;
-	Image closeButtonDefault = new Image("/closeButton.png");
-	Image closeButtonHover = new Image("/closeButtonHover.png");
-	Image minimizeButtonDefault = new Image("/minimizeButton.png");
-	Image minimizeButtonHover = new Image("/minimizeButtonHover.png");
+	Image closeButtonDefault = new Image(CLOSE_BUTTON);
+	Image closeButtonHover = new Image(CLOSE_BUTTON_HOVER);
+	Image minimizeButtonDefault = new Image(MINIMIZE_BUTTON);
+	Image minimizeButtonHover = new Image(MINIMIZE_BUTTON_HOVER);
 	
 	private ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
 	private ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
 	
-	private String jedigreen = getClass().getResource("jedigreen.css").toExternalForm();
-	private String sithred = getClass().getResource("sithred.css").toExternalForm();
-	private String australia = getClass().getResource("australia.css").toExternalForm();
-	private String italy = getClass().getResource("italy.css").toExternalForm();
+	private String jedigreen = getClass().getResource(CSS_JEDIGREEN).toExternalForm();
+	private String sithred = getClass().getResource(CSS_SITHRED).toExternalForm();
+	private String australia = getClass().getResource(CSS_AUSTRALIA).toExternalForm();
+	private String italy = getClass().getResource(CSS_ITALY).toExternalForm();
 	private ArrayList<String> themes = new ArrayList<String>();
-	
-	private static final int JEDI_GREEN = 0;
-	private static final int SITH_RED = 1;
-	private static final int AUSTRALIA = 2;
-	private static final int ITALY = 3;
-	private static int themeIndex = 0;
 	
 	public TaskControllerMin() {
 		commandHandle = new CommandHandler();
@@ -97,10 +119,6 @@ public class TaskControllerMin {
 				ui.primaryS.setY(event.getScreenY() - mouseDragOffsetY);
 			}
 		});
-		
-		/*
-		 * The lines below will set the task counter upon starting the program.
-		 */
 		dataUI = commandHandle.getDataUI();
 	}
 	
@@ -120,60 +138,47 @@ public class TaskControllerMin {
 	public void executeCmd(String lastInput) {
 	  String response;
 	  changeTheme(lastInput);
-	  if (lastInput.contains("add") || lastInput.equals("/x") || 
-	  		lastInput.contains("undo") || lastInput.contains("redo") || lastInput.contains("theme")) {
+	  if (lastInput.contains(CMD_ADD) || lastInput.equals(CMD_EXIT) || 
+	  		lastInput.contains(CMD_UNDO) || lastInput.contains(CMD_REDO) || lastInput.contains(CMD_THEME)) {
 	  	dataUI = commandHandle.executeCmd(lastInput, tableNo);
 	  	response = dataUI.getFeedback();
 	  	notification.setText(response);
 	  } else {
-	  	notification.setText("That can't be done here! Expand the window with Ctrl+Enter.");
+	  	notification.setText(MINI_UI_INVALID_CMD_MESSAGE);
 	  }
-		command.clear(); //clears the input text field
+		command.clear();
 		command.requestFocus();
-		
-		/*
-		 * Retrieves the new information to be shown in the tables.
-		 * Also updates the task counter accordingly.
-		 */
+
 		setUI(ui);
   }
 
 	private void changeTheme(String lastInput) {
 		String[] inputArray = null;
-		if (lastInput.contains("theme")) {
+		if (lastInput.contains(CMD_THEME)) {
 			inputArray = lastInput.split(" ", 2);
 			
 			if (!inputArray[1].isEmpty()) {
 				String chosenTheme = inputArray[1];
 				anchor.getStylesheets().removeAll(themes);
-				if (chosenTheme.equalsIgnoreCase("Jedi")) {
+				if (chosenTheme.equalsIgnoreCase(THEME_JEDI)) {
 					themeIndex = JEDI_GREEN;
-				} else if (chosenTheme.equalsIgnoreCase("Sith")) {
+				} else if (chosenTheme.equalsIgnoreCase(THEME_SITH)) {
 					themeIndex = SITH_RED;
-				} else if (chosenTheme.equalsIgnoreCase("Australia")) {
+				} else if (chosenTheme.equalsIgnoreCase(THEME_AUSTRALIA)) {
 					themeIndex = AUSTRALIA;
-				} else if (chosenTheme.equalsIgnoreCase("Italy")) {
+				} else if (chosenTheme.equalsIgnoreCase(THEME_ITALY)) {
 					themeIndex = ITALY;
 				}
 				anchor.getStylesheets().add(themes.get(themeIndex));
 			} else {
-				notification.setText("You forgot to enter a theme to change to!");
+				notification.setText(THEME_MISSING_ARGUMENT_MESSAGE);
 			}
 		}
   }
 	
 	private void changeThemeByInt(int index) {
 		anchor.getStylesheets().removeAll(themes);
-		if (index == 0) {
-			themeIndex = JEDI_GREEN;
-		} else if (index == 1) {
-			themeIndex = SITH_RED;
-		} else if (index == 2) {
-			themeIndex = AUSTRALIA;
-		} else if (index == 3) {
-			themeIndex = ITALY;
-		}
-		anchor.getStylesheets().add(themes.get(themeIndex));
+		anchor.getStylesheets().add(themes.get(index));
 	}
 	
 	/**
@@ -225,7 +230,7 @@ public class TaskControllerMin {
 	private void undoShortcut() {
 		String response = "";
 		
-		dataUI = commandHandle.executeCmd("undo", tableNo);
+		dataUI = commandHandle.executeCmd(CMD_UNDO, tableNo);
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		
@@ -235,7 +240,7 @@ public class TaskControllerMin {
 	private void redoShortcut() {
 		String response = "";
 		
-		dataUI = commandHandle.executeCmd("redo", tableNo);
+		dataUI = commandHandle.executeCmd(CMD_REDO, tableNo);
 		response = dataUI.getFeedback();
 		notification.setText(response);
 		
@@ -251,15 +256,15 @@ public class TaskControllerMin {
 	
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
-	  	notification.setText("Read me!");
+	  	notification.setText(NOTIFICATION_DEFAULT_PROMPT);
 		}
   }
 
 	private void commandSetNotification(String input) {
-	  if (input.matches("\\w|\\w.+|/x")) {
+	  if (input.matches(REGEX_WITH_EXIT)) {
 			switch(input) {
 				case "a":
-					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
+					notification.setText(NOTIFICATION_ADD);
 					break;
 				default:
 					break;

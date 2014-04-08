@@ -16,6 +16,14 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 
 public class UI extends Application {
+	private static final String JEDIGREEN_CSS = "application/jedigreen.css";
+	private static final String ITALY_CSS = "application/italy.css";
+	private static final String AUSTRALIA_CSS = "application/australia.css";
+	private static final String SITHRED_CSS = "application/sithred.css";
+	private static final String TASKWORTHY_LOGO = "/projectX.png";
+	private static final String TASKWORTHY_MIN_FXML = "TaskWorthyMin.fxml";
+	private static final String TASKWORTHY_UI_FXML = "TaskWorthyUI.fxml";
+	private static final String TASK_WORTHY = "TaskWorthy";
 	private Stage primaryStage;
 	public static Stage primaryS;
 	private Stage primaryStageSub;
@@ -30,13 +38,13 @@ public class UI extends Application {
 	//@author A0094534B
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("TaskWorthy");
+		this.primaryStage.setTitle(TASK_WORTHY);
 		primaryStage.setResizable(false);
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		
 		try {
-			FXMLLoader loader = new FXMLLoader(UI.class.getResource("TaskWorthyUI.fxml"));
-			FXMLLoader loaderMin = new FXMLLoader(UI.class.getResource("TaskWorthyMin.fxml"));
+			FXMLLoader loader = new FXMLLoader(UI.class.getResource(TASKWORTHY_UI_FXML));
+			FXMLLoader loaderMin = new FXMLLoader(UI.class.getResource(TASKWORTHY_MIN_FXML));
 			
 			Parent root = (Parent) loader.load();
 			Parent rootMin = (Parent) loaderMin.load();
@@ -45,12 +53,12 @@ public class UI extends Application {
 			final Scene scene1Sub = scene;
 			final Scene scene2Sub = scene2;
 			
-			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream("/projectX.png")));
+			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream(TASKWORTHY_LOGO)));
 			//CSS file
-			scene.getStylesheets().add("application/sithred.css");
-			scene.getStylesheets().add("application/australia.css");
-			scene.getStylesheets().add("application/italy.css");
-			scene.getStylesheets().add("application/jedigreen.css");
+			scene.getStylesheets().add(SITHRED_CSS);
+			scene.getStylesheets().add(AUSTRALIA_CSS);
+			scene.getStylesheets().add(ITALY_CSS);
+			scene.getStylesheets().add(JEDIGREEN_CSS);
 			
 			final TaskController tc = loader.getController();
 			final TaskControllerMin tcMin = loaderMin.getController();
