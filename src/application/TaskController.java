@@ -59,8 +59,6 @@ public class TaskController {
 	private Tab completeTab;
 	@FXML
 	private Tab helpTab;
-	@FXML
-	private Pane validPane;
 	
 	@FXML
 	private TextField notification;
@@ -216,7 +214,6 @@ public class TaskController {
 		taskTableComplete = new TableView<TaskDataUI>();
 		helpTable = new TableView<EventDataUI>();
 		tab = new TabPane();
-		validPane = new Pane();
 		helpAnchor = new AnchorPane();
 		testingResponse = "";
 		themes.add(jedigreen);
@@ -240,7 +237,8 @@ public class TaskController {
 			}
 		});
 		dragPane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
+			@SuppressWarnings("static-access")
+      @Override
 			public void handle(MouseEvent event) {
 				ui.primaryS.setX(event.getScreenX() - mouseDragOffsetX);
 				ui.primaryS.setY(event.getScreenY() - mouseDragOffsetY);
@@ -295,8 +293,7 @@ public class TaskController {
 		
 		eventPaneIncomplete.setText(String.format("Events [%d]", incompleteEvents.size()));
 		taskPaneIncomplete.setText(String.format("Tasks [%d]", incompleteTasks.size()));
-	
-		validPane.setStyle("-fx-background-color: green;");
+
 		updateClock();
 		highlightExpiredAndOngoingRows();
 		
@@ -888,11 +885,6 @@ public class TaskController {
 			commandEditSelectionStyle(input);
 		}
 		
-		if (input.matches("edit \\d+ \\w.+: \\w.+|edite \\d+ \\w.+: \\w.+|editt \\d+ \\w.+: \\w.+|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+") ||
-				input.matches("view Incomplete|view Completed|view Events|view Tasks|view Incomplete Events|view Incomplete Tasks|view Completed Events|view Completed Tasks")) {
-			validPane.setStyle("-fx-background-color: green;");
-		}
-		
 		currentTableShown();
 	}
 	
@@ -906,7 +898,6 @@ public class TaskController {
 			taskTableIncomplete.getSelectionModel().clearSelection();
 			eventTableComplete.getSelectionModel().clearSelection();
 			taskTableComplete.getSelectionModel().clearSelection();
-			validPane.setStyle("-fx-background-color: green;");
 		}
   }
 
@@ -916,7 +907,6 @@ public class TaskController {
 	 */
 	private void commandSetNotification(String input) {
 	  if (input.matches("\\w|\\w.+|/x")) {
-			validPane.setStyle("-fx-background-color: red;");
 			switch(input) {
 				case "a":
 					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
@@ -949,15 +939,6 @@ public class TaskController {
 						notification.setText("view Incomplete/Events");
 					}
 					break;
-				case "undo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "redo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "/x":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
 				default:
 					break;
 			}
@@ -979,7 +960,6 @@ public class TaskController {
 	  
 	  switch(inputArray[0]) {
 	  	case "del":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		if (tableNo == EVENT_INC) {
 	  			eventPaneIncomplete.setExpanded(true);
 	  			eventTableIncomplete.scrollTo(rowID);
@@ -999,35 +979,30 @@ public class TaskController {
 	  		}
 	  		break;
 	  	case "dele":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(incompleteTab);
 	  		eventPaneIncomplete.setExpanded(true);
 	  		eventTableIncomplete.scrollTo(rowID);
 	  		eventTableIncomplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "delt":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(incompleteTab);
 	  		taskPaneIncomplete.setExpanded(true);
 	  		taskTableIncomplete.scrollTo(rowID);
 	  		taskTableIncomplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "delec":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(completeTab);
 	  		eventPaneComplete.setExpanded(true);
 	  		eventTableComplete.scrollTo(rowID);
 	  		eventTableComplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "deltc":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(completeTab);
 	  		taskPaneComplete.setExpanded(true);
 	  		taskTableComplete.scrollTo(rowID);
 	  		taskTableComplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "mark":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(incompleteTab);
 	  		currentTableShown();
 	  		if (tableNo == EVENT_INC) {
@@ -1039,21 +1014,18 @@ public class TaskController {
 	  		}
 	  		break;
 	  	case "marke":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(incompleteTab);
 	  		eventPaneIncomplete.setExpanded(true);
 	  		eventTableIncomplete.scrollTo(rowID);
 	  		eventTableIncomplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "markt":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(incompleteTab);
 	  		taskPaneIncomplete.setExpanded(true);
 	  		taskTableIncomplete.scrollTo(rowID);
 	  		taskTableIncomplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "unmark":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(completeTab);
 	  		currentTableShown();
 	  		if (tableNo == EVENT_COM) {
@@ -1065,14 +1037,12 @@ public class TaskController {
 	  		}
 	  		break;
 	  	case "unmarke":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(completeTab);
 	  		eventPaneComplete.setExpanded(true);
 	  		eventTableComplete.scrollTo(rowID);
 	  		eventTableComplete.getSelectionModel().select(rowID);
 	  		break;
 	  	case "unmarkt":
-	  		validPane.setStyle("-fx-background-color: green;");
 	  		tab.getSelectionModel().select(completeTab);
 	  		taskPaneComplete.setExpanded(true);
 	  		taskTableComplete.scrollTo(rowID);
@@ -1108,7 +1078,6 @@ public class TaskController {
 	  		taskTableIncomplete.getSelectionModel().select(rowID, colTaskIDIncomplete);
 	  		break;
 	  	default:
-	  		validPane.setStyle("-fx-background-color: red;");
 	  		break;
 	  }
   }
@@ -1305,7 +1274,8 @@ public class TaskController {
 		minimizeButton.setImage(minimizeButtonDefault);
 	}
 	
-	@FXML
+	@SuppressWarnings("static-access")
+  @FXML
 	public void minimizeWindow (MouseEvent mouse) {
 		ui.primaryS.setIconified(true);
 	}

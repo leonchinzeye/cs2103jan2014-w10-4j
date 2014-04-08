@@ -25,13 +25,12 @@
         <Image url="@../projectX.png" />
       </image>
     </ImageView>
-    <Text id="anchortext" layoutX="422.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+Enter to expand the window">
+    <Text id="anchortext" layoutX="382.0" layoutY="16.0" pickOnBounds="true" scaleX="1.0" scaleY="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hit Ctrl+Enter to expand the window">
       <font>
         <Font name="Moire" size="12.0" />
       </font>
     </Text>
-    <Pane fx:id="validPane" blendMode="SRC_OVER" layoutX="590.0" layoutY="100.0" mouseTransparent="true" prefHeight="35.0" prefWidth="35.0" styleClass="pane" />
-    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="100.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="565.0000999999975" promptText="Feed me!" styleClass="input" text="" />
+    <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="100.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="612.0" promptText="Feed me!" styleClass="input" text="" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="57.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <Pane fx:id="dragPane" focusTraversable="true" layoutX="0.0" layoutY="0.0" prefHeight="57.0" prefWidth="640.0" />
     <ImageView fx:id="closeButton" fitHeight="14.0" fitWidth="14.0" layoutX="619.0" layoutY="5.0" onMouseClicked="#closeWindow" onMouseEntered="#closeEnter" onMouseExited="#closeExit" pickOnBounds="true" preserveRatio="true">

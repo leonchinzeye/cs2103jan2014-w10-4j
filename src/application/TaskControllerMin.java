@@ -33,8 +33,6 @@ public class TaskControllerMin {
 	private ImageView closeButton;
 	@FXML
 	private ImageView minimizeButton;
-	@FXML
-	private Pane validPane;
 	
 	@FXML
 	private TextField notification;
@@ -76,7 +74,6 @@ public class TaskControllerMin {
 		notification = new TextField();
 		command = new TextField();
 		anchor = new AnchorPane();
-		validPane = new Pane();
 		themes.add(jedigreen);
 		themes.add(sithred);
 		themes.add(australia);
@@ -93,14 +90,13 @@ public class TaskControllerMin {
 			}
 		});
 		dragPane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
+			@SuppressWarnings("static-access")
+      @Override
 			public void handle(MouseEvent event) {
 				ui.primaryS.setX(event.getScreenX() - mouseDragOffsetX);
 				ui.primaryS.setY(event.getScreenY() - mouseDragOffsetY);
 			}
 		});
-		
-		validPane.setStyle("-fx-background-color: green;");
 		
 		/*
 		 * The lines below will set the task counter upon starting the program.
@@ -251,34 +247,19 @@ public class TaskControllerMin {
 		
 		commandBlank(input);
 		commandSetNotification(input);
-		
-		if (input.matches("|add \\w.+|add \\w.+; \\w.+|add \\w.+ due by \\w.+")) {
-			validPane.setStyle("-fx-background-color: green;");
-		}
 	}
 	
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
 	  	notification.setText("Read me!");
-			validPane.setStyle("-fx-background-color: green;");
 		}
   }
 
 	private void commandSetNotification(String input) {
 	  if (input.matches("\\w|\\w.+|/x")) {
-			validPane.setStyle("-fx-background-color: red;");
 			switch(input) {
 				case "a":
 					notification.setText("add <Name> due by <End> OR add <Name>; <Start> to <End>");
-					break;
-				case "undo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "redo":
-					validPane.setStyle("-fx-background-color: green;");
-					break;
-				case "/x":
-					validPane.setStyle("-fx-background-color: green;");
 					break;
 				default:
 					break;
@@ -357,7 +338,8 @@ public class TaskControllerMin {
 		minimizeButton.setImage(minimizeButtonDefault);
 	}
 	
-	@FXML
+	@SuppressWarnings("static-access")
+  @FXML
 	public void minimizeWindow (MouseEvent mouse) {
 		ui.primaryS.setIconified(true);
 	}
