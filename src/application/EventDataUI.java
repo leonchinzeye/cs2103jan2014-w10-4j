@@ -2,6 +2,7 @@ package application;
 
 import javafx.beans.property.SimpleStringProperty;
 
+//@author A0100720E
 public class EventDataUI {
 
 	private SimpleStringProperty ID; 
@@ -126,3 +127,4 @@ public class EventDataUI {
 		return endTime;
 	}
 }
+//@author A0100720E
