@@ -20,7 +20,7 @@ public class AddTest {
 		addUI.configIncompleteTasks(adddFileLinker);
 		Add newAddWithWrongCommand = new Add();
 		
-		newAddWithWrongCommand.executeAdd(wrongAdd, adddFileLinker, addUI, undoHandler);
+//		newAddWithWrongCommand.executeAdd(wrongAdd, adddFileLinker, addUI, undoHandler);
 		
 		assertEquals("That was an unrecognisable add command! :(", addUI.getFeedback());
 		
@@ -30,7 +30,7 @@ public class AddTest {
 		DataUI addWithoutEntry = new DataUI();
 		addWithoutEntry.configIncompleteTasks(addFileLinker);
 		Add newAddWithoutEntry = new Add();
-		newAddWithoutEntry.executeAdd(addWithOutAnyEntry, addFileLinker, addWithoutEntry, undoHandler);
+//		newAddWithoutEntry.executeAdd(addWithOutAnyEntry, addFileLinker, addWithoutEntry, undoHandler);
 		
 		assertEquals("You didn't enter a task! Please enter a task!", addWithoutEntry.getFeedback());
 		
@@ -43,7 +43,7 @@ public class AddTest {
 		DataUI addTokenUI = new DataUI();
 		addTokenUI.configIncompleteTasks(addTokenLinker);
 		Add newAddWithTooManyTokens = new Add();
-		newAddWithTooManyTokens.executeAdd(addWithTooManyTokenizers, addTokenLinker, addTokenUI, undoHandler);
+//		newAddWithTooManyTokens.executeAdd(addWithTooManyTokenizers, addTokenLinker, addTokenUI, undoHandler);
 		
 		assertEquals("That was an invalid format for adding a task :(", addTokenUI.getFeedback());
 		
@@ -56,7 +56,7 @@ public class AddTest {
 		DataUI addfUI = new DataUI();
 		addfUI.configIncompleteTasks(addFLinker);
 		Add newAddFProper = new Add();
-		newAddFProper.executeAdd(addFloatingTask, addFLinker, addfUI, undoHandler);
+//		newAddFProper.executeAdd(addFloatingTask, addFLinker, addfUI, undoHandler);
 		
 		assertEquals ("Task added!", addfUI.getFeedback());
 		
