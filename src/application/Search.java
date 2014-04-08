@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-//@SuppressWarnings("deprecation")
+//@author A0097304E
 public class Search {
 	
 	private static final int SECOND_ARGUMENT = 1;
