@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 /**
  * 
- * @author leon
+ * @author Atul
  *
  */
+
+//@author A0100720E
 public class Delete {
 	
 	private static final int DELETE_INCOMPLETE_TASKS = 1;
@@ -230,3 +232,5 @@ public class Delete {
 		cmdTable.put("delec", DELETE_COMPLETE_EVENTS);
 	}
 }
+
+//@author A0100720E
