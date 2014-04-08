@@ -32,7 +32,7 @@ public class Add {
 	private static final String FEEDBACK_EXTRA_DETAILS_ARG = "You seem to have entered more than you need to :(  Please try again!";
 	private static final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You seem to have entered more than you need to :(  Please try again!";
 	private static final String FEEDBACK_SUCCESSFUL_ADD_TASK = "Task has been successfully added!";
-	private static final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "\"%s\" has been successfully added!";
+	private static final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "Event has been successfully added!";
 	private static final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :(";
 	private static final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :(";
 	private static final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please try again!";
@@ -255,7 +255,7 @@ public class Add {
 			}
 			
 			setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
-			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
 			
 			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
@@ -335,7 +335,7 @@ public class Add {
 				return false;
 			}
 			
-			dataUI.setFeedback(String.format(FEEDBACK_SUCCESSFUL_ADD_EVENT, eventToBeAdded.getName()));
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
 			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
 			
 			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
