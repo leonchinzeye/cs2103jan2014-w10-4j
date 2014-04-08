@@ -1,5 +1,10 @@
 package application;
 
+/**
+ * 
+ * 
+ */
+//@author A0097304E
 public class CommandHandler {
 	
 	private static FileLinker fileLink;
