@@ -12,14 +12,25 @@ import java.util.HashMap;
 //@author A0094534B
 public class Mark {
 
+	private static final int FILE_COMPLETE_EVENTS = 4;
+	private static final int FILE_COMPLETE_TASKS = 3;
+	private static final int FILE_INCOMPLETE_EVENTS = 2;
+	private static final int FILE_INCOMPLETE_TASKS = 1;
+	private static final int NO_ARGUMENT_LENGTH = 2;
+	private static final int SPLIT_TWO = 2;
+	private static final int DEFAULT_LIST = 0;
 	private static final int MARK_INCOMPLETE_TASKS = 1;
 	private static final int MARK_INCOMPLETE_EVENTS = 2;
 	private static final int UNMARK_COMPLETE_TASKS = 3;
 	private static final int UNMARK_COMPLETE_EVENTS = 4;
-	
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
-		
+	private static final String CMD_UNMARKE = "unmarke";
+	private static final String CMD_UNMARKT = "unmarkt";
+	private static final String CMD_UNMARK = "unmark";
+	private static final String CMD_MARKE = "marke";
+	private static final String CMD_MARKT = "markt";
+	private static final String CMD_MARK = "mark";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID!";
 	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
@@ -39,7 +50,7 @@ public class Mark {
 	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 
-		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		String[] tokenizedInput = userInput.trim().split("\\s+", SPLIT_TWO);
 		String cmd = tokenizedInput[FIRST_ARGUMENT];
 			
 		if(cmdTable.containsKey(cmd) != true) {
@@ -58,7 +69,7 @@ public class Mark {
 		boolean noIndexArgument = false;
 		String userIndex = null;
 		
-		if(tokenizedInput.length < 2) {
+		if(tokenizedInput.length < NO_ARGUMENT_LENGTH) {
 			noIndexArgument = true;
 		} else {
 			userIndex = tokenizedInput[SECOND_ARGUMENT];
@@ -116,9 +127,9 @@ public class Mark {
 			} else {
 				TaskCard taskToBeMarked = incTasks.get(markedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, taskToBeMarked.getName()));
-				fileLink.markHandling(taskToBeMarked, markedIndex - 1, 1);
+				fileLink.markHandling(taskToBeMarked, markedIndex - 1, FILE_INCOMPLETE_TASKS);
 				
-				undoHandler.storeUndo("mark", MARK_INCOMPLETE_TASKS, taskToBeMarked, null);
+				undoHandler.storeUndo(CMD_MARK, MARK_INCOMPLETE_TASKS, taskToBeMarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -141,9 +152,9 @@ public class Mark {
 			} else {
 				TaskCard eventToBeMarked = incEvent.get(markIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, eventToBeMarked.getName()));
-				fileLink.markHandling(eventToBeMarked, markIndex - 1, 2);
+				fileLink.markHandling(eventToBeMarked, markIndex - 1, FILE_INCOMPLETE_EVENTS);
 				
-				undoHandler.storeUndo("mark", MARK_INCOMPLETE_EVENTS, eventToBeMarked, null);
+				undoHandler.storeUndo(CMD_MARK, MARK_INCOMPLETE_EVENTS, eventToBeMarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -166,9 +177,9 @@ public class Mark {
 			} else {
 				TaskCard taskToBeUnmarked = comTasks.get(markedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, taskToBeUnmarked.getName()));
-				fileLink.markHandling(taskToBeUnmarked, markedIndex - 1, 3);
+				fileLink.markHandling(taskToBeUnmarked, markedIndex - 1, FILE_COMPLETE_TASKS);
 				
-				undoHandler.storeUndo("unmark", UNMARK_COMPLETE_TASKS, taskToBeUnmarked, null);
+				undoHandler.storeUndo(CMD_UNMARK, UNMARK_COMPLETE_TASKS, taskToBeUnmarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -191,9 +202,9 @@ public class Mark {
 			} else {
 				TaskCard eventToBeUnmarked = comEvent.get(markIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, eventToBeUnmarked.getName()));
-				fileLink.markHandling(eventToBeUnmarked, markIndex - 1, 4);
+				fileLink.markHandling(eventToBeUnmarked, markIndex - 1, FILE_COMPLETE_EVENTS);
 				
-				undoHandler.storeUndo("unmark", UNMARK_COMPLETE_EVENTS, eventToBeUnmarked, null);
+				undoHandler.storeUndo(CMD_UNMARK, UNMARK_COMPLETE_EVENTS, eventToBeUnmarked, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
 		} catch(NumberFormatException ex) {
@@ -209,11 +220,11 @@ public class Mark {
 	}
 	
 	private void initialiseCmdTable() {
-		cmdTable.put("mark", 0);
-		cmdTable.put("markt", MARK_INCOMPLETE_TASKS);
-		cmdTable.put("marke", MARK_INCOMPLETE_EVENTS);
-		cmdTable.put("unmark", 0);
-		cmdTable.put("unmarkt", UNMARK_COMPLETE_TASKS);
-		cmdTable.put("unmarke", UNMARK_COMPLETE_EVENTS);
+		cmdTable.put(CMD_MARK, DEFAULT_LIST);
+		cmdTable.put(CMD_MARKT, MARK_INCOMPLETE_TASKS);
+		cmdTable.put(CMD_MARKE, MARK_INCOMPLETE_EVENTS);
+		cmdTable.put(CMD_UNMARK, DEFAULT_LIST);
+		cmdTable.put(CMD_UNMARKT, UNMARK_COMPLETE_TASKS);
+		cmdTable.put(CMD_UNMARKE, UNMARK_COMPLETE_EVENTS);
 	}
 }
