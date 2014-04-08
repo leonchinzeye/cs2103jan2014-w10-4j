@@ -31,12 +31,12 @@
       </font>
     </Text>
     <TextField fx:id="command" disable="false" layoutX="14.0" layoutY="436.0" mouseTransparent="false" onAction="#parseInput" onKeyReleased="#commandTextFieldKeystrokes" prefHeight="35.0" prefWidth="612.0" promptText="Feed me!" styleClass="input" text="" />
-    <Text fx:id="dayAndTime" layoutX="451.0" layoutY="51.0" scaleX="1.0" scaleY="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mon 00:00AM" textAlignment="RIGHT" underline="false" wrappingWidth="175.0">
+    <Text fx:id="dayAndTime" layoutX="439.0" layoutY="51.0" scaleX="1.0" scaleY="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Mon 00:00AM" textAlignment="RIGHT" underline="false" wrappingWidth="175.0">
       <font>
         <Font name="Moire" size="19.0" fx:id="x1" />
       </font>
     </Text>
-    <Text id="date" fx:id="dateText" font="$x1" layoutX="501.0" layoutY="80.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1 Jan 2014" textAlignment="RIGHT" underline="false" wrappingWidth="125.0" />
+    <Text id="date" fx:id="dateText" font="$x1" layoutX="504.0" layoutY="80.0" scaleX="0.9914801243615368" scaleY="1.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1 Jan 2014" textAlignment="RIGHT" underline="false" wrappingWidth="0.0" />
     <TextField id="feedback" fx:id="notification" blendMode="SRC_OVER" disable="false" editable="false" focusTraversable="false" layoutX="14.0" layoutY="393.0" mouseTransparent="true" pickOnBounds="false" prefHeight="35.0" prefWidth="612.0" promptText="Read me!" styleClass="feedback" text="Read me!" visible="true" />
     <TabPane fx:id="tab" focusTraversable="false" layoutX="14.0" layoutY="53.0" mouseTransparent="false" onKeyPressed="#changeTab" prefHeight="331.0" prefWidth="612.0" rotateGraphic="false" tabClosingPolicy="UNAVAILABLE">
       <tabs>
