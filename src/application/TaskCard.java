@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class TaskCard {
+public class TaskCard implements Cloneable {
 	
 	private static final int MAX_PRIORITY = 3;
 	private String name;
@@ -112,6 +112,15 @@ public class TaskCard {
 			taskString += name + ", " + dateString.format(startDay.getTime()) + " - " + dateString.format(endDay.getTime());
 		}		
 		return taskString;
+	}
+	
+	@Override
+	protected Object clone() {
+		try {
+			return super.clone();
+		} catch(CloneNotSupportedException e) {
+			return null;
+		}
 	}
 }
 
