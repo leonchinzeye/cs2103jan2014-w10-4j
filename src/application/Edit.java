@@ -2,8 +2,6 @@ package application;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,19 +14,17 @@ import java.util.Date;
 public class Edit {
 	
 	private static final String FEEDBACK_IMPROPER_DATE_TIME_FORMAT = "You didn't enter a proper date or time format!";
-	
 	private static final String FEEDBACK_MISSING_TIMING = "Did you enter a timing?";
-	
 	private static final String FEEDBACK_EXTRA_TIMING = "Did you enter an extra timing?";
-	
 	private static final String FEEDBACK_EXTRA_DETAILS = "Did you enter something extra?";
-	
 	private static final String FEEDBACK_MISSING_DETAILS = "Are you missing something?";
-	
 	private static final String FEEDBACK_ENTER_PROPER_RANGE = "Please enter a number between 1 to %d";
-	
 	private static final String FEEDBACK_NOTHING_TO_BE_EDITED = "There is nothing to be edited!";
-	
+	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been successfully edited!";
+	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been successfully edited!";
+	private static final String FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND = "That was an unrecognisable edit command :(";
+	private static final String FEEDBACK_TIME_TRAVEL = "Greaaat Scott! Are you a time traveler?";
+
 	private static final String TYPE_EDIT = "edit";
 	
 	private Calendar floatingDefaultEndDay = new GregorianCalendar(9999, 11, 31, 23, 59, 59);
@@ -51,42 +47,17 @@ public class Edit {
 	private static final int EDIT_START = 3;
 	private static final int EDIT_END = 4;
 	
-	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
-	private static final String FEEDBACK_PENDING_EVENT_ATTRIBUTES = "You didn't specify anything to edit for event %s!";
-	private static final String FEEDBACK_PENDING_TASK_ATTRIBUTES = "You didn't specify anything to edit for task %s!";
-	private static final String FEEDBACK_TASK_EDIT_SUCCESSFUL = "The task has been successfully edited!";
-	private static final String FEEDBACK_EVENT_EDIT_SUCCESSFUL = "The event has been successfully edited!";
-	private static final String FEEDBACK_EDITION_RANGE = "Please enter a number between 1 to %d!";
-	private static final String FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND = "That was an unrecognisable edit command :(";
-	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
-	private static final String FEEDBACK_INVALID_PRIORITY_LEVEL = "You've entered an invalid priority level :(";
-	private static final String FEEDBACK_UNRECOGNIZED_DATE_TIME_FORMAT = "The format you entered for editing the date and time was not recognized";
-	private static final String FEEDBACK_LEFT_SOMETHING_BLANK = "You seem to have left %s blank!";
-	private static final String FEEDBACK_TIME_TRAVEL = "Greaaat Scott! Are you a time traveler?";
-
 	private static final int START = 1;
-
 	private static final int END = 2;
 	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	private HashMap<String, Integer> editTable = new HashMap<String, Integer>();
 	private HashMap<String, Integer> priorityTable = new HashMap<String, Integer>();
 	
-	private Integer userEnteredID;
-	private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm");
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-	private String[] attArray;
-	
 	public Edit() {
 		initialiseCmdTable();
 		initialiseEditTable();
 		intialisePriorityTable();
-		userEnteredID = null;
-		dateAndTimeFormat.setLenient(false);
-		dateFormat.setLenient(false);
-		timeFormat.setLenient(false);
 		
 		floatingDefaultEndDay.set(Calendar.MILLISECOND, 999);
 	}
@@ -668,6 +639,7 @@ public class Edit {
 		return time;
 	}
 	
+	@SuppressWarnings("deprecation")
 	private Date getDateAndTime(String[] dateAndTime, DateAndTimeFormats dateFormats) {
 		String dateComponent = dateAndTime[FIRST_ARG].trim();
 		String timeComponent = dateAndTime[SECOND_ARG].trim();
