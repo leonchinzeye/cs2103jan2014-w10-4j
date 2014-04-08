@@ -509,7 +509,7 @@ public class Search {
 		}
 		
 		return searchedList;
-	}
+	}	
 	
 	private Calendar getEndRange(Date date) {
 		Calendar endRange = GregorianCalendar.getInstance();
