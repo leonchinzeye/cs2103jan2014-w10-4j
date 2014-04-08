@@ -15,11 +15,19 @@ import java.util.Date;
 
 public class Edit {
 	
+	
+	
+	private static final int EDIT_BOTH_EVENTS_TASKS = 0;
 	private static final int EDIT_INCOMPLETE_TASKS = 1;
 	private static final int EDIT_INCOMPLETE_EVENTS = 2;
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
 	private static final int THIRD_ARGUMENT = 2;
+	
+	private static final int EDIT_NAME = 1;
+	private static final int EDIT_PRIORITY = 2;
+	private static final int EDIT_START = 3;
+	private static final int EDIT_END = 4;
 	
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to edit!";
@@ -30,8 +38,14 @@ public class Edit {
 	private static final String FEEDBACK_EDITION_RANGE = "Please enter a number between 1 to %d!";
 	private static final String FEEDBACK_UNRECOGNISABLE_EDIT_COMMAND = "That was an unrecognisable edit command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_INVALID_PRIORITY_LEVEL = "You've entered an invalid priority level :(";
+	private static final String FEEDBACK_UNRECOGNIZED_DATE_TIME_FORMAT = "The format you entered for editing the date and time was not recognized";
+	private static final String FEEDBACK_LEFT_SOMETHING_BLANK = "You seem to have left %s blank!";
+	private static final String FEEDBACK_TIME_TRAVEL = "Greaaat Scott! Are you a time traveler?";
 	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
+	private HashMap<String, Integer> editTable = new HashMap<String, Integer>();
+	private HashMap<String, Integer> priorityTable = new HashMap<String, Integer>();
 	
 	private Integer userEnteredID;
 	private SimpleDateFormat dateAndTimeFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm");
@@ -41,6 +55,8 @@ public class Edit {
 	
 	public Edit() {
 		initialiseCmdTable();
+		initialiseEditTable();
+		intialisePriorityTable();
 		userEnteredID = null;
 		dateAndTimeFormat.setLenient(false);
 		dateFormat.setLenient(false);
@@ -61,7 +77,7 @@ public class Edit {
 	 * or that there was an error involved
 	 */
 	
-	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
+	public void executeEdit(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success = false;
 		String[] tokenizedInput = userInput.trim().split("\\s+", 3);
 		
@@ -70,7 +86,7 @@ public class Edit {
 		if(cmdTable.containsKey(cmd) != true) {	
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
-			success = identifyCmdAndPerform(cmd, tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
+			success = identifyCmdAndPerform(cmd, tokenizedInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 		}
 		
 		if(success) {
@@ -78,7 +94,7 @@ public class Edit {
 		}
 	}
 	
-	private boolean identifyCmdAndPerform(String cmd, String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
+	private boolean identifyCmdAndPerform(String cmd, String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success = false;	
 		boolean noIndexArgument = false;
 		boolean noAttributesArgument = false;
@@ -122,7 +138,7 @@ public class Edit {
 					dataUI.setFeedback(String.format(FEEDBACK_PENDING_TASK_ATTRIBUTES, userIndex));
 					return success = false;
 				} else {
-					success = checkAndGetIncTaskID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler);
+					success = checkAndGetIncTaskID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, dateFormats);
 				}
 				break;
 			case EDIT_INCOMPLETE_EVENTS:				
@@ -136,7 +152,7 @@ public class Edit {
 					dataUI.setFeedback(String.format(FEEDBACK_PENDING_EVENT_ATTRIBUTES, userIndex));					
 					return success = false;				
 				} else {				
-					success = checkAndGetIncEventID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler);					
+					success = checkAndGetIncEventID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, dateFormats);					
 				}
 				break;
 			default:	
@@ -145,22 +161,34 @@ public class Edit {
 		return success;		
 	}
 	
-	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {	
+	/**
+	 * This section of the code will extract the actual task ID from the command entered by the 
+	 * user and pass it down to the actual editing functions
+	 * 
+	 * @param userIndex
+	 * @param attributesToEdit
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @return
+	 */
+	
+	private boolean checkAndGetIncTaskID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {	
 		boolean success = true;	
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();			
-		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incTasks, 1);
-		return success;		
-	}
-
-		
-	private boolean checkAndGetIncEventID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {		
-		boolean success = true;		
-		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();		
-		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incEvents, 2);
+		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incTasks, 1, dateFormats);
 		return success;		
 	}
 	
-	private boolean checkAndGetID(String userIndex, String attributesToEdit,FileLinker fileLink, DataUI dataUI, Undo undoHandler, ArrayList<TaskCard> listOfEntries, int taskOrEvent) {
+	
+	private boolean checkAndGetIncEventID(String userIndex, String attributesToEdit, FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {		
+		boolean success = true;		
+		ArrayList<TaskCard> incEvents = fileLink.getIncompleteEvents();		
+		success = checkAndGetID(userIndex, attributesToEdit, fileLink, dataUI, undoHandler, incEvents, 2, dateFormats);
+		return success;		
+	}
+	
+	private boolean checkAndGetID(String userIndex, String attributesToEdit,FileLinker fileLink, DataUI dataUI, Undo undoHandler, ArrayList<TaskCard> listOfEntries, int taskOrEvent, DateAndTimeFormats dateFormats) {
 		boolean success = true; 
 		
 		try {
@@ -172,15 +200,15 @@ public class Edit {
 				TaskCard eventOrTask = listOfEntries.get(editIndex - 1);
 				userEnteredID = editIndex;
 				if(taskOrEvent == 1) {
-					success = performIncTaskEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler);
+					success = performIncTaskEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler, dateFormats);
 				}	else {
-					success = performIncEventEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler);
+					success = performIncEventEdit(eventOrTask, attributesToEdit, fileLink, dataUI, undoHandler, dateFormats);
 				}
-			 }
-			} catch(NumberFormatException ex) {
-				dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, listOfEntries.size()));			
-				return success = false;
 			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, listOfEntries.size()));			
+			return success = false;
+		}
 		
 		return success;
 	}
@@ -195,124 +223,167 @@ public class Edit {
 	 * @return
 	 */
 	
-	private boolean performIncTaskEdit(TaskCard origTask, String attribute, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+	private boolean performIncTaskEdit(TaskCard origTask, String attribute, FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success = true;
 		boolean changeName = false;
 		boolean changePriority = false;
 		boolean changeEndDate = false;
 		boolean isDate = false;
 		boolean isTime = false;
+		boolean isDateAndTime = false;
 		TaskCard replacementTask = new TaskCard();
 		replacementTask.setStartDay(origTask.getStartDay());
 		attArray = attribute.split(":", 2);
 		
-		if (attArray.length < 2) {
-			dataUI.setFeedback(String.format("You seem to have left %s blank!", attArray[0]));				
-		} else if (attArray[0].equalsIgnoreCase("Name")){
-			changeName = true;
-			replacementTask.setName(attArray[1].trim());				
-		} else if (attArray[0].equalsIgnoreCase("Priority")) {
-			changePriority = true;
-			if (attArray[1].trim().equalsIgnoreCase("low")) {					
-				replacementTask.setPriority(1);					
-			} else if (attArray[1].trim().equalsIgnoreCase("med")) {					
-				replacementTask.setPriority(2);					
-			} else if (attArray[1].trim().equalsIgnoreCase("high")) {					
-				replacementTask.setPriority(3);					
-			} else {					
-				dataUI.setFeedback("You've entered an invalid priority level :(");					
-				return false;					
-			}
-		} else if(attArray[0].equalsIgnoreCase("End")) {
-			/*
-			 * Need to fix this whole section, and need to add End Time editing below
-			 */
-			changeEndDate = true;
-			String endDateEntry = attArray[1].trim();
-			try {					
-				Date changeDate = dateFormat.parse(endDateEntry);						
-				//here we need to check if the task already has an end time 						
-				//if it does and it is not being modified, it need to be saved and 						
-				//set for replacement task												
-				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);						
-				if(!(origTask.getType().equals("FT"))) {							
-					cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));							
-					cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));
-					cal.set(Calendar.SECOND, origTask.getEndDay().get(Calendar.SECOND));
-					cal.set(Calendar.MILLISECOND, origTask.getEndDay().get(Calendar.MILLISECOND));
-				} else {						
-					cal.set(Calendar.HOUR_OF_DAY, 0);							
-					cal.set(Calendar.MINUTE, 0);
-					cal.set(Calendar.SECOND, 0);
-					cal.set(Calendar.MILLISECOND, 0);
-				}						
-				replacementTask.setEndDay(cal);						
-				isDate = true;
-			} catch(ParseException e) {
-					
-			}					
-
-			if(isDate == true) {
-				replacementTask.setType("T");
-			}
-			try {
-				Date changeDate = timeFormat.parse(endDateEntry);						
-				//here we need to check if the task already has
-				//an end date and if it is not to be modified, need to
-				//set it for replacement task
-				Calendar cal = GregorianCalendar.getInstance();
-				Calendar calChangeDate = GregorianCalendar.getInstance();
-				calChangeDate.setTime(changeDate);
-				if(!(origTask.getType().equals("FT"))) {							
-					cal.setTime(changeDate);							
-					cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));							
-					cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));							
-					cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));							
-				} else {
-					cal.set(Calendar.HOUR_OF_DAY, calChangeDate.get(Calendar.HOUR_OF_DAY));							
-					cal.set(Calendar.MINUTE, calChangeDate.get(Calendar.MINUTE));
-					cal.set(Calendar.SECOND, calChangeDate.get(Calendar.SECOND));
-					cal.set(Calendar.MILLISECOND, calChangeDate.get(Calendar.MILLISECOND));
-				}						
-				replacementTask.setEndDay(cal);						
-				isTime = true;
-			} catch(ParseException e) {
-				
-			}
-			if(isTime == true) {
-				replacementTask.setType("T");
-			}
+		
+		if (attArray.length != 2) {
+			dataUI.setFeedback(String.format(FEEDBACK_LEFT_SOMETHING_BLANK, attArray[0]));
+			return success = false;
+		}	else {
+			String parameterToEdit = attArray[0].toLowerCase();
 			
-			if(!isTime && !isDate) {
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
+			switch(editTable.get(parameterToEdit)) {
+				case EDIT_NAME:
+					changeName = settingNewName(replacementTask);
+					break;
+				case EDIT_PRIORITY:
+					changePriority = true;
+					String typeOfPriority = attArray[1].toLowerCase().trim();
+					
+					if(priorityTable.get(typeOfPriority) != null) {
+						settingNewPriority(replacementTask);
+					} else {					
+						dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_LEVEL);					
+						return false;					
+					}
+					break;
+				case EDIT_END:
+					changeEndDate = true;
+					String endDateEntry = attArray[1].trim();
+					try {
+						Date changeDateAndTime = dateAndTimeFormat.parse(endDateEntry);
+						Calendar cal = GregorianCalendar.getInstance();
+						cal.setTime(changeDateAndTime);
+						replacementTask.setEndDay(cal);
+						isDateAndTime = true;
+					} catch(ParseException e) {
+						
+					}
+					
+					try {					
+						Date changeDate = dateFormat.parse(endDateEntry);						
+						//here we need to check if the task already has an end time 						
+						//if it does and it is not being modified, it need to be saved and 						
+						//set for replacement task												
+						Calendar cal = GregorianCalendar.getInstance();						
+						cal.setTime(changeDate);						
+						if(!(origTask.getType().equals("FT"))) {							
+							cal.set(Calendar.HOUR_OF_DAY, origTask.getEndDay().get(Calendar.HOUR_OF_DAY));							
+							cal.set(Calendar.MINUTE, origTask.getEndDay().get(Calendar.MINUTE));
+							cal.set(Calendar.SECOND, origTask.getEndDay().get(Calendar.SECOND));
+							cal.set(Calendar.MILLISECOND, origTask.getEndDay().get(Calendar.MILLISECOND));
+						} else {						
+							cal.set(Calendar.HOUR_OF_DAY, 0);							
+							cal.set(Calendar.MINUTE, 0);
+							cal.set(Calendar.SECOND, 0);
+							cal.set(Calendar.MILLISECOND, 0);
+						}						
+						replacementTask.setEndDay(cal);						
+						isDate = true;
+					} catch(ParseException e) {
+						
+					}					
+					
+					if(isDate == true) {
+						replacementTask.setType("T");
+					}
+					try {
+						Date changeDate = timeFormat.parse(endDateEntry);						
+						//here we need to check if the task already has
+						//an end date and if it is not to be modified, need to
+						//set it for replacement task
+						Calendar cal = GregorianCalendar.getInstance();
+						Calendar calChangeDate = GregorianCalendar.getInstance();
+						calChangeDate.setTime(changeDate);
+						if(!(origTask.getType().equals("FT"))) {							
+							cal.setTime(changeDate);							
+							cal.set(Calendar.DATE, origTask.getEndDay().get(Calendar.DATE));							
+							cal.set(Calendar.MONTH, origTask.getEndDay().get(Calendar.MONTH));							
+							cal.set(Calendar.YEAR, origTask.getEndDay().get(Calendar.YEAR));							
+						} else {
+							cal.set(Calendar.HOUR_OF_DAY, calChangeDate.get(Calendar.HOUR_OF_DAY));							
+							cal.set(Calendar.MINUTE, calChangeDate.get(Calendar.MINUTE));
+							cal.set(Calendar.SECOND, calChangeDate.get(Calendar.SECOND));
+							cal.set(Calendar.MILLISECOND, calChangeDate.get(Calendar.MILLISECOND));
+						}						
+						replacementTask.setEndDay(cal);						
+						isTime = true;
+					} catch(ParseException e) {
+						
+					}
+					if(isTime == true) {
+						replacementTask.setType("T");
+					}
+					
+					if(!isTime && !isDate && !isDateAndTime) {
+						dataUI.setFeedback(FEEDBACK_UNRECOGNIZED_DATE_TIME_FORMAT);
+						return success = false;
+					}
+					break;
+				default:
+					break;
+			}
+			/**
+			 * if none of the parameters are changed 
+			 */
+			
+			if (!changeName && !changePriority && !changeEndDate) {
 				return success = false;
 			}
+			
+			/**
+			 * set the unedited task details back into the replacement task 
+			 */
+			
+			if(changeName == false) {
+				replacementTask.setName(origTask.getName());
+			}
+			
+			if (changePriority == false) {			
+				replacementTask.setPriority(origTask.getPriority());					
+			}
+			
+			if(changeEndDate == false) {			
+				replacementTask.setEndDay(origTask.getEndDay());			
+				replacementTask.setType(origTask.getType());			
+			}
+			
+			dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);		
+			fileLink.editHandling(replacementTask, userEnteredID - 1, 1);
+			
+			undoHandler.storeUndo("edit", EDIT_INCOMPLETE_TASKS, origTask, replacementTask);
+			RefreshUI.executeRefresh(fileLink, dataUI);		
+			return success;
+			
 		}
 		
-		if (!changeName && !changePriority && !changeEndDate) {
-			return success = false;
+	}
+
+	private void settingNewPriority(TaskCard replacementTask) {
+		if (attArray[1].trim().equalsIgnoreCase("low")) {					
+			replacementTask.setPriority(1);					
+		} else if (attArray[1].trim().equalsIgnoreCase("med")) {					
+			replacementTask.setPriority(2);					
+		} else if (attArray[1].trim().equalsIgnoreCase("high")) {					
+			replacementTask.setPriority(3);
 		}
-		
-		if(changeName == false) {
-			replacementTask.setName(origTask.getName());
-		}
-		
-		if (changePriority == false) {			
-			replacementTask.setPriority(origTask.getPriority());					
-		}
-		
-		if(changeEndDate == false) {			
-			replacementTask.setEndDay(origTask.getEndDay());			
-			replacementTask.setType(origTask.getType());			
-		}
-		
-		dataUI.setFeedback(FEEDBACK_TASK_EDIT_SUCCESSFUL);		
-		fileLink.editHandling(replacementTask, userEnteredID - 1, 1);
-		
-		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_TASKS, origTask, replacementTask);
-		RefreshUI.executeRefresh(fileLink, dataUI);		
-		return success;		
+	}
+
+	private boolean settingNewName(TaskCard replacementTask) {
+		boolean changeName;
+		changeName = true;
+		replacementTask.setName(attArray[1].trim());
+		return changeName;
 	}
 	
 	/**
@@ -323,8 +394,8 @@ public class Edit {
 	 * @param dataUI
 	 * @return
 	 */
-		
-	private boolean performIncEventEdit(TaskCard origEvent, String attribute, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {	
+	
+	private boolean performIncEventEdit(TaskCard origEvent, String attribute, FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {	
 		boolean success = false;
 		boolean changeName = false;
 		boolean changePriority = false;
@@ -334,131 +405,139 @@ public class Edit {
 		boolean isTime = false;
 		TaskCard replacementEvent = new TaskCard();
 		attArray = attribute.split(":", 2);
-
-		if (attArray.length < 2) {				
-			dataUI.setFeedback(String.format("You seem to have left %s blank!", attArray[0]));				
-		} else if (attArray[0].equalsIgnoreCase("Name")){
-			changeName = true;
-			replacementEvent.setName(attArray[1].trim());				
-		} else if (attArray[0].equalsIgnoreCase("Priority")) {
-			changePriority = true;
-			if (attArray[1].trim().equalsIgnoreCase("low")) {					
-				replacementEvent.setPriority(1);
-			}	else if (attArray[1].trim().equalsIgnoreCase("med")) {					
-				replacementEvent.setPriority(2);					
-			} else if (attArray[1].trim().equalsIgnoreCase("high")) {					
-				replacementEvent.setPriority(3);					
-			} else {					
-				dataUI.setFeedback("You've entered an invalid priority level :(");					
-				return false;					
-			}
-		} else if (attArray[0].equalsIgnoreCase("Start")) {
-			changeStartDate = true;
-			String startDateEntry = attArray[1].trim();
-			try {						
-				Date changeDate = dateFormat.parse(startDateEntry);						
-				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);						
-				cal.set(Calendar.HOUR_OF_DAY, origEvent.getStartDay().get(Calendar.HOUR_OF_DAY));						
-				cal.set(Calendar.MINUTE, origEvent.getStartDay().get(Calendar.MINUTE));						
-				replacementEvent.setStartDay(cal);						
-				isDate = true;
-			} catch (ParseException e) {												
-				isDate = false;
-			}
-
-			try {					
-				Date changeDate = timeFormat.parse(startDateEntry);						
-				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);
-				cal.set(Calendar.DATE, origEvent.getStartDay().get(Calendar.DATE));						
-				cal.set(Calendar.MONTH, origEvent.getStartDay().get(Calendar.MONTH));						
-				cal.set(Calendar.YEAR, origEvent.getStartDay().get(Calendar.YEAR));						
-				replacementEvent.setStartDay(cal);						
-				isTime = true;
-			} catch (ParseException e) {
-				isTime = false;
-			}
-			
-			
-			if (!isTime && !isDate) {				
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");	
-				return success = false;
-			}				
-		} else if (attArray[0].equalsIgnoreCase("End")) {
-			changeEndDate = true;
-			String endDateEntry = attArray[1].trim();			
-			try {						
-				Date changeDate = dateFormat.parse(endDateEntry);												
-				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);						
-				cal.set(Calendar.HOUR_OF_DAY, origEvent.getEndDay().get(Calendar.HOUR_OF_DAY));						
-				cal.set(Calendar.MINUTE, origEvent.getEndDay().get(Calendar.MINUTE));						
-				replacementEvent.setEndDay(cal);						
-				isDate = true;
-			} catch (ParseException e) {						
-				isDate = false;
-			}
-
-			try {						
-				Date changeDate = timeFormat.parse(endDateEntry);						
-				Calendar cal = GregorianCalendar.getInstance();						
-				cal.setTime(changeDate);
-				cal.set(Calendar.DATE, origEvent.getEndDay().get(Calendar.DATE));					
-				cal.set(Calendar.MONTH, origEvent.getEndDay().get(Calendar.MONTH));						
-				cal.set(Calendar.YEAR, origEvent.getEndDay().get(Calendar.YEAR));						
-				replacementEvent.setEndDay(cal);						
-				isTime = true;
-			} catch (ParseException e) {						
-				isTime = false;
-			}
-			
-			
-			
-			if (!isTime && !isDate) {					
-				dataUI.setFeedback("The format you entered for editing the date and time was not recognized");
-				return success = false;
-			}				
-		}
 		
-		if (!changeName && !changePriority && !changeStartDate && !changeEndDate) {				
+		if (attArray.length != 2) {				
+			dataUI.setFeedback(String.format(FEEDBACK_LEFT_SOMETHING_BLANK, attArray[0]));
 			return success = false;
+		} else {
+			String parameterToEdit = attArray[0].toLowerCase();
+			
+			switch(editTable.get(parameterToEdit)) {
+				case EDIT_NAME:
+					changeName = settingNewName(replacementEvent);
+					break;
+				case EDIT_PRIORITY:
+					changePriority = true;
+					String typeOfPriority = attArray[1].toLowerCase().trim();
+					
+					if(priorityTable.get(typeOfPriority) != null) {
+						settingNewPriority(replacementEvent);
+					} else {					
+						dataUI.setFeedback(FEEDBACK_INVALID_PRIORITY_LEVEL);					
+						return false;					
+					}
+					break;
+				case EDIT_START:
+					changeStartDate = true;
+					String startDateEntry = attArray[1].trim();
+					try {						
+						Date changeDate = dateFormat.parse(startDateEntry);						
+						Calendar cal = GregorianCalendar.getInstance();						
+						cal.setTime(changeDate);						
+						cal.set(Calendar.HOUR_OF_DAY, origEvent.getStartDay().get(Calendar.HOUR_OF_DAY));						
+						cal.set(Calendar.MINUTE, origEvent.getStartDay().get(Calendar.MINUTE));						
+						replacementEvent.setStartDay(cal);						
+						isDate = true;
+					} catch (ParseException e) {												
+						isDate = false;
+					}
+					
+					try {					
+						Date changeDate = timeFormat.parse(startDateEntry);						
+						Calendar cal = GregorianCalendar.getInstance();						
+						cal.setTime(changeDate);
+						cal.set(Calendar.DATE, origEvent.getStartDay().get(Calendar.DATE));						
+						cal.set(Calendar.MONTH, origEvent.getStartDay().get(Calendar.MONTH));						
+						cal.set(Calendar.YEAR, origEvent.getStartDay().get(Calendar.YEAR));						
+						replacementEvent.setStartDay(cal);						
+						isTime = true;
+					} catch (ParseException e) {
+						isTime = false;
+					}
+					
+					if (!isTime && !isDate) {				
+						dataUI.setFeedback(FEEDBACK_UNRECOGNIZED_DATE_TIME_FORMAT);	
+						return success = false;
+					}
+					break;
+				case EDIT_END:
+					changeEndDate = true;
+					String endDateEntry = attArray[1].trim();			
+					try {						
+						Date changeDate = dateFormat.parse(endDateEntry);												
+						Calendar cal = GregorianCalendar.getInstance();						
+						cal.setTime(changeDate);						
+						cal.set(Calendar.HOUR_OF_DAY, origEvent.getEndDay().get(Calendar.HOUR_OF_DAY));						
+						cal.set(Calendar.MINUTE, origEvent.getEndDay().get(Calendar.MINUTE));						
+						replacementEvent.setEndDay(cal);						
+						isDate = true;
+					} catch (ParseException e) {						
+						isDate = false;
+					}
+					
+					try {						
+						Date changeDate = timeFormat.parse(endDateEntry);						
+						Calendar cal = GregorianCalendar.getInstance();						
+						cal.setTime(changeDate);
+						cal.set(Calendar.DATE, origEvent.getEndDay().get(Calendar.DATE));					
+						cal.set(Calendar.MONTH, origEvent.getEndDay().get(Calendar.MONTH));						
+						cal.set(Calendar.YEAR, origEvent.getEndDay().get(Calendar.YEAR));						
+						replacementEvent.setEndDay(cal);						
+						isTime = true;
+					} catch (ParseException e) {						
+						isTime = false;
+					}
+					
+					if (!isTime && !isDate) {					
+						dataUI.setFeedback(FEEDBACK_UNRECOGNIZED_DATE_TIME_FORMAT);
+						return success = false;
+					}
+					break;
+				default: 
+					break;
+			}
+			
+			
+			if (!changeName && !changePriority && !changeStartDate && !changeEndDate) {				
+				return success = false;
+			}
+			
+			if(changeName == false) {			
+				replacementEvent.setName(origEvent.getName());			
+			}
+			
+			if (changePriority == false) {			
+				replacementEvent.setPriority(origEvent.getPriority());			
+			}
+			
+			if (changeEndDate == false) {			
+				replacementEvent.setEndDay(origEvent.getEndDay());			
+			}
+			
+			if (changeStartDate == false) {			
+				replacementEvent.setStartDay(origEvent.getStartDay());			
+			}
+			
+			if (isTime) {
+				replacementEvent.setType("E");
+			}
+			else {
+				replacementEvent.setType(origEvent.getType());
+			}
+			
+			if(replacementEvent.getEndDay().before(replacementEvent.getStartDay())) {
+				dataUI.setFeedback(FEEDBACK_TIME_TRAVEL);
+				return false;
+			}
+			
+			dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);		
+			fileLink.editHandling(replacementEvent, userEnteredID - 1, 2);
+			
+			undoHandler.storeUndo("edit", EDIT_INCOMPLETE_EVENTS, origEvent, replacementEvent);
+			RefreshUI.executeRefresh(fileLink, dataUI);		
+			return success;
 		}
 		
-		if(changeName == false) {			
-			replacementEvent.setName(origEvent.getName());			
-		}
-		
-		if (changePriority == false) {			
-			replacementEvent.setPriority(origEvent.getPriority());			
-		}
-		
-		if (changeEndDate == false) {			
-			replacementEvent.setEndDay(origEvent.getEndDay());			
-		}
-		
-		if (changeStartDate == false) {			
-			replacementEvent.setStartDay(origEvent.getStartDay());			
-		}
-		
-		if (isTime) {
-			replacementEvent.setType("E");
-		}
-		else {
-			replacementEvent.setType(origEvent.getType());
-		}
-
-		if(replacementEvent.getEndDay().before(replacementEvent.getStartDay())) {
-			dataUI.setFeedback("Greaaat Scott! Are you a time traveler?");
-			return false;
-		}
-		
-		dataUI.setFeedback(FEEDBACK_EVENT_EDIT_SUCCESSFUL);		
-		fileLink.editHandling(replacementEvent, userEnteredID - 1, 2);
-		
-		undoHandler.storeUndo("edit", EDIT_INCOMPLETE_EVENTS, origEvent, replacementEvent);
-		RefreshUI.executeRefresh(fileLink, dataUI);		
-		return success;	
 	}
 	
 	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {		
@@ -467,8 +546,23 @@ public class Edit {
 	}
 	
 	private void initialiseCmdTable() {
-		cmdTable.put("edit", 0);
+		cmdTable.put("edit", EDIT_BOTH_EVENTS_TASKS);
 		cmdTable.put("editt", EDIT_INCOMPLETE_TASKS);		
 		cmdTable.put("edite", EDIT_INCOMPLETE_EVENTS);		
+	}
+	
+	private void initialiseEditTable() {
+		editTable.put("name", 1);
+		editTable.put("priority", 2);
+		editTable.put("start", 3);
+		editTable.put("end", 4);
+	}
+	
+	private void intialisePriorityTable() {
+		priorityTable.put("low", 1);
+		priorityTable.put("med", 2);
+		priorityTable.put("medium", 2);
+		priorityTable.put("high", 3);
+		
 	}
 }
