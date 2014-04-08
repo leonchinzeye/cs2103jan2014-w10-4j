@@ -1,11 +1,18 @@
 package application;
 
+/**
+ * This class works as a command handler.
+ * It parses in the first input and checks if it is a valid command.
+ * If the command is valid, then CommandHandler will pass the inputs
+ * into the respective functions based on the commands that the user
+ * has entered
+ */
+//@author A0097304E
 public class CommandHandler {
 	
 	private static FileLinker fileLink;
 	private static DataUI dataUI;
 	
-	//handlers
 	private static Delete deleteHandler;
 	private static Search searchHandler;
 	private static Mark markHandler;
@@ -63,7 +70,7 @@ public class CommandHandler {
 				deleteHandler.executeDelete(userInput, fileLink, dataUI, tableNo, undoHandler);
 				break;
 			case EDIT:
-				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler);
+				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 				break;
 			case SEARCH:
 				fileLink.resetState();
