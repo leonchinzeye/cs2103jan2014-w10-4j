@@ -326,4 +326,3 @@ public class DataUI {
 		UIdate = dateFormat.format(date);
 	}
 }
-//@author A0100720E

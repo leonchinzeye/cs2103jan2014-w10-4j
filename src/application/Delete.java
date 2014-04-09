@@ -232,5 +232,3 @@ public class Delete {
 		cmdTable.put("delec", DELETE_COMPLETE_EVENTS);
 	}
 }
-
-//@author A0100720E

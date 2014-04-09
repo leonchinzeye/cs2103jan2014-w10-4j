@@ -127,4 +127,3 @@ public class EventDataUI {
 		return endTime;
 	}
 }
-//@author A0100720E
