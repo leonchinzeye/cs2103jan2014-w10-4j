@@ -568,6 +568,7 @@ public class Edit {
 	private boolean editPriority(String priority, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited, int type) {
 		boolean success = false;
+		priority = priority.trim();
 		ArrayList<TaskCard> fileToBeEdited = new ArrayList<TaskCard>();
 		
 		if(!priorityTable.containsKey(priority)) {
