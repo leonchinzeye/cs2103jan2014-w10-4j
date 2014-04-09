@@ -706,10 +706,13 @@ public class Edit {
 	
 	private void intialisePriorityTable() {
 		priorityTable.put("low", 1);
+		priorityTable.put("Low", 1);
 		priorityTable.put("med", 2);
 		priorityTable.put("medium", 2);
+		priorityTable.put("Med", 2);
+		priorityTable.put("Medium", 2);
 		priorityTable.put("high", 3);
-		
+		priorityTable.put("High", 3);
 	}
 }
 //@author A0100720E
