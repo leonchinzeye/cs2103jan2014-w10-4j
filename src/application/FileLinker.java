@@ -4,12 +4,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
-/**
- * Class that links the individual logic components to the FileHandler
- * and vice versa
- * @author leon
- *
- */
+//@author A0097304E
 public class FileLinker {
 
 	private ArrayList<TaskCard> incompleteTasks;
