@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+//@author A0097304E
 public class TaskCard implements Cloneable {
 	
 	private static final int MAX_PRIORITY = 3;
