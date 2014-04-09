@@ -1,0 +1,243 @@
+/* Color Reference
+ * 
+ * Shades of Gold
+ * darkest: #c39f03
+ * darker: #dcb403
+ * dark: #f5c803
+ * gold: #fcd116
+ * light: #fcd62f
+ * lighter: #fddb48
+ * lightest: #fde062
+ * 
+ * Shades of Green
+ * darkest: #003b23
+ * darker: #005432
+ * dark: #006e42
+ * green: #008751
+ * light: #00a160
+ * lighter: #00ba70
+ * lightest: #00d47f
+ * 
+ * yellow: #ffd700
+ * blue: #003f85
+ * 
+ * font: Moire
+ * 
+ * fix font size
+ * fix row highlight
+ */
+
+#title {
+	-fx-fill: #fcd116
+}
+
+#dayAndTime {
+	-fx-fill: #fcd116
+}
+
+#date {
+	-fx-fill: #fcd116
+}
+
+#anchortext {
+	-fx-fill: #ffffff
+}
+
+.anchor {
+	-fx-background-color: #008751
+}
+
+.input {
+	-fx-background-color: #008751;
+	-fx-border-color: #fcd62f;
+	-fx-border-width: 2px;
+	-fx-text-fill: #ffffff;
+	-fx-highlight-fill: #fcd116;
+	-fx-font-size: 13;
+	-fx-prompt-text-fill: #ffffff;
+	-fx-font-family: Moire;
+}
+
+.feedback {
+	-fx-background-color: #fcd116;
+	-fx-border-color: #000000;
+	-fx-border-width: 2px;
+	-fx-text-fill: #000000;
+	-fx-font-size: 13;
+	-fx-font-family: Moire;
+}
+
+.pane {
+	-fx-border-width: 2px;
+	-fx-border-color: #000000;
+}
+
+/*Help Tab*/
+.polygon {
+	-fx-fill: #003f85;
+	-fx-stroke-width: 15;
+	-fx-stroke: #fcd116;
+}
+
+.TextArea {
+	-fx-background-color: #003f85;
+	-fx-font-family: Moire;
+	-fx-font-size: 11;
+	-fx-border-width: 2px;
+	-fx-border-color: #fcd116;
+	-fx-text-fill: #fcd116;
+}
+
+/*Tab Pane*/
+.tab-pane .tab-header-area .tab-header-background {
+	-fx-opacity: 0;
+}
+
+.tab-pane {
+	-fx-tab-min-width: 150px;
+}
+
+.tab {
+	-fx-background-insets: 0 1 0 1, 0, 0;
+	-fx-background-color: #005432;
+	-fx-border-width: 0 0 2 0;
+	-fx-border-color: #fcd116;
+}
+
+.tab .tab-label {
+	-fx-alignment: CENTER;
+	-fx-text-fill: #fcd116;
+	-fx-font-size: 14px;
+	-fx-font-family: Moire;
+}
+
+.tab-pane .tab:selected {
+	-fx-background-color: #003b23;
+	-fx-border-width: 0 0 5 0;
+	-fx-border-color: #fcd116;
+}
+
+.tab-pane:top *.tab-header-area {
+	-fx-background-insets: 0, 0 0 1 0;
+	-fx-padding: 0.416667em 0.166667em 0.0em 0.0em;
+}
+
+/*Titled Pane*/
+.titled-pane .title {
+	-fx-background-color: #005432;
+}
+
+.titled-pane .title .text {
+	-fx-alignment: CENTER;
+	-fx-fill: #fcd116;
+	-fx-font-size: 14px;
+	-fx-font-family: Moire;
+}
+
+.titled-pane .title .arrow-button .arrow {
+	-fx-background-color: #fcd116
+}
+
+.titled-pane:expanded .title {
+	-fx-background-color: #003b23;
+	-fx-border-width: 0 0 4 0;
+	-fx-border-color: #fcd116;
+}
+
+/*Table*/
+.column-header {
+	-fx-background-color: #005432;
+	-fx-border-width: 0
+}
+
+.column-header .label {
+	-fx-alignment: CENTER;
+	-fx-text-fill: #fcd116;
+	-fx-font-size: 12px;
+	-fx-font-family: Moire;
+}
+
+.table-view {
+	-fx-control-inner-background: #00a160;
+	-fx-padding: 0px;
+}
+
+.table-view .column-header, .table-view .filler {
+	-fx-size: 30;
+	-fx-border-width: 0 0 2 0;
+	-fx-border-color: #fcd116;
+}
+
+.table-view .column-header-background .filler {
+	-fx-background-color: #005432;
+}
+
+.table-view .table-cell {
+	-fx-padding: 10 0 5 0;
+	-fx-alignment: center;
+	-fx-border-width: 1px;
+	-fx-border-color: #003b23;
+	-fx-font-size: 11px;
+	-fx-font-family: Moire;
+}
+
+.table-view .table-cell .filler {
+	-fx-border-width: 1px;
+	-fx-border-color: #003b23;
+}
+
+/* Selected cell */
+.table-cell:filled:selected {
+    -fx-background-color: #fcd116;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: black;
+}
+
+/* Cell hovered */
+.table-cell:filled:hover {
+    -fx-background-color: #003f85;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+/* Selected row */
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: #fcd116;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: black;
+}
+
+/* Selected row when table not focused */
+.table-row-cell:filled:selected {
+    -fx-background-color: #fcd116;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: black;
+}
+
+/* Row hovered */
+.table-view:row-selection .table-row-cell:filled:hover {
+    -fx-background-color: #003f85;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+/* Selected row hovered */
+.table-view:focused .table-row-cell:filled:focused:selected:hover {
+    -fx-background-color: #003f85;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+/* Selected expired row */
+.highlightExpired {
+    -fx-background-color: #ff4d4d;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: -fx-selection-bar-text;
+}
+
+/* Selected ongoing row */
+.highlightOngoing {
+    -fx-background-color: #8080ff;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: #ffffff;
+}
