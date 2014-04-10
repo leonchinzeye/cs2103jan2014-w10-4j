@@ -19,8 +19,6 @@ public class TaskCard implements Cloneable {
 	private Calendar endDay = new GregorianCalendar();
 	private SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private String taskString;
-	private boolean isExpired;
-	private boolean isOngoing;
 	
 	public TaskCard(){
 	}
@@ -31,8 +29,6 @@ public class TaskCard implements Cloneable {
 		this.priority = priority;
 		this.startDay = start;
 		this.endDay = end;
-		this.isExpired = expired;
-		this.isOngoing = ongoing;
 	}
 
 	public String getName() {
@@ -73,28 +69,6 @@ public class TaskCard implements Cloneable {
 	
 	public void setEndDay(Calendar end) {
 		this.endDay = end;
-	}
-	
-	public boolean getIsExpired() {
-		if (current.after(endDay)) {
-			isExpired = true;
-		}
-		return isExpired;
-	}
-	
-	public void setIsExpired(boolean expired) {
-		this.isExpired = expired;
-	}
-	
-	public boolean getIsOngoing() {
-		if (!type.contains("T") && current.after(startDay) && current.before(endDay)) {
-			isOngoing = true;
-		}
-		return isOngoing;
-	}
-	
-	public void setIsOngoing(boolean ongoing) {
-		this.isOngoing = ongoing;
 	}
 	
 	public String getTaskString() {

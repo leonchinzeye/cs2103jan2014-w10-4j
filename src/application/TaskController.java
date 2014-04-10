@@ -3,6 +3,7 @@ package application;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -403,7 +404,16 @@ public class TaskController {
 
 	private void updateClock() {
 	  dayAndTime.setText(dataUI.getUIClock());
-		dateText.setText(dataUI.getUIdate());
+
+	  
+	  /*del after record video
+	  Calendar now = new GregorianCalendar();
+	  now.set(Calendar.DAY_OF_MONTH, 6);
+		now.set(Calendar.MONTH, 4);
+	  dataUI.setUIdate(now);
+	  */
+	  
+	  dateText.setText(dataUI.getUIdate());
   }
 	
 	/**
