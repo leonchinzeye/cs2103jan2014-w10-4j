@@ -80,6 +80,8 @@ public class DataUI {
 			} else {
 				Calendar endDay = task.getEndDay();
 				Calendar now = GregorianCalendar.getInstance();
+				//now.set(Calendar.DAY_OF_MONTH, 6);	//del after record video
+				//now.set(Calendar.MONTH, 4);					//del after record video
 				
 				if(endDay.before(now) || endDay.equals(now)) {
 					taskData.setIsExpired(true);
@@ -134,6 +136,8 @@ public class DataUI {
 			}
 			
 			Calendar now = GregorianCalendar.getInstance();
+			//now.set(Calendar.DAY_OF_MONTH, 6);	//del after record video
+			//now.set(Calendar.MONTH, 4);					//del after record video
 			
 			if(event.getEndDay().before(now) || event.getEndDay().equals(now)) {
 				eventData.setIsExpired(true);
