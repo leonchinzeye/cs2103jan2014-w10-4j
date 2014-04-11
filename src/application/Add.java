@@ -619,10 +619,17 @@ public class Add {
 	  return true;
 	}
 
+	/**
+	 * this method resets the urgent flag which is used when the user wants to add an urgent task
+	 */
 	private void resetFlag() {
 		urgent_flag = false;
 	}
 	
+	/**
+	 * initialises the commands it detects for when it is an urgent task or a default priority
+	 * task
+	 */
 	private void initCmdTable() {
 		cmdTable = new HashMap<String, Integer>();
 		cmdTable.put("add", 1);
