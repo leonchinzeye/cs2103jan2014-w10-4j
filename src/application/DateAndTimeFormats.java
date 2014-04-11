@@ -1,6 +1,7 @@
 package application;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,12 +39,12 @@ public class DateAndTimeFormats {
 	};
 	
 	private SimpleDateFormat[] complete12HrFormat = {
-		new SimpleDateFormat("hh:mmaa"),
-		new SimpleDateFormat("hh.mmaa"),
+		new SimpleDateFormat("hh:mma"),
+		new SimpleDateFormat("hh.mma"),
 	};
 	
 	private SimpleDateFormat[] hourOnly12HrFormat = {
-		new SimpleDateFormat("hhaa"),
+		new SimpleDateFormat("hha"),
 	};
 
 	public DateAndTimeFormats() {
@@ -57,7 +58,13 @@ public class DateAndTimeFormats {
 			formatter.setLenient(false);
 			
 			try {
-				Date userDate = formatter.parse(input);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
 				Calendar enteredDate = GregorianCalendar.getInstance();
 				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
 				enteredDate.set(Calendar.MINUTE, 0);
@@ -80,7 +87,13 @@ public class DateAndTimeFormats {
 			formatter.setLenient(false);
 			
 			try {
-				Date userDate = formatter.parse(input);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
 				Calendar enteredDate = GregorianCalendar.getInstance();
 				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
 				enteredDate.set(Calendar.MINUTE, userDate.getMinutes());
@@ -103,7 +116,13 @@ public class DateAndTimeFormats {
 			formatter.setLenient(false);
 			
 			try {
-				Date userDate = formatter.parse(input);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
 				Calendar enteredDate = GregorianCalendar.getInstance();
 				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
 				enteredDate.set(Calendar.MINUTE, userDate.getMinutes());
@@ -130,7 +149,13 @@ public class DateAndTimeFormats {
 			formatter.setLenient(false);
 
 			try {
-				Date userDate = formatter.parse(userInput);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(userInput, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(userInput, pos.getIndex());
+				}
+				
 				return userDate;
 			} catch(ParseException e) {
 				continue;
@@ -149,7 +174,13 @@ public class DateAndTimeFormats {
 			formatter.set2DigitYearStart(startOf21stCentury);
 			
 			try {
-				Date userDate = formatter.parse(input);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
 				return userDate;
 			} catch(ParseException e) {
 				continue;
@@ -165,7 +196,12 @@ public class DateAndTimeFormats {
 			formatter.setLenient(false);
 			
 			try {
-				Date userDate = formatter.parse(input);
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
 				
 				return userDate;
 			} catch(ParseException e){
