@@ -346,7 +346,6 @@ public class Add {
 			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
 		}
 		
-		
 		return success;
 	}
 
@@ -410,12 +409,17 @@ public class Add {
 		
 		Calendar startDay = GregorianCalendar.getInstance();
 		Calendar endDay = GregorianCalendar.getInstance();
+		Calendar today = GregorianCalendar.getInstance();
 		startDay.setTime(startDate);
 		endDay.setTime(endDate);
 		
-		endDay.set(Calendar.DATE, startDay.get(Calendar.DATE));
-		endDay.set(Calendar.MONTH, startDay.get(Calendar.MONTH));
-		endDay.set(Calendar.YEAR, startDay.get(Calendar.YEAR));
+		if(endDay.get(Calendar.DATE) == today.get(Calendar.DATE) 
+				&& endDay.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+				&& endDay.get(Calendar.YEAR) == today.get(Calendar.YEAR)) {
+			endDay.set(Calendar.DATE, startDay.get(Calendar.DATE));
+			endDay.set(Calendar.MONTH, startDay.get(Calendar.MONTH));
+			endDay.set(Calendar.YEAR, startDay.get(Calendar.YEAR));
+		}
 		
 		eventToBeAdded.setStartDay(startDay);
 		eventToBeAdded.setEndDay(endDay);
