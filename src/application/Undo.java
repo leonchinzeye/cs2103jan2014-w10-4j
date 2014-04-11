@@ -19,7 +19,14 @@ public class Undo {
 	
 	private int indexOfLastCmdUndo;
 	private int indexOfLastCmdRedo;
-
+	
+	private final String RESPONSE_SUCCESSFUL_UNDO_ADD = "\"%s\" has been removed!";
+	private final String RESPONSE_SUCCESSFUL_REDO_ADD = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_DELETE = "\"%s\" has been added back!";
+	private final String RESPONSE_SUCCESSFUL_REDO_DELETE = "\"%s\" has been removed again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_EDIT = "\"s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_REDO_EDIT = "\"s\" has been added back again!";
+	
 	public enum COMMAND_TYPE {
 		ADD, DELETE, EDIT, MARK, UNMARK
 	}
@@ -178,7 +185,7 @@ public class Undo {
 	  
 	  pushUndoToRedo();
 	  
-	  return "Undo for adding \"" + taskToBeUndone.getName() + "\" successful!";
+	  return String.format(RESPONSE_SUCCESSFUL_UNDO_ADD, taskToBeUndone.getName());
   }
 	
 	/**
@@ -194,7 +201,7 @@ public class Undo {
 		
 		pushRedoToUndo();
 		
-		return "Redo for adding \"" + taskToBeRedone.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_REDO_ADD, taskToBeRedone.getName()); 
 	}
 
 	/**
@@ -207,12 +214,11 @@ public class Undo {
 	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
 		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
 	  
-	  //must consider deleting from completed tasks too
 	  fileLink.addHandling(taskToBeAddedBack, modifiedFile);
 	  
 	  pushUndoToRedo();
 	  
-	  return "Undo for deleting \"" + taskToBeAddedBack.getName() + "\" successful!";
+	  return String.format(RESPONSE_SUCCESSFUL_UNDO_DELETE, taskToBeAddedBack.getName());
   }
 
 	/**
@@ -242,7 +248,7 @@ public class Undo {
 		
 		pushRedoToUndo();
 		
-		return "Undo for deleting \"" + taskToBeDeletedBack.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_REDO_DELETE, taskToBeDeletedBack.getName());
 	}
 
 	/**
