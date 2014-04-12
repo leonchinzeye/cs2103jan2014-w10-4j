@@ -298,7 +298,6 @@ public class TaskController {
 	private String australia = getClass().getResource(CSS_AUSTRALIA).toExternalForm();
 	private String italy = getClass().getResource(CSS_ITALY).toExternalForm();
 	
-	//@author A0094534B
 	public TaskController() {
 		commandHandle = new CommandHandler();
 		notification = new TextField();
@@ -403,16 +402,7 @@ public class TaskController {
 	}
 
 	private void updateClock() {
-	  dayAndTime.setText(dataUI.getUIClock());
-
-	  
-	  /*del after record video
-	  Calendar now = new GregorianCalendar();
-	  now.set(Calendar.DAY_OF_MONTH, 6);
-		now.set(Calendar.MONTH, 4);
-	  dataUI.setUIdate(now);
-	  */
-	  
+	  dayAndTime.setText(dataUI.getUIClock());	  
 	  dateText.setText(dataUI.getUIdate());
   }
 	
