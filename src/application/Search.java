@@ -333,9 +333,19 @@ public class Search {
 			Calendar eventStart = event.getStartDay();
 			Calendar eventEnd = event.getEndDay();
 			
+			System.out.println(today.getTime().toLocaleString());
+			System.out.println(getTmr().getTime().getDate());
 			if(eventStart.after(today) && eventEnd.before(getTmr())) {
 				searchedEvents.add(event);
 			} else if(today.before(eventEnd) && today.after(eventStart)) {
+				searchedEvents.add(event);
+			} else if(today.get(Calendar.DATE) == eventStart.get(Calendar.DATE)
+					&& today.get(Calendar.MONTH) == eventStart.get(Calendar.MONTH)
+					&& today.get(Calendar.YEAR) == eventStart.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(today.get(Calendar.DATE) == eventEnd.get(Calendar.DATE)
+					&& today.get(Calendar.MONTH) == eventEnd.get(Calendar.MONTH)
+					&& today.get(Calendar.YEAR) == eventEnd.get(Calendar.YEAR)) {
 				searchedEvents.add(event);
 			} else if(today.equals(eventStart)) {
 				searchedEvents.add(event);
