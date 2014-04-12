@@ -215,12 +215,6 @@ public class FileLinker {
 		return true;
 	}
 
-	public void resetIncompleteHandling() {
-		incompleteTasks = new ArrayList<TaskCard>();
-		int numberOfIncompleteTasks = incompleteTasks.size();
-		Storage.writeFile(incompleteTasks, numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
-	}
-	
 	public void resetCompleteHandling() {
 		completedTasks = new ArrayList<TaskCard>(); 
 		int numberOfCompletedTasks = completedTasks.size();
