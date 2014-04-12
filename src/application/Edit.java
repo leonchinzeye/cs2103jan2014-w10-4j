@@ -13,6 +13,12 @@ import java.util.Date;
 //@author A0100720E
 public class Edit {
 	
+	
+	private static final String FEEDBACK_IMPROPER_PRIORITY = "You didn't enter a proper priority!";
+	private static final String FEEDBACK_EVENT_EDITED = "Event edited!";
+	private static final String FEEDBACK_TASK_EDITED = "Task edited!";
+	private static final String FEEDBACK_MISSING_DETAILS_TO_EDIT = "Are you missing the details that you want to edit?";
+	private static final String FEEDBACK_MISSING_NUM_DETAILS = "Are you missing the task number and details you want to edit?";
 	private static final String FEEDBACK_IMPROPER_DATE_TIME_FORMAT = "You didn't enter a proper date or time format!";
 	private static final String FEEDBACK_MISSING_TIMING = "Did you enter a timing?";
 	private static final String FEEDBACK_EXTRA_TIMING = "Did you enter an extra timing?";
@@ -50,6 +56,14 @@ public class Edit {
 	private static final int START = 1;
 	private static final int END = 2;
 	
+	private static final int EDITING_PRIORITY_HIGH = 3;
+	private static final int EDITING_PRIORITY_MED = 2;
+	private static final int EDITING_PRIORITY_LOW = 1;
+	private static final int EDITING_END = 4;
+	private static final int EDITING_START = 3;
+	private static final int EDITING_PRIORITY = 2;
+	private static final int EDITING_NAME = 1;
+	
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
 	private HashMap<String, Integer> editTable = new HashMap<String, Integer>();
 	private HashMap<String, Integer> priorityTable = new HashMap<String, Integer>();
@@ -63,17 +77,16 @@ public class Edit {
 	}
 	
 	/**
-	 * this method checks if the program is currently in any edit error handling state
-	 * if it is, it calls the individual edit methods
-	 * else, it will identify what type of edit command the user has entered before
-	 * handling the user input
-	 * if errors still persist, it will remain in a state of error
+	 * This method checks if the user input is of acceptable length and if the command entered is 
+	 * valid. If it does it passes it to the next layer to understand and execute the command
+	 * else it will prompt the user to check his input
 	 * @param userInput
 	 * @param fileLink
 	 * @param dataUI
+	 * @param tableNo
+	 * @param undoHandler
+	 * @param dateFormats
 	 * @return
-	 * the return type will signal to commandhandler whether the edit was successful
-	 * or that there was an error involved
 	 */
 	
 	public boolean executeEdit(String userInput, FileLinker fileLink, 
@@ -85,7 +98,7 @@ public class Edit {
 		String cmd = tokenizedInput[FIRST_ARG];
 		
 		if(tokenizedInput.length < 2) {
-			dataUI.setFeedback("Are you missing the task number and details you want to edit?");
+			dataUI.setFeedback(FEEDBACK_MISSING_NUM_DETAILS);
 			return false;
 		}
 		
@@ -103,6 +116,18 @@ public class Edit {
 		return success;
 	}
 	
+	/**
+	 * This method checks if the input that comes after the edit command is of acceptable length and redirect the 
+	 * input to the relevant other commands based on whether it is to edit tasks or events. 
+	 * @param tokenizedInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @param tableNo
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @return
+	 */
+	
 	private boolean identifyCmdAndPerform(String[] tokenizedInput, 
 			FileLinker fileLink, DataUI dataUI, int tableNo, 
 			Undo undoHandler, DateAndTimeFormats dateFormats) {
@@ -111,7 +136,7 @@ public class Edit {
 		String[] indexAndDetails = tokenizedInput[SECOND_ARG].trim().split("\\s+", 2);
 		
 		if(indexAndDetails.length < 2) {
-			dataUI.setFeedback("Are you missing the details that you want to edit?");
+			dataUI.setFeedback(FEEDBACK_MISSING_DETAILS_TO_EDIT);
 			return false;
 		}
 		
@@ -136,6 +161,17 @@ public class Edit {
 		return success;		
 	}
 	
+	/**
+	 * This method checks to see if the index enter for editing an incomplete task is within the range of tasks that exist and if it
+	 * is relays the information to the next methof
+	 * @param indexAndDetails
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @return
+	 */
+	
 	private boolean checkIndexIncTaskEdit(String[] indexAndDetails, FileLinker fileLink, 
 			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
@@ -156,7 +192,17 @@ public class Edit {
 		success = identifyParamsAndEditIncTask(paramAndDetails, fileLink, dataUI, undoHandler, dateFormats, indexToBeEdited);
 		return success;
 	}
-	
+	/**
+	 * This method checks the if the input after the index is of acceptable length. If it is, it tries to recognize
+	 * what parameter the user wishes to edit
+	 * @param paramAndDetails
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @param indexToBeEdited
+	 * @return
+	 */
 	private boolean identifyParamsAndEditIncTask(String paramAndDetails, FileLinker fileLink, 
 			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats, int indexToBeEdited) {
 		boolean success = false;
@@ -187,6 +233,18 @@ public class Edit {
 		
 		return success;
 	}
+	
+	/**
+	 * This method checks if the input is to set an end time and date or if the input is meant to change a timed task to a floating task
+	 * and then calls the functions required to make the change based on this input
+	 * @param date
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param dateFormats
+	 * @return
+	 */
 	
 	private boolean editTaskEnd(String date, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited, DateAndTimeFormats dateFormats) {
@@ -232,6 +290,14 @@ public class Edit {
 		return success;
 	}
 	
+	/**
+	 * This input make a timed task a floating task 
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 */
+	
 	private void editToFloatingTask(FileLinker fileLink, DataUI dataUI,
 			Undo undoHandler, int indexToBeEdited) {
 		TaskCard origTask = fileLink.getIncompleteTasks().get(indexToBeEdited - 1);
@@ -246,6 +312,16 @@ public class Edit {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 	}
 	
+	/**
+	 * This method will change the end date and time for the task that the user has entered and change the type of the 
+	 * task to that of a floating task
+	 * @param dateAndTimeEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @return
+	 */
 	private boolean editTaskDateAndTimeAdd(Date dateAndTimeEntered,
 			FileLinker fileLink, DataUI dataUI, Undo undoHandler, int indexToBeEdited) {
 		boolean success = true;
@@ -264,6 +340,16 @@ public class Edit {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		return success;
 	}
+	
+	/**
+	 * This method will only change the end date of a task and change the type of the task to that of a timed task
+	 * @param dateEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @return
+	 */
 	
 	private boolean editTaskDateAndAdd(Date dateEntered, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited) {
@@ -296,7 +382,16 @@ public class Edit {
 		
 		return success;
 	}
-	
+	/**
+	 * This method will only change the time of the task to the one that was entered by the user, the end date is set to be 
+	 * the date that the user is currently using TaskWorthy on
+	 * @param timeEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @return
+	 */
 	private boolean editTaskTimeAndAdd(Date timeEntered, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited) {
 		boolean success = true;
@@ -322,7 +417,15 @@ public class Edit {
 		
 		return success;
 	}
-	
+	/**
+	 * This method checks if the event index that the user wants to edit is within the range of incomplete events
+	 * @param indexAndDetails
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @return
+	 */
 	private boolean checkIndexIncEventEdit(String[] indexAndDetails, FileLinker fileLink, 
 			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {	
 		boolean success = false;
@@ -344,6 +447,17 @@ public class Edit {
 		return success;
 	}
 	
+	/**
+	 * This method checks if the input after the event index is of acceptable length and if so checks to see if
+	 * the parameter the user wants to edit is valid, in which case it redirects the input to the relevant methods
+	 * @param paramAndDetails
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param dateFormats
+	 * @param indexToBeEdited
+	 * @return
+	 */
 	private boolean identifyParamsAndEditIncEvent(String paramAndDetails,
 			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
 			DateAndTimeFormats dateFormats, int indexToBeEdited) {
@@ -377,7 +491,19 @@ public class Edit {
 		}
 		return success;
 	}
-	
+	/**
+	 * This method edits the input entered after the recognized keywords of start and end are of acceptable length
+	 * and checks whether the user wishes to edit both the date and time, just the date or just the time and redirects the 
+	 * input accordingly.
+	 * @param date
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param dateFormats
+	 * @param timing
+	 * @return
+	 */
 	private boolean editEventTiming(String date, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited, DateAndTimeFormats dateFormats, int timing) {
 		boolean success = false;
@@ -415,6 +541,17 @@ public class Edit {
 		}
 		return success;
 	}
+	/**
+	 * This method changes the time of the event and depending on what type of event it is, changes it to a Timed event if it is an
+	 * all day event 
+	 * @param timeEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param typeTiming
+	 * @return
+	 */
 	
 	private boolean editEventTimeAndAdd(Date timeEntered, FileLinker fileLink,
       DataUI dataUI, Undo undoHandler, int indexToBeEdited, int typeTiming) {
@@ -453,6 +590,17 @@ public class Edit {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		return success;
   }
+	
+	/**
+	 * This method only changes the event date of the event that the user wishes to change
+	 * @param dateEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param typeTiming
+	 * @return
+	 */
 
 	private boolean editEventDateAndAdd(Date dateEntered, FileLinker fileLink,
       DataUI dataUI, Undo undoHandler, int indexToBeEdited, int typeTiming) {
@@ -501,6 +649,17 @@ public class Edit {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		return success;
   }
+	
+	/**
+	 * This method just changes the date of the event
+	 * @param dateAndTimeEntered
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param typeTiming
+	 * @return
+	 */
 
 	private boolean editEventDateAndTimeAdd(Date dateAndTimeEntered,
       FileLinker fileLink, DataUI dataUI, Undo undoHandler,
@@ -535,7 +694,16 @@ public class Edit {
 		return success;
   }
 
-	
+	/**
+	 * This method changes the name of the task or event
+	 * @param name
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param type
+	 * @return
+	 */
 	private boolean editName(String name, FileLinker fileLink, DataUI dataUI,
 			Undo undoHandler, int indexToBeEdited, int type) {
 		boolean success = true;
@@ -553,9 +721,9 @@ public class Edit {
 		editedTask.setName(name.trim());
 		
 		if(type == TYPE_INC_TASKS) {
-			dataUI.setFeedback("Task edited!");
+			dataUI.setFeedback(FEEDBACK_TASK_EDITED);
 		} else {
-			dataUI.setFeedback("Event edited!");
+			dataUI.setFeedback(FEEDBACK_EVENT_EDITED);
 		}
 		
 		fileLink.editHandling(editedTask, indexToBeEdited - 1, type);
@@ -565,6 +733,16 @@ public class Edit {
 		return success;
 	}
 	
+	/**
+	 * This method checks if the priority level the user wishes to change is of relevant format and if it is, changes it
+	 * @param priority
+	 * @param fileLink
+	 * @param dataUI
+	 * @param undoHandler
+	 * @param indexToBeEdited
+	 * @param type
+	 * @return
+	 */
 	private boolean editPriority(String priority, FileLinker fileLink,
 			DataUI dataUI, Undo undoHandler, int indexToBeEdited, int type) {
 		boolean success = false;
@@ -572,7 +750,7 @@ public class Edit {
 		ArrayList<TaskCard> fileToBeEdited = new ArrayList<TaskCard>();
 		
 		if(!priorityTable.containsKey(priority)) {
-			dataUI.setFeedback("You didn't enter a proper priority!");
+			dataUI.setFeedback(FEEDBACK_IMPROPER_PRIORITY);
 			return false;
 		}
 		
@@ -600,9 +778,9 @@ public class Edit {
 		}
 		
 		if(type == TYPE_INC_TASKS) {
-			dataUI.setFeedback("Task edited!");
+			dataUI.setFeedback(FEEDBACK_TASK_EDITED);
 		} else {
-			dataUI.setFeedback("Event edited!");
+			dataUI.setFeedback(FEEDBACK_EVENT_EDITED);
 		}
 		
 		fileLink.editHandling(editedTask, indexToBeEdited - 1, type);
@@ -698,21 +876,21 @@ public class Edit {
 	}
 	
 	private void initialiseEditTable() {
-		editTable.put("name", 1);
-		editTable.put("priority", 2);
-		editTable.put("start", 3);
-		editTable.put("end", 4);
+		editTable.put("name", EDITING_NAME);
+		editTable.put("priority", EDITING_PRIORITY);
+		editTable.put("start", EDITING_START);
+		editTable.put("end", EDITING_END);
 	}
 	
 	private void intialisePriorityTable() {
-		priorityTable.put("low", 1);
-		priorityTable.put("Low", 1);
-		priorityTable.put("med", 2);
-		priorityTable.put("medium", 2);
-		priorityTable.put("Med", 2);
-		priorityTable.put("Medium", 2);
-		priorityTable.put("high", 3);
-		priorityTable.put("High", 3);
+		priorityTable.put("low", EDITING_PRIORITY_LOW);
+		priorityTable.put("Low", EDITING_PRIORITY_LOW);
+		priorityTable.put("med", EDITING_PRIORITY_MED);
+		priorityTable.put("medium", EDITING_PRIORITY_MED);
+		priorityTable.put("Med", EDITING_PRIORITY_MED);
+		priorityTable.put("Medium", EDITING_PRIORITY_MED);
+		priorityTable.put("high", EDITING_PRIORITY_HIGH);
+		priorityTable.put("High", EDITING_PRIORITY_HIGH);
 	}
 }
 //@author A0100720E
