@@ -35,7 +35,7 @@ public class Delete {
 	}
 
 	/**
-	 * this method checks if the program is currently in any delete error handling state
+	 * This method checks if the program is currently in any delete error handling state
 	 * if it is, it calls the individual delete methods
 	 * else, it will identify what type of delete command the user has entered before
 	 * handling the user input
@@ -64,6 +64,16 @@ public class Delete {
 		}
 	}
 	
+	/**
+	 * This method checks if the command index is of acceptable length and checks what type of delete the user wishes to execute.
+	 * It then redirects the input accordingly
+	 * @param tokenizedInput
+	 * @param fileLink
+	 * @param dataUI
+	 * @param tableNo
+	 * @param undoHandler
+	 * @return
+	 */
 	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
 		boolean success = false;
 		boolean noIndexArgument = false;
@@ -232,3 +242,5 @@ public class Delete {
 		cmdTable.put("delec", DELETE_COMPLETE_EVENTS);
 	}
 }
+
+//@author A0100720E
