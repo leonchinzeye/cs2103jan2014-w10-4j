@@ -96,36 +96,7 @@ public class FileLinker {
 		writeToFiles();
 	}
 	
-	/**
-	 * method for edit logic that will update modified data to the file
-	 * @param arrayToBeUpdated
-	 */
-	public boolean editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeEditedFrom) {				
-
-		if(fileToBeEditedFrom == 1) {
-			if(state_search) {
-				TaskCard origTask = searchIncTasks.get(taskNumberToBeModified);
-				searchIncTasks.set(taskNumberToBeModified, modifiedTask);
-				taskNumberToBeModified = incompleteTasks.indexOf(origTask);
-			}
-			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
-		}
-		
-		else if (fileToBeEditedFrom == 2) {
-			if(state_search) {
-				TaskCard origEvent = searchIncEvents.get(taskNumberToBeModified);
-				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
-				taskNumberToBeModified = incompleteEvents.indexOf(origEvent);
-			}
-			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
-		}
-	
-		sortFiles();
-		writeToFiles();
-		return true;
-	}
-
-	public boolean deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
+	public void deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
 			if(state_search) {
 				TaskCard toBeDeleted = searchIncTasks.get(taskNumberToBeDeleted);
@@ -166,9 +137,36 @@ public class FileLinker {
 		
 		sortFiles();
 		writeToFiles();
-		return true;
 	}
 	
+	/**
+	 * method for edit logic that will update modified data to the file
+	 * @param arrayToBeUpdated
+	 */
+	public void editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeEditedFrom) {				
+	
+		if(fileToBeEditedFrom == 1) {
+			if(state_search) {
+				TaskCard origTask = searchIncTasks.get(taskNumberToBeModified);
+				searchIncTasks.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incompleteTasks.indexOf(origTask);
+			}
+			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+		}
+		
+		else if (fileToBeEditedFrom == 2) {
+			if(state_search) {
+				TaskCard origEvent = searchIncEvents.get(taskNumberToBeModified);
+				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incompleteEvents.indexOf(origEvent);
+			}
+			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
+		}
+	
+		sortFiles();
+		writeToFiles();
+	}
+
 	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
 			int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
@@ -203,7 +201,7 @@ public class FileLinker {
 		writeToFiles();
 	}
 
-	public boolean searchHandling(ArrayList<TaskCard> searchedIncTasks, ArrayList<TaskCard> searchedIncEvents,
+	public void searchHandling(ArrayList<TaskCard> searchedIncTasks, ArrayList<TaskCard> searchedIncEvents,
 			ArrayList<TaskCard> searchedCompTasks, ArrayList<TaskCard> searchedCompEvents) {
 		state_search = true;
 		
@@ -211,15 +209,8 @@ public class FileLinker {
 		searchIncEvents = searchedIncEvents;
 		searchCompTasks = searchedCompTasks;
 		searchCompEvents = searchedCompEvents;
-		
-		return true;
 	}
 
-	public void resetCompleteHandling() {
-		completedTasks = new ArrayList<TaskCard>(); 
-		int numberOfCompletedTasks = completedTasks.size();
-		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);;
-	}
 	
 	private void writeToFiles() {
 		callStorageWriteIncompleteTasks();
