@@ -108,15 +108,15 @@ public class Search {
 	 */
 	private void searchByDay(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
-		ArrayList<TaskCard> searchedIncTasks = searchByDay(searchInput, fileLink, TYPE_INC_TASKS);
-		ArrayList<TaskCard> searchedIncEvents = searchByDay(searchInput, fileLink, TYPE_INC_EVENTS);
-		ArrayList<TaskCard> searchedCompTasks = searchByDay(searchInput, fileLink, TYPE_COMP_TASKS);
-		ArrayList<TaskCard> searchedCompEvents = searchByDay(searchInput, fileLink, TYPE_COMP_EVENTS);
+		ArrayList<TaskCard> searchedIncTasks = performSearchByDay(searchInput, fileLink, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = performSearchByDay(searchInput, fileLink, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = performSearchByDay(searchInput, fileLink, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = performSearchByDay(searchInput, fileLink, TYPE_COMP_EVENTS);
 		
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
-	private ArrayList<TaskCard> searchByDay(String searchInput,
+	private ArrayList<TaskCard> performSearchByDay(String searchInput,
 			FileLinker fileLink, int type) {
 		int daysToBeAdded;
 		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
@@ -333,8 +333,6 @@ public class Search {
 			Calendar eventStart = event.getStartDay();
 			Calendar eventEnd = event.getEndDay();
 			
-			System.out.println(today.getTime().toLocaleString());
-			System.out.println(getTmr().getTime().getDate());
 			if(eventStart.after(today) && eventEnd.before(getTmr())) {
 				searchedEvents.add(event);
 			} else if(today.before(eventEnd) && today.after(eventStart)) {
@@ -472,13 +470,26 @@ public class Search {
 			TaskCard event = listToBeSearched.get(i);
 			Calendar searchedDateStart = GregorianCalendar.getInstance();
 			Calendar searchedDateEnd = getEndRange(date);
-			searchedDateStart.setTime(date);
+			Calendar eventStart;
+			Calendar eventEnd;
+			eventStart = event.getStartDay();
+			eventEnd = event.getEndDay();
 			
-			if(event.getStartDay().after(searchedDateStart) && event.getEndDay().before(searchedDateEnd)) {
+			searchedDateStart.setTime(date);
+
+			if(eventStart.after(searchedDateStart) && eventEnd.before(searchedDateEnd)) {
 				searchedEvents.add(event);
-			} else if(event.getStartDay().before(searchedDateStart) && event.getEndDay().after(searchedDateStart)) {
+			} else if(eventStart.before(searchedDateStart) && eventEnd.after(searchedDateStart)) {
 				searchedEvents.add(event);
-			} else if(event.getStartDay().equals(searchedDateStart) || event.getEndDay().equals(searchedDateStart)) {
+			}	else if(searchedDateStart.get(Calendar.DATE) == eventStart.get(Calendar.DATE)
+					&& searchedDateStart.get(Calendar.MONTH) == eventStart.get(Calendar.MONTH)
+					&& searchedDateStart.get(Calendar.YEAR) == eventStart.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(searchedDateStart.get(Calendar.DATE) == eventEnd.get(Calendar.DATE)
+					&& searchedDateStart.get(Calendar.MONTH) == eventEnd.get(Calendar.MONTH)
+					&& searchedDateStart.get(Calendar.YEAR) == eventEnd.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(eventStart.equals(searchedDateStart) || eventEnd.equals(searchedDateStart)) {
 				searchedEvents.add(event);
 			}
 		}
