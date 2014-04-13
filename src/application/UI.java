@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-
+//@author A0094534B
 public class UI extends Application {
 	private static final String JEDIGREEN_CSS = "application/jedigreen.css";
 	private static final String ITALY_CSS = "application/italy.css";
@@ -35,7 +35,6 @@ public class UI extends Application {
 	 * An event handler is implemented to detect when the Ctrl+Enter is pressed 
 	 * during which the scene will change to scene2, which is the minimized UI.
 	 */
-	//@author A0094534B
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle(TASK_WORTHY);

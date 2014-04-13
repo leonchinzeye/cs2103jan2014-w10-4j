@@ -402,7 +402,7 @@ public class TaskController {
 	}
 
 	private void updateClock() {
-	  dayAndTime.setText(dataUI.getUIClock());	  
+	  dayAndTime.setText(dataUI.getUIClock());
 	  dateText.setText(dataUI.getUIdate());
   }
 	
