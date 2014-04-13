@@ -24,8 +24,12 @@ public class Undo {
 	private final String RESPONSE_SUCCESSFUL_REDO_ADD = "\"%s\" has been added back again!";
 	private final String RESPONSE_SUCCESSFUL_UNDO_DELETE = "\"%s\" has been added back!";
 	private final String RESPONSE_SUCCESSFUL_REDO_DELETE = "\"%s\" has been removed again!";
-	private final String RESPONSE_SUCCESSFUL_UNDO_EDIT = "\"s\" has been added back again!";
-	private final String RESPONSE_SUCCESSFUL_REDO_EDIT = "\"s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_EDIT = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_REDO_EDIT = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_MARK = "\"%s\" has been unmarked!";
+	private final String RESPONSE_SUCCESSFUL_REDO_MARK = "\"%s\" has been marked to the completed section again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_UNMARK = "\"%s\" has been marked back to completed";
+	private final String RESPONSE_SUCCESSFUL_REDO_UNMARK = "\"%s\" has been unmarked again!";
 	
 	public enum COMMAND_TYPE {
 		ADD, DELETE, EDIT, MARK, UNMARK
@@ -278,7 +282,7 @@ public class Undo {
 	  
 	  pushUndoToRedo();
 	  
-		return "Undo for editing \"" + taskToBeReplaced.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_EDIT, taskToBeAddedBack.getName());
   }
 
 	/**
@@ -304,7 +308,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-		return "Redo for editing \"" + taskToBeReplaced.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_REDO_EDIT, taskToBeAddedBack.getName());
 	}
 
 	/**
@@ -332,7 +336,7 @@ public class Undo {
 	  
 	  pushUndoToRedo();
 		
-		return "Undo for archiving \"" + taskToBeAddedBack.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_MARK, taskToBeAddedBack.getName());
   }
 
 	/**
@@ -357,7 +361,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-	  return "Redo for unarchiving \"" + taskToBeMarked.getName() + "\" successful!";
+	  return String.format(RESPONSE_SUCCESSFUL_REDO_MARK, taskToBeMarked.getName());
 	}
 	
 	/**
@@ -385,7 +389,7 @@ public class Undo {
 		
 		pushUndoToRedo();
 		
-		return "Undo for unarchiving \"" + taskToBeMarked.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_UNMARK, taskToBeMarked.getName());
   }
 	
 	/**
@@ -410,7 +414,7 @@ public class Undo {
 	  
 	  pushRedoToUndo();
 	  
-		return "Redo for archiving \"" + taskToBeMarked.getName() + "\" successful!";
+		return String.format(RESPONSE_SUCCESSFUL_REDO_UNMARK, taskToBeMarked.getName());
   }
 
 	/**
