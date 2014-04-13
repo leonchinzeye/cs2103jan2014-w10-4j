@@ -54,7 +54,7 @@ public class Add {
 	 * this method returns a boolean to any external method calling it to indicate if 
 	 * adding of a task/event has been successful
 	 */
-	public boolean executeAdd(String userInput, FileLinker fileLink, 
+	public void executeAdd(String userInput, FileLinker fileLink, 
 			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
 		boolean success = false;
 		
@@ -62,7 +62,7 @@ public class Add {
 		
 		if(!cmdTable.containsKey(tokenizedInput[ARRAY_FIRST_ARG])) {
 			dataUI.setFeedback(FEEDBACK_INVALID_ADD_COMMAND);
-			return false;
+			return;
 		}
 		
 		if(cmdTable.get(tokenizedInput[ARRAY_FIRST_ARG]) == 2) {
@@ -71,7 +71,7 @@ public class Add {
 		
 		if(tokenizedInput.length < 2) {
 			dataUI.setFeedback(FEEDBACK_NO_ARG_ENTERED);
-			return false;
+			return;
 		} else {
 			String userDetails = tokenizedInput[ARRAY_SECOND_ARG];
 			success = identifyTypeAndPerform(userDetails, fileLink, dataUI, undoHandler, dateFormats);
@@ -82,7 +82,7 @@ public class Add {
 		}
 		
 		resetFlag();
-		return success;
+		return;
 	}
 	
 	/**
