@@ -3,10 +3,8 @@
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Add.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Add.java
 	 */
-
-package application;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -648,17 +646,15 @@ public class Add {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Add.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Add.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\AddTest.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\AddTest.java
 	 */
-
-package application;
 
 import static org.junit.Assert.*;
 
@@ -726,17 +722,15 @@ public class AddTest {
 	
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\AddTest.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\AddTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\CommandHandler.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\CommandHandler.java
 	 */
-
-package application;
 
 /**
  * This class works as a command handler.
@@ -914,17 +908,15 @@ public class CommandHandler {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\CommandHandler.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\CommandHandler.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DateAndTimeFormats.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DateAndTimeFormats.java
 	 */
-
-package application;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -1186,17 +1178,16 @@ public class DateAndTimeFormats {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DateAndTimeFormats.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DateAndTimeFormats.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\FileLinker.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\FileLinker.java
 	 */
 
-package application;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -1581,17 +1572,15 @@ public class FileLinker {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\FileLinker.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\FileLinker.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\RefreshUI.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\RefreshUI.java
 	 */
-
-package application;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -1615,17 +1604,15 @@ public class RefreshUI {
 		dataUI.setUIdate(now);
 	}
 }
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\RefreshUI.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\RefreshUI.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Search.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Search.java
 	 */
-
-package application;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -2344,17 +2331,16 @@ public class Search {
 		dayTable.put("Sunday", 7);  
 	}
 }
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Search.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Search.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Storage.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Storage.java
 	 */
 
-package application;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2544,17 +2530,15 @@ public class Storage {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Storage.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Storage.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskCard.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskCard.java
 	 */
-
-package application;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -2671,17 +2655,15 @@ public class TaskCard implements Cloneable {
 }
 
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskCard.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskCard.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Undo.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Undo.java
 	 */
-
-package application;
 
 import java.util.ArrayList;
 
@@ -3252,7 +3234,7 @@ public class Undo {
 		}
 	}
 }
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Undo.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Undo.java
 
 
 
