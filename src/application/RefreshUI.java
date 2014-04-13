@@ -9,9 +9,8 @@ public class RefreshUI {
 	/**
 	 * this is the main method that is called to refresh the details on the UI.
 	 * the clock shown on the UI is also refreshed at this point
-	 * @return
 	 */
-	public static boolean executeRefresh(FileLinker fileLink, DataUI dataUI) {
+	public static void executeRefresh(FileLinker fileLink, DataUI dataUI) {
 		//should check for events that have passed the designated time (not done yet)		
 		Calendar now = GregorianCalendar.getInstance();
 		
@@ -22,7 +21,5 @@ public class RefreshUI {
 		
 		dataUI.setUIclock(now);
 		dataUI.setUIdate(now);
-		
-		return true;
 	}
 }

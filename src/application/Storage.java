@@ -20,6 +20,11 @@ import java.io.IOException;
  */
 public class Storage {
 
+	private static final int FIRST_ARG = 0;
+	private static final int SECOND_ARG = 1;
+	private static final int THIRD_ARG = 2;
+	private static final int FOURTH_ARG = 3;
+	
 	//2 separate files for storage. one for incomplete tasks, the other for archiving
 	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
 	public static final String INCOMPLETE_EVENTS_STORAGE_FILE_NAME = "incompleteevents.txt";
@@ -36,10 +41,11 @@ public class Storage {
 	public Storage() {
 	
 	}
-
-	/*
-	 * When writing to the program, will instantiate a new TaskCard object with the parameters
-	 * filled and then it will be added to the ArrayList of completed/incomplete tasks
+	
+	/**
+	 * reads the data stored in the text file
+	 * @return
+	 * returns an arraylist of tasks/events that can be manipulated
 	 */
 	public static ArrayList<TaskCard> openFile(String fileName) {
 		ArrayList<TaskCard> file = new ArrayList<TaskCard>();
@@ -70,6 +76,9 @@ public class Storage {
 		return file;
 	}
 	
+	/**
+	 * writes the current stored database into the files
+	 */
 	public static void writeFile(ArrayList<TaskCard> file, int fileSize, String fileName) {
 		try {
 			FileWriter fileWrite = new FileWriter(fileName);
@@ -89,6 +98,11 @@ public class Storage {
 		}
 	}
 
+	/**
+	 * writes the details in a format that is pre-determined
+	 * @param buffWrite
+	 * @param task
+	 */
 	private static void writeTaskCardDetails(BufferedWriter buffWrite,
 			TaskCard task) {
 		try {
@@ -105,6 +119,11 @@ public class Storage {
 		}	
 	}
 
+	/**
+	 * segment the details stored in the file for reading by the program
+	 * @return
+	 * returns an arraylist of strings of each segmented information
+	 */
 	private static ArrayList<String> getTaskDetailsFromFile(
 			BufferedReader buffRead) {
 		ArrayList<String> taskDetails = new ArrayList<String>();
@@ -119,16 +138,19 @@ public class Storage {
 		}
 	}
 
+	/**
+	 * reads the lines and sets the details stored into a TaskCard object
+	 */
 	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,	TaskCard task) {
 		Date start;
 		Date end;
-		task.setName(taskDetails.get(0));
+		task.setName(taskDetails.get(FIRST_ARG));
 		
-		String[] restOfDetails = taskDetails.get(1).split(" ");
-		task.setType(restOfDetails[0]); //Type of task/event
+		String[] restOfDetails = taskDetails.get(SECOND_ARG).split(" ");
+		task.setType(restOfDetails[FIRST_ARG]); //Type of task/event
 		
 		try {
-			start = dateString.parse(restOfDetails[1]);
+			start = dateString.parse(restOfDetails[SECOND_ARG]);
 			Calendar startCal = GregorianCalendar.getInstance();
 			startCal.setTime(start);
 			task.setStartDay(startCal);
@@ -137,7 +159,7 @@ public class Storage {
 		}
 		
 		try {
-			end = dateString.parse(restOfDetails[2]);
+			end = dateString.parse(restOfDetails[THIRD_ARG]);
 			Calendar endCal = GregorianCalendar.getInstance();
 			endCal.setTime(end);
 			task.setEndDay(endCal);
@@ -145,9 +167,12 @@ public class Storage {
 			//error reading from file
 		}
 		
-		task.setPriority(Integer.parseInt(restOfDetails[3]));
+		task.setPriority(Integer.parseInt(restOfDetails[FOURTH_ARG]));
 	}
 
+	/**
+	 * creates and empty file with the file name
+	 */
 	private static void createEmptyFile(String fileStorageName) {
 		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
 		int numberOfTasks = emptyArrayList.size();

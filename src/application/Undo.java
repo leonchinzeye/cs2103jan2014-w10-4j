@@ -35,6 +35,9 @@ public class Undo {
 		ADD, DELETE, EDIT, MARK, UNMARK
 	}
 	
+	/**
+	 * constructor for undo
+	 */
 	public Undo() {
 		initVariables();
 	}

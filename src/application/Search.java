@@ -29,6 +29,9 @@ public class Search {
 	private static final int DAY_SATURDAY = 6;
 	private static final int DAY_SUNDAY = 7;
 	
+	private static final String PRIORITY_LOW = "LOW";
+	private static final String PRIORITY_MEDIUM = "MED";
+	
 	
 	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you are looking for?";
 	
@@ -37,6 +40,9 @@ public class Search {
 	
 	private static Calendar today;
 	
+	/**
+	 * constructor for search
+	 */
 	public Search() {
 		reservedKeywords = new HashMap<String, Integer>();
 		dayTable = new HashMap<String, Integer>();
@@ -46,6 +52,9 @@ public class Search {
 		getToday();
 	}
 	
+	/**
+	 * main method for search to be called
+	 */
 	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI, DateAndTimeFormats dateFormats) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		getToday();
@@ -59,20 +68,21 @@ public class Search {
 		dataUI.setFeedback("Displaying results for \"" + tokenizedInput[1] + "\"");
 	}
 	
+	/**
+	 * sets the feedback in dataUI
+	 * @param dataUI
+	 */
 	private void noArgument(DataUI dataUI) {
 		dataUI.setFeedback(FEEDBACK_SEARCH_PROMPT);
 	}
 	
 	/**
 	 * checks to see what the search is
-	 * it can be either 3 possibilities
+	 * it can be either 4 possibilities
 	 * 1) search by a date
-	 * 2)	search using reserved keywords
-	 * 3) a normal search using user defined keywords
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @param dateFormats 
+	 * 2) search by a day
+	 * 3)	search using reserved keywords
+	 * 4) a normal search using user defined keywords
 	 */
 	private void checkKeywordAndIdentify(String searchInput, FileLinker fileLink,
 			DataUI dataUI, DateAndTimeFormats dateFormats) {
@@ -100,10 +110,7 @@ public class Search {
 	}
 	
 	/**
-	 * searches by the day that use typed
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
+	 * searches by the day that use typed through all files
 	 */
 	private void searchByDay(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
@@ -115,6 +122,11 @@ public class Search {
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
+	/**
+	 * searches an individual file for events that fall on that day
+	 * @return
+	 * returns an arraylist of searched files
+	 */
 	private ArrayList<TaskCard> performSearchByDay(String searchInput,
 			FileLinker fileLink, int type) {
 		int daysToBeAdded;
@@ -143,9 +155,6 @@ public class Search {
 	
 	/**
 	 * takes in the user specified date and searches for tasks that have that date
-	 * @param fileLink
-	 * @param dataUI
-	 * @param date 
 	 */
 	private void searchByDate(FileLinker fileLink,
 			DataUI dataUI, Date date) {
@@ -159,9 +168,6 @@ public class Search {
 	
 	/**
 	 * user input has been identified as a reserved keyword and will perform roles based on that
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
 	 */
 	private void searchByKeyword(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
@@ -203,6 +209,11 @@ public class Search {
 		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
 	}
 	
+	/**
+	 * searches for tasks/events which have past their end date 
+	 * @return]
+	 * returns a list of tasks/events which have expired
+	 */
 	private ArrayList<TaskCard> searchForExpired(FileLinker fileLink,
       DataUI dataUI, int type) {
 		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
@@ -231,6 +242,11 @@ public class Search {
 	  return searchedTasks;
   }
 
+	/**
+	 * searches the list for tasks that can be done before tomorrow
+	 * @return
+	 * returns a list of searched tasks
+	 */
 	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
 			FileLinker fileLink, DataUI dataUI, int type) {
 		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
@@ -253,6 +269,11 @@ public class Search {
 		return searchedTasks;
 	}
 	
+	/**
+	 * searches the events files for events which takes place tomorrow
+	 * @return
+	 * returns a list of searched events
+	 */
 	private ArrayList<TaskCard> searchEventTmr(String searchInput,
 			FileLinker fileLink, DataUI dataUI, int type) {
 		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
@@ -282,9 +303,8 @@ public class Search {
 	
 	/**
 	 * searches incomplete tasks that can be done today
-	 * @param fileLink
-	 * @param dataUI
 	 * @return
+	 * returns a list of searched tasks
 	 */
 	private ArrayList<TaskCard> searchTaskToday(FileLinker fileLink,
 			DataUI dataUI, int type) {
@@ -308,9 +328,8 @@ public class Search {
 	
 	/**
 	 * searches incomplete events that happen today
-	 * @param fileLink
-	 * @param dataUI
 	 * @return
+	 * returns a list of searched events
 	 */
 	private ArrayList<TaskCard> searchEventToday(FileLinker fileLink,
 			DataUI dataUI, int type) {
@@ -350,11 +369,8 @@ public class Search {
 	
 	/**
 	 * searches based on priority for incompleted tasks
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
-	 * @param typeIncTasks 
 	 * @return
+	 * returns a list of searched tasks by priority
 	 */
 	private ArrayList<TaskCard> searchPriority(String searchInput, FileLinker fileLink,
 			DataUI dataUI, int type) {
@@ -372,9 +388,9 @@ public class Search {
 		}
 		
 		int priority;
-		if(searchInput.equals("LOW")) {
+		if(searchInput.equals(PRIORITY_LOW)) {
 			priority = 1;
-		} else if(searchInput.equals("MED")) {
+		} else if(searchInput.equals(PRIORITY_MEDIUM)) {
 			priority = 2;
 		} else {
 			priority = 3;
@@ -392,9 +408,6 @@ public class Search {
 	
 	/**
 	 * searches based on user keyword
-	 * @param searchInput
-	 * @param fileLink
-	 * @param dataUI
 	 */
 	private void performNormalSearch(String searchInput, FileLinker fileLink,
 			DataUI dataUI) {
@@ -409,10 +422,8 @@ public class Search {
 	
 	/**
 	 * searches tasks for a specific due date
-	 * @param fileLink
-	 * @param date 
-	 * @param type 
 	 * @return
+	 * returns a list of searched tasks
 	 */
 	private ArrayList<TaskCard> searchTasksByDate(FileLinker fileLink, Date date, int type) {
 		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
@@ -442,10 +453,8 @@ public class Search {
 	
 	/**
 	 * searches events that fall on that date
-	 * @param fileLink
-	 * @param date 
-	 * @param type 
 	 * @return
+	 * returns a list of searched events
 	 */
 	private ArrayList<TaskCard> searchEventsByDate(FileLinker fileLink, Date date, int type) {
 		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
@@ -490,10 +499,8 @@ public class Search {
 	
 	/**
 	 * searches all the files for a user defined keyword
-	 * @param searchInput
-	 * @param fileLink
-	 * @param type 
 	 * @return
+	 * returns a list of searched tasks/events
 	 */
 	private ArrayList<TaskCard> searchByUserWord(String searchInput, FileLinker fileLink, int type) {
 		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
@@ -522,6 +529,12 @@ public class Search {
 		return searchedList;
 	}	
 	
+	/**
+	 * gets a date and returns a calendar object of the ending range of the
+	 * date which is 1 millisecond before the next day
+	 * @return
+	 * returns a calendar object
+	 */
 	private Calendar getEndRange(Date date) {
 		Calendar endRange = GregorianCalendar.getInstance();
 		endRange.setTime(date);
@@ -533,6 +546,9 @@ public class Search {
 		return endRange;
 	}
 	
+	/**
+	 * sets the date to today and sets the timing to 00:00:00:000 of today
+	 */
 	private void getToday() {
 		today = GregorianCalendar.getInstance();
 		today.set(Calendar.HOUR_OF_DAY, 0);
@@ -541,6 +557,11 @@ public class Search {
 		today.set(Calendar.MILLISECOND, 0);
 	}
 	
+	/**
+	 * gets the date of the next day
+	 * @return
+	 * returns the date of the next day
+	 */
 	private Calendar getTmr() {
 		Calendar tmr = GregorianCalendar.getInstance();
 		tmr.add(Calendar.DATE, 1);
@@ -552,6 +573,12 @@ public class Search {
 		return tmr;
 	}
 	
+	/**
+	 * gets the date of end range of next day
+	 * @return
+	 * returns the date of the next day 1 millisecond before
+	 * the next, next day
+	 */
 	private Calendar getTmrEnd() {
 		Calendar tmr = GregorianCalendar.getInstance();
 		tmr.add(Calendar.DATE, 1);
@@ -563,6 +590,13 @@ public class Search {
 		return tmr;
 	}
 	
+	/**
+	 * determine the date to be searched based on the day that the user
+	 * has entered
+	 * @return
+	 * returns a integer that will be added to the current date for that date
+	 * to be searched
+	 */
 	private int determineDaysToBeAdded(String searchInput) {
 		int dayToday = today.get(Calendar.DAY_OF_WEEK);
 		int daysToBeAdded = -1;
@@ -595,6 +629,11 @@ public class Search {
 		return daysToBeAdded;
 	}
 	
+	/**
+	 * checks if the date is a valid date format
+	 * @return
+	 * returns a date if the user input is a valid date format
+	 */
 	private Date checkIsDate(String searchInput, DateAndTimeFormats dateFormats) {
 		Date date = null;
 		
@@ -609,6 +648,10 @@ public class Search {
 		return date;
 	}
 	
+	/**
+	 * checks if the user has entered a parameter to be searched
+	 * @return
+	 */
 	private boolean checkForArg(String[] tokenizedInput) {
 		if(tokenizedInput.length < 2) {
 			return false;
@@ -616,7 +659,10 @@ public class Search {
 			return true;
 		}
 	}
-	
+
+	/**
+	 * initialises the special keyword table
+	 */
 	private void initKeywordTable() {
 		reservedKeywords.put("today", 1);
 		reservedKeywords.put("tdy", 1);
@@ -630,6 +676,10 @@ public class Search {
 		
 	}
 	
+	/**
+	 * initialises the table which checks for the different possibilities of days
+	 * that the user could search by
+	 */
 	private void initDayTable() {
 		dayTable.put("MON", 1);
 		dayTable.put("Mon", 1);

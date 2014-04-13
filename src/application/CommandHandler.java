@@ -28,6 +28,9 @@ public class CommandHandler {
 		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW, THEME, HIGHLIGHT
 	}
 	
+	/**
+	 * Constructor for CommandHandler
+	 */
 	public CommandHandler() {
 		addHandler = new Add();
 		deleteHandler = new Delete();
@@ -44,16 +47,19 @@ public class CommandHandler {
 	}
 	
 	/**
-	 * checks if the program is currently handling any error or prompting states.
-	 * if it is not, it will take user input as a fresh new command.
-	 * @param userInput
+	 * executes the command that the user entered
 	 * @return
+	 * returns a packaged DataUI to the caller of this method
 	 */
 	public DataUI executeCmd(String userInput, int tableNo) {	
 		checkCmdAndPerform(userInput, tableNo);
 		return dataUI;
 	}
 
+	/**
+	 * checks if the command the user entered is valid and calls the
+	 * appropriate classes
+	 */
 	private void checkCmdAndPerform(String userInput, int tableNo) {
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		
@@ -127,6 +133,11 @@ public class CommandHandler {
 		}
 	}
 	
+	/**
+	 * determines the command that the user entered
+	 * @return
+	 * returns a COMMAND_TYPE indicating what the command the user entered
+	 */
 	private COMMAND_TYPE determineCommandType(String commandTypeString) {
 		commandTypeString = commandTypeString.toLowerCase();
 		
