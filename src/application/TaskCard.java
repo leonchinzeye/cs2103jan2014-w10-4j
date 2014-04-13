@@ -1,9 +1,9 @@
+//@author A0097304E
 package application;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-//@author A0097304E
 public class TaskCard implements Cloneable {
 	
 	private String name;

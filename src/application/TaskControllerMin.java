@@ -1,3 +1,4 @@
+//@author A0094534B
 package application;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import javafx.scene.layout.Pane;
  * The only accepted ones are "add", "addu", "undo", "redo", "theme", and "/x".
  * Most, if not all, of the methods below are direct duplicates of the methods in TaskController.java.
  */
-//@author A0094534B
 public class TaskControllerMin {
 	private static final String MINIMIZE_BUTTON_HOVER = "/minimizeButtonHover.png";
 	private static final String MINIMIZE_BUTTON = "/minimizeButton.png";
@@ -124,7 +124,6 @@ public class TaskControllerMin {
 	
 	/**
 	 * The main method to take in input and send it to CommandHandler to execute
-	 * @author Omar Khalid
 	 */
 	@FXML
 	public void parseInput() {
@@ -184,7 +183,6 @@ public class TaskControllerMin {
 	/**
 	 * Retrieves the information to be shown in the tables.
 	 * @param ui
-	 * @author Omar Khalid
 	 */
 	public void setUI(UI ui) {
 		this.ui = ui;

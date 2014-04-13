@@ -1,3 +1,4 @@
+//@author A0100720E
 package application;
 
 import java.text.SimpleDateFormat;
@@ -17,11 +18,9 @@ import java.util.GregorianCalendar;
  * format of processing
  * Events: ID, Priority, Name, Start Date, Start Time, End Date, End Time, Frequency
  * Tasks: ID, Priority, Name, End Date, End Time
- * @author Atul
  *
  */
 
-//@author A0100720E
 public class DataUI {
 
 	private static final String DEFAULT_FEEDBACK = "Read me!";
@@ -59,7 +58,6 @@ public class DataUI {
 	/**
 	 * Incomplete Task 
 	 * @param fileLink
-	 * @author Atul
 	 * 
 	 */
 	public void configIncompleteTasks(FileLinker fileLink) {
@@ -150,7 +148,6 @@ public class DataUI {
 	/**
 	 * Complete Task 
 	 * @param fileLink
-	 * @author Atul
 	 * 
 	 */
 	public void configCompleteTasks(FileLinker fileLink) {
@@ -322,4 +319,3 @@ public class DataUI {
 		UIdate = dateFormat.format(date);
 	}
 }
-//@author A0100720E

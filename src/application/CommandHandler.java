@@ -1,3 +1,4 @@
+//@author A0097304E
 package application;
 
 /**
@@ -7,7 +8,6 @@ package application;
  * into the respective functions based on the commands that the user
  * has entered
  */
-//@author A0097304E
 public class CommandHandler {
 	
 	private static FileLinker fileLink;

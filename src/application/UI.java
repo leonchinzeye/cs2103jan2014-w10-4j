@@ -1,3 +1,4 @@
+//@author A0094534B
 package application;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-//@author A0094534B
+
 public class UI extends Application {
 	private static final String JEDIGREEN_CSS = "application/jedigreen.css";
 	private static final String ITALY_CSS = "application/italy.css";

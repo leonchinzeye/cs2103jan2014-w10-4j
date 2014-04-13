@@ -1,14 +1,8 @@
+//@author A0100720E
 package application;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * 
- * @author Atul
- *
- */
-
-//@author A0100720E
 public class Delete {
 	
 	private static final int DELETE_INCOMPLETE_TASKS = 1;

@@ -1,3 +1,4 @@
+//@author A0097304E
 package application;
 
 import java.util.ArrayList;
@@ -6,7 +7,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-//@author A0097304E
 public class Search {
 	
 	private static final int SECOND_ARGUMENT = 1;
@@ -69,7 +69,6 @@ public class Search {
 	 * 1) search by a date
 	 * 2)	search using reserved keywords
 	 * 3) a normal search using user defined keywords
-	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
@@ -144,7 +143,6 @@ public class Search {
 	
 	/**
 	 * takes in the user specified date and searches for tasks that have that date
-	 * @author leon
 	 * @param fileLink
 	 * @param dataUI
 	 * @param date 
@@ -161,7 +159,6 @@ public class Search {
 	
 	/**
 	 * user input has been identified as a reserved keyword and will perform roles based on that
-	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
@@ -285,7 +282,6 @@ public class Search {
 	
 	/**
 	 * searches incomplete tasks that can be done today
-	 * @author leon
 	 * @param fileLink
 	 * @param dataUI
 	 * @return
@@ -312,7 +308,6 @@ public class Search {
 	
 	/**
 	 * searches incomplete events that happen today
-	 * @author leon
 	 * @param fileLink
 	 * @param dataUI
 	 * @return
@@ -355,7 +350,6 @@ public class Search {
 	
 	/**
 	 * searches based on priority for incompleted tasks
-	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
@@ -398,7 +392,6 @@ public class Search {
 	
 	/**
 	 * searches based on user keyword
-	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
 	 * @param dataUI
@@ -416,7 +409,6 @@ public class Search {
 	
 	/**
 	 * searches tasks for a specific due date
-	 * @author leon
 	 * @param fileLink
 	 * @param date 
 	 * @param type 
@@ -450,7 +442,6 @@ public class Search {
 	
 	/**
 	 * searches events that fall on that date
-	 * @author leon
 	 * @param fileLink
 	 * @param date 
 	 * @param type 
@@ -499,7 +490,6 @@ public class Search {
 	
 	/**
 	 * searches all the files for a user defined keyword
-	 * @author leon
 	 * @param searchInput
 	 * @param fileLink
 	 * @param type 
