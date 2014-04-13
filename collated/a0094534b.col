@@ -3,10 +3,8 @@
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Mark.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Mark.java
 	 */
-
-package application;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -235,17 +233,15 @@ public class Mark {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Mark.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Mark.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\MarkTest.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\MarkTest.java
 	 */
-
-package application;
 
 import static org.junit.Assert.*;
 
@@ -313,22 +309,19 @@ public class MarkTest {
 
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\MarkTest.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\MarkTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskController.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskController.java
 	 */
-
-package application;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.Stack;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -1710,17 +1703,15 @@ public class TaskController {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskController.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskController.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerMin.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerMin.java
 	 */
-
-package application;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -2086,17 +2077,15 @@ public class TaskControllerMin {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerMin.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerMin.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerTest.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerTest.java
 	 */
-
-package application;
 
 import static org.junit.Assert.*;
 
@@ -2136,17 +2125,15 @@ public class TaskControllerTest {
 	
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerTest.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\UI.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\UI.java
 	 */
-
-package application;
 
 import java.io.IOException;
 
@@ -2164,11 +2151,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 
 public class UI extends Application {
-	private static final String JEDIGREEN_CSS = "application/jedigreen.css";
-	private static final String ITALY_CSS = "application/italy.css";
-	private static final String AUSTRALIA_CSS = "application/australia.css";
-	private static final String SITHRED_CSS = "application/sithred.css";
-	private static final String TASKWORTHY_LOGO = "/projectX.png";
+	private static final String JEDIGREEN_CSS = "jedigreen.css";
+	private static final String ITALY_CSS = "italy.css";
+	private static final String AUSTRALIA_CSS = "australia.css";
+	private static final String SITHRED_CSS = "sithred.css";
+	private static final String TASKWORTHY_LOGO = "projectX.png";
 	private static final String TASKWORTHY_MIN_FXML = "TaskWorthyMin.fxml";
 	private static final String TASKWORTHY_UI_FXML = "TaskWorthyUI.fxml";
 	private static final String TASK_WORTHY = "TaskWorthy";
@@ -2246,7 +2233,7 @@ public class UI extends Application {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\UI.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\UI.java
 
 
 

@@ -3,10 +3,8 @@
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DataUI.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DataUI.java
 	 */
-
-package application;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -327,17 +325,16 @@ public class DataUI {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DataUI.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DataUI.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Delete.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
 	 */
 
-package application;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -575,28 +572,27 @@ public class Delete {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Delete.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Delete.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
 	 */
 
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Delete.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DeleteTest.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DeleteTest.java
 	 */
 
-package application;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -671,17 +667,16 @@ public class DeleteTest {
 
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\DeleteTest.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DeleteTest.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Edit.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Edit.java
 	 */
 
-package application;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -1570,27 +1565,25 @@ public class Edit {
 		priorityTable.put("High", EDITING_PRIORITY_HIGH);
 	}
 }
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Edit.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Edit.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Edit.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Edit.java
 	 */
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Edit.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Edit.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\EventDataUI.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\EventDataUI.java
 	 */
-
-package application;
 
 import javafx.beans.property.SimpleStringProperty;
 
@@ -1718,17 +1711,15 @@ public class EventDataUI {
 		return endTime;
 	}
 }
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\EventDataUI.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\EventDataUI.java
 
 
 
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskDataUI.java
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskDataUI.java
 	 */
-
-package application;
 
 import javafx.beans.property.SimpleStringProperty;
 
@@ -1819,7 +1810,7 @@ public class TaskDataUI {
 	}
 }
 
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskDataUI.java
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskDataUI.java
 
 
 
