@@ -19,6 +19,9 @@ public class FileLinker {
 	
 	private boolean state_search;
 	
+	/**
+	 * constructor for FileLinker
+	 */
 	public FileLinker() {
 		this.incompleteTasks = Storage.openFile(Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 		this.incompleteEvents = Storage.openFile(Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
@@ -33,6 +36,12 @@ public class FileLinker {
 		this.state_search = false;
 	}
 	
+	/**
+	 * getter for the list of incomplete tasks
+	 * @return
+	 * returns a list of tasks the user has stored previously.
+	 * returns a list of searched tasks if it is in a searched state
+	 */
 	public ArrayList<TaskCard> getIncompleteTasks() {
 		if(state_search) {
 			return searchIncTasks;
@@ -41,6 +50,12 @@ public class FileLinker {
 		}
 	}
 	
+	/**
+	 * getter for the list of incomplete events
+	 * @return
+	 * returns a list of events the user has stored previously.
+	 * returns a list of searched events if it is in a searched state
+	 */
 	public ArrayList<TaskCard> getIncompleteEvents() {
 		if(state_search) {
 			return searchIncEvents;
@@ -49,6 +64,12 @@ public class FileLinker {
 		}
 	}
 	
+	/**
+	 * getter for the list of completed tasks
+	 * @return
+	 * returns a list of tasks the user has stored previously.
+	 * returns a list of searched tasks if it is in a searched state
+	 */
 	public ArrayList<TaskCard> getCompletedTasks() {
 		if(state_search) {
 			return searchCompTasks;
@@ -57,6 +78,12 @@ public class FileLinker {
 		}
 	}
 	
+	/**
+	 * getter for the list of completed events
+	 * @return
+	 * returns a list of events the user has stored previously.
+	 * returns a list of searched events if it is in a searched state
+	 */
 	public ArrayList<TaskCard> getCompletedEvents() {
 		if(state_search) {
 			return searchCompEvents;
@@ -67,7 +94,6 @@ public class FileLinker {
 	
 	/**
 	 * method that add logic will call to update modified data to the file
-	 * @param arrayToBeUpdated
 	 */
 	public void addHandling(TaskCard taskToBeAdded, int fileToBeAddedTo) {
 		if(fileToBeAddedTo == 1) {
@@ -96,6 +122,9 @@ public class FileLinker {
 		writeToFiles();
 	}
 	
+	/**
+	 * method that delete logic will call to delete tasks from the file
+	 */
 	public void deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
 			if(state_search) {
@@ -141,7 +170,6 @@ public class FileLinker {
 	
 	/**
 	 * method for edit logic that will update modified data to the file
-	 * @param arrayToBeUpdated
 	 */
 	public void editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeEditedFrom) {				
 	
@@ -167,6 +195,9 @@ public class FileLinker {
 		writeToFiles();
 	}
 
+	/**
+	 * method for mark logic to mark or unmark tasks from one file to another
+	 */
 	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
 			int fileToBeDeletedFrom) {
 		if(fileToBeDeletedFrom == 1) {
@@ -201,6 +232,10 @@ public class FileLinker {
 		writeToFiles();
 	}
 
+	/**
+	 * method that updates the arraylist and puts the state to search state when the
+	 * user is searching for something
+	 */
 	public void searchHandling(ArrayList<TaskCard> searchedIncTasks, ArrayList<TaskCard> searchedIncEvents,
 			ArrayList<TaskCard> searchedCompTasks, ArrayList<TaskCard> searchedCompEvents) {
 		state_search = true;
@@ -211,7 +246,9 @@ public class FileLinker {
 		searchCompEvents = searchedCompEvents;
 	}
 
-	
+	/**
+	 * this method writes the current arraylist of tasks/events into the file storage
+	 */
 	private void writeToFiles() {
 		callStorageWriteIncompleteTasks();
 		callStorageWriteIncompleteEvents();
@@ -219,30 +256,49 @@ public class FileLinker {
 		callStorageWriteCompletedEvents();
 	}
 	
+	/**
+	 * writes to the incomplete tasks file storage
+	 */
 	private void callStorageWriteIncompleteTasks() {
 		int numberOfIncompleteTasks = incompleteTasks.size();
 		Storage.writeFile(incompleteTasks, numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
 	}
 	
+	/**
+	 * writes to the incomplete events file storage
+	 */
 	private void callStorageWriteIncompleteEvents() {
 		int numberOfIncompleteEvents = incompleteEvents.size();
 		Storage.writeFile(incompleteEvents, numberOfIncompleteEvents, Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
 	}
 	
+	/**
+	 * writes to the completed tasks file storage
+	 */
 	private void callStorageWriteCompletedTasks() {
 		int numberOfCompletedTasks = completedTasks.size();
 		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
 	}
 	
+	/**
+	 * writes to the completed events file storage
+	 */
 	private void callStorageWriteCompletedEvents() {
 		int numberOfCompletedEvents = completedEvents.size();
 		Storage.writeFile(completedEvents, numberOfCompletedEvents, Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
 	}
 	
+	/**
+	 * resets the search state whenever a new command other than add, delete, search and edit
+	 * is called
+	 */
 	public void resetState() {
 		state_search = false;
 	}
 	
+	/**
+	 * sorts the files internally
+	 */
 	private void sortFiles() {
 		Collections.sort(incompleteTasks, new SortTasksByPriorityThenDeadline());
 		Collections.sort(incompleteEvents, new SortEventsByPriorityThenDeadline());
