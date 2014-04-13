@@ -1,3 +1,4 @@
+//@author A0097304E
 package application;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,10 +16,8 @@ import java.io.IOException;
 /**
  * this class is responsible for reading from and writing to 
  * the designated files
- * @author leon
  *
  */
-//@author A0097304E
 public class Storage {
 
 	//2 separate files for storage. one for incomplete tasks, the other for archiving

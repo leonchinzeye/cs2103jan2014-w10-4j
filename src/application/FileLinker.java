@@ -1,10 +1,10 @@
+//@author A0097304E
 package application;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
-//@author A0097304E
 public class FileLinker {
 
 	private ArrayList<TaskCard> incompleteTasks;

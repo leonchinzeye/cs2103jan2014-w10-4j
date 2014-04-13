@@ -1,3 +1,4 @@
+//@author A0094534B
 package application;
 
 import java.util.ArrayList;
@@ -6,10 +7,8 @@ import java.util.HashMap;
 /**
  * This class allows the user to mark tasks as complete or
  * mark completed tasks as incomplete.
- * @author Omar Khalid
  *
  */
-//@author A0094534B
 public class Mark {
 
 	private static final int FILE_COMPLETE_EVENTS = 4;

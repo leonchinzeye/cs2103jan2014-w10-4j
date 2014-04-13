@@ -1,4 +1,328 @@
-//@author A0094534B
+//@author: a0094534b
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Mark.java
+	 */
+
+package application;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * This class allows the user to mark tasks as complete or
+ * mark completed tasks as incomplete.
+ *
+ */
+public class Mark {
+
+	private static final int FILE_COMPLETE_EVENTS = 4;
+	private static final int FILE_COMPLETE_TASKS = 3;
+	private static final int FILE_INCOMPLETE_EVENTS = 2;
+	private static final int FILE_INCOMPLETE_TASKS = 1;
+	private static final int NO_ARGUMENT_LENGTH = 2;
+	private static final int SPLIT_TWO = 2;
+	private static final int DEFAULT_LIST = 0;
+	private static final int MARK_INCOMPLETE_TASKS = 1;
+	private static final int MARK_INCOMPLETE_EVENTS = 2;
+	private static final int UNMARK_COMPLETE_TASKS = 3;
+	private static final int UNMARK_COMPLETE_EVENTS = 4;
+	private static final int FIRST_ARGUMENT = 0;
+	private static final int SECOND_ARGUMENT = 1;
+	private static final String CMD_UNMARKE = "unmarke";
+	private static final String CMD_UNMARKT = "unmarkt";
+	private static final String CMD_UNMARK = "unmark";
+	private static final String CMD_MARKE = "marke";
+	private static final String CMD_MARKT = "markt";
+	private static final String CMD_MARK = "mark";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID!";
+	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been successfully archived!";
+	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been successfully unarchived!";
+	private static final String FEEDBACK_MARK_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
+	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
+	
+	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
+	
+	public Mark() {
+		initialiseCmdTable();
+	}
+	
+	public void executeMark(String userInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
+		boolean success = false;
+
+		String[] tokenizedInput = userInput.trim().split("\\s+", SPLIT_TWO);
+		String cmd = tokenizedInput[FIRST_ARGUMENT];
+			
+		if(cmdTable.containsKey(cmd) != true) {
+			notRecognisableCmd(fileLink, dataUI);
+		} else {
+			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
+		}
+		
+		if(success) {
+			undoHandler.flushRedo();
+		}
+	}
+	
+	private boolean identifyCmdAndPerform(String[] tokenizedInput, FileLinker fileLink, DataUI dataUI, int tableNo, Undo undoHandler) {
+		boolean success = false;
+		boolean noIndexArgument = false;
+		String userIndex = null;
+		
+		if(tokenizedInput.length < NO_ARGUMENT_LENGTH) {
+			noIndexArgument = true;
+		} else {
+			userIndex = tokenizedInput[SECOND_ARGUMENT];
+		}
+		
+		switch(tableNo) {
+			case MARK_INCOMPLETE_TASKS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX);		
+					return success = false;
+				} else {
+					success = performIncTaskMark(userIndex, fileLink, dataUI, undoHandler);
+				}
+				break;
+			case MARK_INCOMPLETE_EVENTS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX);
+					return success = false;
+				} else {
+					success = performIncEventMark(userIndex, fileLink, dataUI, undoHandler);
+				}
+				break;
+			case UNMARK_COMPLETE_TASKS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_TASK_INDEX);
+					return success = false;
+				} else {
+					success = performComTaskMark(userIndex, fileLink, dataUI, undoHandler);
+				}
+				break;
+			case UNMARK_COMPLETE_EVENTS:
+				if(noIndexArgument == true) {
+					dataUI.setFeedback(FEEDBACK_PENDING_COMPLETE_EVENT_INDEX);
+					return success = false;
+				} else {
+					success = performComEventMark(userIndex, fileLink, dataUI, undoHandler);
+				}
+				break;
+			default:
+				break;
+		}
+		return success;
+	}
+
+	private boolean performIncTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+		boolean success = true;
+		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
+		
+		try {
+			int markedIndex = Integer.parseInt(userIndex);
+			
+			if(markedIndex <= 0 || markedIndex > incTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incTasks.size()));
+				return success = false;
+			} else {
+				TaskCard taskToBeMarked = incTasks.get(markedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, taskToBeMarked.getName()));
+				fileLink.markHandling(taskToBeMarked, markedIndex - 1, FILE_INCOMPLETE_TASKS);
+				
+				undoHandler.storeUndo(CMD_MARK, MARK_INCOMPLETE_TASKS, taskToBeMarked, null);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
+			return success = false;
+		}
+		return success;
+	}
+
+	private boolean performIncEventMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+		boolean success = true;
+		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
+		
+		try {
+			int markIndex = Integer.parseInt(userIndex);
+			
+			if(markIndex <= 0 || markIndex > incEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incEvent.size()));
+				return success = false;
+			} else {
+				TaskCard eventToBeMarked = incEvent.get(markIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_SUCCESSFUL, eventToBeMarked.getName()));
+				fileLink.markHandling(eventToBeMarked, markIndex - 1, FILE_INCOMPLETE_EVENTS);
+				
+				undoHandler.storeUndo(CMD_MARK, MARK_INCOMPLETE_EVENTS, eventToBeMarked, null);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
+			success = false;
+		}
+		return success;
+	}
+	
+	private boolean performComTaskMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+		boolean success = true;
+		ArrayList<TaskCard> comTasks = fileLink.getCompletedTasks();
+		
+		try {
+			int markedIndex = Integer.parseInt(userIndex);
+			
+			if(markedIndex <= 0 || markedIndex > comTasks.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comTasks.size()));
+				return success = false;
+			} else {
+				TaskCard taskToBeUnmarked = comTasks.get(markedIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, taskToBeUnmarked.getName()));
+				fileLink.markHandling(taskToBeUnmarked, markedIndex - 1, FILE_COMPLETE_TASKS);
+				
+				undoHandler.storeUndo(CMD_UNMARK, UNMARK_COMPLETE_TASKS, taskToBeUnmarked, null);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, comTasks.size()));
+			return success = false;
+		}
+		return success;
+	}
+
+	private boolean performComEventMark(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
+		boolean success = true;
+		ArrayList<TaskCard> comEvent = fileLink.getCompletedEvents();
+		
+		try {
+			int markIndex = Integer.parseInt(userIndex);
+			
+			if(markIndex <= 0 || markIndex > comEvent.size()) {
+				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comEvent.size()));
+				return success = false;
+			} else {
+				TaskCard eventToBeUnmarked = comEvent.get(markIndex - 1);
+				dataUI.setFeedback(String.format(FEEDBACK_UNMARK_SUCCESSFUL, eventToBeUnmarked.getName()));
+				fileLink.markHandling(eventToBeUnmarked, markIndex - 1, FILE_COMPLETE_EVENTS);
+				
+				undoHandler.storeUndo(CMD_UNMARK, UNMARK_COMPLETE_EVENTS, eventToBeUnmarked, null);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+			}
+		} catch(NumberFormatException ex) {
+			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, comEvent.size()));
+			success = false;
+		}
+		return success;
+	}
+	
+	private void notRecognisableCmd(FileLinker fileLink, DataUI dataUI) {
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_MARK_COMMAND);
+	}
+	
+	private void initialiseCmdTable() {
+		cmdTable.put(CMD_MARK, DEFAULT_LIST);
+		cmdTable.put(CMD_MARKT, MARK_INCOMPLETE_TASKS);
+		cmdTable.put(CMD_MARKE, MARK_INCOMPLETE_EVENTS);
+		cmdTable.put(CMD_UNMARK, DEFAULT_LIST);
+		cmdTable.put(CMD_UNMARKT, UNMARK_COMPLETE_TASKS);
+		cmdTable.put(CMD_UNMARKE, UNMARK_COMPLETE_EVENTS);
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\Mark.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\MarkTest.java
+	 */
+
+package application;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class MarkTest {
+	/**
+	 * The MarkTest 
+	 */
+	
+	@Test
+	public void testExecuteMark() {
+		Undo undoHandler = new Undo();
+		
+		/*This is an equivalence partition to test for entering a non-digit*/
+		FileLinker markFilelink = new FileLinker();
+		DataUI markUI = new DataUI();
+		markUI.configIncompleteTasks(markFilelink);
+		Mark newMarkWithWrongInput = new Mark();
+		int tableNo = 1;
+		newMarkWithWrongInput.executeMark("markt h", markFilelink, markUI, tableNo, undoHandler);
+		
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 4!", markUI.getFeedback());
+		
+		/*This is to test entering a digit that's out of range.*/
+		markFilelink = new FileLinker();
+		markUI = new DataUI();
+		markUI.configIncompleteTasks(markFilelink);
+		newMarkWithWrongInput = new Mark();
+		tableNo = 1;
+		newMarkWithWrongInput.executeMark("markt 10", markFilelink, markUI, tableNo, undoHandler);
+		
+		assertEquals("Please enter a number between 1 to 4!", markUI.getFeedback());
+		
+		/*This is to test entering a digit that's less than the range.*/
+		markFilelink = new FileLinker();
+		markUI = new DataUI();
+		markUI.configIncompleteTasks(markFilelink);
+		newMarkWithWrongInput = new Mark();
+		tableNo = 1;
+		newMarkWithWrongInput.executeMark("markt -1", markFilelink, markUI, tableNo, undoHandler);
+		
+		assertEquals("Please enter a number between 1 to 4!", markUI.getFeedback());
+		
+		/*This is to test entering a digit that's successful.*/
+		markFilelink = new FileLinker();
+		markUI = new DataUI();
+		markUI.configIncompleteTasks(markFilelink);
+		newMarkWithWrongInput = new Mark();
+		tableNo = 1;
+		newMarkWithWrongInput.executeMark("markt 4", markFilelink, markUI, tableNo, undoHandler);
+		
+		assertEquals("\"baddass\" has been archived!", markUI.getFeedback());
+		
+		/*This is to test entering the command without an argument.*/
+		markFilelink = new FileLinker();
+		markUI = new DataUI();
+		markUI.configIncompleteTasks(markFilelink);
+		newMarkWithWrongInput = new Mark();
+		tableNo = 1;
+		newMarkWithWrongInput.executeMark("markt", markFilelink, markUI, tableNo, undoHandler);
+		
+		assertEquals("You didn't specify a task to mark as complete! Please enter an ID!", markUI.getFeedback());
+	}
+
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\MarkTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskController.java
+	 */
+
 package application;
 
 import java.util.ArrayList;
@@ -1385,3 +1709,546 @@ public class TaskController {
 		TaskController.themeIndex = theme;
 	}
 }
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskController.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerMin.java
+	 */
+
+package application;
+
+import java.util.ArrayList;
+import java.util.Stack;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+
+/**
+ * This class is a shorter version of the main controller as this controller is for the minimized UI.
+ * It does not contain as much information and it restricts the user from entering most commands.
+ * The only accepted ones are "add", "addu", "undo", "redo", "theme", and "/x".
+ * Most, if not all, of the methods below are direct duplicates of the methods in TaskController.java.
+ */
+public class TaskControllerMin {
+	private static final String MINIMIZE_BUTTON_HOVER = "/minimizeButtonHover.png";
+	private static final String MINIMIZE_BUTTON = "/minimizeButton.png";
+	private static final String CLOSE_BUTTON_HOVER = "/closeButtonHover.png";
+	private static final String CLOSE_BUTTON = "/closeButton.png";
+	private static final String NOTIFICATION_ADD = "add <Name> due by <End> OR add <Name>; <Start> to <End>";
+	private static final String REGEX_WITH_EXIT = "\\w|\\w.+|/x";
+	private static final String NOTIFICATION_DEFAULT_PROMPT = "Read me!";
+	private static final String THEME_MISSING_ARGUMENT_MESSAGE = "You forgot to enter a theme to change to!";
+	private static final String THEME_ITALY = "Italy";
+	private static final String THEME_AUSTRALIA = "Australia";
+	private static final String THEME_SITH = "Sith";
+	private static final String THEME_JEDI = "Jedi";
+	private static final String CMD_THEME = "theme";
+	private static final String CMD_UNDO = "undo";
+	private static final String CMD_REDO = "redo";
+	private static final String CMD_EXIT = "/x";
+	private static final String CMD_ADD = "add";
+	private static final String CSS_ITALY = "italy.css";
+	private static final String CSS_AUSTRALIA = "australia.css";
+	private static final String CSS_SITHRED = "sithred.css";
+	private static final String CSS_JEDIGREEN = "jedigreen.css";
+	private static final String MINI_UI_INVALID_CMD_MESSAGE = "That can't be done here! Expand the window with Ctrl+Enter.";
+	private static final int JEDI_GREEN = 0;
+	private static final int SITH_RED = 1;
+	private static final int AUSTRALIA = 2;
+	private static final int ITALY = 3;
+	private static int themeIndex = 0;
+	
+	@FXML
+	private AnchorPane anchor;
+	@FXML
+	private Pane dragPane;
+	@FXML
+	private ImageView closeButton;
+	@FXML
+	private ImageView minimizeButton;
+	
+	@FXML
+	private TextField notification;
+	@FXML
+	private TextField command;
+	
+	private UI ui = new UI();
+	private Stack<String> history = new Stack<String>();
+	private Stack<String> forward = new Stack<String>();
+	private CommandHandler commandHandle;
+	private DataUI dataUI;
+	private String lastInput = null;
+	private int tableNo = 0;
+	private boolean isEnterKey = false;
+	private static double mouseDragOffsetX;
+	private static double mouseDragOffsetY;
+	Image closeButtonDefault = new Image(CLOSE_BUTTON);
+	Image closeButtonHover = new Image(CLOSE_BUTTON_HOVER);
+	Image minimizeButtonDefault = new Image(MINIMIZE_BUTTON);
+	Image minimizeButtonHover = new Image(MINIMIZE_BUTTON_HOVER);
+	
+	private ObservableList<EventDataUI> incompleteEvents = FXCollections.observableArrayList();
+	private ObservableList<TaskDataUI> incompleteTasks = FXCollections.observableArrayList();
+	
+	private String jedigreen = getClass().getResource(CSS_JEDIGREEN).toExternalForm();
+	private String sithred = getClass().getResource(CSS_SITHRED).toExternalForm();
+	private String australia = getClass().getResource(CSS_AUSTRALIA).toExternalForm();
+	private String italy = getClass().getResource(CSS_ITALY).toExternalForm();
+	private ArrayList<String> themes = new ArrayList<String>();
+	
+	public TaskControllerMin() {
+		commandHandle = new CommandHandler();
+		notification = new TextField();
+		command = new TextField();
+		anchor = new AnchorPane();
+		themes.add(jedigreen);
+		themes.add(sithred);
+		themes.add(australia);
+		themes.add(italy);
+	}
+	
+	@FXML
+	private void initialize() {
+		dragPane.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				mouseDragOffsetX = event.getSceneX();
+				mouseDragOffsetY = event.getSceneY();
+			}
+		});
+		dragPane.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@SuppressWarnings("static-access")
+      @Override
+			public void handle(MouseEvent event) {
+				ui.primaryS.setX(event.getScreenX() - mouseDragOffsetX);
+				ui.primaryS.setY(event.getScreenY() - mouseDragOffsetY);
+			}
+		});
+		dataUI = commandHandle.getDataUI();
+	}
+	
+	/**
+	 * The main method to take in input and send it to CommandHandler to execute
+	 */
+	@FXML
+	public void parseInput() {
+		String lastInput = "";
+		
+		lastInput = command.getText();
+		commandHistoryStorage(lastInput);
+		executeCmd(lastInput);
+	}
+
+	public void executeCmd(String lastInput) {
+	  String response;
+	  changeTheme(lastInput);
+	  if (lastInput.contains(CMD_ADD) || lastInput.equals(CMD_EXIT) || 
+	  		lastInput.contains(CMD_UNDO) || lastInput.contains(CMD_REDO) || lastInput.contains(CMD_THEME)) {
+	  	dataUI = commandHandle.executeCmd(lastInput, tableNo);
+	  	response = dataUI.getFeedback();
+	  	notification.setText(response);
+	  } else {
+	  	notification.setText(MINI_UI_INVALID_CMD_MESSAGE);
+	  }
+		command.clear();
+		command.requestFocus();
+
+		setUI(ui);
+  }
+
+	private void changeTheme(String lastInput) {
+		String[] inputArray = null;
+		if (lastInput.contains(CMD_THEME)) {
+			inputArray = lastInput.split(" ", 2);
+			
+			if (!inputArray[1].isEmpty()) {
+				String chosenTheme = inputArray[1];
+				anchor.getStylesheets().removeAll(themes);
+				if (chosenTheme.equalsIgnoreCase(THEME_JEDI)) {
+					themeIndex = JEDI_GREEN;
+				} else if (chosenTheme.equalsIgnoreCase(THEME_SITH)) {
+					themeIndex = SITH_RED;
+				} else if (chosenTheme.equalsIgnoreCase(THEME_AUSTRALIA)) {
+					themeIndex = AUSTRALIA;
+				} else if (chosenTheme.equalsIgnoreCase(THEME_ITALY)) {
+					themeIndex = ITALY;
+				}
+				anchor.getStylesheets().add(themes.get(themeIndex));
+			} else {
+				notification.setText(THEME_MISSING_ARGUMENT_MESSAGE);
+			}
+		}
+  }
+	
+	private void changeThemeByInt(int index) {
+		anchor.getStylesheets().removeAll(themes);
+		anchor.getStylesheets().add(themes.get(index));
+	}
+	
+	/**
+	 * Retrieves the information to be shown in the tables.
+	 * @param ui
+	 */
+	public void setUI(UI ui) {
+		this.ui = ui;
+		
+		/*
+		 * The four lines below clears the table so that new information can be shown.
+		 */
+		incompleteEvents.removeAll(incompleteEvents);
+		incompleteTasks.removeAll(incompleteTasks);
+		
+		incompleteEvents.addAll(dataUI.getIncompleteEvents());
+		incompleteTasks.addAll(dataUI.getIncompleteTasks());
+		
+		changeThemeByInt(themeIndex);
+	}
+	
+	public void focusTextInput(KeyEvent key) {
+		if (key.getCode().equals(KeyCode.ENTER)) {
+			command.requestFocus();
+			command.end();
+		}
+	}
+	
+	@FXML
+	public void commandTextFieldKeystrokes (KeyEvent key) {
+		if (key.getCode().equals(KeyCode.ENTER)) {
+			isEnterKey = true;
+		} else {
+			isEnterKey = false;
+		}
+		if (!isEnterKey) {
+			setTableColumnStyle(key);
+		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Z)) {
+			undoShortcut();
+		}
+		if (key.isControlDown() && key.getCode().equals(KeyCode.Y)) {
+			redoShortcut();
+		}
+		returnLastInput(key);
+	}
+	
+	private void undoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd(CMD_UNDO, tableNo);
+		response = dataUI.getFeedback();
+		notification.setText(response);
+		
+		setUI(ui);
+  }
+	
+	private void redoShortcut() {
+		String response = "";
+		
+		dataUI = commandHandle.executeCmd(CMD_REDO, tableNo);
+		response = dataUI.getFeedback();
+		notification.setText(response);
+		
+		setUI(ui);
+  }
+	
+	public void setTableColumnStyle(KeyEvent key) {
+		String input = command.getText();
+		
+		commandBlank(input);
+		commandSetNotification(input);
+	}
+	
+	private void commandBlank(String input) {
+	  if (input.matches("")) {
+	  	notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+		}
+  }
+
+	private void commandSetNotification(String input) {
+	  if (input.matches(REGEX_WITH_EXIT)) {
+			switch(input) {
+				case "a":
+					notification.setText(NOTIFICATION_ADD);
+					break;
+				default:
+					break;
+			}
+		}
+  }
+	
+	private void commandHistoryStorage(String lastInput) {
+	  if (!forward.empty()) {
+			Stack<String> temp = new Stack<String>();
+			while (!forward.empty()) {
+				temp.add(forward.pop());
+			}
+			forward.add(lastInput);
+			while (!temp.empty()) {
+				forward.add(temp.pop());
+			}
+		} else {
+			history.add(lastInput);
+		}
+	}
+
+	public void returnLastInput(KeyEvent key) {		
+		if(key.getCode().equals(KeyCode.UP)) {
+			if(this.lastInput != null) {
+				forward.push(this.lastInput);
+			}
+			
+			if (!history.isEmpty()) {
+				this.lastInput = history.pop();
+				command.setText(this.lastInput);
+				command.end();
+			} else {
+				this.lastInput = null;
+				command.clear();
+			}
+		} else if(key.getCode().equals(KeyCode.DOWN)) {
+			if(this.lastInput != null) {
+				history.push(this.lastInput);
+			}
+			
+			if (!forward.isEmpty()) {
+				this.lastInput = forward.pop();
+				command.setText(this.lastInput);
+				command.end();
+			} else {
+				this.lastInput = null;
+				command.clear();
+			}
+		}
+	}
+	
+	@FXML
+	public void closeEnter (MouseEvent mouse) {
+		closeButton.setImage(closeButtonHover);
+	}
+	
+	@FXML
+	public void closeExit (MouseEvent mouse) {
+		closeButton.setImage(closeButtonDefault);
+	}
+	
+	@FXML
+	public void closeWindow (MouseEvent mouse) {
+		Platform.exit();
+		System.exit(0);
+	}
+	
+	@FXML
+	public void minimizeEnter (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonHover);
+	}
+	
+	@FXML
+	public void minimizeExit (MouseEvent mouse) {
+		minimizeButton.setImage(minimizeButtonDefault);
+	}
+	
+	@SuppressWarnings("static-access")
+  @FXML
+	public void minimizeWindow (MouseEvent mouse) {
+		ui.primaryS.setIconified(true);
+	}
+	
+	public DataUI getDataUI() {
+		return dataUI;
+	}
+	
+	public void setDataUI(DataUI dataUI) {
+		this.dataUI = dataUI;
+		setUI(ui);
+	}
+	
+	public int getTheme() {
+		return themeIndex;
+	}
+	
+	public void setTheme(int theme) {
+		TaskControllerMin.themeIndex = theme;
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerMin.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerTest.java
+	 */
+
+package application;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class TaskControllerTest {
+	
+	@Test
+	public void test() {
+		TaskController controller = new TaskController();
+		
+		String addTest1 = "add Read the Book Thief";
+		String addTest2 = "add Meeting with the Boss; to 5.30pm";
+		String delTest1 = "delt 11";
+		String delTest2 = delTest1;
+		String markTest1 = "marke 10";
+		String unmarkTest1 = "unmarke 6";
+		
+		controller.executeCmd(addTest1);
+		assertEquals("Task added!", controller.getTestingResponse());
+		
+		controller.executeCmd(addTest2);
+		assertEquals("You've entered an invalid date format :( Please re-enter!", controller.getTestingResponse());
+		
+		controller.executeCmd(delTest1);
+		assertEquals("\"Read the Book Thief\" has been deleted!", controller.getTestingResponse());
+		
+		controller.executeCmd(delTest2);
+		assertEquals("Please enter a valid number between 1 to 10!", controller.getTestingResponse());
+		
+		controller.executeCmd(markTest1);
+		assertEquals("\"Meeting with new clients\" has been archived!", controller.getTestingResponse());
+		
+		controller.executeCmd(unmarkTest1);
+		assertEquals("\"Meeting with new clients\" has been unarchived!", controller.getTestingResponse());
+	}
+	
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\TaskControllerTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\UI.java
+	 */
+
+package application;
+
+import java.io.IOException;
+
+import javafx.application.Application;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+
+public class UI extends Application {
+	private static final String JEDIGREEN_CSS = "application/jedigreen.css";
+	private static final String ITALY_CSS = "application/italy.css";
+	private static final String AUSTRALIA_CSS = "application/australia.css";
+	private static final String SITHRED_CSS = "application/sithred.css";
+	private static final String TASKWORTHY_LOGO = "/projectX.png";
+	private static final String TASKWORTHY_MIN_FXML = "TaskWorthyMin.fxml";
+	private static final String TASKWORTHY_UI_FXML = "TaskWorthyUI.fxml";
+	private static final String TASK_WORTHY = "TaskWorthy";
+	private Stage primaryStage;
+	public static Stage primaryS;
+	private Stage primaryStageSub;
+	private boolean sceneMin = false;
+	 
+	@Override
+	/**
+	 * This method sets up the scene to be shown and adds the stylesheets to be used.
+	 * An event handler is implemented to detect when the Ctrl+Enter is pressed 
+	 * during which the scene will change to scene2, which is the minimized UI.
+	 */
+	public void start(Stage primaryStage) throws Exception {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle(TASK_WORTHY);
+		primaryStage.setResizable(false);
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
+		
+		try {
+			FXMLLoader loader = new FXMLLoader(UI.class.getResource(TASKWORTHY_UI_FXML));
+			FXMLLoader loaderMin = new FXMLLoader(UI.class.getResource(TASKWORTHY_MIN_FXML));
+			
+			Parent root = (Parent) loader.load();
+			Parent rootMin = (Parent) loaderMin.load();
+			Scene scene = new Scene(root,640,480);
+			Scene scene2 = new Scene(rootMin, 640, 150);
+			final Scene scene1Sub = scene;
+			final Scene scene2Sub = scene2;
+			
+			primaryStage.getIcons().add(new Image(UI.class.getResourceAsStream(TASKWORTHY_LOGO)));
+			//CSS file
+			scene.getStylesheets().add(SITHRED_CSS);
+			scene.getStylesheets().add(AUSTRALIA_CSS);
+			scene.getStylesheets().add(ITALY_CSS);
+			scene.getStylesheets().add(JEDIGREEN_CSS);
+			
+			final TaskController tc = loader.getController();
+			final TaskControllerMin tcMin = loaderMin.getController();
+			
+			primaryStage.setScene(scene);
+			primaryStageSub = primaryStage;
+			tcMin.setUI(this);
+			tc.setUI(this);
+			
+			primaryStage.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+				@Override
+				public void handle(KeyEvent t) {
+					final KeyCombination minimize = new KeyCodeCombination(KeyCode.ENTER, KeyCombination.CONTROL_DOWN);
+					if (sceneMin == false && minimize.match(t)) {
+						primaryStageSub.setScene(scene2Sub);
+						sceneMin = true;
+						tcMin.setTheme(tc.getTheme());
+						tcMin.setDataUI(tc.getDataUI());
+					} else if (sceneMin == true && minimize.match(t)) {
+						primaryStageSub.setScene(scene1Sub);
+						sceneMin = false;
+						tc.setTheme(tcMin.getTheme());
+						tc.setDataUI(tcMin.getDataUI());
+					}
+				}
+			});
+			
+			primaryStage.show();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		primaryS = primaryStage;
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\application\UI.java
+
+
+
+
+

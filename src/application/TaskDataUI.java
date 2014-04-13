@@ -1,7 +1,8 @@
+//@author A0100720E
 package application;
 
 import javafx.beans.property.SimpleStringProperty;
-//@author A0100720E
+
 public class TaskDataUI {
 
 	private SimpleStringProperty ID;    
@@ -87,5 +88,4 @@ public class TaskDataUI {
 	public boolean getIsExpired() {
 		return isExpired;
 	}
-
 }

@@ -1,3 +1,4 @@
+//@author A0097304E
 package application;
 
 import java.util.Calendar;
@@ -5,7 +6,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-//@author A0097304E
 public class Add {
 
 	private int ARRAY_FIRST_ARG = 0;
