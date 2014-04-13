@@ -32,7 +32,7 @@ public class Search {
 	private static final String PRIORITY_LOW = "LOW";
 	private static final String PRIORITY_MEDIUM = "MED";
 	
-	
+	private static final String FEEDBACK_SEARCH_PARAM = "Displaying results for \"%s\"";
 	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you are looking for?";
 	
 	private HashMap<String, Integer> reservedKeywords;
@@ -65,7 +65,7 @@ public class Search {
 			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI, dateFormats);
 			RefreshUI.executeRefresh(fileLink, dataUI);
 		}
-		dataUI.setFeedback("Displaying results for \"" + tokenizedInput[1] + "\"");
+		dataUI.setFeedback(String.format(FEEDBACK_SEARCH_PARAM, tokenizedInput[SECOND_ARGUMENT]));
 	}
 	
 	/**
