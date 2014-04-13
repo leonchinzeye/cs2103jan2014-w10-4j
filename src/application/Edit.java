@@ -89,7 +89,7 @@ public class Edit {
 	 * @return
 	 */
 	
-	public boolean executeEdit(String userInput, FileLinker fileLink, 
+	public void executeEdit(String userInput, FileLinker fileLink, 
 			DataUI dataUI, int tableNo, Undo undoHandler, 
 			DateAndTimeFormats dateFormats) {
 		boolean success = false;
@@ -99,12 +99,12 @@ public class Edit {
 		
 		if(tokenizedInput.length < 2) {
 			dataUI.setFeedback(FEEDBACK_MISSING_NUM_DETAILS);
-			return false;
+			return;
 		}
 		
 		if(cmdTable.containsKey(cmd) != true) {	
 			notRecognisableCmd(fileLink, dataUI);
-			return false;
+			return;
 		} else {
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 		}
@@ -113,7 +113,7 @@ public class Edit {
 			undoHandler.flushRedo();
 		}
 		
-		return success;
+		return;
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public class Edit {
 		}
 		
 		String paramAndDetails = indexAndDetails[SECOND_ARG];
-		success = identifyParamsAndEditIncTask(paramAndDetails, fileLink, dataUI, undoHandler, dateFormats, indexToBeEdited);
+		success = identifyTaskParams(paramAndDetails, fileLink, dataUI, undoHandler, dateFormats, indexToBeEdited);
 		return success;
 	}
 	/**
@@ -203,7 +203,7 @@ public class Edit {
 	 * @param indexToBeEdited
 	 * @return
 	 */
-	private boolean identifyParamsAndEditIncTask(String paramAndDetails, FileLinker fileLink, 
+	private boolean identifyTaskParams(String paramAndDetails, FileLinker fileLink, 
 			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats, int indexToBeEdited) {
 		boolean success = false;
 		String[] paramAndDetailsSplit = paramAndDetails.trim().split(":", 2);
@@ -443,7 +443,7 @@ public class Edit {
 		}
 		
 		String paramAndDetails = indexAndDetails[SECOND_ARG];
-		success = identifyParamsAndEditIncEvent(paramAndDetails, fileLink, dataUI, undoHandler, dateFormats, indexToBeEdited);
+		success = identifyEventParams(paramAndDetails, fileLink, dataUI, undoHandler, dateFormats, indexToBeEdited);
 		return success;
 	}
 	
@@ -458,7 +458,7 @@ public class Edit {
 	 * @param indexToBeEdited
 	 * @return
 	 */
-	private boolean identifyParamsAndEditIncEvent(String paramAndDetails,
+	private boolean identifyEventParams(String paramAndDetails,
 			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
 			DateAndTimeFormats dateFormats, int indexToBeEdited) {
 		boolean success = false;
