@@ -401,4 +401,15 @@ public class DateAndTimeFormatsTest {
 		assertEquals(testTime.getTime(), formats.isLazyYearDate(date));
 		assertEquals(testTime.getTime(), formats.isProperDate(date));
 	}
+	
+	@Test
+	public void test30() {
+		String date = "13 mar2014";
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
 }
