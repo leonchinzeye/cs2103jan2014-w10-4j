@@ -105,7 +105,7 @@ public class TaskControllerTest {
 		assertEquals("\"Freshman Camp\" has been deleted!", testController.getTestingResponse());
 	}
 	
-	/*@Test
+	@Test
 	public void markTest() {
 		TaskController controller = new TaskController();
 
@@ -117,5 +117,5 @@ public class TaskControllerTest {
 		
 		controller.executeCmd(unmarkTest1);
 		assertEquals("\"Meeting with new clients\" has been unarchived!", controller.getTestingResponse());
-	}*/
+	}
 }
