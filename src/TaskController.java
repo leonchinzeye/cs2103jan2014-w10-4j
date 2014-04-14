@@ -307,6 +307,10 @@ public class TaskController {
 		helpTable = new TableView<EventDataUI>();
 		tab = new TabPane();
 		helpAnchor = new AnchorPane();
+		dayAndTime = new Text();
+		dateText = new Text();
+		taskPaneIncomplete = new TitledPane();
+		eventPaneIncomplete = new TitledPane();
 		testingResponse = ""; //for integration testing
 		themes.add(jedigreen);
 		themes.add(sithred);
@@ -545,8 +549,11 @@ public class TaskController {
 	 */
 	public void executeCmd(String lastInput) {
 	  String response;
-	  viewCmd(lastInput);
-	  changeTheme(lastInput);
+	  if (lastInput.contains("view")) {
+	  	viewCmd(lastInput);
+	  } else if (lastInput.contains("theme")) {
+	  	changeTheme(lastInput);
+	  }
 		dataUI = commandHandle.executeCmd(lastInput, tableNo);
 		response = dataUI.getFeedback();		
 		testingResponse = response;
@@ -733,7 +740,7 @@ public class TaskController {
 	  updateCounter();
 	  helpAnchor.setVisible(false);
 	  helpAnchor2.setVisible(false);
-	  notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+	  notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.clear();
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  command.setMouseTransparent(false);
@@ -873,7 +880,7 @@ public class TaskController {
 	 */
 	@FXML
 	public void openIncompleteTab() {
-		notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+		notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  updateCounter();
 		notification.setDisable(false);
@@ -886,7 +893,7 @@ public class TaskController {
 	 */
 	@FXML
 	public void openCompleteTab() {
-		notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+		notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  updateCounter();
 		notification.setDisable(false);
@@ -978,7 +985,7 @@ public class TaskController {
 	 */
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
-	  	notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+	  	notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 			eventTableIncomplete.getSelectionModel().clearSelection();
 			taskTableIncomplete.getSelectionModel().clearSelection();
 			eventTableComplete.getSelectionModel().clearSelection();

@@ -100,6 +100,9 @@ public class Edit {
 			notRecognisableCmd(fileLink, dataUI);
 			return;
 		} else {
+			if(cmdTable.get(cmd) != 0) {
+				tableNo = cmdTable.get(cmd);
+			}
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 		}
 		
