@@ -1,7 +1,7 @@
 //@author A0097304E
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,20 +17,6 @@ public class AddTest {
 	@Before
 	public void populate() {
 		fileLinkTest.reset();
-//		ArrayList<String> stuffToAdd = new ArrayList<String>();
-//		stuffToAdd.add("addu CS2105 Assignment due by 15 may");
-//		stuffToAdd.add("add Read Lord of the Rings");
-//		stuffToAdd.add("add Meeting with boss; 2pm to 4pm");
-//		stuffToAdd.add("add CS2107 Assignment due by 20 April");
-//		stuffToAdd.add("add Hello World; 12 April to 17 April");
-//		stuffToAdd.add("add CS2101 Presentation; 11 April, 12pm to 2pm");
-//		stuffToAdd.add("add CS2103 submission by 14 April, 23:59");
-//		stuffToAdd.add("add Freshman Camp; 12 Mar to 14 Mar");
-//		
-//		for(int i = 0; i < stuffToAdd.size(); i++) {
-//			addHandlerTest.executeAdd(stuffToAdd.get(i), fileLinkTest, 
-//					dataUITest, undoHandlerTest, dateFormatsTest);
-//		}
 	}
 	
 	@Test
@@ -75,62 +61,43 @@ public class AddTest {
 		assertEquals("You've entered an invalid date format :(", dataUITest.getFeedback());
 	}
 	
-//	@Test
-//	public void test7() {
-//		String search = "search expired";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"expired\"", dataUITest.getFeedback());
-//		assertEquals(0, fileLinkTest.getIncompleteTasks().size());
-//		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals("Freshman Camp", fileLinkTest.getCompletedEvents().get(0).getName());
-//	}
+	@Test
+	public void test7() {
+		String userInput = "add meeting; 31 April to 40 April";
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("You've entered an invalid date format :(", dataUITest.getFeedback());
+	}
 	
-//	@Test
-//	public void test7() {
-//		String search = "search tomorrow";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"tomorrow\"", dataUITest.getFeedback());
-//		assertEquals("CS2105 Assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
-//		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
-//		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
-//		assertEquals(1, fileLinkTest.getIncompleteEvents().size());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals(0, fileLinkTest.getCompletedEvents().size());
-//	}
-//	
-//	@Test
-//	public void test8() {
-//		String search = "search HIGH";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"HIGH\"", dataUITest.getFeedback());
-//		assertEquals("CS2105 Assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
-//		assertEquals(0, fileLinkTest.getIncompleteEvents().size());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals(0, fileLinkTest.getCompletedEvents().size());
-//	}
-//	
-//	@Test
-//	public void test9() {
-//		String search = "search MED";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"MED\"", dataUITest.getFeedback());
-//		assertEquals(2, fileLinkTest.getIncompleteTasks().size());
-//		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
-//		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
-//		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals(1, fileLinkTest.getCompletedEvents().size());
-//	}
-//	
-//	@Test
-//	public void test10() {
-//		String search = "search LOW";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"LOW\"", dataUITest.getFeedback());
-//		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(0).getName());
-//		assertEquals(0, fileLinkTest.getIncompleteEvents().size());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals(0, fileLinkTest.getCompletedEvents().size());
-//	}
+	@Test
+	public void test8() {
+		String userInput = "add meeting; 21 April to 16 April";
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("Greaaat Scott! Are you a time traveller?", dataUITest.getFeedback());
+	}
+	
+	@Test
+	public void test9() {
+		String userInput = "add meeting; 18 april to 16:00";
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("You've entered an invalid date format :(", dataUITest.getFeedback());
+	}
+	
+	@Test
+	public void test10() {
+		String userInput = "add meeting with Australia; 2pm to 4pm";
+		Calendar timeStart = Calendar.getInstance();
+		timeStart.set(Calendar.HOUR_OF_DAY, 14);
+		timeStart.set(Calendar.MINUTE, 0);
+		timeStart.set(Calendar.SECOND, 0);
+		timeStart.set(Calendar.MILLISECOND, 0);
+		Calendar timeEnd = Calendar.getInstance();
+		timeEnd.set(Calendar.HOUR_OF_DAY, 16);
+		timeEnd.set(Calendar.MINUTE, 0);
+		timeEnd.set(Calendar.SECOND, 0);
+		timeEnd.set(Calendar.MILLISECOND, 0);
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("\"meeting with Australia\" has been successfully added!", dataUITest.getFeedback());
+		assertEquals(timeStart, fileLinkTest.getIncompleteEvents().get(0).getStartDay());
+		assertEquals(timeEnd, fileLinkTest.getIncompleteEvents().get(0).getEndDay());
+	}
 }
