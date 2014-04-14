@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public class Undo {
 
+	private static final String RESPONSE_NOTHING_REDO = "Nothing to redo!";
 	private ArrayList<String> undoCmdType;
 	private ArrayList<String> redoCmdType;
 	
@@ -18,6 +19,7 @@ public class Undo {
 	private int indexOfLastCmdUndo;
 	private int indexOfLastCmdRedo;
 	
+	private final String RESPONSE_NOTHING_UNDO = "Nothing to undo!";
 	private final String RESPONSE_SUCCESSFUL_UNDO_ADD = "\"%s\" has been removed!";
 	private final String RESPONSE_SUCCESSFUL_REDO_ADD = "\"%s\" has been added back again!";
 	private final String RESPONSE_SUCCESSFUL_UNDO_DELETE = "\"%s\" has been added back!";
@@ -26,7 +28,7 @@ public class Undo {
 	private final String RESPONSE_SUCCESSFUL_REDO_EDIT = "\"%s\" has been added back again!";
 	private final String RESPONSE_SUCCESSFUL_UNDO_MARK = "\"%s\" has been unmarked!";
 	private final String RESPONSE_SUCCESSFUL_REDO_MARK = "\"%s\" has been marked to the completed section again!";
-	private final String RESPONSE_SUCCESSFUL_UNDO_UNMARK = "\"%s\" has been marked back to completed";
+	private final String RESPONSE_SUCCESSFUL_UNDO_UNMARK = "\"%s\" has been marked back to completed!";
 	private final String RESPONSE_SUCCESSFUL_REDO_UNMARK = "\"%s\" has been unmarked again!";
 	
 	public enum COMMAND_TYPE {
@@ -80,7 +82,7 @@ public class Undo {
 	public String executeUndo(FileLinker fileLink) {
 		String response = "";
 		if(indexOfLastCmdUndo < 0) {
-			response = "Nothing to undo!";
+			response = RESPONSE_NOTHING_UNDO;
 		} else {
 			response = identifyUndoAndPerform(fileLink);
 		}
@@ -98,7 +100,7 @@ public class Undo {
 	public String executeRedo(FileLinker fileLink) {
 		String response = "";
 		if(indexOfLastCmdRedo < 0) {
-			response = "Nothing to redo!";
+			response = RESPONSE_NOTHING_REDO;
 		} else {
 			response = identifyRedoAndPerform(fileLink);
 		}
