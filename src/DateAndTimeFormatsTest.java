@@ -127,4 +127,58 @@ public class DateAndTimeFormatsTest {
 		assertEquals(null, formats.isLazyYearDate(date));
 		assertEquals(null, formats.isProperDate(date));
 	}
+	
+	@Test
+	public void test11() {
+		String date = "-1.30pm";
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test12() {
+		String date = "11.30pm";
+		Calendar testTime = Calendar.getInstance();
+		testTime.set(Calendar.HOUR_OF_DAY, 23);
+		testTime.set(Calendar.MINUTE, 30);
+		testTime.set(Calendar.SECOND, 0);
+		testTime.set(Calendar.MILLISECOND, 0);
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(testTime.getTime(), formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test13() {
+		String date = "9.61pm";
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test14() {
+		String date = "3.27am";
+		Calendar testTime = Calendar.getInstance();
+		testTime.set(Calendar.HOUR_OF_DAY, 3);
+		testTime.set(Calendar.MINUTE, 27);
+		testTime.set(Calendar.SECOND, 0);
+		testTime.set(Calendar.MILLISECOND, 0);
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(testTime.getTime(), formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
 }
