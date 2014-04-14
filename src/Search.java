@@ -681,37 +681,30 @@ public class Search {
 	private void initDayTable() {
 		dayTable.put("MON", 1);
 		dayTable.put("Mon", 1);
-		dayTable.put("mon", 1);
 		dayTable.put("monday", 1);
 		dayTable.put("Monday", 1);
 		dayTable.put("TUE", 2);
 		dayTable.put("Tue", 2);
-		dayTable.put("tue", 2);
 		dayTable.put("tuesday", 2);
 		dayTable.put("Tuesday", 2);
 		dayTable.put("WED", 3);
 		dayTable.put("Wed", 3);
-		dayTable.put("wed", 3);
 		dayTable.put("wednesday", 3);
 		dayTable.put("Wednesday", 3);
 		dayTable.put("THUR", 4);
 		dayTable.put("Thur", 4);
-		dayTable.put("thur", 4);
 		dayTable.put("thursday", 4);
 		dayTable.put("Thursday", 4);
 		dayTable.put("FRI", 5);
 		dayTable.put("Fri", 5);
-		dayTable.put("fri", 5);
 		dayTable.put("friday", 5);
 		dayTable.put("Friday", 5);
 		dayTable.put("SAT", 6);
 		dayTable.put("Sat", 6);
-		dayTable.put("sat", 6);
 		dayTable.put("saturday", 6);
 		dayTable.put("Saturday", 6);
 		dayTable.put("SUN", 7);
 		dayTable.put("Sun", 7);
-		dayTable.put("sun", 7);
 		dayTable.put("sunday", 7);
 		dayTable.put("Sunday", 7);  
 	}
