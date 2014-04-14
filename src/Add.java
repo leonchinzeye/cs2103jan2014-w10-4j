@@ -1,14 +1,9 @@
-
+//@author A0097304E
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-/**
- * this class contains the add functionalities
- * @author leon
- *
- */
 public class Add {
 
 	private static final int NUMBER_MILISECOND_ZERO = 0;

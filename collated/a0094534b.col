@@ -42,6 +42,8 @@ public class Mark {
 	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been successfully archived!";
 	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been successfully unarchived!";
 	private static final String FEEDBACK_MARK_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_MARK_EMPTY = "There is nothing to archive!";
+	private static final String FEEDBACK_UNMARK_EMPTY = "There is nothing to unarchive!";
 	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
@@ -60,6 +62,9 @@ public class Mark {
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
+			if(cmdTable.get(cmd) != 0) {
+				tableNo = cmdTable.get(cmd);
+			}
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		}
 		
@@ -125,7 +130,9 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex <= 0 || markedIndex > incTasks.size()) {
+			if (incTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_MARK_EMPTY);
+			} else if(markedIndex < 0 || markedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incTasks.size()));
 				return success = false;
 			} else {
@@ -150,7 +157,9 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex <= 0 || markIndex > incEvent.size()) {
+			if (incEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_MARK_EMPTY);
+			} else if(markIndex < 0 || markIndex > incEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incEvent.size()));
 				return success = false;
 			} else {
@@ -175,7 +184,9 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex <= 0 || markedIndex > comTasks.size()) {
+			if (comTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_UNMARK_EMPTY);
+			} else if(markedIndex <= 0 || markedIndex > comTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comTasks.size()));
 				return success = false;
 			} else {
@@ -200,7 +211,9 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex <= 0 || markIndex > comEvent.size()) {
+			if (comEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_UNMARK_EMPTY);
+			} else if(markIndex <= 0 || markIndex > comEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comEvent.size()));
 				return success = false;
 			} else {
@@ -234,82 +247,6 @@ public class Mark {
 }
 
 	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Mark.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\MarkTest.java
-	 */
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-public class MarkTest {
-	/**
-	 * The MarkTest 
-	 */
-	
-	@Test
-	public void testExecuteMark() {
-		Undo undoHandler = new Undo();
-		
-		/*This is an equivalence partition to test for entering a non-digit*/
-		FileLinker markFilelink = new FileLinker();
-		DataUI markUI = new DataUI();
-		markUI.configIncompleteTasks(markFilelink);
-		Mark newMarkWithWrongInput = new Mark();
-		int tableNo = 1;
-		newMarkWithWrongInput.executeMark("markt h", markFilelink, markUI, tableNo, undoHandler);
-		
-		assertEquals("You didn't enter a number! Please enter a number between 1 to 4!", markUI.getFeedback());
-		
-		/*This is to test entering a digit that's out of range.*/
-		markFilelink = new FileLinker();
-		markUI = new DataUI();
-		markUI.configIncompleteTasks(markFilelink);
-		newMarkWithWrongInput = new Mark();
-		tableNo = 1;
-		newMarkWithWrongInput.executeMark("markt 10", markFilelink, markUI, tableNo, undoHandler);
-		
-		assertEquals("Please enter a number between 1 to 4!", markUI.getFeedback());
-		
-		/*This is to test entering a digit that's less than the range.*/
-		markFilelink = new FileLinker();
-		markUI = new DataUI();
-		markUI.configIncompleteTasks(markFilelink);
-		newMarkWithWrongInput = new Mark();
-		tableNo = 1;
-		newMarkWithWrongInput.executeMark("markt -1", markFilelink, markUI, tableNo, undoHandler);
-		
-		assertEquals("Please enter a number between 1 to 4!", markUI.getFeedback());
-		
-		/*This is to test entering a digit that's successful.*/
-		markFilelink = new FileLinker();
-		markUI = new DataUI();
-		markUI.configIncompleteTasks(markFilelink);
-		newMarkWithWrongInput = new Mark();
-		tableNo = 1;
-		newMarkWithWrongInput.executeMark("markt 4", markFilelink, markUI, tableNo, undoHandler);
-		
-		assertEquals("\"baddass\" has been archived!", markUI.getFeedback());
-		
-		/*This is to test entering the command without an argument.*/
-		markFilelink = new FileLinker();
-		markUI = new DataUI();
-		markUI.configIncompleteTasks(markFilelink);
-		newMarkWithWrongInput = new Mark();
-		tableNo = 1;
-		newMarkWithWrongInput.executeMark("markt", markFilelink, markUI, tableNo, undoHandler);
-		
-		assertEquals("You didn't specify a task to mark as complete! Please enter an ID!", markUI.getFeedback());
-	}
-
-}
-
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\MarkTest.java
 
 
 
@@ -627,6 +564,10 @@ public class TaskController {
 		helpTable = new TableView<EventDataUI>();
 		tab = new TabPane();
 		helpAnchor = new AnchorPane();
+		dayAndTime = new Text();
+		dateText = new Text();
+		taskPaneIncomplete = new TitledPane();
+		eventPaneIncomplete = new TitledPane();
 		testingResponse = ""; //for integration testing
 		themes.add(jedigreen);
 		themes.add(sithred);
@@ -865,8 +806,11 @@ public class TaskController {
 	 */
 	public void executeCmd(String lastInput) {
 	  String response;
-	  viewCmd(lastInput);
-	  changeTheme(lastInput);
+	  if (lastInput.contains("view")) {
+	  	viewCmd(lastInput);
+	  } else if (lastInput.contains("theme")) {
+	  	changeTheme(lastInput);
+	  }
 		dataUI = commandHandle.executeCmd(lastInput, tableNo);
 		response = dataUI.getFeedback();		
 		testingResponse = response;
@@ -1053,7 +997,7 @@ public class TaskController {
 	  updateCounter();
 	  helpAnchor.setVisible(false);
 	  helpAnchor2.setVisible(false);
-	  notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+	  notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.clear();
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  command.setMouseTransparent(false);
@@ -1193,7 +1137,7 @@ public class TaskController {
 	 */
 	@FXML
 	public void openIncompleteTab() {
-		notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+		notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  updateCounter();
 		notification.setDisable(false);
@@ -1206,7 +1150,7 @@ public class TaskController {
 	 */
 	@FXML
 	public void openCompleteTab() {
-		notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+		notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 	  command.setPromptText(COMMAND_DEFAULT_PROMPT);
 	  updateCounter();
 		notification.setDisable(false);
@@ -1298,7 +1242,7 @@ public class TaskController {
 	 */
 	private void commandBlank(String input) {
 	  if (input.matches("")) {
-	  	notification.setText(NOTIFICATION_DEFAULT_PROMPT);
+	  	notification.setPromptText(NOTIFICATION_DEFAULT_PROMPT);
 			eventTableIncomplete.getSelectionModel().clearSelection();
 			taskTableIncomplete.getSelectionModel().clearSelection();
 			eventTableComplete.getSelectionModel().clearSelection();
@@ -2078,54 +2022,6 @@ public class TaskControllerMin {
 }
 
 	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerMin.java
-
-
-
-
-
-	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerTest.java
-	 */
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
-public class TaskControllerTest {
-	
-	@Test
-	public void test() {
-		TaskController controller = new TaskController();
-		
-		String addTest1 = "add Read the Book Thief";
-		String addTest2 = "add Meeting with the Boss; to 5.30pm";
-		String delTest1 = "delt 11";
-		String delTest2 = delTest1;
-		String markTest1 = "marke 10";
-		String unmarkTest1 = "unmarke 6";
-		
-		controller.executeCmd(addTest1);
-		assertEquals("Task added!", controller.getTestingResponse());
-		
-		controller.executeCmd(addTest2);
-		assertEquals("You've entered an invalid date format :( Please re-enter!", controller.getTestingResponse());
-		
-		controller.executeCmd(delTest1);
-		assertEquals("\"Read the Book Thief\" has been deleted!", controller.getTestingResponse());
-		
-		controller.executeCmd(delTest2);
-		assertEquals("Please enter a valid number between 1 to 10!", controller.getTestingResponse());
-		
-		controller.executeCmd(markTest1);
-		assertEquals("\"Meeting with new clients\" has been archived!", controller.getTestingResponse());
-		
-		controller.executeCmd(unmarkTest1);
-		assertEquals("\"Meeting with new clients\" has been unarchived!", controller.getTestingResponse());
-	}
-	
-}
-
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskControllerTest.java
 
 
 
