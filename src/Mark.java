@@ -35,6 +35,8 @@ public class Mark {
 	private static final String FEEDBACK_MARK_SUCCESSFUL = "\"%s\" has been successfully archived!";
 	private static final String FEEDBACK_UNMARK_SUCCESSFUL = "\"%s\" has been successfully unarchived!";
 	private static final String FEEDBACK_MARK_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_MARK_EMPTY = "There is nothing to archive!";
+	private static final String FEEDBACK_UNMARK_EMPTY = "There is nothing to unarchive!";
 	private static final String FEEDBACK_UNRECOGNISABLE_MARK_COMMAND = "That was an unrecognisable mark command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
@@ -118,7 +120,9 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex <= 0 || markedIndex > incTasks.size()) {
+			if (incTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_MARK_EMPTY);
+			} else if(markedIndex < 0 || markedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incTasks.size()));
 				return success = false;
 			} else {
@@ -143,7 +147,9 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex <= 0 || markIndex > incEvent.size()) {
+			if (incEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_MARK_EMPTY);
+			} else if(markIndex < 0 || markIndex > incEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, incEvent.size()));
 				return success = false;
 			} else {
@@ -168,7 +174,9 @@ public class Mark {
 		try {
 			int markedIndex = Integer.parseInt(userIndex);
 			
-			if(markedIndex <= 0 || markedIndex > comTasks.size()) {
+			if (comTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_UNMARK_EMPTY);
+			} else if(markedIndex <= 0 || markedIndex > comTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comTasks.size()));
 				return success = false;
 			} else {
@@ -193,7 +201,9 @@ public class Mark {
 		try {
 			int markIndex = Integer.parseInt(userIndex);
 			
-			if(markIndex <= 0 || markIndex > comEvent.size()) {
+			if (comEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_UNMARK_EMPTY);
+			} else if(markIndex <= 0 || markIndex > comEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_MARK_RANGE, comEvent.size()));
 				return success = false;
 			} else {

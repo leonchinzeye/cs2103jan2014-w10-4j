@@ -18,6 +18,7 @@ public class Delete {
 	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to delete!";
 	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
 	private static final String FEEDBACK_DELETION_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_DELETION_EMPTY = "There is nothing to delete!";
 	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
 	
@@ -124,7 +125,10 @@ public class Delete {
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
 			
-			if(deletedIndex <= 0 || deletedIndex > incTasks.size()) {
+			if (incTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			}	else if(deletedIndex <= 0 || deletedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incTasks.size()));
 				return success = false;
 			} else {
@@ -151,7 +155,10 @@ public class Delete {
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
 			
-			if(deletedIndex < 0 || deletedIndex > incEvent.size()) {
+			if (incEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			}	else if(deletedIndex < 0 || deletedIndex > incEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incEvent.size()));
 				return success = false;
 			} else {
@@ -177,7 +184,10 @@ public class Delete {
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
 			
-			if(deletedIndex < 0 || deletedIndex > compTasks.size()) {
+			if (compTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			} else if(deletedIndex < 0 || deletedIndex > compTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compTasks.size()));
 				return success = false;
 			} else {
@@ -203,7 +213,10 @@ public class Delete {
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
 			
-			if(deletedIndex < 0 || deletedIndex > compEvent.size()) {
+			if (compEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			} else if(deletedIndex < 0 || deletedIndex > compEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compEvent.size()));
 				return success = false;
 			} else {
