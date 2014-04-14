@@ -125,6 +125,30 @@ public class SearchTest {
 		assertEquals(0, fileLinkTest.getCompletedTasks().size());
 		assertEquals(0, fileLinkTest.getCompletedEvents().size());
 	}
+	
+	@Test
+	public void test9() {
+		String search = "search MED";
+		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
+		assertEquals("Displaying results for \"MED\"", dataUITest.getFeedback());
+		assertEquals(2, fileLinkTest.getIncompleteTasks().size());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(1, fileLinkTest.getCompletedEvents().size());
+	}
+	
+	@Test
+	public void test10() {
+		String search = "search LOW";
+		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
+		assertEquals("Displaying results for \"LOW\"", dataUITest.getFeedback());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals(0, fileLinkTest.getIncompleteEvents().size());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(0, fileLinkTest.getCompletedEvents().size());
+	}
 }
 
 
