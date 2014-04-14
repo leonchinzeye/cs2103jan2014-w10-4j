@@ -58,6 +58,33 @@ public class SearchTest {
 		String search = "search Mon";
 		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
 		assertEquals("Displaying results for \"Mon\"", dataUITest.getFeedback());
+		assertEquals(0, fileLinkTest.getIncompleteTasks().size());
+		assertEquals(0, fileLinkTest.getIncompleteEvents().size());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(0, fileLinkTest.getCompletedEvents().size());	
+	}
+	
+	@Test
+	public void test4() {
+		String search = "search Wednesday";
+		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
+		assertEquals("Displaying results for \"Wednesday\"", dataUITest.getFeedback());
+		assertEquals(0, fileLinkTest.getIncompleteTasks().size());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(0, fileLinkTest.getCompletedEvents().size());
+	}
+	
+	@Test
+	public void test5() {
+		String search = "search 14 April";
+		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
+		assertEquals("Displaying results for \"14 April\"", dataUITest.getFeedback());
+		assertEquals(0, fileLinkTest.getIncompleteTasks().size());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(0, fileLinkTest.getCompletedEvents().size());	
 	}
 }
+
 
