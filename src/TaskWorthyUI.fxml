@@ -20,7 +20,7 @@
         <Font name="Moire" size="40.0" fx:id="x3" />
       </font>
     </Text>
-    <Text id="title" disable="false" font="$x3" layoutX="171.0" layoutY="46.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000002066182353" strokeType="OUTSIDE" strokeWidth="0.0" text="rthy" />
+    <Text id="title" disable="false" font="$x3" layoutX="169.0" layoutY="46.0" mouseTransparent="true" scaleX="1.0" scaleY="1.000002066182353" strokeType="OUTSIDE" strokeWidth="0.0" text="rthy" />
     <ImageView fitHeight="23.016642326505565" fitWidth="23.04861068725586" layoutX="146.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true">
       <image>
         <Image url="@projectX.png" />
