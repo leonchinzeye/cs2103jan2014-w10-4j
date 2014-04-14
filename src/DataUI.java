@@ -21,10 +21,18 @@ import java.util.GregorianCalendar;
 
 public class DataUI {
 
+	private static final String MESSAGE_ONGOING_EVENTS_ARE_HIGHLIGHTED_IN_BLUE = "Ongoing events are highlighted in blue.";
+	private static final String MESSAGE_EXPIRED_EVENTS_ARE_HIGHLIGHTED_IN_RED = "Expired events are highlighted in red.";
+	
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy");	
 	private SimpleDateFormat timeUIFormat = new SimpleDateFormat("EEE h:mmaa");
+	
+	private static final String NUMBER_SET_ID_TWO = "2";
+	private static final String NUMBER_SET_ID_ONE = "1";
+	private static final int PRIORITY_NUM_MED = 2;
+	private static final int PRIORITY_NUM_LOW = 1;
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
@@ -54,7 +62,7 @@ public class DataUI {
 	}
 	
 	/**
-	 * Incomplete Task 
+	 * Passes the information on Incomplete Tasks in a format readable for GUI 
 	 * @param fileLink
 	 * 
 	 */
@@ -97,7 +105,7 @@ public class DataUI {
 	}
 
 	/**
-	 * For incomplete Events
+	 * Passes the information on Incomplete Events in a format readable for GUI 
 	 * @param fileLink
 	 */
 	public void configIncompleteEvents(FileLinker fileLink) {
@@ -144,7 +152,7 @@ public class DataUI {
 	}
 
 	/**
-	 * Complete Task 
+	 * Passes the information on Completed Tasks in a format readable for GUI 
 	 * @param fileLink
 	 * 
 	 */
@@ -181,7 +189,7 @@ public class DataUI {
 	
 	
 	/**
-	 * For Completed Events
+	 * Passes the information on Completed Tasks in a format readable for GUI 
 	 * @param fileLink
 	 */
 	public void configCompletedEvents(FileLinker fileLink) {
@@ -221,8 +229,8 @@ public class DataUI {
 		EventDataUI helpEvent1 = new EventDataUI();
 		EventDataUI helpEvent2 = new EventDataUI();
 		
-		helpEvent1.setID("1");
-		helpEvent1.setName("Expired events are highlighted in red.");
+		helpEvent1.setID(NUMBER_SET_ID_ONE);
+		helpEvent1.setName(MESSAGE_EXPIRED_EVENTS_ARE_HIGHLIGHTED_IN_RED);
 		helpEvent1.setPriority("HIGH");
 		helpEvent1.setStartDate("-");
 		helpEvent1.setStartTime("-");
@@ -231,8 +239,8 @@ public class DataUI {
 		helpEvent1.setIsExpired(true);
 		helpEvent1.setIsOngoing(false);
 		
-		helpEvent2.setID("2");
-		helpEvent2.setName("Ongoing events are highlighted in blue.");
+		helpEvent2.setID(NUMBER_SET_ID_TWO);
+		helpEvent2.setName(MESSAGE_ONGOING_EVENTS_ARE_HIGHLIGHTED_IN_BLUE);
 		helpEvent2.setPriority("LOW");
 		helpEvent2.setStartDate("-");
 		helpEvent2.setStartTime("-");
@@ -246,9 +254,9 @@ public class DataUI {
 	}
 	
 	private String determinePriority(int priority) {
-		if(priority == 1) {
+		if(priority == PRIORITY_NUM_LOW) {
 			return "LOW";
-		} else if(priority == 2) {
+		} else if(priority == PRIORITY_NUM_MED) {
 			return "MED";
 		} else
 			return "HIGH";
