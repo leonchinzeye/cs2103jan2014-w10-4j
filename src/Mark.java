@@ -55,6 +55,9 @@ public class Mark {
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
+			if(cmdTable.get(cmd) != 0) {
+				tableNo = cmdTable.get(cmd);
+			}
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		}
 		
