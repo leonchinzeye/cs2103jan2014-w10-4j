@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ASCII"?>
+<anttasks:AntTask xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:anttasks="http://org.eclipse.fx.ide.jdt/1.0" buildDirectory="C:\Users\Omar Khalid\workspace\TaskWorthy\build">
+  <deploy>
+    <application name="TaskWorthyFX" mainclass="UI" version=""/>
+    <info title="" vendor="Team AOL"/>
+  </deploy>
+  <signjar/>
+</anttasks:AntTask>
