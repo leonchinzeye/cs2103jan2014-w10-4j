@@ -71,6 +71,10 @@ public class DateAndTimeFormats {
 					throw new ParseException(input, pos.getIndex());
 				}
 				
+				if(userDate == null) {
+					continue;
+				}
+				
 				Calendar enteredDate = GregorianCalendar.getInstance();
 				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
 				enteredDate.set(Calendar.MINUTE, 0);
@@ -108,6 +112,10 @@ public class DateAndTimeFormats {
 					throw new ParseException(input, pos.getIndex());
 				}
 				
+				if(userDate == null) {
+					continue;
+				}
+				
 				Calendar enteredDate = GregorianCalendar.getInstance();
 				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
 				enteredDate.set(Calendar.MINUTE, userDate.getMinutes());
@@ -143,6 +151,10 @@ public class DateAndTimeFormats {
 				
 				if(pos.getIndex() < input.length()) {
 					throw new ParseException(input, pos.getIndex());
+				}
+				
+				if(userDate == null) {
+					continue;
 				}
 				
 				Calendar enteredDate = GregorianCalendar.getInstance();
@@ -186,6 +198,10 @@ public class DateAndTimeFormats {
 					throw new ParseException(userInput, pos.getIndex());
 				}
 				
+				if(userDate == null) {
+					continue;
+				}
+				
 				return userDate;
 			} catch(ParseException e) {
 				continue;
@@ -217,6 +233,10 @@ public class DateAndTimeFormats {
 				
 				if(pos.getIndex() < input.length()) {
 					throw new ParseException(input, pos.getIndex());
+				}
+				
+				if(userDate == null) {
+					continue;
 				}
 				
 				return userDate;
@@ -253,6 +273,10 @@ public class DateAndTimeFormats {
 				
 				if(pos.getIndex() < input.length()) {
 					throw new ParseException(input, pos.getIndex());
+				}
+				
+				if(userDate == null) {
+					continue;
 				}
 				
 				return userDate;

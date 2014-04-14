@@ -36,7 +36,7 @@ public class SearchTest {
 		
 		markHandlerTest.executeMark("mark 1", fileLinkTest, dataUITest, 2, undoHandlerTest);
 	}
-	//
+	
 	@Test
 	public void test() {
 		String userInputSearch = "search today";
