@@ -114,6 +114,17 @@ public class SearchTest {
 		assertEquals(0, fileLinkTest.getCompletedTasks().size());
 		assertEquals(0, fileLinkTest.getCompletedEvents().size());
 	}
+	
+	@Test
+	public void test8() {
+		String search = "search HIGH";
+		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
+		assertEquals("Displaying results for \"HIGH\"", dataUITest.getFeedback());
+		assertEquals("CS2105 Assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals(0, fileLinkTest.getIncompleteEvents().size());
+		assertEquals(0, fileLinkTest.getCompletedTasks().size());
+		assertEquals(0, fileLinkTest.getCompletedEvents().size());
+	}
 }
 
 
