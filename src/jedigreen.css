@@ -60,6 +60,7 @@
 	-fx-border-color: #ff9a00;
 	-fx-border-width: 2px;
 	-fx-text-fill: #ff9a00;
+	-fx-prompt-text-fill: #ff9a00;
 	-fx-font-size: 13;
 	-fx-font-family: Moire;
 }
