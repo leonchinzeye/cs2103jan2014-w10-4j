@@ -1,6 +1,10 @@
 //@author A0100720E
 import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * The object that will represent a task for the UI to be able to read
+ * @author Atul
+ *
+ */
 public class TaskDataUI {
 
 	private SimpleStringProperty ID;    
