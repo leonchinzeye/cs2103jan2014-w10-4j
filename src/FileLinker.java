@@ -381,4 +381,16 @@ public class FileLinker {
 			}
 		}
 	}
+	
+	/**
+	 * for testing purposes. will not be included in the documentation
+	 */
+	public void reset() {
+		incompleteTasks = new ArrayList<TaskCard>();
+		incompleteEvents = new ArrayList<TaskCard>();
+		completedTasks = new ArrayList<TaskCard>();
+		completedEvents = new ArrayList<TaskCard>();
+		
+		writeToFiles();
+	}
 }
