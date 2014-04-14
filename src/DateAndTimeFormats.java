@@ -237,7 +237,7 @@ public class DateAndTimeFormats {
 	 * returns a null object
 	 */
 	public Date isProperDate(String input){
-		String[] array = input.trim().split("/");
+		String[] array = input.trim().split("/| ");
 		
 		if(array[array.length - 1].length() != 4) {
 			return null;

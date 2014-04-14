@@ -341,4 +341,64 @@ public class DateAndTimeFormatsTest {
 		assertEquals(testTime.getTime(), formats.isLazyYearDate(date));
 		assertEquals(null, formats.isProperDate(date));
 	}
+	
+	@Test
+	public void test26() {
+		String date = "12/4/2013";
+		Calendar testTime = Calendar.getInstance();
+		testTime.set(Calendar.DATE, 12);
+		testTime.set(Calendar.MONTH, 3);
+		testTime.set(Calendar.YEAR, 2013);
+		testTime.set(Calendar.HOUR_OF_DAY, 0);
+		testTime.set(Calendar.MINUTE, 0);
+		testTime.set(Calendar.SECOND, 0);
+		testTime.set(Calendar.MILLISECOND, 0);
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(testTime.getTime(), formats.isLazyYearDate(date));
+		assertEquals(testTime.getTime(), formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test27() {
+		String date = "1/16/13";
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test28() {
+		String date = "46/4/13";
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(null, formats.isLazyDate(date));
+		assertEquals(null, formats.isLazyYearDate(date));
+		assertEquals(null, formats.isProperDate(date));
+	}
+	
+	@Test
+	public void test29() {
+		String date = "27 oct 2016";
+		Calendar testTime = Calendar.getInstance();
+		testTime.set(Calendar.DATE, 27);
+		testTime.set(Calendar.MONTH, 9);
+		testTime.set(Calendar.YEAR, 2016);
+		testTime.set(Calendar.HOUR_OF_DAY, 0);
+		testTime.set(Calendar.MINUTE, 0);
+		testTime.set(Calendar.SECOND, 0);
+		testTime.set(Calendar.MILLISECOND, 0);
+		assertEquals(null, formats.isHourOnly(date));
+		assertEquals(null, formats.isComplete12Hr(date));
+		assertEquals(null, formats.isComplete24Hr(date));
+		assertEquals(testTime.getTime(), formats.isLazyDate(date));
+		assertEquals(testTime.getTime(), formats.isLazyYearDate(date));
+		assertEquals(testTime.getTime(), formats.isProperDate(date));
+	}
 }
