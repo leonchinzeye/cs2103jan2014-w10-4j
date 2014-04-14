@@ -67,7 +67,10 @@ public class TaskControllerTest {
 		
 		testController.executeCmd(addEventTest);
 		assertEquals("\"Star Wars marathon\" has been successfully added!", testController.getTestingResponse());
-
+	}
+	
+	@Test
+	public void delTest() {
 		String delMissingIDTest = "delt ";
 		String delOutOfRangeTest = "dele 100";
 		String delNonDigitTest = "dele a";
@@ -81,16 +84,16 @@ public class TaskControllerTest {
 		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", testController.getTestingResponse());
 		
 		testController.executeCmd(delOutOfRangeTest);
-		assertEquals("Please enter a number between 1 to %d!", testController.getTestingResponse());
+		assertEquals("Please enter a number between 1 to 4!", testController.getTestingResponse());
 		
 		testController.executeCmd(delNonDigitTest);
-		assertEquals("You didn't enter a number! Please enter a number between 1 to %d!", testController.getTestingResponse());
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 4!", testController.getTestingResponse());
 		
 		testController.executeCmd(delWrongCmdTest);
 		assertEquals("That was an unrecognisable delete command :(", testController.getTestingResponse());
 		
 		testController.executeCmd(delIncompleteTaskTest);
-		assertEquals("\"Play XCOM\" has been deleted!", testController.getTestingResponse());
+		assertEquals("\"Read Lord of the Rings\" has been deleted!", testController.getTestingResponse());
 		
 		testController.executeCmd(delIncompleteEventTest);
 		assertEquals("\"Star Wars marathon\" has been deleted!", testController.getTestingResponse());
