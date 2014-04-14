@@ -14,6 +14,7 @@ public class TaskControllerTest {
 	Mark markHandlerTest = new Mark();
 	FileLinker fileLinkTest = new FileLinker();
 	DataUI dataUITest = new DataUI();
+	TaskController testController = new TaskController();
 	
 	@Before
 	public void populate() {
@@ -37,78 +38,71 @@ public class TaskControllerTest {
 	}
 	
 	@Test
-	public void addTest() {
-		TaskController controller = new TaskController();
-		
+	public void addTest() {		
 		String addWrongCmdTest = "addd test";
 		String addExtraArgumentsTest = "add Test; 25 May 2014; 2pm";
-		String addMissingDateTest = "add Meeting with the Boss; ";
+		String addMissingDateTest = "add Meeting with the Boss; 14 April, 2pm - 4pm - 6pm";
 		String addWrongDateTest = "add Meeting with the Boss; 32 March 2014";
 		String addTimeTravelTest = "add Event; 15 April to 5 April";
 		String addTaskTest = "add Play XCOM";
 		String addEventTest = "add Star Wars marathon; 15 Apr, 2pm";
 		
-		controller.executeCmd(addWrongCmdTest);
-		assertEquals("You've entered an invalid add command :(", controller.getTestingResponse());
+		testController.executeCmd(addWrongCmdTest);
+		assertEquals("You've entered an invalid add command :(", testController.getTestingResponse());
 		
-		controller.executeCmd(addExtraArgumentsTest);
-		assertEquals("You've entered an invalid add command :(", controller.getTestingResponse());
+		testController.executeCmd(addExtraArgumentsTest);
+		assertEquals("You seem to have entered more than you need to :( Please try again!", testController.getTestingResponse());
 		
-		controller.executeCmd(addMissingDateTest);
-		assertEquals("You didn't enter a timing for this event :( Please try again!", controller.getTestingResponse());
+		testController.executeCmd(addMissingDateTest);
+		assertEquals("You didn't enter a timing for this event :( Please try again!", testController.getTestingResponse());
 		
-		controller.executeCmd(addWrongDateTest);
-		assertEquals("You've entered an invalid date format :(", controller.getTestingResponse());
+		testController.executeCmd(addWrongDateTest);
+		assertEquals("You've entered an invalid date format :(", testController.getTestingResponse());
 		
-		controller.executeCmd(addTimeTravelTest);
-		assertEquals("Greaaat Scott! Are you a time traveller?", controller.getTestingResponse());
+		testController.executeCmd(addTimeTravelTest);
+		assertEquals("Greaaat Scott! Are you a time traveller?", testController.getTestingResponse());
 		
-		controller.executeCmd(addTaskTest);
-		assertEquals("\"Play XCOM\" has been successfully added!", controller.getTestingResponse());
+		testController.executeCmd(addTaskTest);
+		assertEquals("\"Play XCOM\" has been successfully added!", testController.getTestingResponse());
 		
-		controller.executeCmd(addEventTest);
-		assertEquals("\"Star Wars marathon\" has been successfully added!", controller.getTestingResponse());
-	}
-	
-	@Test
-	public void delTest() {
-		TaskController controller = new TaskController();
-		
-		String delMissingIDTest = "del";
-		String delOutOfRangeTest = "del 100";
-		String delNonDigitTest = "del a";
+		testController.executeCmd(addEventTest);
+		assertEquals("\"Star Wars marathon\" has been successfully added!", testController.getTestingResponse());
+
+		String delMissingIDTest = "delt ";
+		String delOutOfRangeTest = "dele 100";
+		String delNonDigitTest = "dele a";
 		String delWrongCmdTest = "delk 1";
 		String delIncompleteTaskTest = "delt 5";
 		String delIncompleteEventTest = "dele 4";
 		String delCompleteTaskTest = "deltc 1";
 		String delCompleteEventTest = "delec 1";
 		
-		controller.executeCmd(delMissingIDTest);
-		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", controller.getTestingResponse());
+		testController.executeCmd(delMissingIDTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", testController.getTestingResponse());
 		
-		controller.executeCmd(delOutOfRangeTest);
-		assertEquals("Please enter a number between 1 to %d!", controller.getTestingResponse());
+		testController.executeCmd(delOutOfRangeTest);
+		assertEquals("Please enter a number between 1 to %d!", testController.getTestingResponse());
 		
-		controller.executeCmd(delNonDigitTest);
-		assertEquals("You didn't enter a number! Please enter a number between 1 to %d!", controller.getTestingResponse());
+		testController.executeCmd(delNonDigitTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to %d!", testController.getTestingResponse());
 		
-		controller.executeCmd(delWrongCmdTest);
-		assertEquals("That was an unrecognisable delete command :(", controller.getTestingResponse());
+		testController.executeCmd(delWrongCmdTest);
+		assertEquals("That was an unrecognisable delete command :(", testController.getTestingResponse());
 		
-		controller.executeCmd(delIncompleteTaskTest);
-		assertEquals("\"Play XCOM\" has been deleted!", controller.getTestingResponse());
+		testController.executeCmd(delIncompleteTaskTest);
+		assertEquals("\"Play XCOM\" has been deleted!", testController.getTestingResponse());
 		
-		controller.executeCmd(delIncompleteEventTest);
-		assertEquals("\"Star Wars marathon\" has been deleted!", controller.getTestingResponse());
+		testController.executeCmd(delIncompleteEventTest);
+		assertEquals("\"Star Wars marathon\" has been deleted!", testController.getTestingResponse());
 		
-		controller.executeCmd(delCompleteTaskTest);
-		assertEquals("", controller.getTestingResponse());
+		testController.executeCmd(delCompleteTaskTest);
+		assertEquals("There is nothing to delete!", testController.getTestingResponse());
 		
-		controller.executeCmd(delCompleteEventTest);
-		assertEquals("\"Freshman Camp\" has been deleted!", controller.getTestingResponse());
+		testController.executeCmd(delCompleteEventTest);
+		assertEquals("\"Freshman Camp\" has been deleted!", testController.getTestingResponse());
 	}
 	
-	@Test
+	/*@Test
 	public void markTest() {
 		TaskController controller = new TaskController();
 
@@ -120,5 +114,5 @@ public class TaskControllerTest {
 		
 		controller.executeCmd(unmarkTest1);
 		assertEquals("\"Meeting with new clients\" has been unarchived!", controller.getTestingResponse());
-	}
+	}*/
 }
