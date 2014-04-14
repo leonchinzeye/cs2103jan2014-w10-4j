@@ -52,8 +52,8 @@ public class Add {
 	private Calendar floatingDefaultEndDay = new GregorianCalendar(9999, 11, 31, 23, 59);
 	
 	private final String FEEDBACK_NO_ARG_ENTERED = "You forgot to enter a task/event to be added!";
-	private final String FEEDBACK_EXTRA_DETAILS_ARG = "You seem to have entered more than you need to :(  Please try again!";
-	private final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You seem to have entered more than you need to :(  Please try again!";
+	private final String FEEDBACK_EXTRA_DETAILS_ARG = "You seem to have entered more than you need to :( Please try again!";
+	private final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You seem to have entered more than you need to :( Please try again!";
 	private final String FEEDBACK_SUCCESSFUL_ADD_TASK = "\"%s\" has been successfully added!";
 	private final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "\"%s\" has been successfully added!";
 	private final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :(";
