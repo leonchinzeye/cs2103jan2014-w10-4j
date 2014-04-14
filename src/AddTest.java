@@ -61,20 +61,22 @@ public class AddTest {
 		assertEquals("You didn't enter a timing for this event :( Please try again!", dataUITest.getFeedback());
 	}
 	
-//	
+	@Test
+	public void test5() {
+		String userInput = "add Hello World due by , ,,";
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("You've entered an invalid date format :(", dataUITest.getFeedback());
+	}
+	
+	@Test
+	public void test6() {
+		String userInput = "add meeting; to 14 april";
+		addHandlerTest.executeAdd(userInput, fileLinkTest, dataUITest, undoHandlerTest, dateFormatsTest);
+		assertEquals("You've entered an invalid date format :(", dataUITest.getFeedback());
+	}
+	
 //	@Test
-//	public void test5() {
-//		String search = "search 14 April";
-//		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
-//		assertEquals("Displaying results for \"14 April\"", dataUITest.getFeedback());
-//		assertEquals(1, fileLinkTest.getIncompleteTasks().size());
-//		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(0).getName());
-//		assertEquals(0, fileLinkTest.getCompletedTasks().size());
-//		assertEquals(0, fileLinkTest.getCompletedEvents().size());	
-//	}
-//	
-//	@Test
-//	public void test6() {
+//	public void test7() {
 //		String search = "search expired";
 //		searchHandlerTest.executeSearch(search, fileLinkTest, dataUITest, dateFormatsTest);
 //		assertEquals("Displaying results for \"expired\"", dataUITest.getFeedback());
@@ -83,7 +85,7 @@ public class AddTest {
 //		assertEquals(0, fileLinkTest.getCompletedTasks().size());
 //		assertEquals("Freshman Camp", fileLinkTest.getCompletedEvents().get(0).getName());
 //	}
-//	
+	
 //	@Test
 //	public void test7() {
 //		String search = "search tomorrow";
