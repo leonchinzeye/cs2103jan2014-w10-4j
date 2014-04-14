@@ -1,6 +1,10 @@
 //@author A0100720E
 import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * The object that will represent a event for the UI to be able to read
+ * @author Atul
+ *
+ */
 public class EventDataUI {
 
 	private SimpleStringProperty ID; 
