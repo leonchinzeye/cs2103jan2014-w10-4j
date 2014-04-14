@@ -1,0 +1,3242 @@
+//@author: a0097304e
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Add.java
+	 */
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+
+public class Add {
+
+	private int ARRAY_FIRST_ARG = 0;
+	private int ARRAY_SECOND_ARG = 1;
+	
+	private final String TYPE_DUE_DATE_TASK = "T";
+	private final String TYPE_FLOATING_TASK = "FT";
+	private final String TYPE_ALL_DAY = "AE";
+	private final String TYPE_EVENT = "E";
+	
+	private final int DEFAULT_FLOATING_TASKS_PRIORITY = 1;
+	private final int DEFAULT_TASKS_AND_EVENTS_PRIORITY = 2;
+	private final int URGENT_PRIORITY = 3;
+	
+	private final int ADD_TO_TASKS = 1;
+	private final int ADD_TO_EVENTS = 2;
+	
+	private boolean urgent_flag;
+	private HashMap<String, Integer> cmdTable;
+	
+	private Calendar floatingDefaultEndDay = new GregorianCalendar(9999, 11, 31, 23, 59);
+	
+	private static final String FEEDBACK_NO_ARG_ENTERED = "You forgot to enter a task/event to be added!";
+	private static final String FEEDBACK_EXTRA_DETAILS_ARG = "You seem to have entered more than you need to :(  Please try again!";
+	private static final String FEEDBACK_EXTRA_DETAILS_ARG_TASK = "You seem to have entered more than you need to :(  Please try again!";
+	private static final String FEEDBACK_SUCCESSFUL_ADD_TASK = "Task has been successfully added!";
+	private static final String FEEDBACK_SUCCESSFUL_ADD_EVENT = "Event has been successfully added!";
+	private static final String FEEDBACK_INVALID_ADD_COMMAND = "You've entered an invalid add command :(";
+	private static final String FEEDBACK_INVALID_DATE_FORMAT = "You've entered an invalid date format :(";
+	private static final String FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT = "You didn't enter a timing for this event :( Please try again!";
+	private static final String FEEDBACK_GOING_BACK_INTO_TIME = "Greaaat scott! Are you a time traveller?";
+	
+	/**
+	 * constructor for add
+	 */
+	public Add() {
+		initCmdTable();
+		resetFlag();
+	}
+	
+	/**
+	 * this is the main method that is called by any external class in order to add tasks or
+	 * events into TaskWorthy. It takes in the user input and does the parsing to determine
+	 * if it is a task or an event
+	 * @return
+	 * this method returns a boolean to any external method calling it to indicate if 
+	 * adding of a task/event has been successful
+	 */
+	public void executeAdd(String userInput, FileLinker fileLink, 
+			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success = false;
+		
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		
+		if(!cmdTable.containsKey(tokenizedInput[ARRAY_FIRST_ARG])) {
+			dataUI.setFeedback(FEEDBACK_INVALID_ADD_COMMAND);
+			return;
+		}
+		
+		if(cmdTable.get(tokenizedInput[ARRAY_FIRST_ARG]) == 2) {
+			urgent_flag = true;
+		}
+		
+		if(tokenizedInput.length < 2) {
+			dataUI.setFeedback(FEEDBACK_NO_ARG_ENTERED);
+			return;
+		} else {
+			String userDetails = tokenizedInput[ARRAY_SECOND_ARG];
+			success = identifyTypeAndPerform(userDetails, fileLink, dataUI, undoHandler, dateFormats);
+		}
+		
+		if(success) {
+			undoHandler.flushRedo();
+		}
+		
+		resetFlag();
+		return;
+	}
+	
+	/**
+	 * this method identifies if the adding is of a task or event type and calls the respective methods
+	 * to add them
+	 * @return
+	 * returns a successful boolean if the adding was successful
+	 */
+	private boolean identifyTypeAndPerform(String userDetails,
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success;
+		
+		String[] details = userDetails.trim().split(";");
+		
+		if(details.length == 1) {
+			success = addTask(details, fileLink, dataUI, undoHandler, dateFormats);
+		} else if(details.length == 2) {
+			success = addEvent(details, fileLink, dataUI, undoHandler, dateFormats);
+		} else {
+			dataUI.setFeedback(FEEDBACK_EXTRA_DETAILS_ARG);
+			return false;
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * this method takes in the task details and determines if it is a floating task or a task that
+	 * has a due date.
+	 * @return
+	 * returns true if the addition has been successful
+	 */
+	private boolean addTask(String[] details, FileLinker fileLink, DataUI dataUI,
+			Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success;
+		
+		String[] detailsAndTime = details[ARRAY_FIRST_ARG].trim().split(" due by | due on | to be done by | by | due at ");
+		
+		if(detailsAndTime.length == 1) {
+			success = addFloatingTask(detailsAndTime[ARRAY_FIRST_ARG], fileLink, dataUI, undoHandler);
+		} else if(detailsAndTime.length == 2) {
+			success = addDueDateTask(detailsAndTime, fileLink, dataUI, undoHandler, dateFormats);
+		} else {
+			dataUI.setFeedback(FEEDBACK_EXTRA_DETAILS_ARG_TASK);
+			return false;
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * this method is mainly for adding events. it takes in the user timings and determines if
+	 * the user has entered a single timing or 2 timings which will determine the start and end
+	 * time of the event after which it calls the respective methods to add the event
+	 * @return
+	 * returns true if the user has entered the details correctly and that the event has been
+	 * added into the storage
+	 */
+	private boolean addEvent(String[] details, FileLinker fileLink,
+			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success;
+		
+		String eventName = details[ARRAY_FIRST_ARG].trim();
+		String[] timeComponents = details[ARRAY_SECOND_ARG].trim().split("-| to ");
+		
+		if(timeComponents.length == 1) {
+			success = addOneTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+		} else if(timeComponents.length == 2) {
+			success = addTwoTimingEvent(eventName, timeComponents, fileLink, dataUI, undoHandler, dateFormats);
+		} else {
+			dataUI.setFeedback(FEEDBACK_NO_TIME_SPECIFIED_FOR_EVENT);
+			return false;
+		}
+		
+		return success;
+	}
+	
+	/**
+	 * This method takes in the details and the time component and checks if the user has entered a
+	 * valid date/time format. If it is correct, it parses the user input into a date format and stores
+	 * it in storage.
+	 * @return
+	 * returns true if the user enters a valid date format that can be parsed. Task will then be added
+	 * into storage.
+	 * returns false if the user enters an invalid date format
+	 */
+	private boolean addDueDateTask(String[] detailsAndTime, FileLinker fileLink,
+			DataUI dataUI, Undo undoHandler, DateAndTimeFormats dateFormats) {
+		boolean success = true;
+		TaskCard taskToBeAdded = new TaskCard();
+		Date date;
+		
+		String details = detailsAndTime[ARRAY_FIRST_ARG];
+		String[] dateAndTime = detailsAndTime[ARRAY_SECOND_ARG].trim().split(",");
+		
+		if(dateAndTime.length == 1 || dateAndTime.length == 2) {
+			date = checkAndGetDate(dateAndTime, dateFormats);
+			
+			if(date == null) {
+				dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+				return false;
+			}
+			
+			setDueDateTaskDetails(taskToBeAdded, date, details);
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
+			fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
+			
+			int indexAdded = fileLink.getIncompleteTasks().indexOf(taskToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_TASKS);
+			
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
+			
+		} else {
+			dataUI.setFeedback(FEEDBACK_EXTRA_DETAILS_ARG_TASK);
+			return false;
+		}
+		return success;
+	}
+	
+	/**
+	 * this method takes in the user input and enters it as a floating task.
+	 * Floating tasks do not have an end timing and thus, their default timing
+	 * is set to 31 Dec 9999 of the calendar.
+	 * @return
+	 * floating tasks will always be true and added if the user ignores any command
+	 * syntax when adding details into TaskWorthy
+	 */
+	private boolean addFloatingTask(String taskDetails, FileLinker fileLink,
+			DataUI dataUI, Undo undoHandler) {
+		TaskCard taskToBeAdded = new TaskCard();
+		
+		setFloatingTaskDetails(taskDetails, taskToBeAdded);
+		dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_TASK);
+		fileLink.addHandling(taskToBeAdded, ADD_TO_TASKS);
+		
+		int indexAdded = fileLink.getIncompleteTasks().indexOf(taskToBeAdded);
+		dataUI.setRowAdded(indexAdded);
+		dataUI.setFileAdded(ADD_TO_TASKS);
+		
+		RefreshUI.executeRefresh(fileLink, dataUI);
+		undoHandler.storeUndo("add", ADD_TO_TASKS, taskToBeAdded, null);
+		
+		return true;
+	}
+	
+	/**
+	 * this method is for when the user only enters one timing for events. the entered 
+	 * event will be given a default 1 hr period block
+	 * @return
+	 * returns true if the date format is correct and event has been added into the database
+	 * returns false if the date format user entered is invalid
+	 */
+	private boolean addOneTimingEvent(String eventName, String[] timeComponents,
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+			DateAndTimeFormats dateFormats) {
+		boolean success = true;
+		TaskCard eventToBeAdded = new TaskCard();
+		Date startDate;
+		
+		String[] dateAndTime = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
+		
+		if(dateAndTime.length == 1 || dateAndTime.length == 2) {
+			startDate = checkAndGetDate(dateAndTime, dateFormats);
+			
+			if(startDate == null) {
+				dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+				return false;
+			}
+			
+			setOneTimingEventDetails(eventToBeAdded, startDate, eventName);
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			
+			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_EVENTS);
+			
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
+			
+		} else {
+			dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+			return false;
+		}
+		return success;
+	}
+
+	/**
+	 * this method is for adding events when the user has entered a specific start and end time for 
+	 * the event. Because TaskWorthy offers some flexibility in adding the date formats, there are
+	 * several cases to identify with regards to the timing that the user enters
+	 * @return
+	 * returns true if the formats have been correct and the event has been added into the database
+	 * returns false if the syntax or the dates that the user entered is invalid
+	 */
+	private boolean addTwoTimingEvent(String eventName, String[] timeComponents,
+			FileLinker fileLink, DataUI dataUI, Undo undoHandler,
+			DateAndTimeFormats dateFormats) {
+		boolean success = true;
+		TaskCard eventToBeAdded = new TaskCard();
+		Date startDate;
+		Date endDate;
+		
+		String[] dateAndTimeStart = timeComponents[ARRAY_FIRST_ARG].trim().split(",");
+		String[] dateAndTimeEnd = timeComponents[ARRAY_SECOND_ARG].trim().split(",");
+		
+		if(dateAndTimeStart.length > 2 || dateAndTimeEnd.length > 2 || dateAndTimeStart.length <= 0 || dateAndTimeEnd.length <= 0) {
+			dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+			return false;
+		} else {
+			startDate = checkAndGetDate(dateAndTimeStart, dateFormats);
+			endDate = checkAndGetDate(dateAndTimeEnd, dateFormats);
+			
+			if(startDate == null || endDate == null) {
+				dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+				return false;
+			}
+			
+			/**
+			 * 1st if: could be a time and a time(event falls within a 
+			 * 				 specific timing on current date) or a date and a 
+			 * 				 date(event stretches over multiple days)
+			 * 2nd if: a full date with a time at the end. ending on the same day
+			 * 3rd if: event stretches over multiple days with specific timings
+			 */
+			if(dateAndTimeStart.length == 1 && dateAndTimeEnd.length == 1) {	
+				Calendar today = GregorianCalendar.getInstance();
+				Calendar startDay = GregorianCalendar.getInstance();
+				Calendar endDay = GregorianCalendar.getInstance();
+				startDay.setTime(startDate);
+				endDay.setTime(endDate);
+				
+				if(checkToday(today, endDay) && checkToday(today, startDay) == false) {
+					dataUI.setFeedback(FEEDBACK_INVALID_DATE_FORMAT);
+					return false;
+				}
+				setCurrentDateTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 1) {
+				setDateEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 2 && dateAndTimeEnd.length == 2) {
+				setMultDaysEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			} else if(dateAndTimeStart.length == 1 && dateAndTimeEnd.length == 2) {
+				setMultDaysEnteredTwoTimingEventDetails(eventToBeAdded, startDate, endDate, eventName);
+			}
+			
+			if(!checkValidityOfEvent(eventToBeAdded)) {
+				dataUI.setFeedback(FEEDBACK_GOING_BACK_INTO_TIME);
+				return false;
+			}
+			
+			dataUI.setFeedback(FEEDBACK_SUCCESSFUL_ADD_EVENT);
+			fileLink.addHandling(eventToBeAdded, ADD_TO_EVENTS);
+			
+			int indexAdded = fileLink.getIncompleteEvents().indexOf(eventToBeAdded);
+			dataUI.setRowAdded(indexAdded);
+			dataUI.setFileAdded(ADD_TO_EVENTS);
+			
+			RefreshUI.executeRefresh(fileLink, dataUI);
+			undoHandler.storeUndo("add", ADD_TO_EVENTS, eventToBeAdded, null);
+		}
+		
+		return success;
+	}
+
+	/**
+	 * this method checks if the date entered corresponds to today's date
+	 * @return
+	 * returns true if the date is today
+	 * returns false if the date is some other date
+	 */
+	private boolean checkToday(Calendar today, Calendar endDay) {
+	  return endDay.get(Calendar.DATE) == today.get(Calendar.DATE)
+	  		&& endDay.get(Calendar.MONTH) == today.get(Calendar.MONTH) 
+	  		&& endDay.get(Calendar.YEAR) == today.get(Calendar.YEAR);
+  }
+
+	/**
+	 * this method is for setting the event details and timings that the user has entered
+	 * into a TaskCard format. In this case, the user has added a timing that could be
+	 * on the current day he enters, or it could also be an event that spans over a couple of
+	 * days without a specific timing, or from a specific timing to an end date
+	 */
+	private void setCurrentDateTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+		
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		if(startDay.get(Calendar.HOUR_OF_DAY) == 0 && startDay.get(Calendar.MINUTE) == 0
+				&& endDay.get(Calendar.HOUR_OF_DAY) == 0 && endDay.get(Calendar.MINUTE) == 0 
+				&& startDay != endDay) {
+			eventToBeAdded.setType(TYPE_ALL_DAY);
+		} else {
+			eventToBeAdded.setType(TYPE_EVENT);
+		}
+	}
+
+	/**
+	 * this method is called when the user enters a specific timing on a specific date for a starting
+	 * date and either a specific date or a specific timing. it then sets the timing details along
+	 * with the event type
+	 */
+	private void setDateEnteredTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}	
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		Calendar today = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+		
+		if(endDay.get(Calendar.DATE) == today.get(Calendar.DATE) 
+				&& endDay.get(Calendar.MONTH) == today.get(Calendar.MONTH)
+				&& endDay.get(Calendar.YEAR) == today.get(Calendar.YEAR)) {
+			endDay.set(Calendar.DATE, startDay.get(Calendar.DATE));
+			endDay.set(Calendar.MONTH, startDay.get(Calendar.MONTH));
+			endDay.set(Calendar.YEAR, startDay.get(Calendar.YEAR));
+		}
+		
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		eventToBeAdded.setType(TYPE_EVENT);
+	}
+
+	/**
+	 * this method is called when the user is specific with the 2 timings that he has
+	 * entered. Eg. 23/4, 4pm to 28/4, 4pm
+	 * It then sets the details for the events in the format of a TaskCard that is to be
+	 * added into the database
+	 */
+	private void setMultDaysEnteredTwoTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, Date endDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}	
+		
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		startDay.setTime(startDate);
+		endDay.setTime(endDate);
+	
+		eventToBeAdded.setStartDay(startDay);
+		eventToBeAdded.setEndDay(endDay);
+		
+		eventToBeAdded.setType(TYPE_EVENT);
+	}
+
+	/**
+	 * this method sets the details for when only the one timing has been entered by the
+	 * user. this is where the default of 1 hour is given because the user has only 
+	 * entered the start timing
+	 */
+	private void setOneTimingEventDetails(TaskCard eventToBeAdded,
+			Date startDate, String eventName) {
+		eventToBeAdded.setName(eventName);
+		
+		if(urgent_flag) {
+			eventToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			eventToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		
+		Calendar start = GregorianCalendar.getInstance();
+		Calendar end = GregorianCalendar.getInstance();
+		
+		start.setTime(startDate);
+		eventToBeAdded.setStartDay(start);
+		
+		if(start.get(Calendar.HOUR_OF_DAY) == 0 && start.get(Calendar.MINUTE) == 0) {
+			eventToBeAdded.setType(TYPE_ALL_DAY);
+			end.setTime(startDate);
+			end.add(Calendar.DATE, 1);
+			end.add(Calendar.MILLISECOND, -1);
+			
+			eventToBeAdded.setEndDay(end);
+		} else {
+			eventToBeAdded.setType(TYPE_EVENT);
+			end.setTime(startDate);
+			end.add(Calendar.HOUR_OF_DAY, 1);
+			
+			eventToBeAdded.setEndDay(end);
+		}
+	}
+	
+	/**
+	 * this method is for setting the details of a due date task into a TaskCard format
+	 */
+	private void setDueDateTaskDetails(TaskCard taskToBeAdded, Date date,
+			String details) {
+		Calendar startDay = GregorianCalendar.getInstance();
+		Calendar endDay = GregorianCalendar.getInstance();
+		
+		endDay.setTime(date);
+		
+		if(urgent_flag) {
+			taskToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_TASKS_AND_EVENTS_PRIORITY);
+		}
+		taskToBeAdded.setName(details);
+		taskToBeAdded.setType(TYPE_DUE_DATE_TASK);
+		taskToBeAdded.setStartDay(startDay);
+		taskToBeAdded.setEndDay(endDay);
+	}
+	
+	/**
+	 * this method sets the details of a floating task into a TaskCard format that will
+	 * be added into the database
+	 */
+	private void setFloatingTaskDetails(String taskDetails, TaskCard taskToBeAdded) {
+		taskToBeAdded.setName(taskDetails);
+		
+		if(urgent_flag) {
+			taskToBeAdded.setPriority(URGENT_PRIORITY);
+		} else {
+			taskToBeAdded.setPriority(DEFAULT_FLOATING_TASKS_PRIORITY);
+		}
+		taskToBeAdded.setType(TYPE_FLOATING_TASK);
+		taskToBeAdded.setStartDay(GregorianCalendar.getInstance());
+		taskToBeAdded.setEndDay(floatingDefaultEndDay);
+	}
+	
+	/**
+	 * this entire method checks for the validity of the date that the user has entered.
+	 * @return
+	 * returns a date that the user has entered if he/she has entered it in a valid format 
+	 * and that it was parsable
+	 * returns null if the format was not valid for a date
+	 */
+	@SuppressWarnings("deprecation")
+  private Date checkAndGetDate(String[] dateAndTime, DateAndTimeFormats dateFormats) {
+		if(dateAndTime.length == 1) {
+			String toBeIdentified = dateAndTime[ARRAY_FIRST_ARG].trim();
+			Date time = null;
+			Date date = null;
+			
+			if(dateFormats.isHourOnly(toBeIdentified) != null) {
+				time = dateFormats.isHourOnly(toBeIdentified);
+			} else if(dateFormats.isComplete12Hr(toBeIdentified) != null) {
+				time = dateFormats.isComplete12Hr(toBeIdentified);
+			} else if(dateFormats.isComplete24Hr(toBeIdentified) != null) {
+				time = dateFormats.isComplete24Hr(toBeIdentified);
+			}
+			
+			if(dateFormats.isLazyYearDate(toBeIdentified) != null) {
+				date = dateFormats.isLazyYearDate(toBeIdentified);
+			} else if(dateFormats.isProperDate(toBeIdentified) != null) {
+				date = dateFormats.isProperDate(toBeIdentified); 
+			} else if(dateFormats.isLazyDate(toBeIdentified) != null) {
+				date = dateFormats.isLazyDate(toBeIdentified);
+			}
+			
+			if(time != null && date != null) {
+				return null;
+			} else if(time == null && date == null) {
+				return null;
+			} else if(time != null) {
+				return time;
+			} else {
+				return date;
+			}
+		} else {
+			String dateComponent = dateAndTime[ARRAY_FIRST_ARG].trim();
+			String timeComponent = dateAndTime[ARRAY_SECOND_ARG].trim();
+			Date time = null;
+			Date date = null;
+			
+			if(dateFormats.isHourOnly(timeComponent) != null) {
+				time = dateFormats.isHourOnly(timeComponent);
+			} else if(dateFormats.isComplete12Hr(timeComponent) != null) {
+				time = dateFormats.isComplete12Hr(timeComponent);
+			} else if(dateFormats.isComplete24Hr(timeComponent) != null) {
+				time = dateFormats.isComplete24Hr(timeComponent);
+			}
+			
+			if(dateFormats.isLazyYearDate(dateComponent) != null) {
+				date = dateFormats.isLazyYearDate(dateComponent);
+			} else if(dateFormats.isProperDate(dateComponent) != null) {
+				date = dateFormats.isProperDate(dateComponent); 
+			} else if(dateFormats.isLazyDate(dateComponent) != null) {
+				date = dateFormats.isLazyDate(dateComponent);
+			}
+			
+			if(time == null || date == null) {
+				return null;
+			}
+			
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(date);
+			cal.set(Calendar.HOUR_OF_DAY, time.getHours());
+			cal.set(Calendar.MINUTE, time.getMinutes());
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			return cal.getTime();
+		}
+	}
+	
+	/**
+	 * this method checks if the user has entered an ending time that takes place
+	 * before the starting time that he has entered.
+	 * @return
+	 * returns false if the timing is not a valid timing and that he's intending to go back
+	 * into the past
+	 * returns true if the timing is a valid start and end time
+	 */
+	private boolean checkValidityOfEvent(TaskCard eventToBeAdded) {
+		Calendar start = eventToBeAdded.getStartDay();
+		Calendar end = eventToBeAdded.getEndDay();
+		
+		if(end.before(start)) {
+			return false;
+		}
+		
+	  return true;
+	}
+
+	/**
+	 * this method resets the urgent flag which is used when the user wants to add an urgent task
+	 */
+	private void resetFlag() {
+		urgent_flag = false;
+	}
+	
+	/**
+	 * initialises the commands it detects for when it is an urgent task or a default priority
+	 * task
+	 */
+	private void initCmdTable() {
+		cmdTable = new HashMap<String, Integer>();
+		cmdTable.put("add", 1);
+		cmdTable.put("addu", 2);
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Add.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\AddTest.java
+	 */
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+public class AddTest {
+	/**
+	 * The AddTest will try to implement all the possible variations of successful 
+	 * and unsuccessful adds Task and Events  
+	 * 
+	 */
+	@Test
+	public void testExecuteAdd() {
+		Undo undoHandler = new Undo();
+		
+		String wrongAdd = "addd";
+		FileLinker adddFileLinker = new FileLinker();
+		DataUI addUI = new DataUI();
+		addUI.configIncompleteTasks(adddFileLinker);
+		Add newAddWithWrongCommand = new Add();
+		
+//		newAddWithWrongCommand.executeAdd(wrongAdd, adddFileLinker, addUI, undoHandler);
+		
+		assertEquals("That was an unrecognisable add command! :(", addUI.getFeedback());
+		
+		
+		String addWithOutAnyEntry = "add";
+		FileLinker addFileLinker = new FileLinker();
+		DataUI addWithoutEntry = new DataUI();
+		addWithoutEntry.configIncompleteTasks(addFileLinker);
+		Add newAddWithoutEntry = new Add();
+//		newAddWithoutEntry.executeAdd(addWithOutAnyEntry, addFileLinker, addWithoutEntry, undoHandler);
+		
+		assertEquals("You didn't enter a task! Please enter a task!", addWithoutEntry.getFeedback());
+		
+		/*
+		 * This is an Equivalence partition as any number of tokenizers more than 3 will produce
+		 * the same output	
+		 */
+		String addWithTooManyTokenizers = "add this; is; something; yes";
+		FileLinker addTokenLinker = new FileLinker();
+		DataUI addTokenUI = new DataUI();
+		addTokenUI.configIncompleteTasks(addTokenLinker);
+		Add newAddWithTooManyTokens = new Add();
+//		newAddWithTooManyTokens.executeAdd(addWithTooManyTokenizers, addTokenLinker, addTokenUI, undoHandler);
+		
+		assertEquals("That was an invalid format for adding a task :(", addTokenUI.getFeedback());
+		
+		/*
+		 * Successful add for the task 
+		 * 
+		 */
+		String addFloatingTask = "addf A new Task";
+		FileLinker addFLinker = new FileLinker();
+		DataUI addfUI = new DataUI();
+		addfUI.configIncompleteTasks(addFLinker);
+		Add newAddFProper = new Add();
+//		newAddFProper.executeAdd(addFloatingTask, addFLinker, addfUI, undoHandler);
+		
+		assertEquals ("Task added!", addfUI.getFeedback());
+		
+	}
+	
+	
+	
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\AddTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\CommandHandler.java
+	 */
+
+/**
+ * This class works as a command handler.
+ * It parses in the first input and checks if it is a valid command.
+ * If the command is valid, then CommandHandler will pass the inputs
+ * into the respective functions based on the commands that the user
+ * has entered
+ */
+public class CommandHandler {
+	
+	private static FileLinker fileLink;
+	private static DataUI dataUI;
+	
+	private static Delete deleteHandler;
+	private static Search searchHandler;
+	private static Mark markHandler;
+	private static Edit editHandler;
+	private static Undo undoHandler;
+	private static Add addHandler;
+	private static DateAndTimeFormats dateFormats;
+	
+	private static final String MESSAGE_ERROR_INVALID_COMMAND = "It appears you have typed "
+			+ "something wrongly! Please try another command.";
+	
+	public enum COMMAND_TYPE {
+		ADD, DELETE, CLEAR, EDIT, SEARCH, MARK, RESET, EXIT, INVALID, ENTER, UNDO, REDO, HELP, VIEW, THEME, HIGHLIGHT
+	}
+	
+	/**
+	 * Constructor for CommandHandler
+	 */
+	public CommandHandler() {
+		addHandler = new Add();
+		deleteHandler = new Delete();
+		searchHandler = new Search();
+		markHandler = new Mark();
+		editHandler = new Edit();
+		undoHandler = new Undo();
+		dateFormats = new DateAndTimeFormats();
+		
+		fileLink = new FileLinker();
+		dataUI = new DataUI();
+		
+		RefreshUI.executeRefresh(fileLink, dataUI);
+	}
+	
+	/**
+	 * executes the command that the user entered
+	 * @return
+	 * returns a packaged DataUI to the caller of this method
+	 */
+	public DataUI executeCmd(String userInput, int tableNo) {	
+		checkCmdAndPerform(userInput, tableNo);
+		return dataUI;
+	}
+
+	/**
+	 * checks if the command the user entered is valid and calls the
+	 * appropriate classes
+	 */
+	private void checkCmdAndPerform(String userInput, int tableNo) {
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		
+		String commandTypeString = tokenizedInput[0];
+		COMMAND_TYPE commandType = determineCommandType(commandTypeString);
+		
+		String response = "";
+		switch(commandType) {
+			case ADD:
+				fileLink.resetState();
+				addHandler.executeAdd(userInput, fileLink, dataUI, undoHandler, dateFormats);
+				break;
+			case DELETE:
+				deleteHandler.executeDelete(userInput, fileLink, dataUI, tableNo, undoHandler);
+				break;
+			case EDIT:
+				editHandler.executeEdit(userInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
+				break;
+			case SEARCH:
+				fileLink.resetState();
+				searchHandler.executeSearch(userInput, fileLink, dataUI, dateFormats);
+				break;
+			case ENTER:
+				fileLink.resetState();
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback("Read me!");
+				break;
+			case MARK:
+				markHandler.executeMark(userInput, fileLink, dataUI, tableNo, undoHandler);
+				break;
+			case UNDO:
+				response = undoHandler.executeUndo(fileLink);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback(response);
+				break;
+			case REDO:
+				response = undoHandler.executeRedo(fileLink);
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				dataUI.setFeedback(response);
+				break;
+			case HELP:
+				dataUI.setFeedback("This will return responses to you based on your commands.");
+				break;
+			case VIEW:
+				dataUI.setFeedback("Read me!");
+				break;
+			case THEME:
+				if (tokenizedInput[1].equalsIgnoreCase("Jedi")) {
+					dataUI.setFeedback("May the Force be with you.");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Sith")) {
+					dataUI.setFeedback("Only a Sith deals in absolutes.");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Australia")) {
+					dataUI.setFeedback("G'day mate!");
+				} else if (tokenizedInput[1].equalsIgnoreCase("Italy")) {
+					dataUI.setFeedback("Mamma mia!");
+				} else {
+					dataUI.setFeedback("We don't have that theme!");
+				}
+				break;
+			case HIGHLIGHT:
+				RefreshUI.executeRefresh(fileLink, dataUI);
+				break;
+			case INVALID:
+				dataUI.setFeedback(MESSAGE_ERROR_INVALID_COMMAND);
+				break;
+			case EXIT:
+				System.exit(0);
+				break;
+			default:
+				break;
+		}
+	}
+	
+	/**
+	 * determines the command that the user entered
+	 * @return
+	 * returns a COMMAND_TYPE indicating what the command the user entered
+	 */
+	private COMMAND_TYPE determineCommandType(String commandTypeString) {
+		commandTypeString = commandTypeString.toLowerCase();
+		
+		if (commandTypeString.contains("add")) {
+			return COMMAND_TYPE.ADD;
+		} else if (commandTypeString.contains("del")) {
+			return COMMAND_TYPE.DELETE;
+		} else if (commandTypeString.contains("edit")) {
+		 	return COMMAND_TYPE.EDIT;
+		} else if (commandTypeString.contains("search")) {
+		 	return COMMAND_TYPE.SEARCH;
+		} else if (commandTypeString.contains("mark")) {
+		 	return COMMAND_TYPE.MARK;
+		} else if (commandTypeString.isEmpty()) {
+			return COMMAND_TYPE.ENTER;
+		} else if(commandTypeString.equals("undo")) {
+			return COMMAND_TYPE.UNDO;
+		} else if(commandTypeString.equals("redo")) {
+			return COMMAND_TYPE.REDO;
+		} else if(commandTypeString.equals("help")) {
+			return COMMAND_TYPE.HELP;
+		} else if(commandTypeString.equals("view")) {
+			return COMMAND_TYPE.VIEW;
+		} else if(commandTypeString.equals("theme")) {
+			return COMMAND_TYPE.THEME;
+		} else if (commandTypeString.equals("/x")) {
+		 	return COMMAND_TYPE.EXIT;
+		} else if (commandTypeString.equals("highlightexpiredandongoingrows")) {
+			return COMMAND_TYPE.HIGHLIGHT;
+		}	else {
+			return COMMAND_TYPE.INVALID;
+		}
+	}
+	
+	public DataUI getDataUI() {
+		return dataUI;
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\CommandHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DateAndTimeFormats.java
+	 */
+
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+public class DateAndTimeFormats {
+
+	private SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+	
+	private SimpleDateFormat[] properDateFormats = {
+		new SimpleDateFormat("dd/MM/yyyy"),
+		new SimpleDateFormat("dd-MM-yyyy"),
+		new SimpleDateFormat("dd MMM yyyy")
+	};
+	
+	private SimpleDateFormat[] lazyYearFormats = {
+		new SimpleDateFormat("dd/MM/yy"),
+		new SimpleDateFormat("dd-MM-yy"),
+		new SimpleDateFormat("dd MMM yy")
+	};
+	
+	private SimpleDateFormat[] lazyDateFormats = {
+		new SimpleDateFormat("dd/MM yyyy"),
+		new SimpleDateFormat("dd-MM yyyy"),
+		new SimpleDateFormat("dd MMM yyyy"),
+		new SimpleDateFormat("ddMMM yyyy"),
+		new SimpleDateFormat("dd/MMM yyyy")
+	};
+	
+	private SimpleDateFormat[] complete24HrFormat = {
+		new SimpleDateFormat("HHmm"),
+		new SimpleDateFormat("HH:mm"),
+		new SimpleDateFormat("HH.mm")
+	};
+	
+	private SimpleDateFormat[] complete12HrFormat = {
+		new SimpleDateFormat("hh:mma"),
+		new SimpleDateFormat("hh.mma"),
+	};
+	
+	private SimpleDateFormat[] hourOnly12HrFormat = {
+		new SimpleDateFormat("hha"),
+	};
+
+	public DateAndTimeFormats() {
+		
+	}
+	
+	/**
+	 * takes in a string and checks if it is a valid 12 hour
+	 * time format with hours only
+	 * Eg 2pm
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	@SuppressWarnings("deprecation")
+	public Date isHourOnly(String input) {
+		for(int i = 0; i < hourOnly12HrFormat.length; i++) {
+			SimpleDateFormat formatter = hourOnly12HrFormat[i];
+			formatter.setLenient(false);
+			
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
+				Calendar enteredDate = GregorianCalendar.getInstance();
+				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
+				enteredDate.set(Calendar.MINUTE, 0);
+				enteredDate.set(Calendar.SECOND, 0);
+				enteredDate.set(Calendar.MILLISECOND, 0);
+				
+				return enteredDate.getTime();
+			} catch(ParseException e) {
+				continue;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * takes in a string and checks if it is a valid 12 hour
+	 * time format 
+	 * Eg 2.30pm
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	@SuppressWarnings("deprecation")
+	public Date isComplete12Hr(String input) {
+		for(int i = 0; i < complete12HrFormat.length; i++) {
+			SimpleDateFormat formatter = complete12HrFormat[i];
+			formatter.setLenient(false);
+			
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
+				Calendar enteredDate = GregorianCalendar.getInstance();
+				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
+				enteredDate.set(Calendar.MINUTE, userDate.getMinutes());
+				enteredDate.set(Calendar.SECOND, 0);
+				enteredDate.set(Calendar.MILLISECOND, 0);
+				
+				return enteredDate.getTime();
+			} catch(ParseException e) {
+				continue;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * takes in a string and checks if it is a valid 24 hour
+	 * time format 
+	 * Eg 16:35
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	@SuppressWarnings("deprecation")
+	public Date isComplete24Hr(String input) {
+		for(int i = 0; i < complete24HrFormat.length; i++) {
+			SimpleDateFormat formatter = complete24HrFormat[i];
+			formatter.setLenient(false);
+			
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
+				Calendar enteredDate = GregorianCalendar.getInstance();
+				enteredDate.set(Calendar.HOUR_OF_DAY, userDate.getHours());
+				enteredDate.set(Calendar.MINUTE, userDate.getMinutes());
+				enteredDate.set(Calendar.SECOND, 0);
+				enteredDate.set(Calendar.MILLISECOND, 0);
+				
+				return enteredDate.getTime();
+			} catch(ParseException e) {
+				continue;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * takes in a string and checks if it is a valid date
+	 * format without the year entered
+	 * Eg 23 May
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	public Date isLazyDate(String input) {
+		Date today = new Date();
+		
+		String currentYear = yearFormat.format(today);
+		String userInput = input + " " + currentYear;
+		
+		for(int i = 0; i < lazyDateFormats.length; i++) {
+			SimpleDateFormat formatter = lazyDateFormats[i];
+			formatter.setLenient(false);
+
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(userInput, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(userInput, pos.getIndex());
+				}
+				
+				return userDate;
+			} catch(ParseException e) {
+				continue;
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * takes in a string and checks if it is a valid date
+	 * format with the year entered as 2 digits
+	 * Eg 23/6/14
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	public Date isLazyYearDate(String input) {
+		for(int i = 0; i < lazyYearFormats.length; i++) {
+			SimpleDateFormat formatter = lazyYearFormats[i];
+			formatter.setLenient(false);
+			
+			Date startOf21stCentury = new GregorianCalendar(2001, 1, 1).getTime();
+			formatter.set2DigitYearStart(startOf21stCentury);
+			
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
+				return userDate;
+			} catch(ParseException e) {
+				continue;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * takes in a string and checks if it is a valid date
+	 * format
+	 * Eg 23/6/2014
+	 * @return
+	 * returns a date object if the string is valid, else
+	 * returns a null object
+	 */
+	public Date isProperDate(String input){
+		for(int i = 0; i < properDateFormats.length; i++) {
+			SimpleDateFormat formatter = properDateFormats[i];
+			formatter.setLenient(false);
+			
+			try {
+				ParsePosition pos = new ParsePosition(0);
+				Date userDate = formatter.parse(input, pos);
+				
+				if(pos.getIndex() < input.length()) {
+					throw new ParseException(input, pos.getIndex());
+				}
+				
+				return userDate;
+			} catch(ParseException e){
+				continue;
+			}
+		}
+		
+		return null;
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DateAndTimeFormats.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\FileLinker.java
+	 */
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+
+public class FileLinker {
+
+	private ArrayList<TaskCard> incompleteTasks;
+	private ArrayList<TaskCard> incompleteEvents;
+	private ArrayList<TaskCard> completedTasks;
+	private ArrayList<TaskCard> completedEvents;
+	
+	private ArrayList<TaskCard> searchIncTasks;
+	private ArrayList<TaskCard> searchIncEvents;
+	private ArrayList<TaskCard> searchCompTasks;
+	private ArrayList<TaskCard> searchCompEvents;
+	
+	private boolean state_search;
+	
+	/**
+	 * constructor for FileLinker
+	 */
+	public FileLinker() {
+		this.incompleteTasks = Storage.openFile(Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		this.incompleteEvents = Storage.openFile(Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
+		this.completedTasks = Storage.openFile(Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
+		this.completedEvents = Storage.openFile(Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
+		
+		this.searchIncTasks = new ArrayList<TaskCard>();
+		this.searchIncEvents = new ArrayList<TaskCard>();
+		this.searchCompTasks = new ArrayList<TaskCard>();
+		this.searchCompEvents = new ArrayList<TaskCard>();
+		
+		this.state_search = false;
+	}
+	
+	/**
+	 * getter for the list of incomplete tasks
+	 * @return
+	 * returns a list of tasks the user has stored previously.
+	 * returns a list of searched tasks if it is in a searched state
+	 */
+	public ArrayList<TaskCard> getIncompleteTasks() {
+		if(state_search) {
+			return searchIncTasks;
+		} else {
+			return incompleteTasks;
+		}
+	}
+	
+	/**
+	 * getter for the list of incomplete events
+	 * @return
+	 * returns a list of events the user has stored previously.
+	 * returns a list of searched events if it is in a searched state
+	 */
+	public ArrayList<TaskCard> getIncompleteEvents() {
+		if(state_search) {
+			return searchIncEvents;
+		} else {
+			return incompleteEvents;
+		}
+	}
+	
+	/**
+	 * getter for the list of completed tasks
+	 * @return
+	 * returns a list of tasks the user has stored previously.
+	 * returns a list of searched tasks if it is in a searched state
+	 */
+	public ArrayList<TaskCard> getCompletedTasks() {
+		if(state_search) {
+			return searchCompTasks;
+		} else {
+			return completedTasks;
+		}
+	}
+	
+	/**
+	 * getter for the list of completed events
+	 * @return
+	 * returns a list of events the user has stored previously.
+	 * returns a list of searched events if it is in a searched state
+	 */
+	public ArrayList<TaskCard> getCompletedEvents() {
+		if(state_search) {
+			return searchCompEvents;
+		} else {
+			return completedEvents;
+		}
+	}
+	
+	/**
+	 * method that add logic will call to update modified data to the file
+	 */
+	public void addHandling(TaskCard taskToBeAdded, int fileToBeAddedTo) {
+		if(fileToBeAddedTo == 1) {
+			if(state_search) {
+				searchIncTasks.add(taskToBeAdded);
+			}
+			incompleteTasks.add(taskToBeAdded);
+		} else if(fileToBeAddedTo == 2) {
+			if(state_search) {
+				searchIncEvents.add(taskToBeAdded);
+			}
+			incompleteEvents.add(taskToBeAdded);
+		} else if(fileToBeAddedTo == 3) {
+			if(state_search) {
+				searchCompTasks.add(taskToBeAdded);
+			}
+			completedTasks.add(taskToBeAdded);
+		} else {
+			if(state_search) {
+				searchCompEvents.add(taskToBeAdded);
+			}
+			completedEvents.add(taskToBeAdded);
+		}
+		
+		sortFiles();
+		writeToFiles();
+	}
+	
+	/**
+	 * method that delete logic will call to delete tasks from the file
+	 */
+	public void deleteHandling(int taskNumberToBeDeleted, int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
+			if(state_search) {
+				TaskCard toBeDeleted = searchIncTasks.get(taskNumberToBeDeleted);
+				int origFileIndex = incompleteTasks.indexOf(toBeDeleted);
+				incompleteTasks.remove(origFileIndex); 
+				searchIncTasks.remove(taskNumberToBeDeleted);
+			} else {
+				incompleteTasks.remove(taskNumberToBeDeleted);
+			}
+		} else if(fileToBeDeletedFrom == 2) {
+			if(state_search) {
+				TaskCard toBeDeleted = searchIncEvents.get(taskNumberToBeDeleted);
+				int origFileIndex = incompleteEvents.indexOf(toBeDeleted);
+				incompleteEvents.remove(origFileIndex);
+				searchIncEvents.remove(taskNumberToBeDeleted);
+			} else {
+				incompleteEvents.remove(taskNumberToBeDeleted);
+			}
+		} else if(fileToBeDeletedFrom == 3) {
+			if(state_search) {
+				TaskCard toBeDeleted = searchCompTasks.get(taskNumberToBeDeleted);
+				int origFileIndex = completedTasks.indexOf(toBeDeleted);
+				completedTasks.remove(origFileIndex);
+				searchCompTasks.remove(taskNumberToBeDeleted);
+			} else {
+				completedTasks.remove(taskNumberToBeDeleted);	
+			}
+		} else {
+			if(state_search) {
+				TaskCard toBeDeleted = searchCompEvents.get(taskNumberToBeDeleted);
+				int origFileIndex = completedEvents.indexOf(toBeDeleted);
+				completedEvents.remove(origFileIndex);
+				searchCompEvents.remove(taskNumberToBeDeleted);
+			} else {
+				completedEvents.remove(taskNumberToBeDeleted);
+			}
+		}
+		
+		sortFiles();
+		writeToFiles();
+	}
+	
+	/**
+	 * method for edit logic that will update modified data to the file
+	 */
+	public void editHandling(TaskCard modifiedTask, int taskNumberToBeModified, int fileToBeEditedFrom) {				
+	
+		if(fileToBeEditedFrom == 1) {
+			if(state_search) {
+				TaskCard origTask = searchIncTasks.get(taskNumberToBeModified);
+				searchIncTasks.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incompleteTasks.indexOf(origTask);
+			}
+			incompleteTasks.set(taskNumberToBeModified, modifiedTask);
+		}
+		
+		else if (fileToBeEditedFrom == 2) {
+			if(state_search) {
+				TaskCard origEvent = searchIncEvents.get(taskNumberToBeModified);
+				searchIncEvents.set(taskNumberToBeModified, modifiedTask);
+				taskNumberToBeModified = incompleteEvents.indexOf(origEvent);
+			}
+			incompleteEvents.set(taskNumberToBeModified, modifiedTask);
+		}
+	
+		sortFiles();
+		writeToFiles();
+	}
+
+	/**
+	 * method for mark logic to mark or unmark tasks from one file to another
+	 */
+	public void markHandling(TaskCard taskToBeMarked, int taskNumberToBeDeleted, 
+			int fileToBeDeletedFrom) {
+		if(fileToBeDeletedFrom == 1) {
+			if(state_search) {
+				searchCompTasks.add(taskToBeMarked);
+			} 
+			completedTasks.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 1);
+		} else if(fileToBeDeletedFrom == 2) {
+			if(state_search) {
+				searchCompEvents.add(taskToBeMarked);
+			}
+			completedEvents.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 2);
+		} else if(fileToBeDeletedFrom == 3) {
+			if(state_search) {
+				searchIncTasks.add(taskToBeMarked);
+			}
+			
+			incompleteTasks.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 3);
+		} else {
+			if(state_search) {
+				searchIncEvents.add(taskToBeMarked);
+			}
+			
+			incompleteEvents.add(taskToBeMarked);
+			deleteHandling(taskNumberToBeDeleted, 4);
+		}
+		
+		sortFiles();
+		writeToFiles();
+	}
+
+	/**
+	 * method that updates the arraylist and puts the state to search state when the
+	 * user is searching for something
+	 */
+	public void searchHandling(ArrayList<TaskCard> searchedIncTasks, ArrayList<TaskCard> searchedIncEvents,
+			ArrayList<TaskCard> searchedCompTasks, ArrayList<TaskCard> searchedCompEvents) {
+		state_search = true;
+		
+		searchIncTasks = searchedIncTasks;
+		searchIncEvents = searchedIncEvents;
+		searchCompTasks = searchedCompTasks;
+		searchCompEvents = searchedCompEvents;
+	}
+
+	/**
+	 * this method writes the current arraylist of tasks/events into the file storage
+	 */
+	private void writeToFiles() {
+		callStorageWriteIncompleteTasks();
+		callStorageWriteIncompleteEvents();
+		callStorageWriteCompletedTasks();
+		callStorageWriteCompletedEvents();
+	}
+	
+	/**
+	 * writes to the incomplete tasks file storage
+	 */
+	private void callStorageWriteIncompleteTasks() {
+		int numberOfIncompleteTasks = incompleteTasks.size();
+		Storage.writeFile(incompleteTasks, numberOfIncompleteTasks, Storage.INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+	}
+	
+	/**
+	 * writes to the incomplete events file storage
+	 */
+	private void callStorageWriteIncompleteEvents() {
+		int numberOfIncompleteEvents = incompleteEvents.size();
+		Storage.writeFile(incompleteEvents, numberOfIncompleteEvents, Storage.INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
+	}
+	
+	/**
+	 * writes to the completed tasks file storage
+	 */
+	private void callStorageWriteCompletedTasks() {
+		int numberOfCompletedTasks = completedTasks.size();
+		Storage.writeFile(completedTasks, numberOfCompletedTasks, Storage.COMPLETED_TASKS_STORAGE_FILE_NAME);
+	}
+	
+	/**
+	 * writes to the completed events file storage
+	 */
+	private void callStorageWriteCompletedEvents() {
+		int numberOfCompletedEvents = completedEvents.size();
+		Storage.writeFile(completedEvents, numberOfCompletedEvents, Storage.COMPLETED_EVENTS_STORAGE_FILE_NAME);
+	}
+	
+	/**
+	 * resets the search state whenever a new command other than add, delete, search and edit
+	 * is called
+	 */
+	public void resetState() {
+		state_search = false;
+	}
+	
+	/**
+	 * sorts the files internally
+	 */
+	private void sortFiles() {
+		Collections.sort(incompleteTasks, new SortTasksByPriorityThenDeadline());
+		Collections.sort(incompleteEvents, new SortEventsByPriorityThenDeadline());
+	}
+	
+	private class SortTasksByPriorityThenDeadline implements Comparator<TaskCard> {
+		public int compare(TaskCard task1, TaskCard task2) {
+			int prior1 = task1.getPriority();
+			int prior2 = task2.getPriority();
+			
+			Calendar end1 = task1.getEndDay();
+			Calendar end2 = task2.getEndDay();
+			
+			String name1 = task1.getName().toLowerCase();
+			String name2 = task2.getName().toLowerCase();
+			
+			String type1 = task1.getType();
+			String type2 = task2.getType();
+			
+			if(prior1 < prior2) {
+				return 1;
+			} else if(prior1 > prior2) {
+				return -1;
+			} else if(end1.before(end2)) {
+				return -1;
+			} else if(end1.after(end2)) {
+				return 1;
+			} else if(name1.compareTo(name2) < 0) {
+				return -1;
+			} else if(name1.compareTo(name2) > 0) {
+				return 1;
+			} else if(type1.equals("FT") && type2.equals("T")) {
+				return 1;
+			} else if(type1.equals("T") && type2.equals("FT")) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	
+	private class SortEventsByPriorityThenDeadline implements Comparator<TaskCard> {
+		public int compare(TaskCard event1, TaskCard event2) {
+			int prior1 = event1.getPriority();
+			int prior2 = event2.getPriority();
+			
+			Calendar start1 = event1.getStartDay();
+			Calendar start2 = event2.getStartDay();
+			
+			Calendar end1 = event1.getEndDay();
+			Calendar end2 = event2.getEndDay();
+			
+			String name1 = event1.getName().toLowerCase();
+			String name2 = event2.getName().toLowerCase();
+			
+			String type1 = event1.getType();
+			String type2 = event2.getType();
+			
+			if(start1.before(start2)) {
+				return -1;
+			} else if(start1.after(start2)) {
+				return 1;
+			} else if(end1.before(end2)) {
+				return -1;
+			} else if(end1.after(end2)) {
+				return 1;
+			} else if(prior1 < prior2) {
+				return 1;
+			} else if(prior1 > prior2) {
+				return -1;
+			} else if(name1.compareTo(name2) < 0) {
+				return -1;
+			} else if(name1.compareTo(name2) > 0) {
+				return 1;
+			} else if(type1.equals("AE") && type2.equals("E")) {
+				return 1;
+			} else if(type1.equals("T") && type2.equals("FT")) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\FileLinker.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\RefreshUI.java
+	 */
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+public class RefreshUI {
+	
+	/**
+	 * this is the main method that is called to refresh the details on the UI.
+	 * the clock shown on the UI is also refreshed at this point
+	 */
+	public static void executeRefresh(FileLinker fileLink, DataUI dataUI) {
+		//should check for events that have passed the designated time (not done yet)		
+		Calendar now = GregorianCalendar.getInstance();
+		
+		dataUI.configIncompleteTasks(fileLink);
+		dataUI.configIncompleteEvents(fileLink);
+		dataUI.configCompleteTasks(fileLink);
+		dataUI.configCompletedEvents(fileLink);
+		
+		dataUI.setUIclock(now);
+		dataUI.setUIdate(now);
+	}
+}
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\RefreshUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Search.java
+	 */
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+
+public class Search {
+	
+	private static final int SECOND_ARGUMENT = 1;
+	
+	private static final int SEARCH_TODAY = 1;
+	private static final int SEARCH_PRIORITY = 2;
+	private static final int SEARCH_TMR = 3;
+	private static final int SEARCH_EXPIRED = 4;
+	
+	private static final int TYPE_INC_TASKS = 1;
+	private static final int TYPE_INC_EVENTS = 2;
+	private static final int TYPE_COMP_TASKS = 3;
+	private static final int TYPE_COMP_EVENTS = 4;
+	
+	private static final int DAY_MONDAY = 1;
+	private static final int DAY_TUESDAY = 2;
+	private static final int DAY_WEDNESDAY = 3;
+	private static final int DAY_THURSDAY = 4;
+	private static final int DAY_FRIDAY = 5;
+	private static final int DAY_SATURDAY = 6;
+	private static final int DAY_SUNDAY = 7;
+	
+	private static final String PRIORITY_LOW = "LOW";
+	private static final String PRIORITY_MEDIUM = "MED";
+	
+	private static final String FEEDBACK_SEARCH_PARAM = "Displaying results for \"%s\"";
+	private static final String FEEDBACK_SEARCH_PROMPT = "What is it that you are looking for?";
+	
+	private HashMap<String, Integer> reservedKeywords;
+	private HashMap<String, Integer> dayTable;
+	
+	private static Calendar today;
+	
+	/**
+	 * constructor for search
+	 */
+	public Search() {
+		reservedKeywords = new HashMap<String, Integer>();
+		dayTable = new HashMap<String, Integer>();
+		initKeywordTable();
+		initDayTable();
+		
+		getToday();
+	}
+	
+	/**
+	 * main method for search to be called
+	 */
+	public void executeSearch(String userInput, FileLinker fileLink, DataUI dataUI, DateAndTimeFormats dateFormats) {
+		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
+		getToday();
+		
+		if(!checkForArg(tokenizedInput)) {
+			noArgument(dataUI);
+		} else {
+			checkKeywordAndIdentify(tokenizedInput[SECOND_ARGUMENT], fileLink, dataUI, dateFormats);
+			RefreshUI.executeRefresh(fileLink, dataUI);
+		}
+		dataUI.setFeedback(String.format(FEEDBACK_SEARCH_PARAM, tokenizedInput[SECOND_ARGUMENT]));
+	}
+	
+	/**
+	 * sets the feedback in dataUI
+	 * @param dataUI
+	 */
+	private void noArgument(DataUI dataUI) {
+		dataUI.setFeedback(FEEDBACK_SEARCH_PROMPT);
+	}
+	
+	/**
+	 * checks to see what the search is
+	 * it can be either 4 possibilities
+	 * 1) search by a date
+	 * 2) search by a day
+	 * 3)	search using reserved keywords
+	 * 4) a normal search using user defined keywords
+	 */
+	private void checkKeywordAndIdentify(String searchInput, FileLinker fileLink,
+			DataUI dataUI, DateAndTimeFormats dateFormats) {
+		
+		Date date = checkIsDate(searchInput, dateFormats);
+		if(date != null) {
+			searchByDate(fileLink, dataUI, date);
+			return;
+		}
+		
+		boolean hasKeyword = reservedKeywords.containsKey(searchInput);
+		boolean hasDay = dayTable.containsKey(searchInput);
+		
+		if(hasKeyword) {
+			searchByKeyword(searchInput, fileLink, dataUI);
+			return;
+		}
+		
+		if(hasDay) {
+			searchByDay(searchInput, fileLink, dataUI);
+			return;
+		}
+		
+		performNormalSearch(searchInput, fileLink, dataUI);
+	}
+	
+	/**
+	 * searches by the day that use typed through all files
+	 */
+	private void searchByDay(String searchInput, FileLinker fileLink,
+			DataUI dataUI) {
+		ArrayList<TaskCard> searchedIncTasks = performSearchByDay(searchInput, fileLink, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = performSearchByDay(searchInput, fileLink, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = performSearchByDay(searchInput, fileLink, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = performSearchByDay(searchInput, fileLink, TYPE_COMP_EVENTS);
+		
+		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
+	}
+	
+	/**
+	 * searches an individual file for events that fall on that day
+	 * @return
+	 * returns an arraylist of searched files
+	 */
+	private ArrayList<TaskCard> performSearchByDay(String searchInput,
+			FileLinker fileLink, int type) {
+		int daysToBeAdded;
+		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
+		Calendar dayToBeSearched = (Calendar) today.clone();
+		daysToBeAdded = determineDaysToBeAdded(searchInput);
+		
+		if(daysToBeAdded <= 0) {
+			daysToBeAdded += 7;
+		}
+		
+		dayToBeSearched.add(Calendar.DAY_OF_YEAR, daysToBeAdded);
+		dayToBeSearched.set(Calendar.HOUR_OF_DAY, 0);
+		dayToBeSearched.set(Calendar.MINUTE, 0);
+		dayToBeSearched.set(Calendar.SECOND, 0);
+		dayToBeSearched.set(Calendar.MILLISECOND, 0);
+		
+		if(type == TYPE_INC_TASKS || type == TYPE_COMP_TASKS) {
+			searchedList = searchTasksByDate(fileLink, dayToBeSearched.getTime(), type);
+		} else {
+			searchedList = searchEventsByDate(fileLink, dayToBeSearched.getTime(), type);
+		}
+		
+		return searchedList;
+	}
+	
+	/**
+	 * takes in the user specified date and searches for tasks that have that date
+	 */
+	private void searchByDate(FileLinker fileLink,
+			DataUI dataUI, Date date) {
+		ArrayList<TaskCard> searchedIncTasks = searchTasksByDate(fileLink, date, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = searchEventsByDate(fileLink, date, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = searchTasksByDate(fileLink, date, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = searchEventsByDate(fileLink, date, TYPE_COMP_EVENTS);
+		
+		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
+	}
+	
+	/**
+	 * user input has been identified as a reserved keyword and will perform roles based on that
+	 */
+	private void searchByKeyword(String searchInput, FileLinker fileLink,
+			DataUI dataUI) {
+		
+		ArrayList<TaskCard> searchedIncTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedIncEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedCompTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedCompEvents = new ArrayList<TaskCard>();
+		
+		switch(reservedKeywords.get(searchInput)) {
+			case SEARCH_TODAY:
+				searchedIncTasks = searchTaskToday(fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchEventToday(fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchTaskToday(fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchEventToday(fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			case SEARCH_PRIORITY:
+				searchedIncTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchPriority(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			case SEARCH_TMR:
+				searchedIncTasks = searchTaskTmr(searchInput, fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks= searchTaskTmr(searchInput, fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchEventTmr(searchInput, fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			case SEARCH_EXPIRED:
+				searchedIncTasks = searchForExpired(fileLink, dataUI, TYPE_INC_TASKS);
+				searchedIncEvents = searchForExpired(fileLink, dataUI, TYPE_INC_EVENTS);
+				searchedCompTasks = searchForExpired(fileLink, dataUI, TYPE_COMP_TASKS);
+				searchedCompEvents = searchForExpired(fileLink, dataUI, TYPE_COMP_EVENTS);
+				break;
+			default:
+				break;
+		}
+		
+		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
+	}
+	
+	/**
+	 * searches for tasks/events which have past their end date 
+	 * @return]
+	 * returns a list of tasks/events which have expired
+	 */
+	private ArrayList<TaskCard> searchForExpired(FileLinker fileLink,
+      DataUI dataUI, int type) {
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		}	else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard toBeSearched = listToBeSearched.get(i);
+			Calendar taskDueDate = toBeSearched.getEndDay();
+			Calendar now = Calendar.getInstance();
+			
+			if(taskDueDate.before(now) || taskDueDate.equals(now)) {
+				searchedTasks.add(toBeSearched);
+			}
+		}
+		
+	  return searchedTasks;
+  }
+
+	/**
+	 * searches the list for tasks that can be done before tomorrow
+	 * @return
+	 * returns a list of searched tasks
+	 */
+	private ArrayList<TaskCard> searchTaskTmr(String searchInput,
+			FileLinker fileLink, DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfTasks = new ArrayList<TaskCard>();
+		if(type == TYPE_INC_TASKS) {
+			listOfTasks = fileLink.getIncompleteTasks();
+		} else {
+			listOfTasks = fileLink.getCompletedTasks();
+		}
+		
+		Calendar tmr = getTmr();
+		
+		for(int i = 0; i < listOfTasks.size(); i++) {
+			TaskCard task = listOfTasks.get(i);
+			if(tmr.before(task.getEndDay())) {
+				searchedTasks.add(task);
+			}
+		}
+		
+		return searchedTasks;
+	}
+	
+	/**
+	 * searches the events files for events which takes place tomorrow
+	 * @return
+	 * returns a list of searched events
+	 */
+	private ArrayList<TaskCard> searchEventTmr(String searchInput,
+			FileLinker fileLink, DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listOfEvents = fileLink.getIncompleteEvents();
+		} else {
+			listOfEvents = fileLink.getCompletedEvents();
+		}
+		
+		Calendar tmr = getTmr();
+		
+		for(int i = 0; i < listOfEvents.size(); i++) {
+			TaskCard event = listOfEvents.get(i);
+			if(tmr.before(event.getEndDay()) && tmr.after(event.getStartDay())) {
+				searchedEvents.add(event);
+			} else if(event.getStartDay().after(tmr) && event.getEndDay().before(getTmrEnd())) {
+				searchedEvents.add(event);
+			} else if(event.getStartDay().equals(tmr)) {
+				searchedEvents.add(event);
+			}
+		}
+		
+		return searchedEvents;
+	}
+	
+	/**
+	 * searches incomplete tasks that can be done today
+	 * @return
+	 * returns a list of searched tasks
+	 */
+	private ArrayList<TaskCard> searchTaskToday(FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfTasks = new ArrayList<TaskCard>();
+		if(type == TYPE_INC_TASKS) {
+			listOfTasks = fileLink.getIncompleteTasks();
+		} else {
+			listOfTasks = fileLink.getCompletedTasks();
+		}
+
+		for(int i = 0; i < listOfTasks.size(); i++) {
+			TaskCard task = listOfTasks.get(i);
+			if(task.getEndDay().after(today)) {
+				searchedTasks.add(task);
+			}
+		}
+		
+		return searchedTasks;
+	}
+	
+	/**
+	 * searches incomplete events that happen today
+	 * @return
+	 * returns a list of searched events
+	 */
+	private ArrayList<TaskCard> searchEventToday(FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listOfEvents = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listOfEvents = fileLink.getIncompleteEvents();
+		} else {
+			listOfEvents = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listOfEvents.size(); i++) {
+			TaskCard event = listOfEvents.get(i);
+			Calendar eventStart = event.getStartDay();
+			Calendar eventEnd = event.getEndDay();
+			
+			if(eventStart.after(today) && eventEnd.before(getTmr())) {
+				searchedEvents.add(event);
+			} else if(today.before(eventEnd) && today.after(eventStart)) {
+				searchedEvents.add(event);
+			} else if(today.get(Calendar.DATE) == eventStart.get(Calendar.DATE)
+					&& today.get(Calendar.MONTH) == eventStart.get(Calendar.MONTH)
+					&& today.get(Calendar.YEAR) == eventStart.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(today.get(Calendar.DATE) == eventEnd.get(Calendar.DATE)
+					&& today.get(Calendar.MONTH) == eventEnd.get(Calendar.MONTH)
+					&& today.get(Calendar.YEAR) == eventEnd.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(today.equals(eventStart)) {
+				searchedEvents.add(event);
+			}
+		}
+		
+		return searchedEvents;
+	}
+	
+	/**
+	 * searches based on priority for incompleted tasks
+	 * @return
+	 * returns a list of searched tasks by priority
+	 */
+	private ArrayList<TaskCard> searchPriority(String searchInput, FileLinker fileLink,
+			DataUI dataUI, int type) {
+		ArrayList<TaskCard> searchedPriority = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		int priority;
+		if(searchInput.equals(PRIORITY_LOW)) {
+			priority = 1;
+		} else if(searchInput.equals(PRIORITY_MEDIUM)) {
+			priority = 2;
+		} else {
+			priority = 3;
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
+			if(task.getPriority() == priority) {
+				searchedPriority.add(task);
+			}
+		}
+		
+		return searchedPriority;
+	}
+	
+	/**
+	 * searches based on user keyword
+	 */
+	private void performNormalSearch(String searchInput, FileLinker fileLink,
+			DataUI dataUI) {
+		ArrayList<TaskCard> searchedIncTasks = searchByUserWord(searchInput, fileLink, TYPE_INC_TASKS);
+		ArrayList<TaskCard> searchedIncEvents = searchByUserWord(searchInput, fileLink, TYPE_INC_EVENTS);
+		ArrayList<TaskCard> searchedCompTasks = searchByUserWord(searchInput, fileLink, TYPE_COMP_TASKS);
+		ArrayList<TaskCard> searchedCompEvents = searchByUserWord(searchInput, fileLink, TYPE_COMP_EVENTS);
+		
+		fileLink.searchHandling(searchedIncTasks, searchedIncEvents, searchedCompTasks, searchedCompEvents);
+		
+	}
+	
+	/**
+	 * searches tasks for a specific due date
+	 * @return
+	 * returns a list of searched tasks
+	 */
+	private ArrayList<TaskCard> searchTasksByDate(FileLinker fileLink, Date date, int type) {
+		ArrayList<TaskCard> searchedTasks = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedTasks();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
+			Calendar dueDate = task.getEndDay();
+			Calendar referenceDate = Calendar.getInstance();
+			referenceDate.setTime(date);
+			
+			if(dueDate.get(Calendar.DATE) == referenceDate.get(Calendar.DATE) 
+					&& dueDate.get(Calendar.MONTH) == referenceDate.get(Calendar.MONTH)
+					&& dueDate.get(Calendar.YEAR) == referenceDate.get(Calendar.YEAR)) {
+				searchedTasks.add(task);
+			}
+		}
+		
+		return searchedTasks;
+	}
+	
+	/**
+	 * searches events that fall on that date
+	 * @return
+	 * returns a list of searched events
+	 */
+	private ArrayList<TaskCard> searchEventsByDate(FileLinker fileLink, Date date, int type) {
+		ArrayList<TaskCard> searchedEvents = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard event = listToBeSearched.get(i);
+			Calendar searchedDateStart = GregorianCalendar.getInstance();
+			Calendar searchedDateEnd = getEndRange(date);
+			Calendar eventStart;
+			Calendar eventEnd;
+			eventStart = event.getStartDay();
+			eventEnd = event.getEndDay();
+			
+			searchedDateStart.setTime(date);
+
+			if(eventStart.after(searchedDateStart) && eventEnd.before(searchedDateEnd)) {
+				searchedEvents.add(event);
+			} else if(eventStart.before(searchedDateStart) && eventEnd.after(searchedDateStart)) {
+				searchedEvents.add(event);
+			}	else if(searchedDateStart.get(Calendar.DATE) == eventStart.get(Calendar.DATE)
+					&& searchedDateStart.get(Calendar.MONTH) == eventStart.get(Calendar.MONTH)
+					&& searchedDateStart.get(Calendar.YEAR) == eventStart.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(searchedDateStart.get(Calendar.DATE) == eventEnd.get(Calendar.DATE)
+					&& searchedDateStart.get(Calendar.MONTH) == eventEnd.get(Calendar.MONTH)
+					&& searchedDateStart.get(Calendar.YEAR) == eventEnd.get(Calendar.YEAR)) {
+				searchedEvents.add(event);
+			} else if(eventStart.equals(searchedDateStart) || eventEnd.equals(searchedDateStart)) {
+				searchedEvents.add(event);
+			}
+		}
+		
+		return searchedEvents;
+	}
+	
+	/**
+	 * searches all the files for a user defined keyword
+	 * @return
+	 * returns a list of searched tasks/events
+	 */
+	private ArrayList<TaskCard> searchByUserWord(String searchInput, FileLinker fileLink, int type) {
+		ArrayList<TaskCard> searchedList = new ArrayList<TaskCard>();
+		ArrayList<TaskCard> listToBeSearched = new ArrayList<TaskCard>();
+		
+		if(type == TYPE_INC_TASKS) {
+			listToBeSearched = fileLink.getIncompleteTasks();
+		} else if(type == TYPE_INC_EVENTS) {
+			listToBeSearched = fileLink.getIncompleteEvents();
+		} else if(type == TYPE_COMP_TASKS) {
+			listToBeSearched = fileLink.getCompletedTasks();
+		} else {
+			listToBeSearched = fileLink.getCompletedEvents();
+		}
+		
+		for(int i = 0; i < listToBeSearched.size(); i++) {
+			TaskCard task = listToBeSearched.get(i);
+			String taskDetails = task.getName().toLowerCase();
+			searchInput = searchInput.toLowerCase();
+			
+			if(taskDetails.contains(searchInput)) {
+				searchedList.add(task);
+			}
+		}
+		
+		return searchedList;
+	}	
+	
+	/**
+	 * gets a date and returns a calendar object of the ending range of the
+	 * date which is 1 millisecond before the next day
+	 * @return
+	 * returns a calendar object
+	 */
+	private Calendar getEndRange(Date date) {
+		Calendar endRange = GregorianCalendar.getInstance();
+		endRange.setTime(date);
+		endRange.set(GregorianCalendar.HOUR_OF_DAY, 23);
+		endRange.set(GregorianCalendar.MINUTE, 59);
+		endRange.set(GregorianCalendar.SECOND, 59);
+		endRange.set(GregorianCalendar.MILLISECOND, 999);
+		
+		return endRange;
+	}
+	
+	/**
+	 * sets the date to today and sets the timing to 00:00:00:000 of today
+	 */
+	private void getToday() {
+		today = GregorianCalendar.getInstance();
+		today.set(Calendar.HOUR_OF_DAY, 0);
+		today.set(Calendar.MINUTE, 0);
+		today.set(Calendar.SECOND, 0);
+		today.set(Calendar.MILLISECOND, 0);
+	}
+	
+	/**
+	 * gets the date of the next day
+	 * @return
+	 * returns the date of the next day
+	 */
+	private Calendar getTmr() {
+		Calendar tmr = GregorianCalendar.getInstance();
+		tmr.add(Calendar.DATE, 1);
+		tmr.set(Calendar.HOUR_OF_DAY, 0);
+		tmr.set(Calendar.MINUTE, 0);
+		tmr.set(Calendar.SECOND, 0);
+		tmr.set(Calendar.MILLISECOND, 0);
+		
+		return tmr;
+	}
+	
+	/**
+	 * gets the date of end range of next day
+	 * @return
+	 * returns the date of the next day 1 millisecond before
+	 * the next, next day
+	 */
+	private Calendar getTmrEnd() {
+		Calendar tmr = GregorianCalendar.getInstance();
+		tmr.add(Calendar.DATE, 1);
+		tmr.set(Calendar.HOUR_OF_DAY, 23);
+		tmr.set(Calendar.MINUTE, 59);
+		tmr.set(Calendar.SECOND, 59);
+		tmr.set(Calendar.MILLISECOND, 999);
+		
+		return tmr;
+	}
+	
+	/**
+	 * determine the date to be searched based on the day that the user
+	 * has entered
+	 * @return
+	 * returns a integer that will be added to the current date for that date
+	 * to be searched
+	 */
+	private int determineDaysToBeAdded(String searchInput) {
+		int dayToday = today.get(Calendar.DAY_OF_WEEK);
+		int daysToBeAdded = -1;
+		switch(dayTable.get(searchInput)) {
+			case DAY_MONDAY:
+				daysToBeAdded = Calendar.MONDAY - dayToday;
+				break;
+			case DAY_TUESDAY:
+				daysToBeAdded = Calendar.TUESDAY - dayToday;
+				break;
+			case DAY_WEDNESDAY:
+				daysToBeAdded = Calendar.WEDNESDAY - dayToday;
+				break;
+			case DAY_THURSDAY:
+				daysToBeAdded = Calendar.THURSDAY - dayToday;
+				break;
+			case DAY_FRIDAY:
+				daysToBeAdded = Calendar.FRIDAY - dayToday;
+				break;
+			case DAY_SATURDAY:
+				daysToBeAdded = Calendar.SATURDAY - dayToday;
+				break;
+			case DAY_SUNDAY:
+				daysToBeAdded = Calendar.SUNDAY - dayToday;
+				break;
+			default:
+				break;
+		}
+		
+		return daysToBeAdded;
+	}
+	
+	/**
+	 * checks if the date is a valid date format
+	 * @return
+	 * returns a date if the user input is a valid date format
+	 */
+	private Date checkIsDate(String searchInput, DateAndTimeFormats dateFormats) {
+		Date date = null;
+		
+		if(dateFormats.isLazyDate(searchInput) != null) {
+			date = dateFormats.isLazyDate(searchInput);
+		} else if(dateFormats.isLazyYearDate(searchInput) != null) {
+			date = dateFormats.isLazyYearDate(searchInput);
+		} else if(dateFormats.isProperDate(searchInput) != null) {
+			date = dateFormats.isProperDate(searchInput);
+		}
+		
+		return date;
+	}
+	
+	/**
+	 * checks if the user has entered a parameter to be searched
+	 * @return
+	 */
+	private boolean checkForArg(String[] tokenizedInput) {
+		if(tokenizedInput.length < 2) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * initialises the special keyword table
+	 */
+	private void initKeywordTable() {
+		reservedKeywords.put("today", 1);
+		reservedKeywords.put("tdy", 1);
+		reservedKeywords.put("LOW", 2);
+		reservedKeywords.put("MED", 2);
+		reservedKeywords.put("HIGH", 2);
+		reservedKeywords.put("tomorrow", 3);
+		reservedKeywords.put("tmr", 3);
+		reservedKeywords.put("expired", 4);
+		reservedKeywords.put("Expired", 4);
+		
+	}
+	
+	/**
+	 * initialises the table which checks for the different possibilities of days
+	 * that the user could search by
+	 */
+	private void initDayTable() {
+		dayTable.put("MON", 1);
+		dayTable.put("Mon", 1);
+		dayTable.put("mon", 1);
+		dayTable.put("monday", 1);
+		dayTable.put("Monday", 1);
+		dayTable.put("TUE", 2);
+		dayTable.put("Tue", 2);
+		dayTable.put("tue", 2);
+		dayTable.put("tuesday", 2);
+		dayTable.put("Tuesday", 2);
+		dayTable.put("WED", 3);
+		dayTable.put("Wed", 3);
+		dayTable.put("wed", 3);
+		dayTable.put("wednesday", 3);
+		dayTable.put("Wednesday", 3);
+		dayTable.put("THUR", 4);
+		dayTable.put("Thur", 4);
+		dayTable.put("thur", 4);
+		dayTable.put("thursday", 4);
+		dayTable.put("Thursday", 4);
+		dayTable.put("FRI", 5);
+		dayTable.put("Fri", 5);
+		dayTable.put("fri", 5);
+		dayTable.put("friday", 5);
+		dayTable.put("Friday", 5);
+		dayTable.put("SAT", 6);
+		dayTable.put("Sat", 6);
+		dayTable.put("sat", 6);
+		dayTable.put("saturday", 6);
+		dayTable.put("Saturday", 6);
+		dayTable.put("SUN", 7);
+		dayTable.put("Sun", 7);
+		dayTable.put("sun", 7);
+		dayTable.put("sunday", 7);
+		dayTable.put("Sunday", 7);  
+	}
+}
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Search.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Storage.java
+	 */
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+/**
+ * this class is responsible for reading from and writing to 
+ * the designated files
+ *
+ */
+public class Storage {
+
+	private static final int FIRST_ARG = 0;
+	private static final int SECOND_ARG = 1;
+	private static final int THIRD_ARG = 2;
+	private static final int FOURTH_ARG = 3;
+	
+	//2 separate files for storage. one for incomplete tasks, the other for archiving
+	public static final String INCOMPLETE_TASKS_STORAGE_FILE_NAME = "incompletetasks.txt";
+	public static final String INCOMPLETE_EVENTS_STORAGE_FILE_NAME = "incompleteevents.txt";
+	public static final String COMPLETED_TASKS_STORAGE_FILE_NAME = "completedtasks.txt";
+	public static final String COMPLETED_EVENTS_STORAGE_FILE_NAME = "completedevents.txt";
+	
+	private static final int NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK = 2;
+	
+	public static int numberOfIncompleteTasks = 0;
+	public static int numberOfCompletedTasks = 0;
+	
+	private static SimpleDateFormat dateString = new SimpleDateFormat("dd/MM/yyyy,HH:mm:ss:SSSS");
+	
+	public Storage() {
+	
+	}
+	
+	/**
+	 * reads the data stored in the text file
+	 * @return
+	 * returns an arraylist of tasks/events that can be manipulated
+	 */
+	public static ArrayList<TaskCard> openFile(String fileName) {
+		ArrayList<TaskCard> file = new ArrayList<TaskCard>();
+		
+		try {
+			FileReader fileRead = new FileReader(fileName);
+			BufferedReader buffRead = new BufferedReader(fileRead);
+			
+			int numberOfTaskCards = Integer.parseInt(buffRead.readLine());
+			
+			for(int i = 0; i < numberOfTaskCards; i++) {
+				TaskCard task = new TaskCard();
+				ArrayList<String> taskDetails = new ArrayList<String>();
+				
+				taskDetails = getTaskDetailsFromFile(buffRead);
+				setTaskDetailsForReading(taskDetails, task);
+				
+				file.add(task);
+			}
+			
+			buffRead.close();
+		} catch(FileNotFoundException ex) {
+			createEmptyFile(fileName);
+		} catch(IOException ex) {
+			
+		}
+		
+		return file;
+	}
+	
+	/**
+	 * writes the current stored database into the files
+	 */
+	public static void writeFile(ArrayList<TaskCard> file, int fileSize, String fileName) {
+		try {
+			FileWriter fileWrite = new FileWriter(fileName);
+			BufferedWriter buffWrite = new BufferedWriter(fileWrite);
+			
+			buffWrite.write("" + fileSize);
+			buffWrite.newLine();
+			
+			for(int i = 0; i < fileSize; i++) {
+				TaskCard task = file.get(i);
+				writeTaskCardDetails(buffWrite, task);
+			}
+			
+			buffWrite.close();
+		} catch(IOException ex) {
+			
+		}
+	}
+
+	/**
+	 * writes the details in a format that is pre-determined
+	 * @param buffWrite
+	 * @param task
+	 */
+	private static void writeTaskCardDetails(BufferedWriter buffWrite,
+			TaskCard task) {
+		try {
+			buffWrite.write("" + task.getName());
+			buffWrite.newLine();
+			
+			String detailsToBeWritten = task.getType() + " " + dateString.format(task.getStartDay().getTime()) + 
+					" " + dateString.format(task.getEndDay().getTime()) + " " + task.getPriority();
+			
+			buffWrite.write(detailsToBeWritten);
+			buffWrite.newLine();
+		} catch(IOException ex) {
+			//error writing to file message
+		}	
+	}
+
+	/**
+	 * segment the details stored in the file for reading by the program
+	 * @return
+	 * returns an arraylist of strings of each segmented information
+	 */
+	private static ArrayList<String> getTaskDetailsFromFile(
+			BufferedReader buffRead) {
+		ArrayList<String> taskDetails = new ArrayList<String>();
+		
+		try {
+			for(int i = 0; i < NUMBER_OF_WRITTEN_LINES_FOR_EACH_TASK; i++) {
+				taskDetails.add(buffRead.readLine());
+			}
+			return taskDetails;
+		} catch(IOException ex) {
+			return null;
+		}
+	}
+
+	/**
+	 * reads the lines and sets the details stored into a TaskCard object
+	 */
+	private static void setTaskDetailsForReading(ArrayList<String> taskDetails,	TaskCard task) {
+		Date start;
+		Date end;
+		task.setName(taskDetails.get(FIRST_ARG));
+		
+		String[] restOfDetails = taskDetails.get(SECOND_ARG).split(" ");
+		task.setType(restOfDetails[FIRST_ARG]); //Type of task/event
+		
+		try {
+			start = dateString.parse(restOfDetails[SECOND_ARG]);
+			Calendar startCal = GregorianCalendar.getInstance();
+			startCal.setTime(start);
+			task.setStartDay(startCal);
+		} catch(ParseException e) {
+			//error reading from file
+		}
+		
+		try {
+			end = dateString.parse(restOfDetails[THIRD_ARG]);
+			Calendar endCal = GregorianCalendar.getInstance();
+			endCal.setTime(end);
+			task.setEndDay(endCal);
+		} catch(ParseException e) {
+			//error reading from file
+		}
+		
+		task.setPriority(Integer.parseInt(restOfDetails[FOURTH_ARG]));
+	}
+
+	/**
+	 * creates and empty file with the file name
+	 */
+	private static void createEmptyFile(String fileStorageName) {
+		ArrayList<TaskCard> emptyArrayList = new ArrayList<TaskCard>();
+		int numberOfTasks = emptyArrayList.size();
+		
+		if(fileStorageName == INCOMPLETE_TASKS_STORAGE_FILE_NAME) {
+			writeFile(emptyArrayList, numberOfTasks, INCOMPLETE_TASKS_STORAGE_FILE_NAME);
+		} else if(fileStorageName == COMPLETED_TASKS_STORAGE_FILE_NAME) {
+			writeFile(emptyArrayList, numberOfTasks, COMPLETED_TASKS_STORAGE_FILE_NAME);
+		} else if(fileStorageName == INCOMPLETE_EVENTS_STORAGE_FILE_NAME) {
+			writeFile(emptyArrayList, numberOfTasks, INCOMPLETE_EVENTS_STORAGE_FILE_NAME);
+		} else {
+			writeFile(emptyArrayList, numberOfTasks, COMPLETED_EVENTS_STORAGE_FILE_NAME);
+		}
+	}
+}
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskCard.java
+	 */
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+public class TaskCard implements Cloneable {
+	
+	private String name;
+	private String type;
+	private int priority = 0;
+	private Calendar startDay = new GregorianCalendar();
+	private Calendar endDay = new GregorianCalendar();
+
+	public TaskCard(){
+	}
+	
+	/**
+	 * constructor for taskcard
+	 */
+	public TaskCard(String name, String type, int priority, Calendar start, Calendar end){
+		this.name = name;
+		this.type = type;
+		this.priority = priority;
+		this.startDay = start;
+		this.endDay = end;
+	}
+
+	/**
+	 * accesser for the task/event name
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * setter for the task/event name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * accessor for the task/event type
+	 * @return
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * setter for the task/event type
+	 */
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	/**
+	 * accessor for the task/event priority
+	 * @return
+	 */
+	public int getPriority() {
+		return priority;
+	}
+	
+	/**
+	 * setter for the task/event priority
+	 */
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+	
+	/**
+	 * accessor for the task/event starting time
+	 * @return
+	 */
+	public Calendar getStartDay() {
+		return startDay;
+	}
+	
+	/**
+	 * setter for the task/event starting time
+	 */
+	public void setStartDay(Calendar startDay) {
+		this.startDay = startDay;
+	}
+	
+	/**
+	 * accessor for the task/event ending time
+	 * @return
+	 */
+	public Calendar getEndDay() {
+		return endDay;
+	}
+	
+	/**
+	 * setter for the task/event ending time
+	 */
+	public void setEndDay(Calendar end) {
+		this.endDay = end;
+	}
+	
+	/**
+	 * method to clone the taskcard which ovverides the object class
+	 * clone
+	 */
+	@Override
+	protected Object clone() {
+		try {
+			return super.clone();
+		} catch(CloneNotSupportedException e) {
+			return null;
+		}
+	}
+}
+
+
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\TaskCard.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Undo.java
+	 */
+
+import java.util.ArrayList;
+
+public class Undo {
+
+	private ArrayList<String> undoCmdType;
+	private ArrayList<String> redoCmdType;
+	
+	private ArrayList<Integer> undoFileToBeModified;
+	private ArrayList<Integer> redoFileToBeModified;
+	
+	private ArrayList<TaskCard> undoTasksOld;
+	private ArrayList<TaskCard> redoTasksOld;
+	
+	private ArrayList<TaskCard> undoTasksNew;
+	private ArrayList<TaskCard> redoTasksNew;
+	
+	private int indexOfLastCmdUndo;
+	private int indexOfLastCmdRedo;
+	
+	private final String RESPONSE_SUCCESSFUL_UNDO_ADD = "\"%s\" has been removed!";
+	private final String RESPONSE_SUCCESSFUL_REDO_ADD = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_DELETE = "\"%s\" has been added back!";
+	private final String RESPONSE_SUCCESSFUL_REDO_DELETE = "\"%s\" has been removed again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_EDIT = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_REDO_EDIT = "\"%s\" has been added back again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_MARK = "\"%s\" has been unmarked!";
+	private final String RESPONSE_SUCCESSFUL_REDO_MARK = "\"%s\" has been marked to the completed section again!";
+	private final String RESPONSE_SUCCESSFUL_UNDO_UNMARK = "\"%s\" has been marked back to completed";
+	private final String RESPONSE_SUCCESSFUL_REDO_UNMARK = "\"%s\" has been unmarked again!";
+	
+	public enum COMMAND_TYPE {
+		ADD, DELETE, EDIT, MARK, UNMARK
+	}
+	
+	/**
+	 * constructor for undo
+	 */
+	public Undo() {
+		initVariables();
+	}
+	
+	/**
+	 * This method takes in the necessary details to store into the arraylist for that will be manipulated
+	 * like a stack for the undo commands. Since the undo command works based on command-based and not state
+	 * based, it stores only the taskcards
+	 */
+	public void storeUndo(String command, int fileModified, TaskCard oldTask, TaskCard newTask) {
+		COMMAND_TYPE cmdType = determineCmdType(command);
+		
+		switch(cmdType) {
+			case ADD:
+				addUndoStorage(oldTask, fileModified);
+				break;
+			case DELETE:
+				deleteUndoStorage(oldTask, fileModified);
+				break;
+			case EDIT:
+				editUndoStorage(oldTask, newTask, fileModified);
+				break;
+			case MARK:
+				markUndoStorage(oldTask, fileModified);
+				break;
+			case UNMARK:
+				unmarkUndoStorage(oldTask, fileModified);
+				break;
+			default:
+				break;
+		}
+	}
+
+	/**
+	 * This method is the main method that CommmandHandler calls when an undo action is called.
+	 * It then performs the necessary undo actions and returns feedback
+	 * @return
+	 * returns a successful feedback message pertaining to the action that was just undone if the
+	 * arraylist is not empty
+	 * returns a false feedback message if there is nothing to be undone
+	 */
+	public String executeUndo(FileLinker fileLink) {
+		String response = "";
+		if(indexOfLastCmdUndo < 0) {
+			response = "Nothing to undo!";
+		} else {
+			response = identifyUndoAndPerform(fileLink);
+		}
+		return response;
+	}
+	
+	/**
+	 * This method is the main method that CommmandHandler calls when an redo action is called.
+	 * It then performs the necessary redo actions and returns feedback
+	 * @return
+	 * returns a successful feedback message pertaining to the action that was just redone if the
+	 * arraylist is not empty
+	 * returns a false feedback message if there is nothing to be redone
+	 */
+	public String executeRedo(FileLinker fileLink) {
+		String response = "";
+		if(indexOfLastCmdRedo < 0) {
+			response = "Nothing to redo!";
+		} else {
+			response = identifyRedoAndPerform(fileLink);
+		}
+		return response;
+	}
+
+	/**
+	 * this method pulls the most recent action from the undo arraylist and determines which
+	 * action needs to be undone
+	 * @return
+	 * returns a string response
+	 */
+	private String identifyUndoAndPerform(FileLinker fileLink) {
+	  String actionToBeDone = undoCmdType.get(indexOfLastCmdUndo);
+	  String response = "";
+	  
+	  switch(actionToBeDone) {
+	  	case "add":
+	  		response = undoAdd(fileLink);
+	  		break;
+	  	case "delete":
+	  		response = undoDelete(fileLink);
+	  		break;
+	  	case "edit":
+	  		response = undoEdit(fileLink);
+	  		break;
+	  	case "mark":
+	  		response = undoMark(fileLink);
+	  		break;
+	  	case "unmark":
+	  		response = undoUnmark(fileLink);
+	  		break;
+	  	default:
+	  		break;
+	  }
+	  return response;
+  }
+
+	/**
+	 * this method pulls the most recent action from the redo arraylist and determines which
+	 * action needs to be redone
+	 * @return
+	 * returns a string response
+	 */
+	private String identifyRedoAndPerform(FileLinker fileLink) {
+		String actionToBeDone = redoCmdType.get(indexOfLastCmdRedo);
+		String response = "";
+		
+		switch(actionToBeDone) {
+			case "add":
+				response = redoAdd(fileLink);
+				break;
+			case "delete":
+				response = redoDelete(fileLink);
+				break;
+			case "edit":
+				response = redoEdit(fileLink);
+				break;
+			case "mark":
+				response = redoMark(fileLink);
+				break;
+			case "unmark":
+				response = redoUnmark(fileLink);
+				break;
+			default:
+				break;
+		}
+		return response;
+	}
+
+	/**
+	 * this method undoes the add method by deleting the taskcard that was added into the
+	 * database
+	 * @return
+	 * returns a string response to indicate which task was undone
+	 */
+	private String undoAdd(FileLinker fileLink) {		
+		TaskCard taskToBeUndone = undoTasksOld.get(indexOfLastCmdUndo);
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+		ArrayList<TaskCard> arrayToBeModified;
+	  if(modifiedFile == 1) {
+	  	arrayToBeModified = fileLink.getIncompleteTasks();
+	  } else {
+	  	arrayToBeModified = fileLink.getIncompleteEvents();
+	  }
+	  
+	  int indexOfTaskToBeDeleted = arrayToBeModified.indexOf(taskToBeUndone);
+	  fileLink.deleteHandling(indexOfTaskToBeDeleted, modifiedFile);
+	  
+	  pushUndoToRedo();
+	  
+	  return String.format(RESPONSE_SUCCESSFUL_UNDO_ADD, taskToBeUndone.getName());
+  }
+	
+	/**
+	 * this method re-does the add method by adding the taskcard back into the database
+	 * @return
+	 * returns a string response for successfully re-doing an add action
+	 */
+	private String redoAdd(FileLinker fileLink) {
+		TaskCard taskToBeRedone = redoTasksOld.get(indexOfLastCmdRedo); 
+		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+		
+		fileLink.addHandling(taskToBeRedone, modifiedFile);
+		
+		pushRedoToUndo();
+		
+		return String.format(RESPONSE_SUCCESSFUL_REDO_ADD, taskToBeRedone.getName()); 
+	}
+
+	/**
+	 * this method is for carrying out an undo action for delete by adding the task
+	 * back into the database
+	 * @return
+	 * returns a response string
+	 */
+	private String undoDelete(FileLinker fileLink) {
+	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+	  
+	  fileLink.addHandling(taskToBeAddedBack, modifiedFile);
+	  
+	  pushUndoToRedo();
+	  
+	  return String.format(RESPONSE_SUCCESSFUL_UNDO_DELETE, taskToBeAddedBack.getName());
+  }
+
+	/**
+	 * this method re-does the delete action by deleting the taskcard away from the
+	 * database
+	 * @return
+	 * returns a response of the action being completed successfully with the task name
+	 * that was deleted
+	 */
+	private String redoDelete(FileLinker fileLink) {
+		TaskCard taskToBeDeletedBack = redoTasksOld.get(indexOfLastCmdRedo);
+		int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+		ArrayList<TaskCard> arrayToBeModified;
+		
+		if(modifiedFile == 1) {
+			arrayToBeModified = fileLink.getIncompleteTasks();
+		} else if(modifiedFile == 2) {
+			arrayToBeModified = fileLink.getIncompleteEvents();
+		} else if(modifiedFile == 3) {
+			arrayToBeModified = fileLink.getCompletedTasks();
+		} else {
+			arrayToBeModified = fileLink.getCompletedEvents();
+		}
+	  
+		int indexOfTaskToBeDeleted = arrayToBeModified.indexOf(taskToBeDeletedBack);
+		fileLink.deleteHandling(indexOfTaskToBeDeleted, modifiedFile);
+		
+		pushRedoToUndo();
+		
+		return String.format(RESPONSE_SUCCESSFUL_REDO_DELETE, taskToBeDeletedBack.getName());
+	}
+
+	/**
+	 * this method un-does the previous edit command and replaces the new taskcard in the
+	 * database with the original taskcard
+	 * @return
+	 * returns a response with the task that was edited/undone
+	 */
+	private String undoEdit(FileLinker fileLink) {
+		ArrayList<TaskCard> arrayToBeModified;
+	  int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+		TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+	  TaskCard taskToBeReplaced = undoTasksNew.get(indexOfLastCmdUndo);
+	  
+	  if(modifiedFile == 1) {
+			arrayToBeModified = fileLink.getIncompleteTasks();
+		} else if(modifiedFile == 2) {
+			arrayToBeModified = fileLink.getIncompleteEvents();
+		} else if(modifiedFile == 3) {
+			arrayToBeModified = fileLink.getCompletedTasks();
+		} else {
+			arrayToBeModified = fileLink.getCompletedEvents();
+		}
+	  
+	  int indexOfTaskToBeEdited = arrayToBeModified.indexOf(taskToBeReplaced);
+	  fileLink.editHandling(taskToBeAddedBack, indexOfTaskToBeEdited, modifiedFile);
+	  
+	  pushUndoToRedo();
+	  
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_EDIT, taskToBeAddedBack.getName());
+  }
+
+	/**
+	 * this method re-does the previous edit command and replaces the old task card with
+	 * new task card in the database 
+	 * @return
+	 * returns a response with the task that was edited/redone
+	 */
+	private String redoEdit(FileLinker fileLink) {
+	  ArrayList<TaskCard> arrayToBeModified;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeAddedBack = redoTasksNew.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeReplaced = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 1) {
+	  	arrayToBeModified = fileLink.getIncompleteTasks();
+	  } else {
+	  	arrayToBeModified = fileLink.getIncompleteEvents();
+	  }
+	  
+	  int indexOfTaskToBeEdited = arrayToBeModified.indexOf(taskToBeReplaced);
+	  fileLink.editHandling(taskToBeAddedBack, indexOfTaskToBeEdited, modifiedFile);
+	  
+	  pushRedoToUndo();
+	  
+		return String.format(RESPONSE_SUCCESSFUL_REDO_EDIT, taskToBeAddedBack.getName());
+	}
+
+	/**
+	 * this method un-does the previous mark that the user performed by moving the taskcard
+	 * from completed to incomplete
+	 * @return
+	 * returns a response with the task that was unmarked back to incomplete
+	 */
+	private String undoMark(FileLinker fileLink) {
+	  ArrayList<TaskCard> arrayToBeMarked;
+	  int fileToBeDeletedFrom;
+	  int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+	  TaskCard taskToBeAddedBack = undoTasksOld.get(indexOfLastCmdUndo);
+	  
+	  if(modifiedFile == 1) {
+	  	fileToBeDeletedFrom = 3;
+	  	arrayToBeMarked = fileLink.getCompletedTasks();
+	  } else {
+	  	fileToBeDeletedFrom = 4;
+	  	arrayToBeMarked = fileLink.getCompletedEvents();
+	  }
+	  
+	  int indexOfTaskToBeDeleted = arrayToBeMarked.indexOf(taskToBeAddedBack);
+	  fileLink.markHandling(taskToBeAddedBack, indexOfTaskToBeDeleted, fileToBeDeletedFrom);
+	  
+	  pushUndoToRedo();
+		
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_MARK, taskToBeAddedBack.getName());
+  }
+
+	/**
+	 * this method re-does the mark function by moving the task back to the completed
+	 * list of taskcard
+	 * @return
+	 * returns a response with the taskname that was marked back into completed
+	 */
+	private String redoMark(FileLinker fileLink) {
+		ArrayList<TaskCard> arrayToBeMarked;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeMarked = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 1) {
+	  	arrayToBeMarked = fileLink.getIncompleteTasks();
+	  } else {
+	  	arrayToBeMarked = fileLink.getIncompleteEvents();
+	  }
+	  
+	  int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+	  fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, modifiedFile);
+	  
+	  pushRedoToUndo();
+	  
+	  return String.format(RESPONSE_SUCCESSFUL_REDO_MARK, taskToBeMarked.getName());
+	}
+	
+	/**
+	 * this method un-does the unmarking by moving the unmarked task back into the 
+	 * list of completed tasks
+	 * @return
+	 * returns a response with the task name
+	 */
+	private String undoUnmark(FileLinker fileLink) {
+		ArrayList<TaskCard> arrayToBeMarked;
+		int fileToBeDeletedFrom;
+		int modifiedFile = undoFileToBeModified.get(indexOfLastCmdUndo);
+		TaskCard taskToBeMarked = undoTasksOld.get(indexOfLastCmdUndo);
+		
+		if(modifiedFile == 3) {
+			fileToBeDeletedFrom = 1;
+			arrayToBeMarked = fileLink.getIncompleteTasks();
+		} else {
+			fileToBeDeletedFrom = 2;
+			arrayToBeMarked = fileLink.getIncompleteEvents();
+		}
+		
+		int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+		fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, fileToBeDeletedFrom);
+		
+		pushUndoToRedo();
+		
+		return String.format(RESPONSE_SUCCESSFUL_UNDO_UNMARK, taskToBeMarked.getName());
+  }
+	
+	/**
+	 * this method re-does the unmark by unmarking the task back into the list of
+	 * incompleted tasks
+	 * @return
+	 * returns a response with the taskname that was moved back into incomplete
+	 */
+	private String redoUnmark(FileLinker fileLink) {
+	  ArrayList<TaskCard> arrayToBeMarked;
+	  int modifiedFile = redoFileToBeModified.get(indexOfLastCmdRedo);
+	  TaskCard taskToBeMarked = redoTasksOld.get(indexOfLastCmdRedo);
+	  
+	  if(modifiedFile == 3) {
+	  	arrayToBeMarked = fileLink.getCompletedTasks();
+	  } else {
+	  	arrayToBeMarked = fileLink.getCompletedEvents();
+	  }
+	  
+	  int taskNumberToBeDeleted = arrayToBeMarked.indexOf(taskToBeMarked);
+	  fileLink.markHandling(taskToBeMarked, taskNumberToBeDeleted, modifiedFile);
+	  
+	  pushRedoToUndo();
+	  
+		return String.format(RESPONSE_SUCCESSFUL_REDO_UNMARK, taskToBeMarked.getName());
+  }
+
+	/**
+	 * this method acts like the pop action from a stack. when an action is undone,
+	 * the details of it are pushed into the redo arraylist
+	 */
+	private void pushUndoToRedo() {
+	  redoTasksOld.add(undoTasksOld.get(indexOfLastCmdUndo));
+	  redoTasksNew.add(undoTasksNew.get(indexOfLastCmdUndo));
+	  redoCmdType.add(undoCmdType.get(indexOfLastCmdUndo));
+	  redoFileToBeModified.add(undoFileToBeModified.get(indexOfLastCmdUndo));
+	  
+	  undoTasksOld.remove(indexOfLastCmdUndo);
+	  undoTasksNew.remove(indexOfLastCmdUndo);
+	  undoCmdType.remove(indexOfLastCmdUndo);
+	  undoFileToBeModified.remove(indexOfLastCmdUndo);
+	  
+	  indexOfLastCmdUndo--;
+	  indexOfLastCmdRedo++;
+	}
+
+	/**
+	 * this method acts like the pop action from a stack. when an action is redone,
+	 * the details of it are pushed into the undo arraylist
+	 */
+	private void pushRedoToUndo() {
+		undoTasksOld.add(redoTasksOld.get(indexOfLastCmdRedo));
+	  undoTasksNew.add(redoTasksNew.get(indexOfLastCmdRedo));
+	  undoCmdType.add(redoCmdType.get(indexOfLastCmdRedo));
+	  undoFileToBeModified.add(redoFileToBeModified.get(indexOfLastCmdRedo));
+	  
+	  redoTasksOld.remove(indexOfLastCmdRedo);
+	  redoTasksNew.remove(indexOfLastCmdRedo);
+	  redoCmdType.remove(indexOfLastCmdRedo);
+	  redoFileToBeModified.remove(indexOfLastCmdRedo);
+	  
+	  indexOfLastCmdRedo--;
+	  indexOfLastCmdUndo++;
+	}
+
+	/**
+	 * this method stores the last command action into the undo arraylist for an add
+	 * command
+	 */
+	private void addUndoStorage(TaskCard task, int fileModified) {
+		undoCmdType.add("add");
+		undoTasksOld.add(task);
+		undoTasksNew.add(null);
+		undoFileToBeModified.add(fileModified);
+		indexOfLastCmdUndo++;
+  }
+
+	/**
+	 * this method stores the last command action into the undo arraylist for a delete
+	 * command
+	 */
+	private void deleteUndoStorage(TaskCard task, int fileModified) {
+	  undoCmdType.add("delete");
+	  undoTasksOld.add(task);
+	  undoTasksNew.add(null);
+	  undoFileToBeModified.add(fileModified);
+	  indexOfLastCmdUndo++;
+  }
+
+	/**
+	 * this method stores the last command action into the undo arraylist for an edit
+	 * command
+	 */
+	private void editUndoStorage(TaskCard oldTask, TaskCard newTask, int fileModified) {
+	  undoCmdType.add("edit");
+	  undoTasksOld.add(oldTask);
+	  undoTasksNew.add(newTask);
+	  undoFileToBeModified.add(fileModified);
+	  indexOfLastCmdUndo++;
+  }
+
+	/**
+	 * this method stores the last command action into the undo arraylist for an mark
+	 * command
+	 */
+	private void markUndoStorage(TaskCard task, int fileModified) {
+		undoCmdType.add("mark");
+		undoTasksOld.add(task);
+		undoTasksNew.add(null);
+		undoFileToBeModified.add(fileModified);
+		indexOfLastCmdUndo++;
+	}
+	
+	/**
+	 * this method stores the last command action into the undo arraylist for an add
+	 * command
+	 */
+	private void unmarkUndoStorage(TaskCard task, int fileModified) {
+		undoCmdType.add("unmark");
+		undoTasksOld.add(task);
+		undoTasksNew.add(null);
+		undoFileToBeModified.add(fileModified);
+		indexOfLastCmdUndo++;
+  }
+
+	/**
+	 * this method is important as it flushes the information in the redo arraylist
+	 * whenever the user enters a new command
+	 */
+	public void flushRedo() {
+		redoCmdType = new ArrayList<String>();
+		redoFileToBeModified = new ArrayList<Integer>();
+		redoTasksOld = new ArrayList<TaskCard>();
+		redoTasksNew = new ArrayList<TaskCard>();
+		indexOfLastCmdRedo = -1;
+	}
+	
+	/**
+	 * this method initialises all the global variables to be used in the undo object
+	 */
+	private void initVariables() {
+	  undoCmdType = new ArrayList<String>();
+	  redoCmdType = new ArrayList<String>();
+	  
+	  undoFileToBeModified = new ArrayList<Integer>();
+	  redoFileToBeModified = new ArrayList<Integer>();
+	  
+	  undoTasksOld = new ArrayList<TaskCard>();
+	  redoTasksOld = new ArrayList<TaskCard>();
+	  
+	  undoTasksNew = new ArrayList<TaskCard>();
+	  redoTasksNew= new ArrayList<TaskCard>();
+	  
+	  indexOfLastCmdUndo = -1;
+	  indexOfLastCmdRedo = -1;
+  }
+	
+	/**
+	 * this method determines which command the user had entered
+	 * @return
+	 * returns a command type enum for the program to execute the appropriate 
+	 * undo command
+	 */
+	private COMMAND_TYPE determineCmdType(String cmd) {
+		if(cmd.equals("add")) {
+			return COMMAND_TYPE.ADD;
+		} else if(cmd.equals("delete")) {
+			return COMMAND_TYPE.DELETE;
+		} else if(cmd.equals("edit")) {
+			return COMMAND_TYPE.EDIT;
+		} else if (cmd.equals("mark")) {
+			return COMMAND_TYPE.MARK;
+		} else {
+			return COMMAND_TYPE.UNMARK;
+		}
+	}
+}
+	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Undo.java
+
+
+
+
+
