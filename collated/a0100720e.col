@@ -28,10 +28,18 @@ import java.util.GregorianCalendar;
 
 public class DataUI {
 
+	private static final String MESSAGE_ONGOING_EVENTS_ARE_HIGHLIGHTED_IN_BLUE = "Ongoing events are highlighted in blue.";
+	private static final String MESSAGE_EXPIRED_EVENTS_ARE_HIGHLIGHTED_IN_RED = "Expired events are highlighted in red.";
+	
 	private static final String DEFAULT_FEEDBACK = "Read me!";
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("h:mmaa");
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yyyy");	
 	private SimpleDateFormat timeUIFormat = new SimpleDateFormat("EEE h:mmaa");
+	
+	private static final String NUMBER_SET_ID_TWO = "2";
+	private static final String NUMBER_SET_ID_ONE = "1";
+	private static final int PRIORITY_NUM_MED = 2;
+	private static final int PRIORITY_NUM_LOW = 1;
 	
 	private ArrayList<TaskDataUI> incompleteTasks;
 	private ArrayList<TaskDataUI> completeTasks;
@@ -61,7 +69,7 @@ public class DataUI {
 	}
 	
 	/**
-	 * Incomplete Task 
+	 * Passes the information on Incomplete Tasks in a format readable for GUI 
 	 * @param fileLink
 	 * 
 	 */
@@ -104,7 +112,7 @@ public class DataUI {
 	}
 
 	/**
-	 * For incomplete Events
+	 * Passes the information on Incomplete Events in a format readable for GUI 
 	 * @param fileLink
 	 */
 	public void configIncompleteEvents(FileLinker fileLink) {
@@ -151,7 +159,7 @@ public class DataUI {
 	}
 
 	/**
-	 * Complete Task 
+	 * Passes the information on Completed Tasks in a format readable for GUI 
 	 * @param fileLink
 	 * 
 	 */
@@ -188,7 +196,7 @@ public class DataUI {
 	
 	
 	/**
-	 * For Completed Events
+	 * Passes the information on Completed Tasks in a format readable for GUI 
 	 * @param fileLink
 	 */
 	public void configCompletedEvents(FileLinker fileLink) {
@@ -228,8 +236,8 @@ public class DataUI {
 		EventDataUI helpEvent1 = new EventDataUI();
 		EventDataUI helpEvent2 = new EventDataUI();
 		
-		helpEvent1.setID("1");
-		helpEvent1.setName("Expired events are highlighted in red.");
+		helpEvent1.setID(NUMBER_SET_ID_ONE);
+		helpEvent1.setName(MESSAGE_EXPIRED_EVENTS_ARE_HIGHLIGHTED_IN_RED);
 		helpEvent1.setPriority("HIGH");
 		helpEvent1.setStartDate("-");
 		helpEvent1.setStartTime("-");
@@ -238,8 +246,8 @@ public class DataUI {
 		helpEvent1.setIsExpired(true);
 		helpEvent1.setIsOngoing(false);
 		
-		helpEvent2.setID("2");
-		helpEvent2.setName("Ongoing events are highlighted in blue.");
+		helpEvent2.setID(NUMBER_SET_ID_TWO);
+		helpEvent2.setName(MESSAGE_ONGOING_EVENTS_ARE_HIGHLIGHTED_IN_BLUE);
 		helpEvent2.setPriority("LOW");
 		helpEvent2.setStartDate("-");
 		helpEvent2.setStartTime("-");
@@ -253,9 +261,9 @@ public class DataUI {
 	}
 	
 	private String determinePriority(int priority) {
-		if(priority == 1) {
+		if(priority == PRIORITY_NUM_LOW) {
 			return "LOW";
-		} else if(priority == 2) {
+		} else if(priority == PRIORITY_NUM_MED) {
 			return "MED";
 		} else
 			return "HIGH";
@@ -339,26 +347,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Delete {
-	
+
 	private static final int DELETE_INCOMPLETE_TASKS = 1;
 	private static final int DELETE_INCOMPLETE_EVENTS = 2;
 	private static final int DELETE_COMPLETE_TASK = 3;
 	private static final int DELETE_COMPLETE_EVENTS = 4;
-	
+
 	private static final int FIRST_ARGUMENT = 0;
 	private static final int SECOND_ARGUMENT = 1;
-		
+
 	private static final String FEEDBACK_PENDING_INCOMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID to delete!";
 	private static final String FEEDBACK_PENDING_INCOMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to delete!";
 	private static final String FEEDBACK_PENDING_COMPLETE_TASK_INDEX = "You seem to have forgotten something! Please enter an ID to delete!";
 	private static final String FEEDBACK_PENDING_COMPLETE_EVENT_INDEX = "You seem to have forgotten something! Please enter an ID to delete!";
 	private static final String FEEDBACK_DELETE_SUCCESSFUL = "\"%s\" has been deleted!";
 	private static final String FEEDBACK_DELETION_RANGE = "Please enter a number between 1 to %d!";
+	private static final String FEEDBACK_DELETION_EMPTY = "There is nothing to delete!";
 	private static final String FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND = "That was an unrecognisable delete command :(";
 	private static final String FEEDBACK_NOT_NUMBER_ENTERED = "You didn't enter a number! Please enter a number between 1 to %d!";
-	
+
 	private HashMap<String, Integer> cmdTable = new HashMap<String, Integer>();
-	
+
 	public Delete() {
 		initialiseCmdTable();
 	}
@@ -382,17 +391,20 @@ public class Delete {
 
 		String[] tokenizedInput = userInput.trim().split("\\s+", 2);
 		String cmd = tokenizedInput[FIRST_ARGUMENT];
-			
+
 		if(cmdTable.containsKey(cmd) != true) {
 			notRecognisableCmd(fileLink, dataUI);
 		} else {
+			if(cmdTable.get(cmd) != 0) {
+				tableNo = cmdTable.get(cmd);
+			}
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler);
 		}
 		if(success) {
 			undoHandler.flushRedo();
 		}
 	}
-	
+
 	/**
 	 * This method checks if the command index is of acceptable length and checks what type of delete the user wishes to execute.
 	 * It then redirects the input accordingly
@@ -407,13 +419,13 @@ public class Delete {
 		boolean success = false;
 		boolean noIndexArgument = false;
 		String userIndex = null;
-		
+
 		if(tokenizedInput.length < 2) {
 			noIndexArgument = true;
 		} else {
 			userIndex = tokenizedInput[SECOND_ARGUMENT];
 		}
-		
+
 		switch(tableNo) {
 			case DELETE_INCOMPLETE_TASKS:
 				if(noIndexArgument == true) {
@@ -456,18 +468,21 @@ public class Delete {
 	private boolean performIncTaskDelete(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incTasks = fileLink.getIncompleteTasks();
-		
+
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
-			
-			if(deletedIndex <= 0 || deletedIndex > incTasks.size()) {
+
+			if (incTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			}	else if(deletedIndex <= 0 || deletedIndex > incTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incTasks.size()));
 				return success = false;
 			} else {
 				TaskCard task = incTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_TASKS);
-				
+
 				undoHandler.storeUndo("delete", DELETE_INCOMPLETE_TASKS, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
@@ -475,7 +490,7 @@ public class Delete {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incTasks.size()));
 			return success = false;
 		}
-		
+
 		return success;
 	}
 
@@ -483,18 +498,21 @@ public class Delete {
 			DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> incEvent = fileLink.getIncompleteEvents();
-		
+
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
-			
-			if(deletedIndex < 0 || deletedIndex > incEvent.size()) {
+
+			if (incEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			}	else if(deletedIndex < 0 || deletedIndex > incEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, incEvent.size()));
 				return success = false;
 			} else {
 				TaskCard event = incEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_INCOMPLETE_EVENTS);
-				
+
 				undoHandler.storeUndo("delete", DELETE_INCOMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
@@ -502,25 +520,28 @@ public class Delete {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, incEvent.size()));
 			success = false;
 		}
-		
+
 		return success;
 	}
 
 	private boolean performCompTaskDelete(String userIndex, FileLinker fileLink, DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compTasks = fileLink.getCompletedTasks();
-		
+
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
-			
-			if(deletedIndex < 0 || deletedIndex > compTasks.size()) {
+
+			if (compTasks.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			} else if(deletedIndex < 0 || deletedIndex > compTasks.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compTasks.size()));
 				return success = false;
 			} else {
 				TaskCard task = compTasks.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, task.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_COMPLETE_TASK);
-				
+
 				undoHandler.storeUndo("delete", DELETE_COMPLETE_TASK, task, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
@@ -528,25 +549,28 @@ public class Delete {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compTasks.size()));
 			return success = false;
 		}
-		
+
 		return success;
 	}
 
 	private boolean performCompEventDelete(String userIndex, FileLinker fileLink,	DataUI dataUI, Undo undoHandler) {
 		boolean success = true;
 		ArrayList<TaskCard> compEvent = fileLink.getCompletedEvents();
-		
+
 		try {
 			int deletedIndex = Integer.parseInt(userIndex);
-			
-			if(deletedIndex < 0 || deletedIndex > compEvent.size()) {
+
+			if (compEvent.size() == 0) {
+				dataUI.setFeedback(FEEDBACK_DELETION_EMPTY);
+				return success = false;
+			} else if(deletedIndex < 0 || deletedIndex > compEvent.size()) {
 				dataUI.setFeedback(String.format(FEEDBACK_DELETION_RANGE, compEvent.size()));
 				return success = false;
 			} else {
 				TaskCard event = compEvent.get(deletedIndex - 1);
 				dataUI.setFeedback(String.format(FEEDBACK_DELETE_SUCCESSFUL, event.getName()));
 				fileLink.deleteHandling(deletedIndex - 1, DELETE_COMPLETE_EVENTS);
-				
+
 				undoHandler.storeUndo("delete", DELETE_COMPLETE_EVENTS, event, null);
 				RefreshUI.executeRefresh(fileLink, dataUI);
 			}
@@ -554,7 +578,7 @@ public class Delete {
 			dataUI.setFeedback(String.format(FEEDBACK_NOT_NUMBER_ENTERED, compEvent.size()));
 			success = false;
 		}
-		
+
 		return success;
 	}
 
@@ -562,7 +586,7 @@ public class Delete {
 		RefreshUI.executeRefresh(fileLink, dataUI);
 		dataUI.setFeedback(FEEDBACK_UNRECOGNISABLE_DELETE_COMMAND);
 	}
-	
+
 	private void initialiseCmdTable() {
 		cmdTable.put("del", 0);
 		cmdTable.put("delt", DELETE_INCOMPLETE_TASKS);
@@ -579,17 +603,6 @@ public class Delete {
 
 
 	/**
-	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
-	 */
-
-
-	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\Delete.java
-
-
-
-
-
-	/**
 	 * origin: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DeleteTest.java
 	 */
 
@@ -597,74 +610,494 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.ArrayList;
+
+import org.junit.Before;
 
 public class DeleteTest {
-
-	@Test
-	public void testExecuteDelete() throws IOException{
-		/**
-		 * For invalid command name without number input
-		 */
-		Undo undoHandler = new Undo();
-		
-		String wrongDelete = "delete";
-		int tableNo = 1;
-		FileLinker deleteFileLinker = new FileLinker();
-		DataUI deleteUI = new DataUI();
-		deleteUI.configIncompleteTasks(deleteFileLinker);
-		Delete newDeleteWithWrongCommand = new Delete();
-		
-		newDeleteWithWrongCommand.executeDelete(wrongDelete, deleteFileLinker, deleteUI, tableNo, undoHandler);
-		
-		assertEquals("That was an unrecognisable delete command :(", deleteUI.getFeedback());
-		
-		/**
-		 * For valid command name without number input
-		 */
-		
-		String deleteIncompTaskNoID = "delt";
-		tableNo = 1;
-		FileLinker deleteFLForDTWithoutNum = new FileLinker();
-		DataUI deleteUIForValidDeleteName = new DataUI();
-		deleteUIForValidDeleteName.configIncompleteTasks(deleteFLForDTWithoutNum);
-		Delete newDeleteForIncompTaskNoId = new Delete();
-		newDeleteForIncompTaskNoId.executeDelete(deleteIncompTaskNoID, deleteFLForDTWithoutNum, deleteUIForValidDeleteName, tableNo, undoHandler);
-		
-		assertEquals("You didn't specify an incomplete task to delete! Please enter an ID to delete!", deleteUIForValidDeleteName.getFeedback());
 	
-		/**
-		 * For valid command for type task 
-		 */
-		
-		
-		String deleteIncompTaskNo3 = "delt 3";
-		tableNo = 1;
-		FileLinker deleteFlTaskWithNum = new FileLinker();
-		DataUI deleteUIForDtWithNum = new DataUI();
-		deleteUIForDtWithNum.configIncompleteTasks(deleteFlTaskWithNum);
-		Delete newDeleteForIncompTaskWithID = new Delete();
-		newDeleteForIncompTaskWithID.executeDelete(deleteIncompTaskNo3, deleteFlTaskWithNum, deleteUIForDtWithNum, tableNo, undoHandler);
-		
-		assertEquals("\"hello world\" has been deleted!", deleteUIForDtWithNum.getFeedback());
-		
-		/**
-		 * For valid command  for type event 
-		 */
-		
-		String deleteIncompEventNo3 = "dele 3";
-		tableNo = 2;
-		FileLinker deleteFlEventWithNum = new FileLinker();
-		DataUI deleteUIForDeWithNum = new DataUI();
-		deleteUIForDeWithNum.configIncompleteEvents(deleteFlEventWithNum);
-		Delete newDeleteForIncompEventWithID = new Delete();
-		newDeleteForIncompEventWithID.executeDelete(deleteIncompEventNo3, deleteFlEventWithNum, deleteUIForDeWithNum, tableNo, undoHandler);
+	DateAndTimeFormats dateFormatsTest = new DateAndTimeFormats();
+	Undo undoHandlerTest = new Undo();
+	Add addHandlerTest = new Add();
+	FileLinker fileLinkTest = new FileLinker();
+	DataUI dataUITest = new DataUI();
+	Delete deleteHandlerTest = new Delete();
+	Mark markHandlerTest = new Mark();
 	
-		assertEquals("\"test2\" has been deleted!", deleteUIForDeWithNum.getFeedback());
-	
-	
+	@Before
+	public void populate() {
+		fileLinkTest.reset();
+		ArrayList<String> stuffToAdd = new ArrayList<String>();
+		stuffToAdd.add("addu CS2105 assignment due by 15 may");
+		stuffToAdd.add("add Read Lord of the Rings");
+		stuffToAdd.add("add Meeting with boss; 2pm to 4pm");
+		stuffToAdd.add("add CS2107 Assignment due by 20 April");
+		stuffToAdd.add("add Hello World; 12 April to 17 April");
+		stuffToAdd.add("add CS2101 Presentation; 11 April, 12pm to 2pm");
+		stuffToAdd.add("add CS2101 OP1; 29 mar, 4pm to 6pm");
+		stuffToAdd.add("add SSA2204 meeting; 27 mar, 12pm");
+		stuffToAdd.add("add Watch Star Wars Movies");
+		stuffToAdd.add("add SSA2204 assignment by 25 mar");
+		
+		for(int i = 0; i < stuffToAdd.size(); i++) {
+			addHandlerTest.executeAdd(stuffToAdd.get(i), fileLinkTest, 
+					dataUITest, undoHandlerTest, dateFormatsTest);
+		}
+		markHandlerTest.executeMark("mark 1", fileLinkTest, dataUITest, 2, undoHandlerTest);
+		markHandlerTest.executeMark("mark 1", fileLinkTest, dataUITest, 2, undoHandlerTest);
+		
+		markHandlerTest.executeMark("mark 5", fileLinkTest, dataUITest, 1, undoHandlerTest);
+		markHandlerTest.executeMark("mark 2", fileLinkTest, dataUITest, 1, undoHandlerTest);
 	}
-
+	
+	
+	//need to check for del, delt, dele, deltc, delec, with input without input, invalid range for input
+	
+	@Test
+	public void test() {
+		String userInputDelete = "del";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test2() {
+		String userInputDelete = "dele";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test3() {
+		String userInputDelete = "delt";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 1, undoHandlerTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName()); 
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test4() {
+		String userInputDelete = "deltc";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 3, undoHandlerTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test5() {
+		String userInputDelete = "delec";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 4, undoHandlerTest);
+		assertEquals("You seem to have forgotten something! Please enter an ID to delete!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test6() {
+		String userInputDelete = "del 1";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("\"CS2101 Presentation\" has been deleted!", dataUITest.getFeedback());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(1).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName()); 
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test7() {
+		String userInputDelete = "dele 1";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("\"CS2101 Presentation\" has been deleted!", dataUITest.getFeedback());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(1).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName()); 
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test8() {
+		String userInputDelete = "delt 1";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 1, undoHandlerTest);
+		assertEquals("\"CS2105 assignment\" has been deleted!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName());
+		
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(1).getName()); 
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	
+	@Test
+	public void test9() {
+		String userInputDelete = "deltc 1";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 3, undoHandlerTest);
+		assertEquals("\"Watch Star Wars Movies\" has been deleted!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName());
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName()); 
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(0).getName());
+		
+	}
+	@Test
+	public void test10() {
+		String userInputDelete = "delec 1";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 4, undoHandlerTest);
+		assertEquals("\"SSA2204 meeting\" has been deleted!", dataUITest.getFeedback());
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName());
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName()); 
+		
+		
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(0).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+	}
+	@Test
+	public void test11() {
+		String userInputDelete = "deletwtey";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("That was an unrecognisable delete command :(", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	@Test
+	public void test12() {
+		String userInputDelete = "del noNum";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test13() {
+		String userInputDelete = "dele noNum";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test14() {
+		String userInputDelete = "delt noNum";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 1, undoHandlerTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test15() {
+		String userInputDelete = "deltc noNum";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 3, undoHandlerTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 2!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test16() {
+		String userInputDelete = "delec noNum";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 4, undoHandlerTest);
+		assertEquals("You didn't enter a number! Please enter a number between 1 to 2!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test17() {
+		String userInputDelete = "del 10";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test18() {
+		String userInputDelete = "dele 10";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 2, undoHandlerTest);
+		assertEquals("Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test19() {
+		String userInputDelete = "delt 10";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 1, undoHandlerTest);
+		assertEquals("Please enter a number between 1 to 3!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test20() {
+		String userInputDelete = "deltc 10";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 3, undoHandlerTest);
+		assertEquals("Please enter a number between 1 to 2!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
+	
+	@Test
+	public void test21() {
+		String userInputDelete = "delec 10";
+		deleteHandlerTest.executeDelete(userInputDelete, fileLinkTest, dataUITest, 4, undoHandlerTest);
+		assertEquals("Please enter a number between 1 to 2!", dataUITest.getFeedback());
+		
+		assertEquals("CS2101 Presentation", fileLinkTest.getIncompleteEvents().get(0).getName());
+		assertEquals("Hello World", fileLinkTest.getIncompleteEvents().get(1).getName());
+		assertEquals("Meeting with boss", fileLinkTest.getIncompleteEvents().get(2).getName()); 
+		
+		assertEquals("CS2105 assignment", fileLinkTest.getIncompleteTasks().get(0).getName());
+		assertEquals("CS2107 Assignment", fileLinkTest.getIncompleteTasks().get(1).getName());
+		assertEquals("Read Lord of the Rings", fileLinkTest.getIncompleteTasks().get(2).getName());
+		
+		assertEquals("SSA2204 meeting", fileLinkTest.getCompletedEvents().get(0).getName());
+		assertEquals("CS2101 OP1", fileLinkTest.getCompletedEvents().get(1).getName());
+		
+		assertEquals("Watch Star Wars Movies", fileLinkTest.getCompletedTasks().get(0).getName());
+		assertEquals("SSA2204 assignment", fileLinkTest.getCompletedTasks().get(1).getName());
+		
+	}
 }
 
 	// End of segment: C:\Users\Omar Khalid\workspace\TaskWorthy\src\DeleteTest.java
@@ -778,6 +1211,9 @@ public class Edit {
 			notRecognisableCmd(fileLink, dataUI);
 			return;
 		} else {
+			if(cmdTable.get(cmd) != 0) {
+				tableNo = cmdTable.get(cmd);
+			}
 			success = identifyCmdAndPerform(tokenizedInput, fileLink, dataUI, tableNo, undoHandler, dateFormats);
 		}
 		
@@ -1586,7 +2022,10 @@ public class Edit {
 	 */
 
 import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * The object that will represent a event for the UI to be able to read
+ *
+ */
 public class EventDataUI {
 
 	private SimpleStringProperty ID; 
@@ -1722,7 +2161,10 @@ public class EventDataUI {
 	 */
 
 import javafx.beans.property.SimpleStringProperty;
-
+/**
+ * The object that will represent a task for the UI to be able to read
+ * 
+ */
 public class TaskDataUI {
 
 	private SimpleStringProperty ID;    
