@@ -1,0 +1,1 @@
+TaskWorthy aims to make life in the workplace more organized and less taxing on the user. It will streamline the workflow by implementing an intricate scheduler along with a simple prioritization system, allowing the user to display items of higher importance with more prominence on his to-do list.
